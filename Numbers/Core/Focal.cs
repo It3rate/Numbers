@@ -17,10 +17,25 @@ namespace Numbers
 
 	    //public Trait Trait { get; }
 	    public int Id { get; }
-	    public int StartId { get; set; }
-	    public int EndId { get; set; }
+	    public int StartId { get; set; } // ref to start point value
+	    public int EndId { get; set; } // ref to end point value
+	    public long StartTickValue
+	    {
+		    get => Trait.Values[StartId];
+		    set => Trait.Values[StartId] = value;
+	    }
+	    public long EndTickValue
+        {
+		    get => Trait.Values[EndId];
+		    set => Trait.Values[EndId] = value;
+	    }
+	    public long LengthTicks => EndTickValue - StartTickValue;
 
-	    public Focal(int startId, int endId)
+	    public long HighTicks => StartTickValue >= EndTickValue ? StartTickValue : EndTickValue;
+	    public long LowTicks => StartTickValue >= EndTickValue ? EndTickValue : StartTickValue;
+	    public long AbsLengthTicks => Math.Abs(EndTickValue - StartTickValue);
+
+        public Focal(int startId, int endId)
 	    {
 		    //Trait = trait;
 		    StartId = startId;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,21 +15,30 @@ namespace Numbers
         [STAThread]
         static void Main()
         {
-            Trait t0 = new Trait();
+	        Trait t0 = new Trait();
             var unit = t0.AddFocalByValues(100, 200);
-            var unot = t0.AddFocalByIndexes(unit.EndId, unit.StartId);
             var range = t0.AddFocalByValues(-900, 1100);
-            var domain = t0.AddDomain(unit.Id, unot.Id, range.Id);
+            var domain = t0.AddDomain(unit.Id, range.Id);
 
-            var val = t0.AddFocalByIndexValue(unit.StartId, 650);
+            var val0 = t0.AddFocalByIndexValue(unit.EndId, 650);
+            var val1 = t0.AddFocalByValueIndex(-300, unit.StartId);
+            var val2 = t0.AddFocalByValues(-200, 950);
 
-            var num = new Number(t0, domain.Id, val.Id);
+            var num0 = new Number(domain, val0.Id);
+            var num1 = new Number(domain, val1.Id);
+            var num2 = new Number(domain, val2.Id);
 
-            Console.WriteLine(num.Value);
+            Console.WriteLine(num0);
+            Console.WriteLine(num1);
+            Console.WriteLine(num2);
+            num2.Add(num1);
+            Console.WriteLine(num2);
+            num2.Multiply(num0);
+            Console.WriteLine(num2);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            //Application.EnableVisualStyles();
+            //Application.SetCompatibleTextRenderingDefault(false);
+            //Application.Run(new Form1());
 
         }
     }

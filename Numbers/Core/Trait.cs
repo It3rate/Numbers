@@ -13,8 +13,8 @@ namespace Numbers
     public class Trait
     {
 	    public static List<Trait> Traits { get; } = new List<Trait>(1024);
+	    public static List<long> Values { get; } = new List<long>(4096);
 
-	    public List<long> Values { get; } = new List<long>(1024);
 	    public Dictionary<int, Focal> Focals { get;} = new Dictionary<int, Focal>();
 	    public Dictionary<int, Domain> Domains { get; } = new Dictionary<int, Domain>();
 	    public int Id;
@@ -57,15 +57,15 @@ namespace Numbers
 		    return AddFocalByIndexes(index, endIndex);
 	    }
 
-	    public Domain AddDomain(int unitIndex, int unotIndex, int rangeIndex)
+	    public Domain AddDomain(int unitIndex, int rangeIndex)
 	    {
-		    var result = new Domain(unitIndex, unotIndex, rangeIndex);
+		    var result = new Domain(Id, unitIndex, rangeIndex);
 		    Domains.Add(result.Id, result);
 		    return result;
 	    }
-	    public Domain AddDomain(Focal unit, Focal unot, Focal range)
+	    public Domain AddDomain(Focal unit, Focal range)
 	    {
-		    return AddDomain(unit.Id, unot.Id, range.Id);
+		    return AddDomain(unit.Id, range.Id);
 	    }
 
         // Focal Methods
@@ -79,12 +79,11 @@ namespace Numbers
         // Domain Methods
 
         public bool IsUnitPerspective(Domain domain) => Direction(Unit(domain)) == Pointing.Right;
-        public Focal Unit(Domain domain) => Focals[domain.UnitId];
-        public Focal Unot(Domain domain) => Focals[domain.UnotId];
-        public Focal Range(Domain domain) => Focals[domain.RangeId];
-        public long UnitTicks(Domain domain) => Ticks(Unit(domain));
-        public long UnotTicks(Domain domain) => Ticks(Unot(domain));
-        public long RangeTicks(Domain domain) => Ticks(Range(domain));
+        public Focal Unit(Domain domain) => domain.Unit;
+        public long UnitTicks(Domain domain) => domain.Unit.LengthTicks;
+        public long UnitStart(Domain domain) => domain.Unit.StartTickValue;
+        public long UnitEnd(Domain domain) => domain.Unit.EndTickValue;
+        public long RangeTicks(Domain domain) => domain.MaxRange.LengthTicks;
 
 
     }

@@ -8,6 +8,7 @@
 
     public class Formula : TransformBase
     {
+        // account for repeats of formula, use stack to enable back selection
         public List<Transform> Transforms { get; } = new List<Transform>();
 
         public override void ApplyStart() { }

@@ -11,6 +11,7 @@ namespace Numbers.Core
 
     public class Transform : TransformBase
     {
+	    // account for repeats of transform, use stack to enable back selection
         public TransformKind TransformKind { get; set; }
         public Selection Selection { get; set; }
         public Number Amount { get; set; }
