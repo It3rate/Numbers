@@ -31,9 +31,11 @@ namespace Numbers
 	    }
 	    public long LengthTicks => EndTickValue - StartTickValue;
 
-	    public long HighTicks => StartTickValue >= EndTickValue ? StartTickValue : EndTickValue;
-	    public long LowTicks => StartTickValue >= EndTickValue ? EndTickValue : StartTickValue;
-	    public long AbsLengthTicks => Math.Abs(EndTickValue - StartTickValue);
+        // A unit tick is always positive direction (greater than zero). A unot is a unit flipped around zero, so same length pointing in opposite direction.
+	    public long UnitTick => StartTickValue >= EndTickValue ? StartTickValue : EndTickValue;
+	    public long ZeroTick => StartTickValue >= EndTickValue ? EndTickValue : StartTickValue;
+	    public long UnotTick => ZeroTick - UnitTick;
+        public long UnitLengthTicks => Math.Abs(EndTickValue - StartTickValue);
 
         public Focal(int startId, int endId)
 	    {

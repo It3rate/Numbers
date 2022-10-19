@@ -20,7 +20,7 @@ namespace Numbers
             var range = t0.AddFocalByValues(-900, 1100);
             var domain = t0.AddDomain(unit.Id, range.Id);
 
-            var val0 = t0.AddFocalByIndexValue(unit.EndId, 650);
+            var val0 = t0.AddFocalByIndexValue(unit.StartId, 650);
             var val1 = t0.AddFocalByValueIndex(-300, unit.StartId);
             var val2 = t0.AddFocalByValues(-200, 950);
 
@@ -34,6 +34,8 @@ namespace Numbers
             num2.Add(num1);
             Console.WriteLine(num2);
             num2.Multiply(num0);
+            Console.WriteLine(num2);
+            num2.Divide(num0);
             Console.WriteLine(num2);
 
             //Application.EnableVisualStyles();

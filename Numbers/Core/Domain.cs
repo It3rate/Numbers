@@ -28,7 +28,7 @@ namespace Numbers
         public Dictionary<int, Number> Numbers { get; } = new Dictionary<int, Number>();
 
         public Trait Trait => Trait.Traits[TraitId];
-        public Focal Unit => Trait.Focals[UnitId]; // todo: a unit must always 'point right' as it is from the perspective of the positive unit
+        public Focal Unit => Trait.Focals[UnitId];
         public Focal MaxRange => Trait.Focals[MaxRangeId];
 
         public Domain(int traitId, int unitId, int maxRangeId)

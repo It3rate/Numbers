@@ -1,7 +1,7 @@
 ﻿
 namespace Numbers
 {
-    partial class Form1
+    partial class CoreForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,13 +29,31 @@ namespace Numbers
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.corePanel = new System.Windows.Forms.Panel();
+            this.SuspendLayout();
+            // 
+            // corePanel
+            // 
+            this.corePanel.Location = new System.Drawing.Point(0, 65);
+            this.corePanel.Name = "corePanel";
+            this.corePanel.Size = new System.Drawing.Size(1792, 1071);
+            this.corePanel.TabIndex = 0;
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1792, 1137);
+            this.Controls.Add(this.corePanel);
+            this.Name = "Form1";
             this.Text = "Form1";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Panel corePanel;
     }
 }
 

@@ -28,17 +28,17 @@ namespace Numbers
 
 		public long StartTickLength
         {
-			get => Focal.StartTickValue - Domain.Unit.HighTicks;
-			set { var f = Focal; f.StartTickValue = value + Domain.Unit.HighTicks; }
+			get => Focal.StartTickValue - Domain.Unit.ZeroTick;
+			set { var f = Focal; f.StartTickValue = value + Domain.Unit.ZeroTick; }
 		}
 		public long EndTickLength
         {
-			get => Focal.EndTickValue - Domain.Unit.LowTicks;
-			set { var f = Focal; f.EndTickValue = value + Domain.Unit.LowTicks; }
+			get => Focal.EndTickValue - Domain.Unit.ZeroTick;
+			set { var f = Focal; f.EndTickValue = value + Domain.Unit.ZeroTick; }
 		}
 
-        public double StartValue => StartTickLength / (double) Domain.Unit.AbsLengthTicks;
-		public double EndValue => EndTickLength / (double) Domain.Unit.AbsLengthTicks;
+        public double StartValue => StartTickLength / (double) Domain.Unit.UnitLengthTicks;
+		public double EndValue => EndTickLength / (double) Domain.Unit.UnitLengthTicks;
 		public Complex Value => new Complex(EndValue, StartValue);
 		public Complex Floor => new Complex(Math.Floor(EndValue), Math.Ceiling(StartValue));
 		public Complex Ceiling => new Complex(Math.Ceiling(EndValue), Math.Floor(StartValue));
@@ -53,26 +53,60 @@ namespace Numbers
 		public void SyncFocalTo(Number other)
 		{
 		}
-
+        // Operations with segments and units allow moving the unit around freely, so for example,
+        // you can shift a segment by aligning the unit with start or end,
+        // and scale in place by moving the unit to left, right or center (equivalent to affine scale, where you move to zero, scale, then move back)
+        // need to have overloads that allow shifting the unit temporarily
 		public void Add(Number other)
 		{
 			var synced = SyncDomain(other);
 			StartTickLength += synced.StartTickLength;
 			EndTickLength += synced.EndTickLength;
 		}
+
 		public void Subtract(Number other)
 		{
 			var synced = SyncDomain(other);
 			StartTickLength -= synced.StartTickLength;
 			EndTickLength -= synced.EndTickLength;
 		}
+
 		public void Multiply(Number other)
 		{
 			var synced = SyncDomain(other);
-			var tmp = (EndTickLength * synced.EndTickLength - StartTickLength * synced.StartTickLength) / Domain.Unit.AbsLengthTicks;
-			StartTickLength = (EndTickLength * synced.StartTickLength - StartTickLength * synced.EndTickLength) / Domain.Unit.AbsLengthTicks;
+			var tmp = (EndTickLength * synced.EndTickLength - StartTickLength * synced.StartTickLength) / Domain.Unit.UnitLengthTicks;
+			StartTickLength = (EndTickLength * synced.StartTickLength - StartTickLength * synced.EndTickLength) / Domain.Unit.UnitLengthTicks;
 			EndTickLength = tmp;
 		}
+
+		public void Divide(Number other)
+		{
+			var synced = SyncDomain(other);
+			double end = EndTickLength;
+			double start = StartTickLength;
+			var oEnd = synced.EndTickLength;
+			var oStart = synced.StartTickLength;
+            // removed nan & divByZero checks, should go away anyway in final
+			if ((oStart < 0 ? -oStart : +oStart) < (oEnd < 0 ? -oEnd : +oEnd))
+			{
+				double wr = oStart / (double) oEnd;
+				double wd = oEnd + wr * oStart;
+
+				double _tmp = (end + start * wr) / wd;
+				start = (start - end * wr) / wd;
+				end = _tmp;
+			}
+			else
+			{
+				double wr = oEnd / (double) oStart;
+				double wd = oStart + wr * oEnd;
+				double tmp = (end * wr + start) / wd;
+				start = (start * wr - end) / wd;
+				end = tmp;
+			}
+			StartTickLength = (long)(-start * Domain.Unit.UnitLengthTicks);
+			EndTickLength = (long)(end * Domain.Unit.UnitLengthTicks);
+        }
 
 		public Number Clone()
 		{
