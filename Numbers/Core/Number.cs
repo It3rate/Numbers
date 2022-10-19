@@ -1,5 +1,5 @@
 ﻿
-namespace Numbers
+namespace Numbers.Core
 {
 	using System;
 	using System.Collections.Generic;
@@ -21,9 +21,10 @@ namespace Numbers
 
 		public Number(Domain domain, int focalId)
 		{
+			Id = numberCounter++;
 			Domain = domain;
 			FocalId = focalId;
-			Id = numberCounter++;
+            domain.Numbers.Add(Id, this);
 		}
 
 		public long StartTickLength
@@ -37,17 +38,18 @@ namespace Numbers
 			set { var f = Focal; f.EndTickValue = value + Domain.Unit.ZeroTick; }
 		}
 
-        public double StartValue => StartTickLength / (double) Domain.Unit.UnitLengthTicks;
-		public double EndValue => EndTickLength / (double) Domain.Unit.UnitLengthTicks;
+        public double StartValue => StartTickLength / (double) Domain.Unit.UnitLengthInTicks;
+		public double EndValue => EndTickLength / (double) Domain.Unit.UnitLengthInTicks;
 		public Complex Value => new Complex(EndValue, StartValue);
 		public Complex Floor => new Complex(Math.Floor(EndValue), Math.Ceiling(StartValue));
 		public Complex Ceiling => new Complex(Math.Ceiling(EndValue), Math.Floor(StartValue));
 		public Complex Round => new Complex(Math.Round(EndValue), Math.Round(StartValue));
 		public Complex Remainder => Value - Floor;
 
-		public Number SyncDomain(Number other)
+		public RatioSeg Ratio => Focal.RatioIn(Domain);
+        public Number SyncDomain(Number other)
 		{
-			return other.Clone();
+			return other;//.Clone();
 		}
 
 		public void SyncFocalTo(Number other)
@@ -74,8 +76,8 @@ namespace Numbers
 		public void Multiply(Number other)
 		{
 			var synced = SyncDomain(other);
-			var tmp = (EndTickLength * synced.EndTickLength - StartTickLength * synced.StartTickLength) / Domain.Unit.UnitLengthTicks;
-			StartTickLength = (EndTickLength * synced.StartTickLength - StartTickLength * synced.EndTickLength) / Domain.Unit.UnitLengthTicks;
+			var tmp = (EndTickLength * synced.EndTickLength - StartTickLength * synced.StartTickLength) / Domain.Unit.UnitLengthInTicks;
+			StartTickLength = (EndTickLength * synced.StartTickLength - StartTickLength * synced.EndTickLength) / Domain.Unit.UnitLengthInTicks;
 			EndTickLength = tmp;
 		}
 
@@ -104,14 +106,12 @@ namespace Numbers
 				start = (start * wr - end) / wd;
 				end = tmp;
 			}
-			StartTickLength = (long)(-start * Domain.Unit.UnitLengthTicks);
-			EndTickLength = (long)(end * Domain.Unit.UnitLengthTicks);
+			StartTickLength = (long)(-start * Domain.Unit.UnitLengthInTicks);
+			EndTickLength = (long)(end * Domain.Unit.UnitLengthInTicks);
         }
 
-		public Number Clone()
-		{
-			return new Number(Domain, FocalId);
-		}
+		public Focal CloneFocal() => Trait.CloneFocal(Focal);
+		public Number Clone() => new Number(Domain, CloneFocal().Id);
 
 		public override string ToString()
 		{

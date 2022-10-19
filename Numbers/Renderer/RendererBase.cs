@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using Numbers.Core;
 
 namespace Numbers.Renderer
 {
@@ -94,11 +95,11 @@ namespace Numbers.Renderer
 			Canvas.SetMatrix(Matrix);
 			if (hasControl == false)
 			{
-				Canvas.Clear(SKColors.White);
+				Canvas.Clear(SKColors.Black);
 			}
 			else
 			{
-				Canvas.Clear(SKColors.Beige);
+				Canvas.Clear(SKColor.FromHsl(200f, 14f, 8f));
 			}
 
 		}

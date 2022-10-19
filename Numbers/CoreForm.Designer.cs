@@ -39,13 +39,14 @@ namespace Numbers
             this.corePanel.Size = new System.Drawing.Size(1792, 1071);
             this.corePanel.TabIndex = 0;
             // 
-            // Form1
+            // CoreForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(1792, 1137);
             this.Controls.Add(this.corePanel);
-            this.Name = "Form1";
+            this.Name = "CoreForm";
             this.Text = "Form1";
             this.ResumeLayout(false);
 

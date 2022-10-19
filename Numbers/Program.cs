@@ -4,14 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Numbers.Core;
 
 namespace Numbers
 {
     static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
@@ -31,16 +29,17 @@ namespace Numbers
             Console.WriteLine(num0);
             Console.WriteLine(num1);
             Console.WriteLine(num2);
-            num2.Add(num1);
-            Console.WriteLine(num2);
-            num2.Multiply(num0);
-            Console.WriteLine(num2);
-            num2.Divide(num0);
-            Console.WriteLine(num2);
+            var num3 = num2.Clone();
+            num3.Add(num1);
+            Console.WriteLine(num3);
+            num3.Multiply(num0);
+            Console.WriteLine(num3);
+            num3.Divide(num0);
+            Console.WriteLine(num3);
 
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new Form1());
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new CoreForm());
 
         }
     }

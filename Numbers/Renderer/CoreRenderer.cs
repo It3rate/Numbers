@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using SkiaSharp;
+using Numbers.Core;
 
 namespace Numbers.Renderer
 {
@@ -15,7 +16,49 @@ namespace Numbers.Renderer
 	    {
 	    }
 
-	    public override void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
+	    public override void Draw()
+	    {
+		    base.Draw();
+		    Canvas.DrawCircle(200, 600, 50, Pens.DrawPen);
+		    long traitY = 100;
+		    long margin = 50;
+		    long nlLength = Width - margin * 2;
+            foreach (var trait in Trait.Traits)
+            {
+                DrawHLine(margin, Width - margin, traitY, Pens.GrayPen);
+                foreach (var domain in trait.Domains.Values)
+                {
+	                var domainScale = nlLength / (float)domain.MaxRange.LengthInTicks;
+	                var unitRatio = domain.UnitRatio;
+                    var zeroPt = nlLength * unitRatio.Start + margin;
+                    var unitPt = nlLength * unitRatio.End + margin;
+                    DrawTick(zeroPt, traitY, Pens.TickBoldPen);
+                    DrawTick(unitPt, traitY, Pens.TickPen);
+
+                    DrawHLine(zeroPt, unitPt, traitY, Pens.HighlightPen);
+                    foreach (var number in domain.Numbers.Values)
+                    {
+						traitY += 6;
+	                    var nr = number.Ratio;
+	                    var start = nlLength * nr.Start + margin;
+	                    var end = nlLength * nr.End + margin;
+                        DrawHLine(start, end, traitY, Pens.SegPen);
+                    }
+                }
+            }
+        }
+
+	    public void DrawHLine(float start, float end, float y, SKPaint paint)
+	    {
+		    Canvas.DrawLine(start, y, end, y, paint);
+	    }
+	    public void DrawTick(float pos, float y, SKPaint paint)
+	    {
+		    Canvas.DrawLine(pos, y, pos, y - 8, paint);
+	    }
+
+
+        public override void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
 	    {
 		    float round = radius / 3f;
 		    var box = new SKRect(point.X - radius, point.Y - radius, point.X + radius, point.Y + radius);

@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Numbers
+namespace Numbers.Core
 {
     using System;
     using System.Collections.Generic;
@@ -31,7 +31,12 @@ namespace Numbers
             return Values.Count - 1;
 	    }
 
-	    public Focal AddFocalByIndexes(int startIndex, int endIndex)
+
+	    public Focal CloneFocal(Focal focal)
+	    {
+		    return AddFocalByValues(focal.StartTickValue, focal.EndTickValue);
+	    }
+        public Focal AddFocalByIndexes(int startIndex, int endIndex)
 	    {
 		    var result = new Focal(startIndex, endIndex);
 		    Focals.Add(result.Id, result);
@@ -72,18 +77,15 @@ namespace Numbers
 	    public long Start(Focal focal) => Values[focal.StartId];
 	    public long End(Focal focal) => Values[focal.EndId];
 	    public long Ticks(Focal focal) => End(focal) - Start(focal);
-	    public Pointing Direction(Focal focal) => Start(focal) < End(focal) ? Pointing.Left : Pointing.Right;
-	    public long RightMost(Focal focal) => Direction(focal) == Pointing.Left ? End(focal) : Start(focal);
-	    public long LeftMost(Focal focal) => Direction(focal) == Pointing.Left ? Start(focal) : End(focal);
+	    public long RightMost(Focal focal) => focal.Direction == Pointing.Left ? End(focal) : Start(focal);
+	    public long LeftMost(Focal focal) => focal.Direction == Pointing.Left ? Start(focal) : End(focal);
 
         // Domain Methods
-
-        public bool IsUnitPerspective(Domain domain) => Direction(Unit(domain)) == Pointing.Right;
-        public Focal Unit(Domain domain) => domain.Unit;
-        public long UnitTicks(Domain domain) => domain.Unit.LengthTicks;
+        public UnitFocal Unit(Domain domain) => domain.Unit;
+        public long UnitTicks(Domain domain) => domain.Unit.LengthInTicks;
         public long UnitStart(Domain domain) => domain.Unit.StartTickValue;
         public long UnitEnd(Domain domain) => domain.Unit.EndTickValue;
-        public long RangeTicks(Domain domain) => domain.MaxRange.LengthTicks;
+        public long RangeTicks(Domain domain) => domain.MaxRange.LengthInTicks;
 
 
     }

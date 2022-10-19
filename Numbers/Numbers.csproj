@@ -91,6 +91,7 @@
     <Compile Include="Core\Domain.cs" />
     <Compile Include="Core\Focal.cs" />
     <Compile Include="Core\Formula.cs" />
+    <Compile Include="Core\IFocal.cs" />
     <Compile Include="Core\Selection.cs" />
     <Compile Include="Core\Transform.cs" />
     <Compile Include="CoreForm.cs">
@@ -100,6 +101,7 @@
       <DependentUpon>CoreForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Core\Number.cs" />
+    <Compile Include="Core\UnitFocal.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Trait.cs" />

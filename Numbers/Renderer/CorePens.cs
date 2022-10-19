@@ -15,14 +15,19 @@ namespace Numbers.Renderer
         public float DefaultWidth { get; }
         public bool IsHoverMap { get; set; }
 
+        public SKPaint DrawPen { get; private set; }
+        public SKPaint GrayPen { get; private set; }
+        public SKPaint TickBoldPen { get; private set; }
+        public SKPaint TickPen { get; private set; }
+        public SKPaint SegPen { get; private set; }
+
+
         public SKPaint HoverPen { get; private set; }
         public SKPaint SelectedPen { get; private set; }
         public SKPaint UnitPen { get; private set; }
         public SKPaint UnitGhostPen { get; private set; }
         public SKPaint DarkPen { get; private set; }
-        public SKPaint GrayPen { get; private set; }
         public SKPaint WorkingPen { get; private set; }
-        public SKPaint DrawPen { get; private set; }
         public SKPaint HighlightPen { get; private set; }
         public SKPaint LockedPen { get; private set; }
         public SKPaint FocalPen { get; private set; }
@@ -77,14 +82,18 @@ namespace Numbers.Renderer
 
         private void GenPens()
         {
+            DrawPen = GetPen(SKColors.LightBlue, DefaultWidth * 4);
+            GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
+            TickBoldPen = GetPen(SKColors.LightCyan, DefaultWidth * 1f);
+            TickPen = GetPen(SKColors.LightGray, DefaultWidth * 0.5f);
+            SegPen = GetPen(new SKColor(150, 160, 0, 50), DefaultWidth * 4f);
+
             HoverPen = GetPen(new SKColor(240, 190, 190), DefaultWidth * 5);
             SelectedPen = GetPen(SKColors.Red, DefaultWidth * 1f);
             UnitPen = GetPen(new SKColor(10, 200, 100, 150), DefaultWidth * 5f);
             UnitGhostPen = GetPen(new SKColor(10, 200, 100, 50), DefaultWidth * 5f);
-            GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
             DarkPen = GetPen(SKColors.Black, DefaultWidth);
-            WorkingPen = GetPen(SKColors.DarkGray, DefaultWidth);
-            DrawPen = GetPen(SKColors.Blue, DefaultWidth * 4);
+            WorkingPen = GetPen(SKColors.LightCoral, DefaultWidth);
             HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 5f);
             LockedPen = GetPen(new SKColor(180, 180, 190), DefaultWidth * 1);
             FocalPen = GetPen(new SKColor(100, 120, 210), DefaultWidth * 3);

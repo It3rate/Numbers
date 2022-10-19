@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using System.Numerics;
+using Numbers.Core;
 
-namespace Numbers
+namespace Numbers.Core
 {
     using System;
     using System.Collections.Generic;
@@ -19,27 +20,33 @@ namespace Numbers
     public class Domain
     {
 	    private static int domainCounter = 1;
+	    private int _unitId;
 
-        //public Trait Trait { get; }
+	    //public Trait Trait { get; }
         public int Id { get; }
         public int TraitId { get; set; }
-        public int UnitId { get; set; }
+        public int UnitId
+        {
+	        get => _unitId;
+	        set { _unitId = value; Unit = new UnitFocal(Trait.Focals[UnitId]);}
+        }
         public int MaxRangeId { get; set; }
         public Dictionary<int, Number> Numbers { get; } = new Dictionary<int, Number>();
 
         public Trait Trait => Trait.Traits[TraitId];
-        public Focal Unit => Trait.Focals[UnitId];
+        public UnitFocal Unit { get; private set; }
         public Focal MaxRange => Trait.Focals[MaxRangeId];
 
         public Domain(int traitId, int unitId, int maxRangeId)
         {
+	        Id = domainCounter++;
             TraitId = traitId;
 	        UnitId = unitId;
             MaxRangeId = maxRangeId;
-	        Id = domainCounter++;
         }
         public Domain(Trait trait, Focal unit, Focal range) : this(trait.Id, unit.Id, range.Id) { }
 
+        public RatioSeg UnitRatio => Unit.RatioIn(this);
         public int AddNumber(Focal focal) => AddNumber(focal.Id);
         public int AddNumber(int focalId)
         {
