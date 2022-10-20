@@ -23,39 +23,35 @@ namespace Numbers.Renderer
 		    long traitY = 100;
 		    long margin = 50;
 		    long nlLength = Width - margin * 2;
+		    var dr = new DomainRenderer(this);
             foreach (var trait in Trait.Traits)
             {
-                DrawHLine(margin, Width - margin, traitY, Pens.GrayPen);
+	            var startPoint = new SKPoint(margin, traitY);
+	            var endPoint = new SKPoint(Width - margin, traitY);
                 foreach (var domain in trait.Domains.Values)
                 {
-	                var domainScale = nlLength / (float)domain.MaxRange.LengthInTicks;
-	                var unitRatio = domain.UnitRatio;
-                    var zeroPt = nlLength * unitRatio.Start + margin;
-                    var unitPt = nlLength * unitRatio.End + margin;
-                    DrawTick(zeroPt, traitY, Pens.TickBoldPen);
-                    DrawTick(unitPt, traitY, Pens.TickPen);
-
-                    DrawHLine(zeroPt, unitPt, traitY, Pens.HighlightPen);
-                    foreach (var number in domain.Numbers.Values)
-                    {
-						traitY += 6;
-	                    var nr = number.Ratio;
-	                    var start = nlLength * nr.Start + margin;
-	                    var end = nlLength * nr.End + margin;
-                        DrawHLine(start, end, traitY, Pens.SegPen);
-                    }
+					dr.Reset(domain, startPoint, endPoint);
+					dr.Draw();
                 }
             }
         }
 
-	    public void DrawHLine(float start, float end, float y, SKPaint paint)
+	    public void DrawSegment(SKSegment seg, SKPaint paint)
+	    {
+		    Canvas.DrawLine(seg.StartPoint, seg.EndPoint, paint);
+	    }
+        public void DrawHLine(float start, float end, float y, SKPaint paint)
 	    {
 		    Canvas.DrawLine(start, y, end, y, paint);
-	    }
-	    public void DrawTick(float pos, float y, SKPaint paint)
-	    {
-		    Canvas.DrawLine(pos, y, pos, y - 8, paint);
-	    }
+        }
+        public void DrawTick(float pos, float y, SKPaint paint)
+        {
+	        Canvas.DrawLine(pos, y, pos, y - 8, paint);
+        }
+        public void DrawTick(SKPoint pt, SKPaint paint)
+        {
+	        Canvas.DrawLine(pt.X, pt.Y, pt.X, pt.Y - 8, paint);
+        }
 
 
         public override void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)

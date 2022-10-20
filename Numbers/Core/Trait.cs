@@ -80,7 +80,7 @@ namespace Numbers.Core
 	    public long RightMost(Focal focal) => focal.Direction == Pointing.Left ? End(focal) : Start(focal);
 	    public long LeftMost(Focal focal) => focal.Direction == Pointing.Left ? Start(focal) : End(focal);
 
-        // Domain Methods
+        // _domain Methods
         public UnitFocal Unit(Domain domain) => domain.Unit;
         public long UnitTicks(Domain domain) => domain.Unit.LengthInTicks;
         public long UnitStart(Domain domain) => domain.Unit.StartTickValue;

@@ -107,8 +107,12 @@
     <Compile Include="Core\Trait.cs" />
     <Compile Include="Renderer\CorePens.cs" />
     <Compile Include="Renderer\CoreRenderer.cs" />
+    <Compile Include="Renderer\DomainRenderer.cs" />
     <Compile Include="Renderer\IAgent.cs" />
+    <Compile Include="Renderer\MathF.cs" />
     <Compile Include="Renderer\RendererBase.cs" />
+    <Compile Include="Renderer\SKPointExtension.cs" />
+    <Compile Include="Renderer\SKSegment.cs" />
     <EmbeddedResource Include="CoreForm.resx">
       <DependentUpon>CoreForm.cs</DependentUpon>
     </EmbeddedResource>
