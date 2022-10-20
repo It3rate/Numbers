@@ -17,7 +17,10 @@ namespace Numbers.Renderer
 	    public Domain _domain { get; private set; }
 	    public SKPoint StartPoint { get; private set; }
 	    public SKPoint EndPoint { get; private set; }
-	    public SKSegment DomainLine { get; private set; }
+
+	    private SKSegment _domainSeg;
+	    private RatioSeg _unitRatio;
+	    private SKSegment _unitSeg;
 
 	    public DomainRenderer(CoreRenderer renderer)
 	    {
@@ -34,34 +37,44 @@ namespace Numbers.Renderer
 		    _domain = domain;
 		    StartPoint = startPoint;
 		    EndPoint = endPoint;
-		    DomainLine = new SKSegment(startPoint, endPoint);
+		    _domainSeg = new SKSegment(startPoint, endPoint);
+	        _unitRatio = _domain.UnitRatio;
+	        _unitSeg = _domainSeg.SegmentAlongLine(_unitRatio.Start, _unitRatio.End);
 	    }
 
         public void Draw()
         {
 	        if (_domain != null)
 	        {
-		        _renderer.DrawSegment(DomainLine, _pens.GrayPen);
-
-		        var unitRatio = _domain.UnitRatio;
-		        var unitSeg = DomainLine.SegmentAlongLine(unitRatio.Start, unitRatio.End);
-
-		        _renderer.DrawTick(unitSeg.StartPoint, _pens.TickBoldPen);
-		        _renderer.DrawTick(unitSeg.EndPoint, _pens.TickPen);
-		        _renderer.DrawSegment(unitSeg, _pens.HighlightPen);
-
+		        DrawNumberline();
 		        var offset = new SKPoint(0, 0);
 		        foreach (var number in _domain.Numbers.Values)
 		        {
 			        offset.Y += 10;
 			        var nr = number.Ratio;
-			        var numSeg = DomainLine.SegmentAlongLine(nr.Start, nr.End);
+			        var numSeg = _domainSeg.SegmentAlongLine(nr.Start, nr.End);
 			        numSeg += offset;
 			        _renderer.DrawSegment(numSeg, _pens.SegPen);
 		        }
 	        }
         }
 
+        private void DrawNumberline()
+        {
+	        _renderer.DrawSegment(_domainSeg, _pens.GrayPen);
+	        _renderer.DrawTick(_unitSeg.StartPoint, _pens.TickBoldPen);
+	        _renderer.DrawTick(_unitSeg.EndPoint, _pens.TickPen);
+	        _renderer.DrawSegment(_unitSeg, _pens.HighlightPen);
+
+	        var segStart = (float)_domain.MaxRange.StartTickValue;
+	        var segLen = (float)_domain.MaxRange.LengthInTicks;
+            var wholeTicks = _domain.WholeNumberTicks();
+	        foreach (var wholeTick in wholeTicks)
+	        {
+		        var tickPt = _domainSeg.PointAlongLine((wholeTick - segStart) / segLen);
+		        _renderer.DrawTick(tickPt, _pens.TickPen);
+	        }
+        }
 
     }
 }

@@ -24,18 +24,42 @@ namespace Numbers.Core
 
 	    //public Trait Trait { get; }
         public int Id { get; }
+
         public int TraitId { get; set; }
+        public Trait Trait => Trait.Traits[TraitId];
+
         public int UnitId
         {
 	        get => _unitId;
 	        set { _unitId = value; Unit = new UnitFocal(Trait.Focals[UnitId]);}
         }
+        public UnitFocal Unit { get; private set; }
+
         public int MaxRangeId { get; set; }
+        public Focal MaxRange => Trait.Focals[MaxRangeId];
+        public double MaxRangeValue => MaxRange.LengthInTicks / (double)Unit.LengthInTicks;
+
+        public long[] WholeNumberTicks()
+        {
+	        var result = new List<long>();
+	        var rangeStart = MaxRange.StartTickValue;
+	        var rangeEnd = MaxRange.EndTickValue;
+            var rangeLen = MaxRange.LengthInTicks;
+	        var unitLen = Unit.LengthInTicks;
+	        var zero = Unit.StartTickValue;
+
+	        var tick = rangeStart + ((zero - rangeStart) % unitLen);
+	        while (tick <= rangeEnd)
+	        {
+                result.Add(tick);
+                tick += unitLen;
+	        }
+
+	        return result.ToArray();
+        }
+
         public Dictionary<int, Number> Numbers { get; } = new Dictionary<int, Number>();
 
-        public Trait Trait => Trait.Traits[TraitId];
-        public UnitFocal Unit { get; private set; }
-        public Focal MaxRange => Trait.Focals[MaxRangeId];
 
         public Domain(int traitId, int unitId, int maxRangeId)
         {
