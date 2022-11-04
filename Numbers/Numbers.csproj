@@ -113,6 +113,7 @@
     <Compile Include="Renderer\RendererBase.cs" />
     <Compile Include="Renderer\SKPointExtension.cs" />
     <Compile Include="Renderer\SKSegment.cs" />
+    <Compile Include="Renderer\TransformRenderer.cs" />
     <EmbeddedResource Include="CoreForm.resx">
       <DependentUpon>CoreForm.cs</DependentUpon>
     </EmbeddedResource>

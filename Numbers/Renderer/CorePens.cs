@@ -15,11 +15,20 @@ namespace Numbers.Renderer
         public float DefaultWidth { get; }
         public bool IsHoverMap { get; set; }
 
+        public SKColor BkgColor { get; private set; }
+        public SKPaint BkgBrush { get; private set; }
+        public SKPaint BkgBrushAlpha { get; private set; }
+
         public SKPaint DrawPen { get; private set; }
         public SKPaint GrayPen { get; private set; }
         public SKPaint TickBoldPen { get; private set; }
         public SKPaint TickPen { get; private set; }
-        public SKPaint SegPen { get; private set; }
+
+        public SKPaint SegPen0 { get; private set; }
+        public SKPaint SegPen1 { get; private set; }
+        public SKPaint SegPen2 { get; private set; }
+        public SKPaint SegPen3 { get; private set; }
+        public List<SKPaint> SegPens;
 
 
         public SKPaint HoverPen { get; private set; }
@@ -44,49 +53,33 @@ namespace Numbers.Renderer
             DefaultWidth = defaultWidth;
             GenPens();
         }
-
-        public SKPaint this[int i] => GetPenForIndex(i);
-        private SKPaint GetPenForIndex(int index)
-        {
-            SKPaint result;
-            index = index < 0 ? 0 : index;
-            if (index < Pens.Count)
-            {
-                result = Pens[index];
-            }
-            else
-            {
-                throw new OverflowException("Pen not found with index:" + index);
-                //result = GetPenByOrder(index - Pens.Count);
-            }
-
-            return result;
-        }
-        public SKPaint GetPenByOrder(int index, float widthScale = 1, bool antiAlias = true)
-        {
-            //uint col = (uint)((index + 3) | 0xFF000000);
-            uint col = (uint)((index + 3) * 0x110D05) | 0xFF000000;
-            if (IndexOfColor.ContainsKey(col))
-            {
-                IndexOfColor[col] = index;
-            }
-            else
-            {
-                IndexOfColor.Add(col, index);
-            }
-
-            var color = new SKColor(col);
-            return GetPen(color, DefaultWidth * widthScale, antiAlias);
-        }
-        public int IndexOfPen(SKPaint pen) => Pens.IndexOf(pen);
-
         private void GenPens()
         {
+	        BkgColor = SKColor.FromHsl(200f, 14f, 8f);
+	        BkgBrush = GetBrush(BkgColor);
+            var hatch = new SKPath();
+            hatch.AddPoly(new SKPoint[] { new SKPoint(-2, -2), new SKPoint(2, 2)}, false);
+            //hatch.AddRect(new SKRect(-1, -1, 1, 1));
+            //hatch.AddPoly(new SKPoint[]{new SKPoint(0,-1), new SKPoint(1,0), new SKPoint(0,1), new SKPoint(-1,0)}, true);
+            BkgBrushAlpha = new SKPaint
+	        {
+		        PathEffect = SKPathEffect.Create2DPath(SKMatrix.MakeScale(6,6), hatch),
+		        Color = BkgColor,// SKColor.FromHsl(200f, 14f, 18f),
+		        Style = SKPaintStyle.Stroke,
+                IsAntialias = true,
+		        StrokeWidth = 2
+	        };
+
             DrawPen = GetPen(SKColors.LightBlue, DefaultWidth * 4);
             GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
             TickBoldPen = GetPen(SKColors.LightCyan, DefaultWidth * 1f);
             TickPen = GetPen(SKColors.LightGray, DefaultWidth * 0.5f);
-            SegPen = GetPen(new SKColor(20, 200, 255, 100), DefaultWidth * 4f);
+
+            SegPen0 = GetPen(new SKColor(210, 250, 50, 255), DefaultWidth * 4f);
+            SegPen1 = GetPen(new SKColor(50, 250, 210, 255), DefaultWidth * 4f);
+            SegPen2 = GetPen(new SKColor(50, 50, 250, 255), DefaultWidth * 4f);
+            SegPen3 = GetPen(new SKColor(50, 250, 50, 255), DefaultWidth * 4f);
+            SegPens  = new List<SKPaint>(){ SegPen0, SegPen1, SegPen2, SegPen3 };
 
             HoverPen = GetPen(new SKColor(240, 190, 190), DefaultWidth * 5);
             SelectedPen = GetPen(SKColors.Red, DefaultWidth * 1f);
@@ -94,7 +87,7 @@ namespace Numbers.Renderer
             UnitGhostPen = GetPen(new SKColor(10, 200, 100, 50), DefaultWidth * 5f);
             DarkPen = GetPen(SKColors.Black, DefaultWidth);
             WorkingPen = GetPen(SKColors.LightCoral, DefaultWidth);
-            HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 5f);
+            HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
             LockedPen = GetPen(new SKColor(180, 180, 190), DefaultWidth * 1);
             FocalPen = GetPen(new SKColor(100, 120, 210), DefaultWidth * 3);
             BondPen = GetPen(new SKColor(100, 20, 240), DefaultWidth * 2);
@@ -168,6 +161,42 @@ namespace Numbers.Renderer
             Pens.Add(SlugTextPen);
         }
 
+
+        public SKPaint this[int i] => GetPenForIndex(i);
+        private SKPaint GetPenForIndex(int index)
+        {
+	        SKPaint result;
+	        index = index < 0 ? 0 : index;
+	        if (index < Pens.Count)
+	        {
+		        result = Pens[index];
+	        }
+	        else
+	        {
+		        throw new OverflowException("Pen not found with index:" + index);
+		        //result = GetPenByOrder(index - Pens.Count);
+	        }
+
+	        return result;
+        }
+        public SKPaint GetPenByOrder(int index, float widthScale = 1, bool antiAlias = true)
+        {
+	        //uint col = (uint)((index + 3) | 0xFF000000);
+	        uint col = (uint)((index + 3) * 0x110D05) | 0xFF000000;
+	        if (IndexOfColor.ContainsKey(col))
+	        {
+		        IndexOfColor[col] = index;
+	        }
+	        else
+	        {
+		        IndexOfColor.Add(col, index);
+	        }
+
+	        var color = new SKColor(col);
+	        return GetPen(color, DefaultWidth * widthScale, antiAlias);
+        }
+        public int IndexOfPen(SKPaint pen) => Pens.IndexOf(pen);
+
         public Dictionary<uint, int> IndexOfColor { get; } = new Dictionary<uint, int>();
 
         public SKPaint GetPen(SKColor color, float width, bool antiAlias = true)
@@ -181,6 +210,16 @@ namespace Numbers.Renderer
                 StrokeCap = SKStrokeCap.Round,
             };
             return pen;
+        }
+
+        public SKPaint GetBrush(SKColor color)
+        {
+	        SKPaint pen = new SKPaint()
+	        {
+		        Style = SKPaintStyle.Fill,
+		        Color = color
+	        };
+	        return pen;
         }
     }
 }

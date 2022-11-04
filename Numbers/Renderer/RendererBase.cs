@@ -99,7 +99,7 @@ namespace Numbers.Renderer
 			}
 			else
 			{
-				Canvas.Clear(SKColor.FromHsl(200f, 14f, 8f));
+				Canvas.Clear(Pens.BkgColor);
 			}
 
 		}
@@ -128,7 +128,7 @@ namespace Numbers.Renderer
 		public abstract void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f);
 		public abstract void DrawPolyline(SKPoint[] polyline, SKPaint paint);
 		public abstract void DrawPath(SKPoint[] polyline, SKPaint paint);
-		public abstract void DrawDirectedLine(Number seg, SKPaint paint);
+		public abstract void DrawDirectedLine(SKSegment seg, SKPaint paint);
 		public abstract void DrawText(SKPoint center, string text, SKPaint paint);
 		public abstract void DrawBitmap(SKBitmap bitmap);
 

@@ -42,23 +42,34 @@ namespace Numbers.Renderer
 	        UnitSeg = DomainSeg.SegmentAlongLine(UnitRatio.Start, UnitRatio.End);
 	    }
 
+        private static int domainIndexCounter = 0;
+        private int domainIndex = -1;
         public void Draw()
         {
 	        if (_domain != null)
 	        {
+		        if (domainIndex == -1) domainIndex = domainIndexCounter++;
+		        DrawUnit();
 		        DrawNumberline();
 		        var offset = SKPoint.Empty;
-		        var step = DomainSeg.RelativeOffset(10);
+		        var step = DomainSeg.RelativeOffset(0);//10);
+		        var segPens = new[] {_pens.SegPen1, _pens.SegPen2};
 		        foreach (var numberId in _domain.Numbers)
 		        {
 			        var number = Number.NumberStore[numberId];
-			        offset += step;
-			        var nr = number.Ratio;
-			        var numSeg = DomainSeg.SegmentAlongLine(nr.Start, nr.End);
-			        numSeg += offset;
-			        _renderer.DrawSegment(numSeg, _pens.SegPen);
+			        offset += step; 
+			        var pen = _pens.SegPens[domainIndex % _pens.SegPens.Count];
+                    DrawNumber(number, offset, pen);
 		        }
 	        }
+        }
+
+        private void DrawNumber(Number number, SKPoint offset, SKPaint paint)
+        {
+	        var nr = number.Ratio;
+	        var numSeg = DomainSeg.SegmentAlongLine(nr.Start, nr.End);
+	        numSeg += offset;
+	        _renderer.DrawDirectedLine(numSeg, paint);
         }
 
         private void DrawTick(float t, int offset, SKPaint paint)
@@ -71,16 +82,19 @@ namespace Numbers.Renderer
 	        _renderer.DrawSegment(DomainSeg, _pens.GrayPen);
 	        DrawTick(0, -8, _pens.TickBoldPen);
 	        DrawTick(1, -8, _pens.TickBoldPen);
-	        _renderer.DrawSegment(UnitSeg, _pens.HighlightPen);
 
 	        var segStart = (float)_domain.MaxRange.StartTickValue;
 	        var segLen = (float)_domain.MaxRange.LengthInTicks;
-            var wholeTicks = _domain.WholeNumberTicks();
+	        var wholeTicks = _domain.WholeNumberTicks();
 	        foreach (var wholeTick in wholeTicks)
 	        {
 		        var t = (wholeTick - segStart) / segLen;
 		        DrawTick(t, -8, _pens.TickPen);
 	        }
+        }
+        private void DrawUnit()
+        {
+	        _renderer.DrawSegment(UnitSeg, _pens.HighlightPen);
         }
 
     }

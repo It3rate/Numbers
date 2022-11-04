@@ -13,63 +13,49 @@ namespace Numbers.Renderer
 
     public class CoreRenderer : RendererBase
     {
-	    Dictionary<int, DomainRenderer> _domainRenderers = new Dictionary<int, DomainRenderer>();
+	    public Dictionary<int, DomainRenderer> DomainRenderers = new Dictionary<int, DomainRenderer>();
+	    public Dictionary<int, TransformRenderer> TransformRenderers = new Dictionary<int, TransformRenderer>();
+
         public CoreRenderer() : base()
         {
         }
 
-        DomainRenderer GetOrCreateDomainRenderer(Domain domain, SKPoint startPoint, SKPoint endPoint)
-        {
-	        DomainRenderer result;
-	        if (_domainRenderers.ContainsKey(domain.Id))
-	        {
-		        result = _domainRenderers[domain.Id];
-	        }
-	        else
-	        {
-                result = new DomainRenderer(this, domain, startPoint, endPoint);
-                _domainRenderers[domain.Id] = result;
-	        }
-	        return result;
-        }
 	    public override void Draw()
 	    {
 		    base.Draw();
-            SKPoint center = new SKPoint(Width/2f, Height/2f);
-            var armLen = 280;
-            SKPoint[] startPoints = new SKPoint[] { center - new SKPoint(armLen, 0), center + new SKPoint(0, armLen) };
-            SKPoint[] endPoints = new SKPoint[] { center + new SKPoint(armLen, 0), center - new SKPoint(0, armLen) };
-            long traitY = (long)center.Y;
-		    long margin = 50;
-		    long nlLength = Width - margin * 2;
+		    EnsureRenderers();
             foreach (var trait in Trait.TraitStore)
             {
-	            int index = 0;
-                foreach (var domain in trait.DomainStore.Values)
-                {
-					var _domainRenderer = GetOrCreateDomainRenderer(domain, startPoints[index], endPoints[index]);
-					_domainRenderer.Draw();
-					index++;
-                }
                 foreach (var transform in trait.TransformStore.Values)
                 {
-                    DrawTransform(transform);
+	                TransformRenderers[transform.Id].Draw();
+                }
+                foreach (var domain in trait.DomainStore.Values)
+                {
+					DomainRenderers[domain.Id].Draw();
                 }
             }
         }
 
-	    public void DrawTransform(Transform transform)
+	    public DomainRenderer GetOrCreateDomainRenderer(Domain domain, SKPoint startPoint, SKPoint endPoint)
 	    {
-            var sel0 = transform.Selection[0];
-            var reps = transform.Repeats;
-            var selRatio = sel0.Ratio;
-            var repRatio = reps.Ratio;
-            var selDr = _domainRenderers[sel0.Domain.Id];
-            var repDr = _domainRenderers[reps.Domain.Id];
-            var p0 = selDr.DomainSeg.PointAlongLine(selRatio.End);
-            var p1 = repDr.DomainSeg.PointAlongLine(repRatio.End);
-            Canvas.DrawLine(p0, p1, Pens.BondPen);
+		    if (!DomainRenderers.TryGetValue(domain.Id, out var result))
+		    {
+			    result = new DomainRenderer(this, domain, startPoint, endPoint);
+			    DomainRenderers[domain.Id] = result;
+		    }
+		    return result;
 	    }
+	    public TransformRenderer GetOrCreateTransformRenderer(Transform transform)
+	    {
+		    if (!TransformRenderers.TryGetValue(transform.Id, out var result))
+		    {
+			    result = new TransformRenderer(this, transform);
+			    TransformRenderers[transform.Id] = result;
+		    }
+		    return result;
+	    }
+
         public void DrawSegment(SKSegment seg, SKPaint paint)
 	    {
 		    Canvas.DrawLine(seg.StartPoint, seg.EndPoint, paint);
@@ -124,13 +110,13 @@ namespace Numbers.Renderer
 		    path.AddPoly(polyline, true);
 		    Canvas.DrawPath(path, paint);
 	    }
-	    public override void DrawDirectedLine(Number seg, SKPaint paint)
+	    public override void DrawDirectedLine(SKSegment seg, SKPaint paint)
 	    {
-		    //DrawPolyline(seg.Points, paint);
-		    //Canvas.DrawCircle(seg.StartPoint, 2, paint);
-		    //var triPts = seg.EndArrow(8);
-		    //Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
-	    }
+            DrawPolyline(seg.Points, paint);
+            Canvas.DrawCircle(seg.StartPoint, 2, paint);
+            var triPts = seg.EndArrow(8);
+            Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
+        }
 	    public override void DrawText(SKPoint center, string text, SKPaint paint)
 	    {
 		    var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
@@ -142,7 +128,29 @@ namespace Numbers.Renderer
 		    Canvas.DrawBitmap(bitmap, new SKRect(0, 0, Width, Height));
 	    }
 
-	    public override void GeneratePens()
+
+	    private void EnsureRenderers()
+	    {
+		    SKPoint center = new SKPoint(Width / 2f, Height / 2f);
+		    var armLen = 280;
+		    SKPoint[] startPoints = new SKPoint[] { center - new SKPoint(armLen, 0), center + new SKPoint(0, armLen) };
+		    SKPoint[] endPoints = new SKPoint[] { center + new SKPoint(armLen, 0), center - new SKPoint(0, armLen) };
+
+		    foreach (var trait in Trait.TraitStore)
+		    {
+			    int index = 0;
+			    foreach (var domain in trait.DomainStore.Values)
+			    {
+				    var dr = GetOrCreateDomainRenderer(domain, startPoints[index], endPoints[index]);
+				    index++;
+			    }
+			    foreach (var transform in trait.TransformStore.Values)
+			    {
+				    var tr = GetOrCreateTransformRenderer(transform);
+			    }
+		    }
+	    }
+        public override void GeneratePens()
 	    {
 		    Pens = new CorePens(1);
 	    }
