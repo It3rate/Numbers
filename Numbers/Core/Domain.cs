@@ -26,17 +26,17 @@ namespace Numbers.Core
         public int Id { get; }
 
         public int TraitId { get; set; }
-        public Trait Trait => Trait.Traits[TraitId];
+        public Trait Trait => Trait.TraitStore[TraitId];
 
         public int UnitId
         {
 	        get => _unitId;
-	        set { _unitId = value; Unit = new UnitFocal(Trait.Focals[UnitId]);}
+	        set { _unitId = value; Unit = new UnitFocal(Trait.FocalStore[UnitId]);}
         }
         public UnitFocal Unit { get; private set; }
 
         public int MaxRangeId { get; set; }
-        public Focal MaxRange => Trait.Focals[MaxRangeId];
+        public Focal MaxRange => Trait.FocalStore[MaxRangeId];
         public double MaxRangeValue => MaxRange.LengthInTicks / (double)Unit.LengthInTicks;
 
         public long[] WholeNumberTicks()
@@ -58,7 +58,7 @@ namespace Numbers.Core
 	        return result.ToArray();
         }
 
-        public Dictionary<int, Number> Numbers { get; } = new Dictionary<int, Number>();
+        public List<int> Numbers { get; } = new List<int>();
 
 
         public Domain(int traitId, int unitId, int maxRangeId)
@@ -71,12 +71,10 @@ namespace Numbers.Core
         public Domain(Trait trait, Focal unit, Focal range) : this(trait.Id, unit.Id, range.Id) { }
 
         public RatioSeg UnitRatio => Unit.RatioIn(this);
-        public int AddNumber(Focal focal) => AddNumber(focal.Id);
-        public int AddNumber(int focalId)
+        public Number AddNumber(Focal focal) => AddNumber(focal.Id);
+        public Number AddNumber(int focalId)
         {
-            var n = new Number(this, focalId);
-            Numbers.Add(n.Id, n);
-            return n.Id;
+	        return new Number(this, focalId); // Number class holds the static list of added numbers.
         }
 
     }

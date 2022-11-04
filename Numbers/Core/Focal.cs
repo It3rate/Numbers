@@ -21,13 +21,13 @@ namespace Numbers.Core
 	    public int EndId { get; set; } // ref to end point value
 	    public long StartTickValue
 	    {
-		    get => Trait.Values[StartId];
-		    set => Trait.Values[StartId] = value;
+		    get => Trait.ValueStore[StartId];
+		    set => Trait.ValueStore[StartId] = value;
 	    }
 	    public long EndTickValue
         {
-		    get => Trait.Values[EndId];
-		    set => Trait.Values[EndId] = value;
+		    get => Trait.ValueStore[EndId];
+		    set => Trait.ValueStore[EndId] = value;
 	    }
 	    public long LengthInTicks => EndTickValue - StartTickValue;
 

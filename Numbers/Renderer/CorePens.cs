@@ -86,7 +86,7 @@ namespace Numbers.Renderer
             GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
             TickBoldPen = GetPen(SKColors.LightCyan, DefaultWidth * 1f);
             TickPen = GetPen(SKColors.LightGray, DefaultWidth * 0.5f);
-            SegPen = GetPen(new SKColor(150, 160, 0, 50), DefaultWidth * 4f);
+            SegPen = GetPen(new SKColor(20, 200, 255, 100), DefaultWidth * 4f);
 
             HoverPen = GetPen(new SKColor(240, 190, 190), DefaultWidth * 5);
             SelectedPen = GetPen(SKColors.Red, DefaultWidth * 1f);

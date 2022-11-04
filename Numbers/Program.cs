@@ -17,25 +17,30 @@ namespace Numbers
             var unit = t0.AddFocalByValues(100, 200);
             var range = t0.AddFocalByValues(-900, 1100);
             var domain = t0.AddDomain(unit.Id, range.Id);
+            var domain2 = t0.AddDomain(unit.Id, range.Id);
+            var val2 = t0.AddFocalByValues(500, 950);
+            var val3 = t0.AddFocalByValues(300, 650);
 
-            var val0 = t0.AddFocalByIndexValue(unit.StartId, 650);
-            var val1 = t0.AddFocalByValueIndex(-300, unit.StartId);
-            var val2 = t0.AddFocalByValues(-200, 950);
-	        
-            var num0 = new Number(domain, val0.Id);
-            var num1 = new Number(domain, val1.Id);
+
             var num2 = new Number(domain, val2.Id);
+            var num3 = new Number(domain2, val3.Id);
+            var sel = new Selection(num2);
+            var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
-            Console.WriteLine(num0);
-            Console.WriteLine(num1);
-            Console.WriteLine(num2);
-            var num3 = num2.Clone();
-            num3.Add(num1);
-            Console.WriteLine(num3);
-            num3.Multiply(num0);
-            Console.WriteLine(num3);
-            num3.Divide(num0);
-            Console.WriteLine(num3);
+            //var val0 = t0.AddFocalByIndexValue(unit.StartId, 650);
+            //var val1 = t0.AddFocalByValueIndex(-300, unit.StartId);
+            //var num0 = new Number(domain, val0.Id);
+            //var num1 = new Number(domain, val1.Id);
+            //Console.WriteLine(num0);
+            //Console.WriteLine(num1);
+            //Console.WriteLine(num2);
+            //var num3 = num2.Clone();
+            //num3.Add(num1);
+            //Console.WriteLine(num3);
+            //num3.Multiply(num0);
+            //Console.WriteLine(num3);
+            //num3.Divide(num0);
+            //Console.WriteLine(num3);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

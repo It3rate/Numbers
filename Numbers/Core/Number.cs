@@ -10,22 +10,27 @@ namespace Numbers.Core
 	public class Number
 	{
 		private static int numberCounter = 1;
-		public int Id { get; set; }
+		public static Dictionary<int, Number> NumberStore { get; } = new Dictionary<int, Number>();
+
+		public Number this[int i] => NumberStore[i];
+
+        public int Id { get; set; }
 
 		// number to the power of x, where x is also a focal. Eventually this is equations, lazy solve them.
 		public int FocalId { get; set; }
 
 		public Domain Domain { get; set; }
 		public Trait Trait => Domain.Trait;
-		public Focal Focal => Trait.Focals[FocalId];
+		public Focal Focal => Trait.FocalStore[FocalId];
 
 		public Number(Domain domain, int focalId)
 		{
 			Id = numberCounter++;
 			Domain = domain;
 			FocalId = focalId;
-            domain.Numbers.Add(Id, this);
-		}
+			domain.Numbers.Add(Id);
+			NumberStore.Add(Id, this);
+        }
 
 		public long StartTickLength
         {

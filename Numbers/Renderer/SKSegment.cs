@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using SkiaSharp;
 
 namespace Numbers.Renderer
@@ -79,6 +80,8 @@ namespace Numbers.Renderer
                 (EndPoint.X - StartPoint.X) * (t + offsetT) + StartPoint.X,
                 (EndPoint.Y - StartPoint.Y) * (t + offsetT) + StartPoint.Y);
         }
+        public (SKPoint, SKPoint) PerpendicularLine(float t, float offset) => (PointAlongLine(t), OrthogonalPoint(PointAlongLine(t), offset));
+        public SKPoint RelativeOffset (float offset) => OrthogonalPoint(SKPoint.Empty, offset);
         public SKPoint OffsetAlongLine(float t, float offset) => OrthogonalPoint(PointAlongLine(t), offset);
         public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Math.Max(MathF.tolerance, Length));
         public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(MathF.tolerance, Length)); 

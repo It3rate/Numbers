@@ -29,7 +29,7 @@ namespace Numbers.Core
     // Twist (3d)
     // Bool ops (can split segment)
     // Branch (splits segment) (connections are 0, 1 or 2 way links)
-    // Join (reduces segments)
+    // Blend (reduces segments)
     // Duplicate (adds segment)
 
     // Compare
@@ -38,12 +38,15 @@ namespace Numbers.Core
     public class Transform : TransformBase
     {
 	    // account for repeats of transform, use stack to enable back selection
-        public TransformKind TransformKind { get; set; }
         public Selection Selection { get; set; }
-        public Number Amount { get; set; }
+        //public Number Amount { get; set; } // hmm, repeats are the amount, repeats are joined in place (area in 2d), then can be added (reg mult), multiplied (powers)
 
         //public List<List<int>> History; // or start states, or this is just computable by running in reverse unless involving random.
 
+        public Transform(Selection selection, Number repeats, TransformKind kind) : base(repeats, kind)
+        {
+	        Selection = selection;
+        }
         public override void ApplyStart() { }
 	    public override void ApplyEnd() { }
 	    public override void ApplyPartial(long tickOffset) { }
@@ -53,8 +56,9 @@ namespace Numbers.Core
     public delegate void TransformEventHandler(object sender, ITransform e);
     public interface ITransform
     {
-	    int Repeats { get; set; }
-	    event TransformEventHandler StartTransformEvent;
+	    int Id { get; set; }
+        Number Repeats { get; set; }
+        event TransformEventHandler StartTransformEvent;
 	    event TransformEventHandler TickTransformEvent;
 	    event TransformEventHandler EndTransformEvent;
 
@@ -65,9 +69,19 @@ namespace Numbers.Core
 
     public abstract class TransformBase : ITransform
     {
-	    public int Repeats { get; set; }
+	    private static int transformCounter = 1;
+	    public int Id { get; set; }
+	    public TransformKind TransformKind { get; set; }
+        public Number Repeats { get; set; }
 
-	    public event TransformEventHandler StartTransformEvent;
+        protected TransformBase( Number repeats, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
+        {
+	        Id = transformCounter++;
+	        TransformKind = kind;
+	        Repeats = repeats;
+        }
+
+        public event TransformEventHandler StartTransformEvent;
 	    public event TransformEventHandler TickTransformEvent;
 	    public event TransformEventHandler EndTransformEvent;
 
@@ -78,7 +92,9 @@ namespace Numbers.Core
 
     public enum TransformKind
     {
-        Shift,
-        PreserveRatio,
+	    None, // leave repeats in place
+	    AppendAll, // repeats are added together ('regular' multiplication)
+        MultiplyAll, // repeats are multiplied together (exponents)
+        Blend, // multiply as in area, blend from unot to unit
     }
 }

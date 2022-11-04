@@ -14,5 +14,9 @@
         public override void ApplyStart() { }
         public override void ApplyEnd() { }
         public override void ApplyPartial(long tickOffset) { }
+
+        public Formula(Number repeats, TransformKind kind) : base(repeats, kind)
+        {
+        }
     }
 }

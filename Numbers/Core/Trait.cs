@@ -10,25 +10,36 @@ namespace Numbers.Core
 
     public enum Pointing { Left, Right }
 
+    /// <summary>
+    /// Traits are measurable properties on objects. They can be composed of multiple domains (like mph or dollars/day or lwh) but do not need to be.
+    /// </summary>
     public class Trait
     {
-	    public static List<Trait> Traits { get; } = new List<Trait>(1024);
-	    public static List<long> Values { get; } = new List<long>(4096);
+	    public static List<Trait> TraitStore { get; } = new List<Trait>(1024);
+	    public static List<long> ValueStore { get; } = new List<long>(4096);
 
-	    public Dictionary<int, Focal> Focals { get;} = new Dictionary<int, Focal>();
-	    public Dictionary<int, Domain> Domains { get; } = new Dictionary<int, Domain>();
-	    public int Id;
+	    public Dictionary<int, Focal> FocalStore { get;} = new Dictionary<int, Focal>();
+	    public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
+	    public Dictionary<int, Transform> TransformStore { get; } = new Dictionary<int, Transform>();
+        public int Id;
 
 	    public Trait()
 	    {
-		    Id = Traits.Count;
-            Traits.Add(this);
+		    Id = TraitStore.Count;
+            TraitStore.Add(this);
 	    }
 
 	    public int AddValue(long value)
 	    {
-            Values.Add(value);
-            return Values.Count - 1;
+            ValueStore.Add(value);
+            return ValueStore.Count - 1;
+	    }
+
+	    public Transform AddTransform(Selection selection, Number repeats, TransformKind kind)
+	    {
+            var result = new Transform(selection, repeats, kind);
+            TransformStore.Add(result.Id, result);
+            return result;
 	    }
 
 
@@ -39,33 +50,33 @@ namespace Numbers.Core
         public Focal AddFocalByIndexes(int startIndex, int endIndex)
 	    {
 		    var result = new Focal(startIndex, endIndex);
-		    Focals.Add(result.Id, result);
+		    FocalStore.Add(result.Id, result);
 		    return result;
         }
 	    public Focal AddFocalByValues(long start, long end)
 	    {
-		    var index = Values.Count;
-		    Values.Add(start);
-		    Values.Add(end);
+		    var index = ValueStore.Count;
+		    ValueStore.Add(start);
+		    ValueStore.Add(end);
 		    return AddFocalByIndexes(index, index + 1);
 	    }
 	    public Focal AddFocalByIndexValue(int startIndex, long end)
 	    {
-		    var index = Values.Count;
-		    Values.Add(end);
+		    var index = ValueStore.Count;
+		    ValueStore.Add(end);
 		    return AddFocalByIndexes(startIndex, index);
 	    }
 	    public Focal AddFocalByValueIndex(long start, int endIndex)
 	    {
-		    var index = Values.Count;
-		    Values.Add(start);
+		    var index = ValueStore.Count;
+		    ValueStore.Add(start);
 		    return AddFocalByIndexes(index, endIndex);
 	    }
 
 	    public Domain AddDomain(int unitIndex, int rangeIndex)
 	    {
 		    var result = new Domain(Id, unitIndex, rangeIndex);
-		    Domains.Add(result.Id, result);
+		    DomainStore.Add(result.Id, result);
 		    return result;
 	    }
 	    public Domain AddDomain(Focal unit, Focal range)
@@ -74,8 +85,8 @@ namespace Numbers.Core
 	    }
 
         // Focal Methods
-	    public long Start(Focal focal) => Values[focal.StartId];
-	    public long End(Focal focal) => Values[focal.EndId];
+	    public long Start(Focal focal) => ValueStore[focal.StartId];
+	    public long End(Focal focal) => ValueStore[focal.EndId];
 	    public long Ticks(Focal focal) => End(focal) - Start(focal);
 	    public long RightMost(Focal focal) => focal.Direction == Pointing.Left ? End(focal) : Start(focal);
 	    public long LeftMost(Focal focal) => focal.Direction == Pointing.Left ? Start(focal) : End(focal);
