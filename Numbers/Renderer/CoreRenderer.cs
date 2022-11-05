@@ -131,17 +131,17 @@ namespace Numbers.Renderer
 
 	    private void EnsureRenderers()
 	    {
-		    SKPoint center = new SKPoint(Width / 2f, Height / 2f);
-		    var armLen = 280;
-		    SKPoint[] startPoints = new SKPoint[] { center - new SKPoint(armLen, 0), center + new SKPoint(0, armLen) };
-		    SKPoint[] endPoints = new SKPoint[] { center + new SKPoint(armLen, 0), center - new SKPoint(0, armLen) };
+		    var cx = Width / 2f - 100;
+		    var cy = Height / 2f;
+            var armLen = 280;
+            var lines = new []{ new SKSegment(cx - armLen, cy, cx + armLen, cy), new SKSegment(cx, cy + armLen, cx, cy - armLen) };
 
 		    foreach (var trait in Trait.TraitStore)
 		    {
 			    int index = 0;
 			    foreach (var domain in trait.DomainStore.Values)
 			    {
-				    var dr = GetOrCreateDomainRenderer(domain, startPoints[index], endPoints[index]);
+				    var dr = GetOrCreateDomainRenderer(domain, lines[index].StartPoint, lines[index].EndPoint);
 				    index++;
 			    }
 			    foreach (var transform in trait.TransformStore.Values)

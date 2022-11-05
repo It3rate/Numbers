@@ -42,7 +42,7 @@ namespace Numbers.Core
         public RatioSeg RatioIn(Domain domain)
         {
 	        var mx = domain.MaxRange;
-	        var start = (StartTickValue - mx.StartTickValue) / (float)(mx.LengthInTicks);
+	        var start = (-StartTickValue - mx.StartTickValue) / (float)(mx.LengthInTicks);
 	        var end = (EndTickValue - mx.StartTickValue) / (float)(mx.LengthInTicks);
             return new RatioSeg(start, end);
         }

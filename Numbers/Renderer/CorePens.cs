@@ -17,8 +17,8 @@ namespace Numbers.Renderer
 
         public SKColor BkgColor { get; private set; }
         public SKPaint BkgBrush { get; private set; }
-        public SKPaint BkgBrushAlpha { get; private set; }
-
+        public SKPaint BackHatch { get; private set; }
+        public SKPaint ForeHatch { get; private set; }
         public SKPaint DrawPen { get; private set; }
         public SKPaint GrayPen { get; private set; }
         public SKPaint TickBoldPen { get; private set; }
@@ -30,6 +30,12 @@ namespace Numbers.Renderer
         public SKPaint SegPen3 { get; private set; }
         public List<SKPaint> SegPens;
 
+        public SKPaint TextBrush { get; private set; }
+        public SKPaint Seg0TextBrush { get; private set; }
+        public SKPaint Seg1TextBrush { get; private set; }
+        public SKPaint Seg2TextBrush { get; private set; }
+        public SKPaint Seg3TextBrush { get; private set; }
+        public List<SKPaint> SegTextBrushes;
 
         public SKPaint HoverPen { get; private set; }
         public SKPaint SelectedPen { get; private set; }
@@ -57,18 +63,8 @@ namespace Numbers.Renderer
         {
 	        BkgColor = SKColor.FromHsl(200f, 14f, 8f);
 	        BkgBrush = GetBrush(BkgColor);
-            var hatch = new SKPath();
-            hatch.AddPoly(new SKPoint[] { new SKPoint(-2, -2), new SKPoint(2, 2)}, false);
-            //hatch.AddRect(new SKRect(-1, -1, 1, 1));
-            //hatch.AddPoly(new SKPoint[]{new SKPoint(0,-1), new SKPoint(1,0), new SKPoint(0,1), new SKPoint(-1,0)}, true);
-            BkgBrushAlpha = new SKPaint
-	        {
-		        PathEffect = SKPathEffect.Create2DPath(SKMatrix.MakeScale(6,6), hatch),
-		        Color = BkgColor,// SKColor.FromHsl(200f, 14f, 18f),
-		        Style = SKPaintStyle.Stroke,
-                IsAntialias = true,
-		        StrokeWidth = 2
-	        };
+	        BackHatch = GetHatch(BkgColor, false);
+	        ForeHatch = GetHatch(BkgColor, true);
 
             DrawPen = GetPen(SKColors.LightBlue, DefaultWidth * 4);
             GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
@@ -80,6 +76,13 @@ namespace Numbers.Renderer
             SegPen2 = GetPen(new SKColor(50, 50, 250, 255), DefaultWidth * 4f);
             SegPen3 = GetPen(new SKColor(50, 250, 50, 255), DefaultWidth * 4f);
             SegPens  = new List<SKPaint>(){ SegPen0, SegPen1, SegPen2, SegPen3 };
+
+            TextBrush = GetText(SKColor.Parse("#A0A0F0"), 20);
+            Seg0TextBrush = GetText(SegPen0.Color, 20);
+            Seg1TextBrush = GetText(SegPen1.Color, 20);
+            Seg2TextBrush = GetText(SegPen2.Color, 20);
+            Seg3TextBrush = GetText(SegPen3.Color, 20);
+            SegTextBrushes = new List<SKPaint>(){ Seg0TextBrush, Seg1TextBrush, Seg2TextBrush, Seg3TextBrush };
 
             HoverPen = GetPen(new SKColor(240, 190, 190), DefaultWidth * 5);
             SelectedPen = GetPen(SKColors.Red, DefaultWidth * 1f);
@@ -199,20 +202,7 @@ namespace Numbers.Renderer
 
         public Dictionary<uint, int> IndexOfColor { get; } = new Dictionary<uint, int>();
 
-        public SKPaint GetPen(SKColor color, float width, bool antiAlias = true)
-        {
-            SKPaint pen = new SKPaint()
-            {
-                Style = SKPaintStyle.Stroke,
-                Color = color,
-                StrokeWidth = width,
-                IsAntialias = antiAlias,
-                StrokeCap = SKStrokeCap.Round,
-            };
-            return pen;
-        }
-
-        public SKPaint GetBrush(SKColor color)
+        public static SKPaint GetBrush(SKColor color)
         {
 	        SKPaint pen = new SKPaint()
 	        {
@@ -220,6 +210,51 @@ namespace Numbers.Renderer
 		        Color = color
 	        };
 	        return pen;
+        }
+
+        public static SKPaint GetPen(SKColor color, float width, bool antiAlias = true)
+        {
+	        SKPaint pen = new SKPaint()
+	        {
+		        Style = SKPaintStyle.Stroke,
+		        Color = color,
+		        StrokeWidth = width,
+		        IsAntialias = antiAlias,
+		        StrokeCap = SKStrokeCap.Round,
+	        };
+	        return pen;
+        }
+        public static SKPaint GetHatch(SKColor color, bool isForward = true)
+        {
+	        var hatch = new SKPath();
+	        if (isForward)
+	        {
+		        hatch.AddPoly(new SKPoint[] { new SKPoint(-2, 2), new SKPoint(2, -2) }, false);
+            }
+	        else
+	        {
+		        hatch.AddPoly(new SKPoint[] { new SKPoint(2, 2), new SKPoint(-2, -2) }, false);
+            }
+
+	        var result = new SKPaint
+	        {
+		        PathEffect = SKPathEffect.Create2DPath(SKMatrix.MakeScale(6, 6), hatch),
+		        Color = color,// SKColor.FromHsl(200f, 14f, 18f),
+		        Style = SKPaintStyle.Stroke,
+		        IsAntialias = true,
+		        StrokeWidth = 2
+	        };
+	        return result;
+        }
+
+        public static SKPaint GetText(SKColor color, int fontSize, string fontName = "Arial", bool isBold = false)
+        {
+	        var result = new SKPaint { TextSize = fontSize, Color = color };
+	        result.IsAntialias = true;
+	        result.Typeface = SKTypeface.FromFamilyName(
+		        fontName,
+		        isBold ? SKFontStyle.Bold : SKFontStyle.Normal);
+	        return result;
         }
     }
 }
