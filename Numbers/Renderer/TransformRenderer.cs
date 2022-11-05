@@ -50,28 +50,19 @@ namespace Numbers.Renderer
 	        var b0i = repDr.DomainSeg.PointAlongLine(1f - repRatio.Start);
 	        var b1i = repDr.DomainSeg.PointAlongLine(1f - repRatio.End);
 
-	        DrawTriangle(sel0.EndValue * reps.EndValue > 0, unitBB_Pen, true, a1, b1, org);
-	        DrawTriangle(sel0.StartValue * reps.EndValue > 0, unitAB_Pen, true, a1, b0i, org);
-	        DrawTriangle(sel0.EndValue * reps.StartValue > 0, unitBA_Pen, true, b1, org, a0i);
-	        DrawTriangle(sel0.StartValue * reps.StartValue < 0, unitAA_Pen, true, a0i, b0i, org);
-
-            //_renderer.DrawPath(new SKPoint[] { a1, b1, org }, (sel0.EndValue * reps.EndValue > 0) ? unitBB_Pen : _pens.BackHatch); // +
-            //_renderer.DrawPath(new SKPoint[] { a1, b0i, org }, (sel0.StartValue * reps.EndValue > 0) ? unitAB_Pen : _pens.BackHatch); // +
-            //_renderer.DrawPath(new SKPoint[] { b1, org, a0i }, (sel0.EndValue * reps.StartValue > 0) ? unitBA_Pen : _pens.BackHatch); // +
-            //_renderer.DrawPath(new SKPoint[] { a0i, b0i, org },(sel0.StartValue * reps.StartValue < 0) ? unitAA_Pen : _pens.BackHatch); // -
+	        DrawTriangle(sel0.EndValue * reps.EndValue > 0, unitBB_Pen, true, a1, b1, org); // +
+	        DrawTriangle(sel0.StartValue * reps.EndValue > 0, unitAB_Pen, true, a1, b0i, org); // +
+            DrawTriangle(sel0.EndValue * reps.StartValue > 0, unitBA_Pen, true, b1, org, a0i); // +
+            DrawTriangle(sel0.StartValue * reps.StartValue < 0, unitAA_Pen, true, a0i, b0i, org);  // -
             _renderer.DrawPath(new SKPoint[] { a1, b1, a0i, b0i }, unitOutline);
 
-            DrawTriangle(sel0.EndValue * reps.EndValue > 0, unotBB_Pen, false, a1i, b1i, org);
-            DrawTriangle(sel0.StartValue * reps.EndValue > 0, unotAB_Pen, false,   a1i, b0, org);
-            DrawTriangle(sel0.EndValue * reps.StartValue > 0, unotBA_Pen, false,   b1i, org, a0);
-            DrawTriangle(sel0.StartValue * reps.StartValue < 0, unotAA_Pen, false, a0, b0, org);
-            //_renderer.DrawPath(new SKPoint[] { a1i, b1i, org }, (sel0.EndValue * reps.EndValue > 0) ? unotBB_Pen : _pens.BackHatch); // +
-            //_renderer.DrawPath(new SKPoint[] { a1i, b0, org }, (sel0.StartValue * reps.EndValue > 0) ? unotAB_Pen : _pens.BackHatch); // +
-            //_renderer.DrawPath(new SKPoint[] { b1i, org, a0 }, (sel0.EndValue * reps.StartValue > 0) ? unotBA_Pen : _pens.BackHatch); // +
-            //_renderer.DrawPath(new SKPoint[] { a0, b0, org }, (sel0.StartValue * reps.StartValue < 0) ? unotAA_Pen : _pens.BackHatch); // -
+            DrawTriangle(sel0.EndValue * reps.EndValue > 0, unotBB_Pen, false, a1i, b1i, org); // +
+            DrawTriangle(sel0.StartValue * reps.EndValue > 0, unotAB_Pen, false,   a1i, b0, org); // +
+            DrawTriangle(sel0.EndValue * reps.StartValue > 0, unotBA_Pen, false,   b1i, org, a0); // +
+            DrawTriangle(sel0.StartValue * reps.StartValue < 0, unotAA_Pen, false, a0, b0, org); // -
             _renderer.DrawPath(new SKPoint[] { a1i, b1i, a0, b0 }, unotOutline);
 
-            DrawEquation(sel0, reps, repDr.DomainSeg.StartPoint + new SKPoint(500, -100), _pens.TextBrush);
+            DrawEquation(sel0, reps, repDr.DomainSeg.StartPoint + new SKPoint(500, -200), _pens.TextBrush);
             DrawAreaValues(sel0, reps);
         }
 
@@ -90,11 +81,13 @@ namespace Numbers.Renderer
             var repTxt = $"({rep.StartValue:0.0}i → {rep.EndValue:0.0})";
             var result = sel.Value * rep.Value;
             var resultTxt = $"({result.Imaginary:0.0}i → {result.Real:0.0})";
+            var areaTxt = $"area:  {result.Imaginary + result.Real:0.0}";
 
             Canvas.DrawText(selTxt, location.X, location.Y, _pens.Seg0TextBrush);
             Canvas.DrawText(repTxt, location.X, location.Y + 30, _pens.Seg1TextBrush);
             Canvas.DrawLine(location.X, location.Y+38, location.X + 100, location.Y+38, _pens.GrayPen);
             Canvas.DrawText(resultTxt, location.X, location.Y + 60, _pens.TextBrush);
+            Canvas.DrawText(areaTxt, location.X, location.Y + 95, unitText);
         }
 
         private void DrawAreaValues(Number sel, Number rep, bool unitPerspective = true)

@@ -1,13 +1,7 @@
 ﻿using System.Windows.Forms;
 
-namespace Numbers.Renderer
+namespace Numbers.UI
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
 	interface IAgent
     {
 	    void Clear();

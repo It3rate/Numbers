@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Numbers.Renderer;
+using Numbers.UI;
 
 namespace Numbers
 {
@@ -33,7 +34,7 @@ namespace Numbers
             //KeyPress += OnKeyPress;
             KeyUp += OnKeyUp;
             KeyPreview = true;
-
+            _agent = new Agent(_renderer);
         }
         private void OnMouseDown(object sender, MouseEventArgs e)
         {
