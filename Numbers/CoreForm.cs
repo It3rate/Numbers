@@ -88,7 +88,7 @@ namespace Numbers
         }
         private void Redraw()
         {
-	        //_renderer.Agent = Agent;
+	        //Renderer.Agent = Agent;
 	        _control.Invalidate();
         }
 

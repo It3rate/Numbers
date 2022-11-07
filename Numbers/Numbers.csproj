@@ -91,7 +91,8 @@
     <Compile Include="Core\Domain.cs" />
     <Compile Include="Core\Focal.cs" />
     <Compile Include="Core\Formula.cs" />
-    <Compile Include="Core\IFocal.cs" />
+    <Compile Include="Core\IMathElement.cs" />
+    <Compile Include="Core\Network.cs" />
     <Compile Include="Core\Selection.cs" />
     <Compile Include="Core\Transform.cs" />
     <Compile Include="CoreForm.cs">
@@ -102,19 +103,23 @@
     </Compile>
     <Compile Include="Core\Number.cs" />
     <Compile Include="Core\UnitFocal.cs" />
+    <Compile Include="Mind\Definitions.cs" />
+    <Compile Include="Mind\Workspace.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Trait.cs" />
     <Compile Include="Renderer\CorePens.cs" />
     <Compile Include="Renderer\CoreRenderer.cs" />
-    <Compile Include="Renderer\DomainRenderer.cs" />
     <Compile Include="UI\IAgent.cs" />
     <Compile Include="Renderer\MathF.cs" />
     <Compile Include="Renderer\RendererBase.cs" />
     <Compile Include="Renderer\SKPointExtension.cs" />
     <Compile Include="Renderer\SKSegment.cs" />
-    <Compile Include="Renderer\TransformRenderer.cs" />
     <Compile Include="UI\Agent.cs" />
+    <Compile Include="UI\SKDomainMapper.cs" />
+    <Compile Include="UI\SKMapper.cs" />
+    <Compile Include="UI\SKNumberMapper.cs" />
+    <Compile Include="UI\SKTransformMapper.cs" />
     <EmbeddedResource Include="CoreForm.resx">
       <DependentUpon>CoreForm.cs</DependentUpon>
     </EmbeddedResource>

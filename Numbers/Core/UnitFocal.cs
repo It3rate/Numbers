@@ -11,7 +11,8 @@
     // For now it is a unit multiplied and a unot that is the unit multiplied by 'i' (which flips the number line around zero).
 	public class UnitFocal : IFocal
 	{
-		public Focal FocalBase { get; }
+		public MathElementKind Kind => MathElementKind.Focal;
+        public Focal FocalBase { get; }
 		public long Offset { get; set; } = 0;
 
 		public long StartTickValue

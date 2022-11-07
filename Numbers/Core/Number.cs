@@ -7,17 +7,20 @@ namespace Numbers.Core
 	using System.Numerics;
 
 
-	public class Number
-	{
-		private static int numberCounter = 1;
+	public class Number : IMathElement
+    {
+	    public MathElementKind Kind => MathElementKind.Number;
+	    private static int numberCounter = 1 + (int)MathElementKind.Number;
+
 		public static Dictionary<int, Number> NumberStore { get; } = new Dictionary<int, Number>();
 
 		public Number this[int i] => NumberStore[i];
 
-        public int Id { get; set; }
+		public int Id { get; set; }
+		public int DomainId { get; set; }
 
-		// number to the power of x, where x is also a focal. Eventually this is equations, lazy solve them.
-		public int FocalId { get; set; }
+        // number to the power of x, where x is also a focal. Eventually this is equations, lazy solve them.
+        public int FocalId { get; set; }
 
 		public Domain Domain { get; set; }
 		public Trait Trait => Domain.Trait;
@@ -28,7 +31,7 @@ namespace Numbers.Core
 			Id = numberCounter++;
 			Domain = domain;
 			FocalId = focalId;
-			domain.Numbers.Add(Id);
+			domain.NumberIds.Add(Id);
 			NumberStore.Add(Id, this);
         }
 

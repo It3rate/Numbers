@@ -6,9 +6,19 @@ namespace Numbers.Core
     using System.Collections.Generic;
     using System.Text;
 
+    public interface IFocal : IMathElement
+    {
+	    long StartTickValue { get; set; }
+	    long EndTickValue { get; set; }
+	    long LengthInTicks { get; }
+	    Pointing Direction { get; }
+	    RatioSeg RatioIn(Domain domain);
+    }
+
     public struct Focal : IFocal
     {
-	    private static int focalCounter = 1;
+	    public MathElementKind Kind => MathElementKind.Focal;
+	    private static int focalCounter = 1 + (int)MathElementKind.Focal;
 	    // can be dealt with by expanding resolution (mult all) or range (add)
 	    //bool startPrecisionUnderflow; 
 	    //bool endPrecisionUnderflow;
@@ -46,5 +56,17 @@ namespace Numbers.Core
 	        var end = (EndTickValue - mx.StartTickValue) / (float)(mx.LengthInTicks);
             return new RatioSeg(start, end);
         }
+    }
+
+    public class RatioSeg
+    {
+	    public float Start { get; set; }
+	    public float End { get; set; }
+
+	    public RatioSeg(float start, float end)
+	    {
+		    Start = start;
+		    End = end;
+	    }
     }
 }

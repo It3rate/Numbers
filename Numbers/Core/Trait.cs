@@ -13,20 +13,24 @@ namespace Numbers.Core
     /// <summary>
     /// Traits are measurable properties on objects. They can be composed of multiple domains (like mph or dollars/day or lwh) but do not need to be.
     /// </summary>
-    public class Trait
+    public class Trait : IMathElement
     {
-	    public static List<Trait> TraitStore { get; } = new List<Trait>(1024);
+	    public MathElementKind Kind => MathElementKind.Trait;
+	    private static int traitCounter = 1 + (int)MathElementKind.Trait;
+	    public static Dictionary<int, Trait> TraitStore { get; } = new Dictionary<int, Trait>(); // todo: Move to Network
+	    // public static List<Trait> TraitStore { get; } = new List<Trait>(1024);
+
 	    public static List<long> ValueStore { get; } = new List<long>(4096);
 
-	    public Dictionary<int, Focal> FocalStore { get;} = new Dictionary<int, Focal>();
-	    public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
+	    public Dictionary<int, Focal> FocalStore { get; } = new Dictionary<int, Focal>();
+        public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
 	    public Dictionary<int, Transform> TransformStore { get; } = new Dictionary<int, Transform>();
         public int Id;
 
 	    public Trait()
 	    {
-		    Id = TraitStore.Count;
-            TraitStore.Add(this);
+		    Id = traitCounter++;//TraitStore.Count;
+            TraitStore.Add(Id, this);
 	    }
 
 	    public int AddValue(long value)

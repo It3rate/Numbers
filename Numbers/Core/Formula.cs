@@ -8,14 +8,17 @@
 
     public class Formula : TransformBase
     {
-        // account for repeats of formula, use stack to enable back selection
+	    public MathElementKind Kind => MathElementKind.Formula;
+	    private static int formulaCounter = 1 + (int)MathElementKind.Formula;
+
+        // account for repeat of formula, use stack to enable back selection
         public List<Transform> Transforms { get; } = new List<Transform>();
 
         public override void ApplyStart() { }
         public override void ApplyEnd() { }
         public override void ApplyPartial(long tickOffset) { }
 
-        public Formula(Number repeats, TransformKind kind) : base(repeats, kind)
+        public Formula(Number repeat, TransformKind kind) : base(repeat, kind)
         {
         }
     }

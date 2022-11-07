@@ -9,8 +9,11 @@
     /// <summary>
     /// Selection is a selected set of numbers. This can be manually set, or derived from an operation using an number (eg last two results in fibonacci sequence).
     /// </summary>
-    public class Selection
+    public class Selection : IMathElement
     {
+	    public MathElementKind Kind => MathElementKind.Selection;
+	    private static int SelectionCounter = 1 + (int)MathElementKind.Selection;
+
         public int[] NumberIds { get; }
         public int Count => NumberIds.Length;
 

@@ -17,9 +17,10 @@ namespace Numbers.Core
     // E.g. changing the domain 'tolerance' could change neat writing into messy.
 
     // Min size is tick size. Unit is start/end point (only one focal allowed for a unit). MaxRange is bounds in ticks. todo: add conversion methods etc.
-    public class Domain
+    public class Domain : IMathElement
     {
-	    private static int domainCounter = 1;
+	    public  MathElementKind Kind => MathElementKind.Domain;
+        private static int domainCounter = 1 + (int)MathElementKind.Domain;
 	    private int _unitId;
 
 	    //public Trait Trait { get; }
@@ -58,8 +59,15 @@ namespace Numbers.Core
 	        return result.ToArray();
         }
 
-        public List<int> Numbers { get; } = new List<int>();
+        public List<int> NumberIds { get; } = new List<int>();
 
+        public IEnumerable<Number> Numbers()
+        {
+	        foreach (var id in NumberIds)
+	        {
+		        yield return Number.NumberStore[id];
+	        }
+        }
 
         public Domain(int traitId, int unitId, int maxRangeId)
         {

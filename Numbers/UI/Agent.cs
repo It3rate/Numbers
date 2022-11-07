@@ -52,7 +52,7 @@ namespace Numbers.UI
             //_editCommands = new CommandStack<EditCommand>(this);
 
             _renderer = renderer;
-            //_renderer.Data = Data;
+            //Renderer.Data = Data;
 
             //var entityCmd = new CreateEntityCommand(InputPad);
             //_editCommands.Do(entityCmd);
