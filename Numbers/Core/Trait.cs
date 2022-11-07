@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Numbers.Mind;
 
 namespace Numbers.Core
 {
@@ -15,21 +16,23 @@ namespace Numbers.Core
     /// </summary>
     public class Trait : IMathElement
     {
+        public Brain _brain = Brain.BrainA;
+
 	    public MathElementKind Kind => MathElementKind.Trait;
-	    private static int traitCounter = 1 + (int)MathElementKind.Trait;
-	    public static Dictionary<int, Trait> TraitStore { get; } = new Dictionary<int, Trait>(); // todo: Move to Network
-	    // public static List<Trait> TraitStore { get; } = new List<Trait>(1024);
+        public int Id { get; }
+        public string Name { get; private set; }
+
+        public Dictionary<int, Transform> TransformStore => _brain.TransformStore;
+        public Dictionary<int, Trait> TraitStore => _brain.TraitStore;
 
 	    public static List<long> ValueStore { get; } = new List<long>(4096);
 
 	    public Dictionary<int, Focal> FocalStore { get; } = new Dictionary<int, Focal>();
         public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
-	    public Dictionary<int, Transform> TransformStore { get; } = new Dictionary<int, Transform>();
-        public int Id;
 
 	    public Trait()
 	    {
-		    Id = traitCounter++;//TraitStore.Count;
+		    Id = Brain.BrainA.NextTraitId();
             TraitStore.Add(Id, this);
 	    }
 

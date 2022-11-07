@@ -12,6 +12,7 @@
 	public class UnitFocal : IFocal
 	{
 		public MathElementKind Kind => MathElementKind.Focal;
+		public int Id { get; }
         public Focal FocalBase { get; }
 		public long Offset { get; set; } = 0;
 
@@ -29,6 +30,7 @@
 
 		public UnitFocal(Focal unitFocal)
 		{
+			Id = unitFocal.Id;
 			FocalBase = unitFocal;
 		}
 

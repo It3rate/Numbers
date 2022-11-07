@@ -1,5 +1,6 @@
 ﻿using System.Security.Permissions;
 using Numbers.Core;
+using Numbers.Mind;
 using Numbers.Renderer;
 using SkiaSharp;
 
@@ -24,14 +25,15 @@ namespace Numbers.UI
         //public SKSegment[] SalientSegments { get; private set; }
         //public SKPath[] SalientAreas { get; private set; }
 
-        protected CoreRenderer Renderer { get; }
+        protected Workspace Workspace { get; }
+        protected RendererBase Renderer => Workspace.Renderer;
         protected SKCanvas Canvas => Renderer.Canvas;
         protected CorePens Pens => Renderer.Pens;
 
-        public SKMapper(CoreRenderer renderer, IMathElement element)
+        public SKMapper(Workspace workspace, IMathElement element)
         {
 	        Id = _mapperCounter++;
-            Renderer = renderer;
+	        Workspace = workspace;
 	        MathElement = element;
         }
 

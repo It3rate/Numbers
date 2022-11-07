@@ -103,6 +103,7 @@
     </Compile>
     <Compile Include="Core\Number.cs" />
     <Compile Include="Core\UnitFocal.cs" />
+    <Compile Include="Mind\Brain.cs" />
     <Compile Include="Mind\Definitions.cs" />
     <Compile Include="Mind\Workspace.cs" />
     <Compile Include="Program.cs" />

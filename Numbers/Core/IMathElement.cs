@@ -9,6 +9,7 @@
     public interface IMathElement
     {
 	    MathElementKind Kind { get; }
+	    int Id { get; }
     }
 
     public enum MathElementKind

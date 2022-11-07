@@ -38,10 +38,6 @@ namespace Numbers.Core
     public class Transform : TransformBase
     {
 
-        // account for repeat of transform, use stack to enable back selection
-        public Selection Selection { get; set; }
-        //public Number Amount { get; set; } // hmm, repeat are the amount, repeat are joined in place (area in 2d), then can be added (reg mult), multiplied (powers)
-
         //public List<List<int>> History; // or start states, or this is just computable by running in reverse unless involving random.
 
         public Transform(Selection selection, Number repeat, TransformKind kind) : base(repeat, kind)
@@ -75,7 +71,9 @@ namespace Numbers.Core
 
 	    public int Id { get; set; }
 	    public TransformKind TransformKind { get; set; }
-        public Number Repeat { get; set; }
+	    public Selection Selection { get; set; }
+	    public Number Repeat { get; set; }
+	    public Number Relatedness { get; set; } // angle of relation between selection and Repeat, like the dot product. Determines 'perpendicularness' of axis. Can be non linear.
 
         protected TransformBase( Number repeat, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
         {

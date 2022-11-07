@@ -1,4 +1,6 @@
-﻿namespace Numbers.Mind
+﻿using Numbers.Core;
+
+namespace Numbers.Mind
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +8,8 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    class Definitions
+    public class Definitions
     {
+	    public static Dictionary<string, int> Traits { get; } = new Dictionary<string, int>();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Numbers.Core;
+using Numbers.Mind;
 using Numbers.Renderer;
 using SkiaSharp;
 
@@ -17,15 +18,15 @@ namespace Numbers.UI
 		private CorePens Pens => Renderer.Pens;
 		private List<SKPoint[]> Triangles { get; } = new List<SKPoint[]>();
 
-		private SKDomainMapper SelectionMapper => Renderer.DomainMapper(Transform.Selection[0].Domain.Id);
-		private SKDomainMapper RepeatMapper => Renderer.DomainMapper(Transform.Repeat.Domain.Id);
+		private SKDomainMapper SelectionMapper => Workspace.DomainMapper(Transform.Selection[0].Domain.Id);
+		private SKDomainMapper RepeatMapper => Workspace.DomainMapper(Transform.Repeat.Domain.Id);
 
         //public SKDomainMapper SelectionMapper => 
         public override SKPoint StartPoint => SKPoint.Empty;//NumberSeg.StartPoint;
         public override SKPoint MidPoint => SKPoint.Empty;//NumberSegment.Midpoint;
         public override SKPoint EndPoint => SKPoint.Empty;//NumberSegment.EndPoint;
 
-        public SKTransformMapper(CoreRenderer renderer, Transform transform) : base(renderer, transform)
+        public SKTransformMapper(Workspace workspace, Transform transform) : base(workspace, transform)
         {
 	        Transform = transform;
         }

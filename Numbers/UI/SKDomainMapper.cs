@@ -1,4 +1,5 @@
 ﻿using Numbers.Core;
+using Numbers.Mind;
 using Numbers.Renderer;
 using SkiaSharp;
 
@@ -21,7 +22,7 @@ namespace Numbers.UI
 	    public override SKPoint MidPoint => DomainSegment.Midpoint;
 	    public override SKPoint EndPoint => DomainSegment.EndPoint;
 
-        public SKDomainMapper(CoreRenderer renderer, Domain domain, SKPoint startPoint, SKPoint endPoint) : base(renderer, domain)
+        public SKDomainMapper(Workspace workspace, Domain domain, SKPoint startPoint, SKPoint endPoint) : base(workspace, domain)
         {
 	        Reset(domain, startPoint, endPoint);
         }
@@ -50,7 +51,7 @@ namespace Numbers.UI
 		        {
 			        offset += step;
 			        var pen = Pens.SegPens[domainIndex % Pens.SegPens.Count];
-                    Renderer.NumberMapper(numberId).Draw(offset, pen);
+			        Workspace.NumberMapper(numberId).Draw(offset, pen);
 		        }
 	        }
         }

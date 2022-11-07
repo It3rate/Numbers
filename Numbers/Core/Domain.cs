@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Numerics;
 using Numbers.Core;
+using Numbers.Mind;
 
 namespace Numbers.Core
 {
@@ -19,6 +20,8 @@ namespace Numbers.Core
     // Min size is tick size. Unit is start/end point (only one focal allowed for a unit). MaxRange is bounds in ticks. todo: add conversion methods etc.
     public class Domain : IMathElement
     {
+	    private Brain _brain => Brain.BrainA;
+
 	    public  MathElementKind Kind => MathElementKind.Domain;
         private static int domainCounter = 1 + (int)MathElementKind.Domain;
 	    private int _unitId;
@@ -27,7 +30,7 @@ namespace Numbers.Core
         public int Id { get; }
 
         public int TraitId { get; set; }
-        public Trait Trait => Trait.TraitStore[TraitId];
+        public Trait Trait => _brain.TraitStore[TraitId];
 
         public int UnitId
         {

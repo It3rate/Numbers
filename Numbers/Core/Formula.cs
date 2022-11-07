@@ -12,7 +12,13 @@
 	    private static int formulaCounter = 1 + (int)MathElementKind.Formula;
 
         // account for repeat of formula, use stack to enable back selection
-        public List<Transform> Transforms { get; } = new List<Transform>();
+        public Number SelectionRange { get; } // find multiplicand(s) on stack. -n from end, n from start, 0 is all?
+        public Number RepeatRange { get; } // find multiplier(s) on stack
+        public Number Repeat { get; } // iterations (need to allow evaluation halting, yield)
+        public Stack<Transform> TransformStack { get; } = new Stack<Transform>();
+
+        private Number _repeatIndex; // need a trait in the dictionary that just represents values
+        public bool CanRepeat() { return true;}
 
         public override void ApplyStart() { }
         public override void ApplyEnd() { }

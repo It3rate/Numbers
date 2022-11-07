@@ -12,7 +12,8 @@
     public class Selection : IMathElement
     {
 	    public MathElementKind Kind => MathElementKind.Selection;
-	    private static int SelectionCounter = 1 + (int)MathElementKind.Selection;
+	    public int Id { get; }
+        private static int SelectionCounter = 1 + (int)MathElementKind.Selection;
 
         public int[] NumberIds { get; }
         public int Count => NumberIds.Length;
@@ -22,6 +23,7 @@
 
         public Selection(params int[] numberIds)
         {
+	        Id = SelectionCounter++;
 	        NumberIds = numberIds;
         }
         public Selection(params Number[] numbers)

@@ -1,22 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Numbers.Core;
+using Numbers.Mind;
 
 namespace Numbers.Renderer
 {
 	public abstract class RendererBase
 	{
-		//public RenderStatus Status { get; set; }
-		public int Width { get; protected set; }
+        public Brain _brain { get; private set; }
+        public List<Workspace> Workspaces { get; } = new List<Workspace>();
+        public Workspace CurrentWorkspace { get; private set; }
+
+        //public RenderStatus Status { get; set; }
+        public int Width { get; protected set; }
 		public int Height { get; protected set; }
 		public event EventHandler DrawingComplete;
 
 		//public UIData Data { get; set; }
 
 		public SKCanvas Canvas;
-
 		public CorePens Pens { get; set; }
 		public SKBitmap Bitmap { get; set; }
 		public bool ShowBitmap { get; set; }
@@ -53,7 +58,17 @@ namespace Numbers.Renderer
 			return result;
 		}
 
-		private void DrawOnGLSurface(object sender, SKPaintGLSurfaceEventArgs e)
+		public abstract void GeneratePens();
+		public abstract void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f);
+		public abstract void DrawPolyline(SKPoint[] polyline, SKPaint paint);
+		public abstract void DrawShape(SKPoint[] polyline, SKPaint paint);
+		public abstract void DrawDirectedLine(SKSegment seg, SKPaint paint);
+		public abstract void DrawText(SKPoint center, string text, SKPaint paint);
+		public abstract void DrawBitmap(SKBitmap bitmap);
+		public abstract void DrawSegment(SKSegment seg, SKPaint paint);
+		public abstract void DrawLine(SKPoint p0, SKPoint p1, SKPaint paint);
+
+        private void DrawOnGLSurface(object sender, SKPaintGLSurfaceEventArgs e)
 		{
 			//if (Status != null)
 			//{
@@ -83,10 +98,19 @@ namespace Numbers.Renderer
 		public void DrawOnCanvas(SKCanvas canvas)
 		{
 			Canvas = canvas;
-			BeginDraw();
-			Draw();
-			EndDraw();
-			//WorkingPad = null;
+			foreach (var workspace in Workspaces)
+			{
+				if (workspace.IsActive)
+				{
+					_brain = workspace.MyBrain;
+					CurrentWorkspace = workspace;
+					BeginDraw();
+					Draw();
+					EndDraw();
+					CurrentWorkspace = null;
+					_brain = null;
+                }
+			}
 		}
 
 		public virtual void BeginDraw()
@@ -125,28 +149,17 @@ namespace Numbers.Renderer
 			DrawingComplete?.Invoke(this, EventArgs.Empty);
 		}
 
-		public abstract void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f);
-		public abstract void DrawPolyline(SKPoint[] polyline, SKPaint paint);
-		public abstract void DrawShape(SKPoint[] polyline, SKPaint paint);
-		public abstract void DrawDirectedLine(SKSegment seg, SKPaint paint);
-		public abstract void DrawText(SKPoint center, string text, SKPaint paint);
-		public abstract void DrawBitmap(SKBitmap bitmap);
-
-		public abstract void GeneratePens();
-
 		protected SKRect GetTextBackgroundSize(float x, float y, String text, SKPaint paint)
 		{
 			var fm = paint.FontMetrics;
 			float halfTextLength = paint.MeasureText(text) / 2 + 4;
 			return new SKRect((int) (x - halfTextLength), (int) (y + fm.Top + 3), (int) (x + halfTextLength), (int) (y + fm.Bottom - 1));
 		}
-
 		public SKBitmap GenerateBitmap(int width, int height)
 		{
 			Bitmap = new SKBitmap(width, height);
 			return Bitmap;
 		}
-
 
 #region View Matrix
 

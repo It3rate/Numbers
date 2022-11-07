@@ -18,6 +18,7 @@ namespace Numbers.Core
     public struct Focal : IFocal
     {
 	    public MathElementKind Kind => MathElementKind.Focal;
+	    public int Id { get; }
 	    private static int focalCounter = 1 + (int)MathElementKind.Focal;
 	    // can be dealt with by expanding resolution (mult all) or range (add)
 	    //bool startPrecisionUnderflow; 
@@ -26,7 +27,6 @@ namespace Numbers.Core
 	    //bool endRangeOverflow;
 
 	    //public Trait Trait { get; }
-	    public int Id { get; }
 	    public int StartId { get; set; } // ref to start point value
 	    public int EndId { get; set; } // ref to end point value
 	    public long StartTickValue
