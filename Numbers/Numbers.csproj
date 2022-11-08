@@ -112,6 +112,7 @@
     <Compile Include="Renderer\CorePens.cs" />
     <Compile Include="Renderer\CoreRenderer.cs" />
     <Compile Include="UI\Highlight.cs" />
+    <Compile Include="UI\HighlightSet.cs" />
     <Compile Include="UI\IAgent.cs" />
     <Compile Include="Renderer\MathF.cs" />
     <Compile Include="Renderer\RendererBase.cs" />

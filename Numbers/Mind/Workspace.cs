@@ -30,6 +30,11 @@ namespace Numbers.Mind
         //   private List<int> ActiveNumberIds { get; } = new List<int>();
         //private List<int> ActiveTransformIds { get; } = new List<int>();
 
+        public HighlightSet SelBegin = new HighlightSet();
+        public HighlightSet SelCurrent = new HighlightSet();
+        public HighlightSet SelHighlight = new HighlightSet();
+        public HighlightSet SelSelection = new HighlightSet();
+
         public Stack<Selection> SelectionStack { get; } = new Stack<Selection>();
 	    public Stack<Formula> FormulaStack { get; } = new Stack<Formula>();
         public Stack<Number> ResultStack { get; } = new Stack<Number>(); // can have multiple results?
@@ -74,25 +79,25 @@ namespace Numbers.Mind
 	        }
         }
 
-        public Highlight HoverHighlight { get; set; } = new Highlight();
         public const float SnapDistance = 5.0f;
-        public Highlight GetSnapPoint(SKPoint input, float maxDist = SnapDistance * 2f)
+        public Highlight GetSnapPoint(Highlight highlight, SKPoint input, float maxDist = SnapDistance * 2f)
         {
-	        HoverHighlight.Reset();
+	        highlight.Reset();
+			        highlight.OrginalPoint = input;
 	        foreach (var nm in NumberMappers())
 	        {
 		        if (input.DistanceTo(nm.StartPoint) < maxDist)
 		        {
-			        HoverHighlight.Set(input, nm, 0);
+			        highlight.Set(input,  nm.DomainSegment.StartPoint, nm, 0);
 			        break;
 		        }
 		        else if (input.DistanceTo(nm.EndPoint) < maxDist)
 		        {
-			        HoverHighlight.Set(input, nm, 1);
+			        highlight.Set(input, nm.DomainSegment.EndPoint, nm, 1);
 			        break;
 		        }
             }
-	        return HoverHighlight;
+	        return highlight;
         }
 
         public void Draw()
@@ -106,9 +111,9 @@ namespace Numbers.Mind
 		        domainMapper.Draw();
 	        }
 
-	        if (HoverHighlight.IsSet)
+	        if (SelHighlight.HasHighlight)
 	        {
-                Renderer.Canvas.DrawPath(HoverHighlight.HighlightPath(), Renderer.Pens.HoverPen);
+                Renderer.Canvas.DrawPath(SelHighlight.ActiveHighlight.HighlightPath(), Renderer.Pens.HoverPen);
 	        }
         }
 

@@ -15,7 +15,7 @@ namespace Numbers.Core
 	    RatioSeg RatioIn(Domain domain);
     }
 
-    public struct Focal : IFocal
+    public class Focal : IFocal
     {
 	    public MathElementKind Kind => MathElementKind.Focal;
 	    public int Id { get; }
