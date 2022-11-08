@@ -21,6 +21,7 @@ namespace Numbers.UI
 	    public abstract SKPoint StartPoint { get; }
         public abstract SKPoint MidPoint { get; }
         public abstract SKPoint EndPoint { get; }
+
         //   public SKPoint[] SalientPoints { get; private set; }
         //public SKSegment[] SalientSegments { get; private set; }
         //public SKPath[] SalientAreas { get; private set; }
@@ -36,6 +37,8 @@ namespace Numbers.UI
 	        Workspace = workspace;
 	        MathElement = element;
         }
+
+        public abstract SKPath HighlightAt(float t, SKPoint targetPoint);
 
         //public abstract void Draw();
     }

@@ -14,7 +14,7 @@ namespace Numbers.UI
     public class SKNumberMapper : SKMapper
     {
         public Number Number { get; }
-	    public SKSegment NumberSegment { get; }
+	    public SKSegment NumberSegment { get; private set; }
 
 	    private SKDomainMapper DomainMapper => Workspace.DomainMapper(Number.Domain.Id);
 
@@ -32,9 +32,15 @@ namespace Numbers.UI
         public void Draw(SKPoint offset, SKPaint paint)
 	    {
 		    var nr = Number.Ratio;
-		    var numSeg = DomainSegment.SegmentAlongLine(nr.Start, nr.End);
-		    numSeg += offset;
-		    Renderer.DrawDirectedLine(numSeg, paint);
+		    NumberSegment = DomainSegment.SegmentAlongLine(nr.Start, nr.End);
+		    NumberSegment += offset;
+		    Renderer.DrawDirectedLine(NumberSegment, paint);
 	    }
+
+        public override SKPath HighlightAt(float t, SKPoint targetPoint)
+        {
+	        var pt = NumberSegment.PointAlongLine(t);
+	        return Renderer.GetCirclePath(pt);
+        }
     }
 }

@@ -59,6 +59,7 @@ namespace Numbers.Renderer
 		}
 
 		public abstract void GeneratePens();
+		public abstract SKPath GetCirclePath(SKPoint center, float radius = 10f);
 		public abstract void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f);
 		public abstract void DrawPolyline(SKPoint[] polyline, SKPaint paint);
 		public abstract void DrawShape(SKPoint[] polyline, SKPaint paint);

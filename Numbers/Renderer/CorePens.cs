@@ -84,7 +84,7 @@ namespace Numbers.Renderer
             Seg3TextBrush = GetText(SegPen3.Color, 20);
             SegTextBrushes = new List<SKPaint>(){ Seg0TextBrush, Seg1TextBrush, Seg2TextBrush, Seg3TextBrush };
 
-            HoverPen = GetPen(new SKColor(240, 190, 190), DefaultWidth * 5);
+            HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
             SelectedPen = GetPen(SKColors.Red, DefaultWidth * 1f);
             UnitPen = GetPen(new SKColor(10, 200, 100, 150), DefaultWidth * 5f);
             UnitGhostPen = GetPen(new SKColor(10, 200, 100, 50), DefaultWidth * 5f);

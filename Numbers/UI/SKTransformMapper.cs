@@ -81,7 +81,12 @@ namespace Numbers.UI
 			DrawAreaValues(selNum, repNum);
 		}
 
-		private void DrawTriangle(bool isPositive, SKPaint color, bool isUnit, params SKPoint[] points)
+		public override SKPath HighlightAt(float t, SKPoint targetPoint)
+		{
+			return new SKPath(); // todo: add line in focused triangle
+		}
+
+        private void DrawTriangle(bool isPositive, SKPaint color, bool isUnit, params SKPoint[] points)
 		{
             Triangles.Add(points);
 			Renderer.DrawShape(points, color);

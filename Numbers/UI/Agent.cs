@@ -67,11 +67,12 @@ namespace Numbers.UI
         }
 
         private Brain _brain;
+        private Workspace _workspace;
         private void test0()
         {
 	        _brain = Brain.BrainA;
-	        var workspace = new Workspace(_brain, _renderer);
-            _renderer.Workspaces.Add(workspace);
+	        _workspace = new Workspace(_brain, _renderer);
+            _renderer.Workspaces.Add(_workspace);
 
 	        Trait t0 = new Trait();
 	        //var unit = t0.AddFocalByValues(100, 200);
@@ -91,7 +92,7 @@ namespace Numbers.UI
 	        var sel = new Selection(num2);
 	        var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
-	        workspace.AddFullDomains(domain, domain2);
+	        _workspace.AddFullDomains(domain, domain2);
 
 	        //var val0 = t0.AddFocalByIndexValue(unit.StartId, 650);
 	        //var val1 = t0.AddFocalByValueIndex(-300, unit.StartId);
@@ -246,23 +247,11 @@ namespace Numbers.UI
 
         public bool MouseMove(MouseEventArgs e)
         {
-            // if > that min length, either create element, or drag existing, based on highlight - p0 based on highlight, keys and selection
-            // Create:
-            //      - creating tool, p0 is either terminal (no highlight), refPoint if highlight point, or vPoint if line selected (also check key mods)
-            //      - if highlighting point or element, start dragging it
-            //      - if no highlight, start selection rect
-            // Drag Element:
-            //      - may be rect select if mode isn't create, p0 is start point
-            // Rect Select:
-            //      - live reset contents to selection by bounds (also done in up).
-            // Suppress Select Element:
-            //      - cancels click select if length > select max
-
-            // CreateTrait, AddBond, AddFocal, MoveElement, SelectRect 
             var result = false;
             _rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
 
+            _workspace.GetSnapPoint(mousePoint);
             //Data.Current.UpdatePositions(mousePoint);
             //Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
             if (IsDown)

@@ -23,18 +23,15 @@ namespace Numbers.Renderer
 	    {
 		    base.Draw();
 		    CurrentWorkspace.EnsureRenderers();
-            foreach (var trait in _brain.TraitStore.Values)
-            {
-                foreach (var transform in trait.TransformStore.Values)
-                {
-	                CurrentWorkspace.TransformMapper(transform.Id).Draw();
-                }
-                foreach (var domain in trait.DomainStore.Values)
-                {
-	                CurrentWorkspace.DomainMapper(domain.Id).Draw();
-                }
-            }
+            CurrentWorkspace.Draw();
         }
+
+	    public override SKPath GetCirclePath(SKPoint center, float radius = 10)
+	    {
+		    var path = new SKPath();
+		    path.AddCircle(center.X, center.Y, radius);
+		    return path;
+	    }
 
         public override void DrawSegment(SKSegment seg, SKPaint paint)
 	    {

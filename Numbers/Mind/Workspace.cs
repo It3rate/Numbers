@@ -40,6 +40,78 @@ namespace Numbers.Mind
 	        Renderer = renderer;
         }
 
+        public IEnumerable<SKTransformMapper> TransformMappers()
+        {
+	        foreach (var mapper in Mappers.Values)
+	        {
+		        if (mapper is SKTransformMapper)
+		        {
+			        yield return (SKTransformMapper)mapper;
+		        }
+	        }
+        }
+        public IEnumerable<SKDomainMapper> DomainMappers()
+        {
+	        foreach (var mapper in Mappers.Values)
+	        {
+		        if (mapper is SKDomainMapper)
+		        {
+			        yield return (SKDomainMapper)mapper;
+		        }
+	        }
+        }
+        public IEnumerable<SKNumberMapper> NumberMappers()
+        {
+	        foreach (var mapper in Mappers.Values)
+	        {
+		        if (mapper is SKDomainMapper dm)
+		        {
+			        foreach (var numId in dm.Domain.NumberIds)
+			        {
+				        yield return NumberMapper(numId);
+			        }
+		        }
+	        }
+        }
+
+        public Highlight HoverHighlight { get; set; } = new Highlight();
+        public const float SnapDistance = 5.0f;
+        public Highlight GetSnapPoint(SKPoint input, float maxDist = SnapDistance * 2f)
+        {
+	        HoverHighlight.Reset();
+	        foreach (var nm in NumberMappers())
+	        {
+		        if (input.DistanceTo(nm.StartPoint) < maxDist)
+		        {
+			        HoverHighlight.Set(input, nm, 0);
+			        break;
+		        }
+		        else if (input.DistanceTo(nm.EndPoint) < maxDist)
+		        {
+			        HoverHighlight.Set(input, nm, 1);
+			        break;
+		        }
+            }
+	        return HoverHighlight;
+        }
+
+        public void Draw()
+        {
+	        foreach (var transformMapper in TransformMappers())
+	        {
+		        transformMapper.Draw();
+	        }
+	        foreach (var domainMapper in DomainMappers())
+	        {
+		        domainMapper.Draw();
+	        }
+
+	        if (HoverHighlight.IsSet)
+	        {
+                Renderer.Canvas.DrawPath(HoverHighlight.HighlightPath(), Renderer.Pens.HoverPen);
+	        }
+        }
+
         public void AddElements(params IMathElement[] elements)
         {
 	        foreach (var element in elements)
@@ -121,6 +193,7 @@ namespace Numbers.Mind
 	        }
 	        return (SKTransformMapper)result;
         }
+
         public void EnsureRenderers()
         {
 	        var cx = Renderer.Width / 2f - 100;

@@ -55,6 +55,11 @@ namespace Numbers.UI
 		        }
 	        }
         }
+        public override SKPath HighlightAt(float t, SKPoint targetPoint)
+        {
+	        var pt = DomainSegment.PointAlongLine(t);
+	        return Renderer.GetCirclePath(pt);
+        }
 
         private void DrawUnit()
         {
