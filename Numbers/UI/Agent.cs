@@ -165,7 +165,6 @@ namespace Numbers.UI
             _workspace.GetSnapPoint(_highlight, mousePoint);
             SelHighlight.Set(_highlight);
 
-            SelCurrent.Set(_highlight.Clone());
             if (IsDown)
             {
                 result = MouseDrag(mousePoint);
@@ -173,12 +172,11 @@ namespace Numbers.UI
             return true;
         }
 
-        private float _minDragDistance = 10f;
+        private float _minDragDistance = 4f;
         public bool MouseDrag(SKPoint mousePoint)
         {
             _workspace.GetSnapPoint(_highlight, mousePoint);
             SelHighlight.Set(_highlight);
-            SelCurrent.Set(_highlight.Clone());
             if (UIMode == UIMode.Pan)
             {
                 //Data.SetPanAndZoom(_startMatrix, _downRawMousePoint, _rawMousePoint - _downRawMousePoint, 1f);
@@ -189,15 +187,23 @@ namespace Numbers.UI
                 if (dist > _minDragDistance)
                 {
                     IsDragging = true;
+					SelCurrent.Set(_highlight.Clone());
                 }
             }
 
             if (IsDragging)
             {
-	            var ah = SelHighlight.ActiveHighlight;
+	            var ah = SelCurrent.ActiveHighlight;
 	            if (ah.Mapper is SKNumberMapper nm)
 	            {
-		            nm.Number.Focal.EndTickValue += 10;
+		            if (SelCurrent.ActiveHighlight.T < 0.5)
+		            {
+			            nm.SetStartValueByPoint(_highlight.OrginalPoint);
+                    }
+		            else
+		            {
+			            nm.SetEndValueByPoint(_highlight.OrginalPoint);
+                    }
 	            }
             }
 
@@ -206,6 +212,7 @@ namespace Numbers.UI
 
         public bool MouseUp(MouseEventArgs e)
         {
+	        Console.WriteLine("UP");
             // If dragging or creating, check for last point merge
             // If rect select, add contents to selection (also done in move).
             // If not dragging or creating and dist < selMax, click select
@@ -248,7 +255,6 @@ namespace Numbers.UI
 
             OnSelectionChange?.Invoke(this, new EventArgs());
             ClearMouse();
-            SelBegin.Reset();
 
             return true;
         }
@@ -467,13 +473,12 @@ namespace Numbers.UI
         {
             IsDown = false;
             IsDragging = false;
-            //_activeCommand = null;
-            //_ignoreList.Clear();
-            //Data.Current.Clear();
-            //Data.Begin.Clear();
-            //WorkingPad.Clear();
             SetSelectable(UIMode);
-            //Data.SetWorkingPoints();
+            if (_workspace != null)
+            {
+	            SelBegin?.Reset();
+	            SelCurrent?.Reset();
+            }
         }
         public void Clear()
         {

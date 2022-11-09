@@ -37,6 +37,21 @@ namespace Numbers.UI
 		    Renderer.DrawDirectedLine(NumberSegment, paint);
 	    }
 
+        public void SetStartValueByPoint(SKPoint newPoint)
+        {
+	        var dm = DomainMapper.DomainSegment;
+	        var pt = dm.ProjectPointOnto(newPoint);
+	        var (t, _) = dm.TFromPoint(pt, false);
+	        Number.StartT = 1.0 - t;
+        }
+        public void SetEndValueByPoint(SKPoint newPoint)
+        {
+	        var dm = DomainMapper.DomainSegment;
+	        var pt = dm.ProjectPointOnto(newPoint);
+	        var (t, _) = dm.TFromPoint(pt, false);
+	        Number.EndT = t;
+        }
+
         public override SKPath HighlightAt(float t, SKPoint targetPoint)
         {
 	        var pt = NumberSegment.PointAlongLine(t);

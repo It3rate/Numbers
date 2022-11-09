@@ -49,7 +49,7 @@ namespace Numbers.UI
 
 	    public Highlight Clone()
 	    {
-            return new Highlight(OrginalPoint, Mapper, T);
+            return new Highlight(new SKPoint(OrginalPoint.X, OrginalPoint.Y), Mapper, T);
 	    }
 
 	    public SKPath HighlightPath()

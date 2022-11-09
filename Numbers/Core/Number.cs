@@ -38,12 +38,23 @@ namespace Numbers.Core
 		public long StartTickLength
         {
 			get => Focal.StartTickValue - Domain.Unit.ZeroTick;
-			set { var f = Focal; f.StartTickValue = value + Domain.Unit.ZeroTick; }
+			set => Focal.StartTickValue = value + Domain.Unit.ZeroTick;
 		}
 		public long EndTickLength
         {
 			get => Focal.EndTickValue - Domain.Unit.ZeroTick;
-			set { var f = Focal; f.EndTickValue = value + Domain.Unit.ZeroTick; }
+			set => Focal.EndTickValue = value + Domain.Unit.ZeroTick;
+		}
+
+		public double StartT
+		{
+			get => Focal.StartTickValue / (double)Domain.MaxRange.LengthInTicks;
+			set => Focal.StartTickValue = (long)(value * (double)Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickValue);
+		}
+		public double EndT
+		{
+			get => Focal.EndTickValue / (double)Domain.MaxRange.LengthInTicks;
+			set => Focal.EndTickValue = (long)(value * Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickValue);
 		}
 
         public double StartValue => StartTickLength / (double) Domain.Unit.UnitLengthInTicks;

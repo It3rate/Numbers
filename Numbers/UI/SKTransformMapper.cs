@@ -48,36 +48,45 @@ namespace Numbers.UI
 			var b0DirOk = repNum.StartValue >= 0;
 			var b1DirOk = repNum.EndValue >= 0;
 
-			var a0Unit = selDr.DomainSegment.PointAlongLine(a0DirOk ? selRatio.Start : 1f - selRatio.Start);
-			var a1Unit = selDr.DomainSegment.PointAlongLine(a1DirOk ? selRatio.End : 1f - selRatio.End);
-			var b0Unit = repDr.DomainSegment.PointAlongLine(b0DirOk ? repRatio.Start : 1f - repRatio.Start);
-			var b1Unit = repDr.DomainSegment.PointAlongLine(b1DirOk ? repRatio.End : 1f - repRatio.End);
+			//var a0Unit = selDr.DomainSegment.PointAlongLine(a0DirOk ? selRatio.Start : 1f - selRatio.Start);
+			//var a1Unit = selDr.DomainSegment.PointAlongLine(a1DirOk ? selRatio.End : 1f - selRatio.End);
+			//var b0Unit = repDr.DomainSegment.PointAlongLine(b0DirOk ? repRatio.Start : 1f - repRatio.Start);
+			//var b1Unit = repDr.DomainSegment.PointAlongLine(b1DirOk ? repRatio.End : 1f - repRatio.End);
 
-			var a0Unot = selDr.DomainSegment.PointAlongLine(!a0DirOk ? selRatio.Start : 1f - selRatio.Start);
-			var a1Unot = selDr.DomainSegment.PointAlongLine(!a1DirOk ? selRatio.End : 1f - selRatio.End);
-			var b0Unot = repDr.DomainSegment.PointAlongLine(!b0DirOk ? repRatio.Start : 1f - repRatio.Start);
-			var b1Unot = repDr.DomainSegment.PointAlongLine(!b1DirOk ? repRatio.End : 1f - repRatio.End);
+			//var a0Unot = selDr.DomainSegment.PointAlongLine(!a0DirOk ? selRatio.Start : 1f - selRatio.Start);
+			//var a1Unot = selDr.DomainSegment.PointAlongLine(!a1DirOk ? selRatio.End : 1f - selRatio.End);
+			//var b0Unot = repDr.DomainSegment.PointAlongLine(!b0DirOk ? repRatio.Start : 1f - repRatio.Start);
+			//var b1Unot = repDr.DomainSegment.PointAlongLine(!b1DirOk ? repRatio.End : 1f - repRatio.End);
+
+			var a0Unit = selDr.DomainSegment.PointAlongLine(selRatio.Start);
+			var a1Unit = selDr.DomainSegment.PointAlongLine(selRatio.End);
+			var b0Unit = repDr.DomainSegment.PointAlongLine(repRatio.Start);
+			var b1Unit = repDr.DomainSegment.PointAlongLine(repRatio.End);
+
+			var a0Unot = selDr.DomainSegment.PointAlongLine(1f - selRatio.Start);
+			var a1Unot = selDr.DomainSegment.PointAlongLine(1f - selRatio.End);
+			var b0Unot = repDr.DomainSegment.PointAlongLine(1f - repRatio.Start);
+			var b1Unot = repDr.DomainSegment.PointAlongLine(1f - repRatio.End);
 
 
-			var aaPos = selNum.EndValue * repNum.EndValue >= 0;
+            var aaPos = selNum.EndValue * repNum.EndValue >= 0;
 			var abPos = selNum.StartValue * repNum.EndValue >= 0;
 			var baPos = selNum.EndValue * repNum.StartValue >= 0;
-			var bbPos = selNum.StartValue * repNum.StartValue >= 0;
+			var bbPos = -selNum.StartValue * repNum.StartValue >= 0;
 
-			DrawTriangle(aaPos, unotBB_Pen, false, a1Unot, b1Unot, org); // +
-			DrawTriangle(abPos, unotAB_Pen, false, a0Unot, b1Unot, org); // +
-			DrawTriangle(baPos, unotBA_Pen, false, a1Unot, b0Unot, org); // +
-			DrawTriangle(!bbPos, unotAA_Pen, false, a0Unot, b0Unot, org); // -
-			Renderer.DrawShape(new SKPoint[] {a1Unot, b1Unot, a0Unot, b0Unot}, unotOutline);
+            //DrawTriangle(aaPos, unotBB_Pen, false, a1Unot, b1Unot, org); // +
+            //DrawTriangle(abPos, unotAB_Pen, false, a0Unot, b1Unot, org); // +
+            //DrawTriangle(baPos, unotBA_Pen, false, a1Unot, b0Unot, org); // +
+            //DrawTriangle(!bbPos, unotAA_Pen, false, a0Unot, b0Unot, org); // -
+            //Renderer.DrawShape(new SKPoint[] {a1Unot, b1Unot, a0Unot, b0Unot}, unotOutline);
 
-			DrawTriangle(aaPos, unitBB_Pen, true, a1Unit, b1Unit, org); // +
-			DrawTriangle(abPos, unitAB_Pen, true, a0Unit, b1Unit, org); // +
-			DrawTriangle(baPos, unitBA_Pen, true, a1Unit, b0Unit, org); // +
-			DrawTriangle(!bbPos, unitAA_Pen, true, a0Unit, b0Unit, org); // -
-			Renderer.DrawShape(new SKPoint[] {a1Unit, b1Unit, a0Unit, b0Unit}, unitOutline);
+            DrawTriangle(bbPos, unitAA_Pen, true, a0Unit, b0Unit, b0Unot, a0Unot); // +
+            DrawTriangle(aaPos, unitBB_Pen, true, a1Unit, b1Unit, b1Unot, a1Unot); // +
+            DrawTriangle(baPos, unotBA_Pen, true, a1Unit, b0Unit, b0Unot, a1Unot); // +
+            DrawTriangle(abPos, unotAB_Pen, true, a0Unit, b1Unit, b1Unot, a0Unot); // +
 
 
-			DrawEquation(selNum, repNum, repDr.DomainSegment.StartPoint + new SKPoint(500, -200), Pens.TextBrush);
+            DrawEquation(selNum, repNum, repDr.DomainSegment.StartPoint + new SKPoint(500, -200), Pens.TextBrush);
 			DrawAreaValues(selNum, repNum);
 		}
 
