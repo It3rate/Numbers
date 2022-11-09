@@ -1,4 +1,6 @@
-﻿using Numbers.Core;
+﻿using System.Net;
+using System.Windows.Forms;
+using Numbers.Core;
 using Numbers.Mind;
 using Numbers.Renderer;
 using SkiaSharp;
@@ -48,16 +50,6 @@ namespace Numbers.UI
 			var b0DirOk = repNum.StartValue >= 0;
 			var b1DirOk = repNum.EndValue >= 0;
 
-			//var a0Unit = selDr.DomainSegment.PointAlongLine(a0DirOk ? selRatio.Start : 1f - selRatio.Start);
-			//var a1Unit = selDr.DomainSegment.PointAlongLine(a1DirOk ? selRatio.End : 1f - selRatio.End);
-			//var b0Unit = repDr.DomainSegment.PointAlongLine(b0DirOk ? repRatio.Start : 1f - repRatio.Start);
-			//var b1Unit = repDr.DomainSegment.PointAlongLine(b1DirOk ? repRatio.End : 1f - repRatio.End);
-
-			//var a0Unot = selDr.DomainSegment.PointAlongLine(!a0DirOk ? selRatio.Start : 1f - selRatio.Start);
-			//var a1Unot = selDr.DomainSegment.PointAlongLine(!a1DirOk ? selRatio.End : 1f - selRatio.End);
-			//var b0Unot = repDr.DomainSegment.PointAlongLine(!b0DirOk ? repRatio.Start : 1f - repRatio.Start);
-			//var b1Unot = repDr.DomainSegment.PointAlongLine(!b1DirOk ? repRatio.End : 1f - repRatio.End);
-
 			var a0Unit = selDr.DomainSegment.PointAlongLine(selRatio.Start);
 			var a1Unit = selDr.DomainSegment.PointAlongLine(selRatio.End);
 			var b0Unit = repDr.DomainSegment.PointAlongLine(repRatio.Start);
@@ -74,17 +66,15 @@ namespace Numbers.UI
 			var baPos = selNum.EndValue * repNum.StartValue >= 0;
 			var bbPos = -selNum.StartValue * repNum.StartValue >= 0;
 
-            //DrawTriangle(aaPos, unotBB_Pen, false, a1Unot, b1Unot, org); // +
-            //DrawTriangle(abPos, unotAB_Pen, false, a0Unot, b1Unot, org); // +
-            //DrawTriangle(baPos, unotBA_Pen, false, a1Unot, b0Unot, org); // +
-            //DrawTriangle(!bbPos, unotAA_Pen, false, a0Unot, b0Unot, org); // -
-            //Renderer.DrawShape(new SKPoint[] {a1Unot, b1Unot, a0Unot, b0Unot}, unotOutline);
+			DrawTriangle(bbPos, unitAA_Brush, true, a0Unit, b0Unit, org);
+            DrawTriangle(aaPos, unitBB_Brush, true, a1Unit, b1Unit, org);
+            DrawTriangle(baPos, unotBA_Brush, true, b0Unot, a1Unit, org);
+            DrawTriangle(aaPos, unotAB_Brush, true, b1Unot, a0Unit, org);
 
-            DrawTriangle(bbPos, unitAA_Pen, true, a0Unit, b0Unit, b0Unot, a0Unot); // +
-            DrawTriangle(aaPos, unitBB_Pen, true, a1Unit, b1Unit, b1Unot, a1Unot); // +
-            DrawTriangle(baPos, unotBA_Pen, true, a1Unit, b0Unit, b0Unot, a1Unot); // +
-            DrawTriangle(abPos, unotAB_Pen, true, a0Unit, b1Unit, b1Unot, a0Unot); // +
-
+            DrawTriangle(bbPos, unitAA_Pen, true, b0Unot, a0Unot, org);
+            DrawTriangle(aaPos, unitBB_Pen, true, b1Unot, a1Unot, org);
+            DrawTriangle(baPos, unotBA_Pen, true, a1Unot, b0Unit, org);
+            DrawTriangle(aaPos, unotAB_Pen, true, a0Unot, b1Unit, org);
 
             DrawEquation(selNum, repNum, repDr.DomainSegment.StartPoint + new SKPoint(500, -200), Pens.TextBrush);
 			DrawAreaValues(selNum, repNum);
@@ -120,38 +110,73 @@ namespace Numbers.UI
 			Canvas.DrawText(areaTxt, location.X, location.Y + 95, unitText);
 		}
 
+		public void DrawTextOnSegment(string txt, SKPoint startPt, SKPoint endPt, SKPaint paint)
+		{
+			var ordered = new List<SKPoint>() {startPt, endPt};
+			if (startPt.X > endPt.X)
+			{
+				ordered.Reverse();
+			}
+
+			var offset = startPt.Y < endPt.Y ? new SKPoint(0, 18) : new SKPoint(0, -5);
+            var seg = new SKSegment(ordered[0], ordered[1]);
+            var seg2 = new SKSegment(seg.PointAlongLine(0.3f), seg.PointAlongLine(0.7f));
+            var p = new SKPath();
+            p.AddPoly(new SKPoint[] { seg2.StartPoint, seg2.EndPoint }, false);
+            Canvas.DrawTextOnPath(txt, p, offset, paint);
+        }
 		private void DrawAreaValues(Number sel, Number rep, bool unitPerspective = true)
 		{
             var selSeg = SelectionMapper.DomainSegment;
 			var repSeg = RepeatMapper.DomainSegment;
 
-			var aaTxt = $"{sel.EndValue * rep.EndValue:0.0}";
-			Canvas.DrawText(aaTxt, selSeg.EndPoint.X, repSeg.EndPoint.Y, unitText);
+			var aa = sel.EndValue * rep.EndValue;
+			var ab = sel.StartValue * rep.EndValue;
+			var ba = sel.EndValue * rep.StartValue;
+			var bb = sel.StartValue * -rep.StartValue;
 
-			var abTxt = $"{sel.StartValue * rep.EndValue:0.0}";
-			Canvas.DrawText(abTxt, selSeg.StartPoint.X, repSeg.EndPoint.Y, unitText);
+            var aaTxt = $"{aa:0.0}";
+			var abTxt = $"{ab:0.0}";
+			var baTxt = $"{ba:0.0}";
+			var bbTxt = $"{bb:0.0}";
 
-			var baTxt = $"{sel.EndValue * rep.StartValue:0.0}";
-			Canvas.DrawText(baTxt, selSeg.EndPoint.X, repSeg.StartPoint.Y, unitText);
+			var selRat = sel.Ratio;
+			var repRat = rep.Ratio;
+			DrawTextOnSegment(aaTxt, selSeg.PointAlongLine(selRat.End), repSeg.PointAlongLine(repRat.End), unitText);
+			DrawTextOnSegment(bbTxt, selSeg.PointAlongLine(selRat.Start), repSeg.PointAlongLine(repRat.Start), unitText);
+            DrawTextOnSegment(baTxt, selSeg.PointAlongLine(selRat.End), repSeg.PointAlongLine(1 - repRat.Start), unotText);
+            DrawTextOnSegment(abTxt, selSeg.PointAlongLine(selRat.Start), repSeg.PointAlongLine(1 - repRat.End), unotText);
 
-			var bbTxt = $"{sel.StartValue * -rep.StartValue:0.0}";
-			Canvas.DrawText(bbTxt, selSeg.StartPoint.X, repSeg.StartPoint.Y, unitText);
-		}
+            var total = aa + ab + ba + bb;
+			Canvas.DrawText($"{total:0.0}", selSeg.StartPoint.X, repSeg.EndPoint.Y, Pens.TextBrush);
+        }
+
+		private static SKColor unitAA_Color = SKColor.Parse("#70C93B0C");
+		private static SKColor unitBB_Color = SKColor.Parse("#70F87A0E");
+		private static SKColor unotAB_Color = SKColor.Parse("#900060A9");
+		private static SKColor unotBA_Color = SKColor.Parse("#9000BCFD");
+		private static readonly SKPaint unitAA_Brush = CorePens.GetBrush(unitAA_Color);
+        private static readonly SKPaint unitBB_Brush = CorePens.GetBrush(unitBB_Color);
+        private static readonly SKPaint unotAB_Brush = CorePens.GetBrush(unotAB_Color);
+		private static readonly SKPaint unotBA_Brush = CorePens.GetBrush(unotBA_Color);
 
 
-		private static readonly SKPaint unitBB_Pen = CorePens.GetBrush(SKColor.Parse("#70F87A0E"));
-		private static readonly SKPaint unitAB_Pen = CorePens.GetBrush(SKColor.Parse("#70C8690B"));
-		private static readonly SKPaint unitBA_Pen = CorePens.GetBrush(SKColor.Parse("#70FBB968"));
-		private static readonly SKPaint unitAA_Pen = CorePens.GetBrush(SKColor.Parse("#70C93B0C"));
-		private static readonly SKPaint unitOutline = CorePens.GetPen(SKColor.Parse("#A0200000"), 4);
+		private static readonly SKPaint unitBB_Pen = CorePens.GetPen(unitBB_Color, 4);
+		private static readonly SKPaint unitAA_Pen = CorePens.GetPen(unitAA_Color, 4);
+		private static readonly SKPaint unotAB_Pen = CorePens.GetPen(unotAB_Color,3);
+		private static readonly SKPaint unotBA_Pen = CorePens.GetPen(unotBA_Color,3);
 
-		private static readonly SKPaint unotBB_Pen = CorePens.GetBrush(SKColor.Parse("#9000BCFD"));
-		private static readonly SKPaint unotAB_Pen = CorePens.GetBrush(SKColor.Parse("#90177B9E"));
-		private static readonly SKPaint unotBA_Pen = CorePens.GetBrush(SKColor.Parse("#9091E2FD"));
-		private static readonly SKPaint unotAA_Pen = CorePens.GetBrush(SKColor.Parse("#900060A9"));
-		private static readonly SKPaint unotOutline = CorePens.GetPen(SKColor.Parse("#A0000020"), 4);
 
-		private static readonly SKPaint unitText = CorePens.GetText(unitBB_Pen.Color, 18);
-		private static readonly SKPaint unotText = CorePens.GetText(unitBB_Pen.Color, 18);
+
+
+  //      private static readonly SKPaint unitOutline = CorePens.GetPen(SKColor.Parse("#A0200000"), 4);
+		//private static readonly SKPaint unotBB_Pen = CorePens.GetBrush(SKColor.Parse("#9000BCFD"));
+		//private static readonly SKPaint unotAB_Pen = CorePens.GetPen(SKColor.Parse("#90177B9E"),5);
+		//private static readonly SKPaint unotBA_Pen = CorePens.GetPen(SKColor.Parse("#9091E2FD"),3);
+		//private static readonly SKPaint unotAA_Pen = CorePens.GetBrush(SKColor.Parse("#900060A9"));
+		//private static readonly SKPaint unotOutline = CorePens.GetPen(SKColor.Parse("#A0000020"), 4);
+
+		private static readonly SKPaint unitText = CorePens.GetText(unitAA_Color, 18);
+		private static readonly SKPaint unotText = CorePens.GetText(unotAB_Color, 18);
 	}
 }

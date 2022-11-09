@@ -63,8 +63,8 @@ namespace Numbers.Renderer
         {
 	        BkgColor = SKColor.FromHsl(200f, 14f, 8f);
 	        BkgBrush = GetBrush(BkgColor);
-	        BackHatch = GetHatch(BkgColor, false);
-	        ForeHatch = GetHatch(BkgColor, true);
+	        BackHatch = GetHatch(SKColor.Parse("#60004089"), false);
+	        ForeHatch = GetHatch(SKColor.Parse("#60D85A00"), true);
 
             DrawPen = GetPen(SKColors.LightBlue, DefaultWidth * 4);
             GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
