@@ -66,25 +66,28 @@ namespace Numbers.UI
 	        Renderer.DrawSegment(UnitSegment, Pens.HighlightPen);
         }
 
+        public List<SKPoint> TickPoints = new List<SKPoint>();
         private void DrawNumberline()
 	    {
 		    Renderer.DrawSegment(DomainSegment, Renderer.Pens.GrayPen);
-		    DrawTick(0, -8, Renderer.Pens.TickBoldPen);
-		    DrawTick(1, -8, Renderer.Pens.TickBoldPen);
+		    //DrawTick(0, -8, Renderer.Pens.TickBoldPen);
+		    //DrawTick(1, -8, Renderer.Pens.TickBoldPen);
 
 		    var segStart = (float)Domain.MaxRange.StartTickValue;
 		    var segLen = (float)Domain.MaxRange.LengthInTicks;
 		    var wholeTicks = Domain.WholeNumberTicks();
+		    TickPoints.Clear();
 		    foreach (var wholeTick in wholeTicks)
 		    {
 			    var t = (wholeTick - segStart) / segLen;
-			    DrawTick(t, -8, Renderer.Pens.TickPen);
+			    TickPoints.Add(DrawTick(t, -8, Renderer.Pens.TickPen));
 		    }
 	    }
-	    private void DrawTick(float t, int offset, SKPaint paint)
+	    private SKPoint DrawTick(float t, int offset, SKPaint paint)
 	    {
 		    var pts = DomainSegment.PerpendicularLine(t, offset);
 		    Renderer.DrawLine(pts.Item1, pts.Item2, paint);
+		    return pts.Item1;
 	    }
     }
 }

@@ -198,13 +198,18 @@ namespace Numbers.UI
 	            {
 		            if (SelCurrent.ActiveHighlight.T < 0.5)
 		            {
-			            nm.SetStartValueByPoint(_highlight.OrginalPoint);
+			            nm.SetStartValueByPoint(_highlight.SnapPoint);
                     }
 		            else
 		            {
-			            nm.SetEndValueByPoint(_highlight.OrginalPoint);
+			            nm.SetEndValueByPoint(_highlight.SnapPoint);
                     }
 	            }
+             //   else if (ah.Mapper is SKDomainMapper dm)
+	            //{
+
+		           // nm.SetEndValueByPoint(_highlight.SnapPoint);
+             //   }
             }
 
             return true;

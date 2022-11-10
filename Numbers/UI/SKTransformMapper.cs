@@ -161,20 +161,10 @@ namespace Numbers.UI
 		private static readonly SKPaint unotBA_Brush = CorePens.GetBrush(unotBA_Color);
 
 
-		private static readonly SKPaint unitBB_Pen = CorePens.GetPen(unitBB_Color, 4);
-		private static readonly SKPaint unitAA_Pen = CorePens.GetPen(unitAA_Color, 4);
-		private static readonly SKPaint unotAB_Pen = CorePens.GetPen(unotAB_Color,3);
-		private static readonly SKPaint unotBA_Pen = CorePens.GetPen(unotBA_Color,3);
-
-
-
-
-  //      private static readonly SKPaint unitOutline = CorePens.GetPen(SKColor.Parse("#A0200000"), 4);
-		//private static readonly SKPaint unotBB_Pen = CorePens.GetBrush(SKColor.Parse("#9000BCFD"));
-		//private static readonly SKPaint unotAB_Pen = CorePens.GetPen(SKColor.Parse("#90177B9E"),5);
-		//private static readonly SKPaint unotBA_Pen = CorePens.GetPen(SKColor.Parse("#9091E2FD"),3);
-		//private static readonly SKPaint unotAA_Pen = CorePens.GetBrush(SKColor.Parse("#900060A9"));
-		//private static readonly SKPaint unotOutline = CorePens.GetPen(SKColor.Parse("#A0000020"), 4);
+		private static readonly SKPaint unitBB_Pen = CorePens.GetPen(unitBB_Color, 2);
+		private static readonly SKPaint unitAA_Pen = CorePens.GetPen(unitAA_Color, 2);
+		private static readonly SKPaint unotAB_Pen = CorePens.GetPen(unotAB_Color,1.5f);
+		private static readonly SKPaint unotBA_Pen = CorePens.GetPen(unotBA_Color, 1.5f);
 
 		private static readonly SKPaint unitText = CorePens.GetText(unitAA_Color, 18);
 		private static readonly SKPaint unotText = CorePens.GetText(unotAB_Color, 18);

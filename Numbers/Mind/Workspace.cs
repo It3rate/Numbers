@@ -1,4 +1,5 @@
-﻿using Numbers.Core;
+﻿using System.Reflection.Emit;
+using Numbers.Core;
 using Numbers.Renderer;
 using Numbers.UI;
 using SkiaSharp;
@@ -83,20 +84,35 @@ namespace Numbers.Mind
         public Highlight GetSnapPoint(Highlight highlight, SKPoint input, float maxDist = SnapDistance * 2f)
         {
 	        highlight.Reset();
-			        highlight.OrginalPoint = input;
+	        highlight.OrginalPoint = input;
 	        foreach (var nm in NumberMappers())
 	        {
 		        if (input.DistanceTo(nm.StartPoint) < maxDist)
 		        {
-			        highlight.Set(input,  nm.DomainSegment.StartPoint, nm, 0);
-			        break;
-		        }
+			        highlight.Set(input,  nm.StartPoint, nm, 0);
+			        goto Found;
+                }
 		        else if (input.DistanceTo(nm.EndPoint) < maxDist)
 		        {
-			        highlight.Set(input, nm.DomainSegment.EndPoint, nm, 1);
-			        break;
-		        }
+			        highlight.Set(input, nm.EndPoint, nm, 1);
+			        goto Found;
+                }
             }
+
+	        foreach (var dm in DomainMappers())
+	        {
+		        foreach (var dmTickPoint in dm.TickPoints)
+		        {
+			        if (input.DistanceTo(dmTickPoint) < maxDist)
+			        {
+				        var (t, _) = dm.DomainSegment.TFromPoint(dmTickPoint, false);
+				        highlight.Set(input, dmTickPoint, dm, t);
+				        goto Found;
+			        }
+		        }
+	        }
+
+	        Found:
 	        return highlight;
         }
 

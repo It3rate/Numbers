@@ -16,7 +16,13 @@ namespace Numbers.UI
     public class Highlight
     {
 	    public SKPoint OrginalPoint { get; set; } = SKPoint.Empty;
-	    public SKPoint SnapPoint { get; set; } = SKPoint.Empty;
+	    private SKPoint _snapPoint = SKPoint.Empty;
+	    public SKPoint SnapPoint
+	    {
+		    get => _snapPoint.IsEmpty ? OrginalPoint : _snapPoint;
+		    set => _snapPoint = value;
+
+	    }
         public SKMapper Mapper { get; set; }
 	    public float T { get; set; }
 	    //public Number Range { get; set; } // will set selection ranges with a length trait number eventually
