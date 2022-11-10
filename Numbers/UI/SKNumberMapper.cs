@@ -30,26 +30,36 @@ namespace Numbers.UI
 	    }
 
         public void Draw(SKPoint offset, SKPaint paint)
-	    {
-		    var nr = Number.Ratio;
+        {
+	        var nr = Number.Ratio;
 		    NumberSegment = DomainSegment.SegmentAlongLine(nr.Start, nr.End);
 		    NumberSegment += offset;
-		    Renderer.DrawDirectedLine(NumberSegment, paint);
-	    }
+	        if (Number.Id == Number.Domain.UnitId)
+	        {
+		        Renderer.DrawSegment(NumberSegment, Pens.HighlightPen);
+            }
+	        else
+	        {
+		        Renderer.DrawDirectedLine(NumberSegment, paint);
+            }
+        }
 
         public void SetStartValueByPoint(SKPoint newPoint)
         {
 	        var dm = DomainMapper.DomainSegment;
 	        var pt = dm.ProjectPointOnto(newPoint);
 	        var (t, _) = dm.TFromPoint(pt, false);
-	        Number.StartT = 1.0 - t;
+            t = (float)(Math.Round(t * dm.Length) / dm.Length);
+
+            Number.StartT = 1.0 - t;
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {
 	        var dm = DomainMapper.DomainSegment;
 	        var pt = dm.ProjectPointOnto(newPoint);
 	        var (t, _) = dm.TFromPoint(pt, false);
-	        Number.EndT = t;
+	        t = (float)(Math.Round(t * dm.Length) / dm.Length);
+            Number.EndT = t;
         }
 
         public override SKPath HighlightAt(float t, SKPoint targetPoint)

@@ -16,7 +16,7 @@ namespace Numbers.UI
     public class Highlight
     {
 	    public SKPoint OrginalPoint { get; set; } = SKPoint.Empty;
-	    private SKPoint _snapPoint = SKPoint.Empty;
+	    public SKPoint _snapPoint = SKPoint.Empty;
 	    public SKPoint SnapPoint
 	    {
 		    get => _snapPoint.IsEmpty ? OrginalPoint : _snapPoint;

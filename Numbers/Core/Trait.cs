@@ -99,10 +99,10 @@ namespace Numbers.Core
 	    public long LeftMost(Focal focal) => focal.Direction == Pointing.Left ? Start(focal) : End(focal);
 
         // _transform Methods
-        public UnitFocal Unit(Domain domain) => domain.Unit;
-        public long UnitTicks(Domain domain) => domain.Unit.LengthInTicks;
-        public long UnitStart(Domain domain) => domain.Unit.StartTickValue;
-        public long UnitEnd(Domain domain) => domain.Unit.EndTickValue;
+        public UnitFocal Unit(Domain domain) => domain.UnitFocal;
+        public long UnitTicks(Domain domain) => domain.UnitFocal.LengthInTicks;
+        public long UnitStart(Domain domain) => domain.UnitFocal.StartTickValue;
+        public long UnitEnd(Domain domain) => domain.UnitFocal.EndTickValue;
         public long RangeTicks(Domain domain) => domain.MaxRange.LengthInTicks;
 
 

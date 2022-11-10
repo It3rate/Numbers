@@ -34,6 +34,7 @@ namespace Numbers.Renderer
             var len = a.Length;
             return new SKPoint(a.X / len, a.Y / len);
         }
+        public static SKPoint Round(this SKPoint a) => new SKPoint((float)Math.Round(a.X), (float)Math.Round(a.Y));
 
 
         public static float Length(this SKPoint self) => (float)Math.Sqrt(self.X * self.X + self.Y * self.Y);

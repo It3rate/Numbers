@@ -17,10 +17,14 @@ namespace Numbers.UI
 	    public SKSegment DomainSegment { get; private set; }
 	    public RatioSeg UnitRatio;
 	    public SKSegment UnitSegment;
+	    public List<SKPoint> TickPoints = new List<SKPoint>();
 
-	    public override SKPoint StartPoint => DomainSegment.StartPoint;
+        public override SKPoint StartPoint => DomainSegment.StartPoint;
 	    public override SKPoint MidPoint => DomainSegment.Midpoint;
 	    public override SKPoint EndPoint => DomainSegment.EndPoint;
+
+        private static int domainIndexCounter = 0;
+        private int domainIndex = -1;
 
         public SKDomainMapper(Workspace workspace, Domain domain, SKPoint startPoint, SKPoint endPoint) : base(workspace, domain)
         {
@@ -31,18 +35,22 @@ namespace Numbers.UI
 	        base.MathElement = domain;
 	        Domain = domain;
 	        DomainSegment = new SKSegment(startPoint, endPoint);
-	        UnitRatio = Domain.UnitRatio;
+	        UnitRatio = Domain.UnitFocalRatio;
 	        UnitSegment = DomainSegment.SegmentAlongLine(UnitRatio.Start, UnitRatio.End);
         }
 
-        private static int domainIndexCounter = 0;
-        private int domainIndex = -1;
+        public override SKPath HighlightAt(float t, SKPoint targetPoint)
+        {
+	        var pt = DomainSegment.PointAlongLine(t);
+	        return Renderer.GetCirclePath(pt);
+        }
+
         public void Draw()
         {
 	        if (Domain != null)
 	        {
 		        if (domainIndex == -1) domainIndex = domainIndexCounter++;
-		        DrawUnit();
+		        //DrawUnit();
 		        DrawNumberline();
 		        var offset = SKPoint.Empty;
 		        var step = DomainSegment.RelativeOffset(0);//10);
@@ -55,18 +63,7 @@ namespace Numbers.UI
 		        }
 	        }
         }
-        public override SKPath HighlightAt(float t, SKPoint targetPoint)
-        {
-	        var pt = DomainSegment.PointAlongLine(t);
-	        return Renderer.GetCirclePath(pt);
-        }
 
-        private void DrawUnit()
-        {
-	        Renderer.DrawSegment(UnitSegment, Pens.HighlightPen);
-        }
-
-        public List<SKPoint> TickPoints = new List<SKPoint>();
         private void DrawNumberline()
 	    {
 		    Renderer.DrawSegment(DomainSegment, Renderer.Pens.GrayPen);

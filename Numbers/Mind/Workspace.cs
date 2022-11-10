@@ -81,36 +81,40 @@ namespace Numbers.Mind
         }
 
         public const float SnapDistance = 5.0f;
-        public Highlight GetSnapPoint(Highlight highlight, SKPoint input, float maxDist = SnapDistance * 2f)
+        public Highlight GetSnapPoint(Highlight highlight, HighlightSet ignoreSet, SKPoint input, float maxDist = SnapDistance * 2f)
         {
 	        highlight.Reset();
 	        highlight.OrginalPoint = input;
-	        foreach (var nm in NumberMappers())
-	        {
-		        if (input.DistanceTo(nm.StartPoint) < maxDist)
+            foreach (var nm in NumberMappers())
+            {
+	            var isSameMapper = ignoreSet.ActiveHighlight != null && ignoreSet.ActiveHighlight.Mapper == nm;
+
+		        if (!isSameMapper && input.DistanceTo(nm.StartPoint) < maxDist)
 		        {
-			        highlight.Set(input,  nm.StartPoint, nm, 0);
+			        highlight.Set(input, nm.StartPoint, nm, 0);
 			        goto Found;
-                }
-		        else if (input.DistanceTo(nm.EndPoint) < maxDist)
+		        }
+		        if (!isSameMapper && input.DistanceTo(nm.EndPoint) < maxDist)
 		        {
 			        highlight.Set(input, nm.EndPoint, nm, 1);
 			        goto Found;
-                }
+		        }
+
+		        Console.WriteLine("nn " + input.DistanceTo(nm.EndPoint) + " :: " + nm.EndPoint);
             }
 
 	        foreach (var dm in DomainMappers())
 	        {
 		        foreach (var dmTickPoint in dm.TickPoints)
 		        {
-			        if (input.DistanceTo(dmTickPoint) < maxDist)
+			        if (input.DistanceTo(dmTickPoint) < maxDist/2f)
 			        {
 				        var (t, _) = dm.DomainSegment.TFromPoint(dmTickPoint, false);
-				        highlight.Set(input, dmTickPoint, dm, t);
+                        highlight.Set(input, dmTickPoint, dm, t);
 				        goto Found;
 			        }
 		        }
-	        }
+            }
 
 	        Found:
 	        return highlight;
@@ -146,7 +150,7 @@ namespace Numbers.Mind
 	        {
 		        ActiveIds.Add(domain.Id);
 		        ActiveIds.AddRange(domain.NumberIds);
-		        ActiveIds.Add(domain.UnitId);
+		        ActiveIds.Add(domain.UnitFocalId);
 	        }
         }
         public void RemoveFullDomains(params Domain[] domains)
@@ -158,7 +162,7 @@ namespace Numbers.Mind
 		        {
 			        ActiveIds.Remove(numberId);
 		        }
-		        ActiveIds.Remove(domain.UnitId);
+		        ActiveIds.Remove(domain.UnitFocalId);
 	        }
         }
         public void RemoveElements(params IMathElement[] elements)

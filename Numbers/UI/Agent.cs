@@ -128,7 +128,7 @@ namespace Numbers.UI
             _rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
             _downRawMousePoint = _rawMousePoint;
-	        _workspace.GetSnapPoint(_highlight, mousePoint);
+	        _workspace.GetSnapPoint(_highlight, SelCurrent, mousePoint);
             SelHighlight.Set(_highlight);
 
             //Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, false, _selectableKind);
@@ -162,7 +162,7 @@ namespace Numbers.UI
             var result = false;
             _rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
-            _workspace.GetSnapPoint(_highlight, mousePoint);
+            _workspace.GetSnapPoint(_highlight, SelCurrent, mousePoint);
             SelHighlight.Set(_highlight);
 
             if (IsDown)
@@ -175,8 +175,6 @@ namespace Numbers.UI
         private float _minDragDistance = 4f;
         public bool MouseDrag(SKPoint mousePoint)
         {
-            _workspace.GetSnapPoint(_highlight, mousePoint);
-            SelHighlight.Set(_highlight);
             if (UIMode == UIMode.Pan)
             {
                 //Data.SetPanAndZoom(_startMatrix, _downRawMousePoint, _rawMousePoint - _downRawMousePoint, 1f);
@@ -196,20 +194,15 @@ namespace Numbers.UI
 	            var ah = SelCurrent.ActiveHighlight;
 	            if (ah.Mapper is SKNumberMapper nm)
 	            {
-		            if (SelCurrent.ActiveHighlight.T < 0.5)
+                    if (SelCurrent.ActiveHighlight.T < 0.5)
 		            {
 			            nm.SetStartValueByPoint(_highlight.SnapPoint);
                     }
 		            else
 		            {
-			            nm.SetEndValueByPoint(_highlight.SnapPoint);
+                        nm.SetEndValueByPoint(_highlight.SnapPoint);
                     }
 	            }
-             //   else if (ah.Mapper is SKDomainMapper dm)
-	            //{
-
-		           // nm.SetEndValueByPoint(_highlight.SnapPoint);
-             //   }
             }
 
             return true;
@@ -217,7 +210,6 @@ namespace Numbers.UI
 
         public bool MouseUp(MouseEventArgs e)
         {
-	        Console.WriteLine("UP");
             // If dragging or creating, check for last point merge
             // If rect select, add contents to selection (also done in move).
             // If not dragging or creating and dist < selMax, click select
