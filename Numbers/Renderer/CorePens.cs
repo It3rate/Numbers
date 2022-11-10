@@ -63,8 +63,8 @@ namespace Numbers.Renderer
         {
 	        BkgColor = SKColor.FromHsl(200f, 14f, 8f);
 	        BkgBrush = GetBrush(BkgColor);
-	        BackHatch = GetHatch(SKColor.Parse("#60004089"), false);
-	        ForeHatch = GetHatch(SKColor.Parse("#60D85A00"), true);
+	        BackHatch = GetHatch(SKColors.Black, false);
+	        ForeHatch = GetHatch(SKColors.Black, true);
 
             DrawPen = GetPen(SKColors.LightBlue, DefaultWidth * 4);
             GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
@@ -238,11 +238,11 @@ namespace Numbers.Renderer
 
 	        var result = new SKPaint
 	        {
-		        PathEffect = SKPathEffect.Create2DPath(SKMatrix.MakeScale(6, 6), hatch),
+		        PathEffect = SKPathEffect.Create2DPath(SKMatrix.MakeScale(8, 8), hatch),
 		        Color = color,// SKColor.FromHsl(200f, 14f, 18f),
 		        Style = SKPaintStyle.Stroke,
 		        IsAntialias = true,
-		        StrokeWidth = 2
+		        StrokeWidth = 1f
 	        };
 	        return result;
         }
