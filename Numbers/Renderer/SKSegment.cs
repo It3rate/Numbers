@@ -32,6 +32,8 @@ namespace Numbers.Renderer
 
         public SKSegment Clone() => new SKSegment(StartPoint, EndPoint);
 
+        public SKSegment InsetSegment(float pixels) => new SKSegment(PointAlongLine(pixels/Length), PointAlongLine(1f - (pixels / Length)));
+
         public static SKSegment operator +(SKSegment a, SKPoint value)
         {
 	        var result = a.Clone();

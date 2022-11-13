@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Drawing;
+using System.Net;
 using System.Windows.Forms;
 using Numbers.Core;
 using Numbers.Mind;
@@ -80,6 +81,8 @@ namespace Numbers.UI
 
             DrawEquation(selNum, repNum, repDr.DomainSegment.StartPoint + new SKPoint(500, -200), Pens.TextBrush);
 			DrawAreaValues(selNum, repNum);
+			DrawUnitBox(GetUnitBoxPoints(), unitRect_Pen);
+			//DrawXFormedUnitBox(GetUnitBoxPoints(), unitXformRect_Pen);
 		}
 
 		public override SKPath HighlightAt(float t, SKPoint targetPoint)
@@ -114,6 +117,7 @@ namespace Numbers.UI
 
 		public void DrawTextOnSegment(string txt, SKPoint startPt, SKPoint endPt, SKPaint paint)
 		{
+			bool isUnot = txt.EndsWith("i");
 			var ordered = new List<SKPoint>() {startPt, endPt};
 			if (startPt.X > endPt.X)
 			{
@@ -122,7 +126,9 @@ namespace Numbers.UI
 
 			var offset = startPt.Y < endPt.Y ? new SKPoint(0, 18) : new SKPoint(0, -5);
             var seg = new SKSegment(ordered[0], ordered[1]);
-            var seg2 = new SKSegment(seg.PointAlongLine(0.3f), seg.PointAlongLine(0.7f));
+            var seg2 = isUnot ? 
+	            new SKSegment(seg.PointAlongLine(0.5f), seg.PointAlongLine(0.9f)) : 
+	            new SKSegment(seg.PointAlongLine(0.2f), seg.PointAlongLine(0.6f));
             var p = new SKPath();
             p.AddPoly(new SKPoint[] { seg2.StartPoint, seg2.EndPoint }, false);
             Canvas.DrawTextOnPath(txt, p, offset, paint);
@@ -132,8 +138,8 @@ namespace Numbers.UI
             var selSeg = SelectionMapper.DomainSegment;
 			var repSeg = RepeatMapper.DomainSegment;
 
-			var r0_s1Txt = $"{r0_s1:0.0}";
-			var r1_s0Txt = $"{r1_s0:0.0}";
+			var r0_s1Txt = $"{r0_s1:0.0}i";
+			var r1_s0Txt = $"{r1_s0:0.0}i";
 			var r0_s0Txt = $"{r0_s0:0.0}";
             var r1_s1Txt = $"{r1_s1:0.0}";
 
@@ -144,6 +150,101 @@ namespace Numbers.UI
 
             var total = r0_s1 + r1_s0 + r0_s0 + r1_s1;
 			Canvas.DrawText($"{total:0.0}", selSeg.StartPoint.X, repSeg.EndPoint.Y, Pens.TextBrush);
+        }
+
+		private SKPoint[] GetUnitBoxPoints() // cw from org
+		{
+			var result = new SKPoint[4];
+			var rs = RepeatMapper.UnitSegment;
+			var ss = SelectionMapper.UnitSegment;
+			result[0] = ss.StartPoint; // Org
+            result[1] = rs.EndPoint; // TL
+            result[2] = new SKPoint(ss.EndPoint.X, rs.EndPoint.Y); // TR
+            result[3] = ss.EndPoint; // BR
+            return result;
+		}
+		private void DrawUnitBox(SKPoint[] cwPts, SKPaint pen)
+		{
+			var left = new SKSegment(cwPts[0], cwPts[1]);
+			var top = new SKSegment(cwPts[1], cwPts[2]);
+			var right = new SKSegment(cwPts[3], cwPts[2]);
+			var bottom = new SKSegment(cwPts[0], cwPts[3]);
+			var inset = 5;
+			var rv = left.InsetSegment(inset);
+			var sh = top.InsetSegment(inset);
+			var rh = right .InsetSegment(inset);
+			var sv = bottom.InsetSegment(inset);
+            Renderer.DrawDirectedLine(rv, pen);
+			Renderer.DrawDirectedLine(sh, pen);
+			Renderer.DrawDirectedLine(rh, pen);
+			Renderer.DrawDirectedLine(sv, pen);
+		}
+
+		private void DrawXFormedUnitBox(SKPoint[] cwPts, SKPaint pen)
+		{
+			TransformPoints(cwPts);
+			DrawUnitBox(cwPts, pen);
+		}
+
+		private SKPoint SKOrigin => SelectionMapper.UnitSegment.StartPoint;
+		private void TransformPoints(SKPoint[] pts)
+		{
+			var org = SKOrigin;
+			var unitLen = RepeatMapper.UnitSegment.Length;
+
+			var rNum = Transform.Repeat.Value;
+            var sNum = Transform.Selection[0].Value;
+            var prod = rNum * sNum;
+
+            var ri = (float)rNum.Imaginary;
+			var ru = (float)rNum.Real;
+			var si = (float)sNum.Imaginary;
+			var su = (float)sNum.Real;
+			var prodI = (float)prod.Imaginary;
+			var prodU = (float)prod.Real;
+            SKPoint pt = SKPoint.Empty;
+			float x, y = 0;
+
+			pt = pts[0]; // x of s0 y of r0
+			pt -= org;
+			x = -unitLen * si;
+			y = unitLen * ri;
+			pts[0] = new SKPoint(x + org.X, y + org.Y);
+
+			pt = pts[1]; // x of s01 y of r01
+			pt -= org;
+			//x = -(unitLen * su - unitLen);
+			//y = pt.Y * ri;
+			x = ((pt.X - unitLen) * prodU) / 2f;
+			y = pt.Y * ri;
+            pts[1] = new SKPoint(x + org.X, y + org.Y);
+
+			pt = pts[2]; // x of s1 y of r1
+			pt -= org;
+			x = pt.X * su;
+			y = pt.Y * ru;
+			pts[2] = new SKPoint(x + org.X, y + org.Y);
+
+			pt = pts[3]; // x of s0 y of r10
+			pt -= org;
+			//x = pt.X * si - unitLen;
+			//y = (pt.Y + unitLen) * ri;
+			x = ((pt.X + unitLen) * prodU) / 2f;
+			y = (pt.Y + unitLen) * ri;
+            pts[3] = new SKPoint(x + org.X, y + org.Y);
+
+
+
+            //         var 
+            //for (int i = 0; i < pts.Length; i++)
+            //{
+            //	var pt = pts[i];
+            //	pt -= org;
+            //	var x = pt.X * ru + pt.X * ri;
+            //	var y = pt.Y * su + pt.Y * si;
+            //	Console.WriteLine(x + " :: " + y);
+            //             pts[i] = new SKPoint(x + org.X, y+ org.Y);
+            //}
         }
 
 		private static SKColor unitAA_Color = SKColor.Parse("#50C93B0C");
@@ -163,5 +264,9 @@ namespace Numbers.UI
 
 		private static readonly SKPaint unitText = CorePens.GetText(SKColor.Parse("#A0F87A0E"), 18);
 		private static readonly SKPaint unotText = CorePens.GetText(SKColor.Parse("#B000D0FF"), 18);
-	}
+
+
+		private static readonly SKPaint unitRect_Pen = CorePens.GetPen(SKColors.Wheat, 0.5f);
+		private static readonly SKPaint unitXformRect_Pen = CorePens.GetPen(SKColors.White, 1f);
+    }
 }

@@ -74,19 +74,18 @@ namespace Numbers.UI
             _renderer.Workspaces.Add(_workspace);
 
 	        Trait t0 = new Trait();
-	        //var unit = t0.AddFocalByValues(100, 200);
-	        //var range = t0.AddFocalByValues(-900, 1100);
-	        var unit = t0.AddFocalByValues(0, 100);
+	        var unitSize = 500;
+	        var unit = t0.AddFocalByValues(0, unitSize);
 	        var range = t0.AddFocalByValues(-1000, 1000);
 	        var domain = t0.AddDomain(unit.Id, range.Id);
 	        var domain2 = t0.AddDomain(unit.Id, range.Id);
 	        var val2 = t0.AddFocalByValues(900, 200);
 	        var val3 = t0.AddFocalByValues(-400, 600);
-	        //var val2 = t0.AddFocalByValues(400, 500);
-	        //var val3 = t0.AddFocalByValues(0, 200);
+	        //var val2 = t0.AddFocalByValues(unitSize, unitSize);
+	        //var val3 = t0.AddFocalByValues(unitSize, unitSize);
 
 
-	        var num2 = new Number(domain, val2.Id);
+            var num2 = new Number(domain, val2.Id);
 	        var num3 = new Number(domain2, val3.Id);
 	        var sel = new Selection(num2);
 	        var transform = t0.AddTransform(sel, num3, TransformKind.Blend);

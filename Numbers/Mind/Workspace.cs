@@ -46,36 +46,49 @@ namespace Numbers.Mind
 	        Renderer = renderer;
         }
 
-        public IEnumerable<SKTransformMapper> TransformMappers()
+        public IEnumerable<SKTransformMapper> TransformMappers(bool reverse = false)
         {
-	        foreach (var mapper in Mappers.Values)
-	        {
-		        if (mapper is SKTransformMapper)
+	        var vals = reverse ? Mappers.Values.Reverse() : Mappers.Values;
+	        foreach (var mapper in vals)
+            {
+		        if (mapper is SKTransformMapper tm)
 		        {
-			        yield return (SKTransformMapper)mapper;
+			        yield return tm;
 		        }
 	        }
         }
-        public IEnumerable<SKDomainMapper> DomainMappers()
+        public IEnumerable<SKDomainMapper> DomainMappers(bool reverse = false)
         {
-	        foreach (var mapper in Mappers.Values)
-	        {
-		        if (mapper is SKDomainMapper)
+	        var vals = reverse ? Mappers.Values.Reverse() : Mappers.Values;
+	        foreach (var mapper in vals)
+            {
+		        if (mapper is SKDomainMapper dm)
 		        {
-			        yield return (SKDomainMapper)mapper;
+			        yield return dm;
 		        }
 	        }
         }
-        public IEnumerable<SKNumberMapper> NumberMappers()
+        public IEnumerable<SKNumberMapper> NumberMappers(bool reverse=false)
         {
 	        foreach (var mapper in Mappers.Values)
 	        {
 		        if (mapper is SKDomainMapper dm)
 		        {
-			        foreach (var numId in dm.Domain.NumberIds)
+			        var ids = dm.Domain.NumberIds;
+			        if (reverse)
 			        {
-				        yield return NumberMapper(numId);
+				        for (int i = ids.Count - 1; i >= 0 ; i--)
+				        {
+					        yield return NumberMapper(ids[i]);
+                        }
 			        }
+			        else
+			        {
+				        foreach (var numId in ids)
+				        {
+					        yield return NumberMapper(numId);
+				        }
+                    }
 		        }
 	        }
         }
@@ -85,7 +98,7 @@ namespace Numbers.Mind
         {
 	        highlight.Reset();
 	        highlight.OrginalPoint = input;
-            foreach (var nm in NumberMappers())
+            foreach (var nm in NumberMappers(true))
             {
 	            var isSameMapper = ignoreSet.ActiveHighlight != null && ignoreSet.ActiveHighlight.Mapper == nm;
 
@@ -99,8 +112,6 @@ namespace Numbers.Mind
 			        highlight.Set(input, nm.EndPoint, nm, 1);
 			        goto Found;
 		        }
-
-		        Console.WriteLine("nn " + input.DistanceTo(nm.EndPoint) + " :: " + nm.EndPoint);
             }
 
 	        foreach (var dm in DomainMappers())

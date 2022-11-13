@@ -26,7 +26,7 @@
 			get => FocalBase.EndTickValue + Offset;
 			set { var fb = FocalBase; fb.EndTickValue = value - Offset; }
 		}
-		public long LengthInTicks => FocalBase.LengthInTicks;
+		public long LengthInTicks => Math.Max(FocalBase.LengthInTicks, 1);
 
 		public UnitFocal(Focal unitFocal)
 		{
@@ -41,6 +41,6 @@
         public long UnitTick => StartTickValue >= EndTickValue ? StartTickValue : EndTickValue;
 		public long ZeroTick => StartTickValue >= EndTickValue ? EndTickValue : StartTickValue;
 		public long UnotTick => ZeroTick - UnitTick;
-		public long UnitLengthInTicks => Math.Abs(EndTickValue - StartTickValue);
+		public long UnitLengthInTicks => Math.Max(Math.Abs(EndTickValue - StartTickValue), 1);
     }
 }
