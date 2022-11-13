@@ -18,9 +18,9 @@ namespace Numbers.UI
         public int Id { get; private set; }
 
         public IMathElement MathElement { get; protected set; }
-	    public abstract SKPoint StartPoint { get; }
-        public abstract SKPoint MidPoint { get; }
-        public abstract SKPoint EndPoint { get; }
+	    public abstract SKPoint StartPoint { get; set; }
+	    public abstract SKPoint MidPoint { get; }
+        public abstract SKPoint EndPoint { get; set; }
 
         //   public SKPoint[] SalientPoints { get; private set; }
         //public SKSegment[] SalientSegments { get; private set; }

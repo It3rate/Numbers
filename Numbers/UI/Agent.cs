@@ -62,7 +62,7 @@ namespace Numbers.UI
 
             UIMode = UIMode.Any;
             ClearMouse();
-            test0();
+            test1();
         }
 
         private Brain _brain;
@@ -84,28 +84,40 @@ namespace Numbers.UI
 	        //var val2 = t0.AddFocalByValues(unitSize, unitSize);
 	        //var val3 = t0.AddFocalByValues(unitSize, unitSize);
 
-
             var num2 = new Number(domain, val2.Id);
 	        var num3 = new Number(domain2, val3.Id);
 	        var sel = new Selection(num2);
 	        var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
 	        _workspace.AddFullDomains(domain, domain2);
+        }
+        private void test1()
+        {
+	        _brain = Brain.BrainA;
+	        _workspace = new Workspace(_brain, _renderer);
+	        _renderer.Workspaces.Add(_workspace);
 
-	        //var val0 = t0.AddFocalByIndexValue(unit.StartId, 650);
-	        //var val1 = t0.AddFocalByValueIndex(-300, unit.StartId);
-	        //var num0 = new Number(domain, val0.Id);
-	        //var num1 = new Number(domain, val1.Id);
-	        //Console.WriteLine(num0);
-	        //Console.WriteLine(num1);
-	        //Console.WriteLine(num2);
-	        //var num3 = num2.Clone();
-	        //num3.Add(num1);
-	        //Console.WriteLine(num3);
-	        //num3.Multiply(num0);
-	        //Console.WriteLine(num3);
-	        //num3.Divide(num0);
-	        //Console.WriteLine(num3);
+	        Trait t0 = new Trait();
+	        var unitSize = 500;
+	        var unit = t0.AddFocalByValues(0, unitSize);
+	        var range = t0.AddFocalByValues(-1000, 1000);
+	        var domain = t0.AddDomain(unit.Id, range.Id);
+	        //var domain2 = t0.AddDomain(unit.Id, range.Id);
+	        var val2 = t0.AddFocalByValues(900, 200);
+	        //var val3 = t0.AddFocalByValues(-400, 600);
+	        //var val2 = t0.AddFocalByValues(unitSize, unitSize);
+	        //var val3 = t0.AddFocalByValues(unitSize, unitSize);
+
+	        var num2 = new Number(domain, val2.Id);
+	        //var num3 = new Number(domain2, val3.Id);
+	        //var sel = new Selection(num2);
+	        //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
+
+	        _workspace.AddFullDomains(domain);//, domain2);
+            _workspace.EnsureRenderers();
+            var dm = _workspace.DomainMapper(domain.Id);
+            var nm = _workspace.NumberMapper(num2.Id);
+            dm.EndPoint += new SKPoint(0, -50);
         }
 
         #region Position and Keyboard

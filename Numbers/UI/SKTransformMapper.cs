@@ -25,9 +25,17 @@ namespace Numbers.UI
 		private SKDomainMapper RepeatMapper => Workspace.DomainMapper(Transform.Repeat.Domain.Id);
 
         //public SKDomainMapper SelectionMapper => 
-        public override SKPoint StartPoint => SKPoint.Empty;//NumberSeg.StartPoint;
-        public override SKPoint MidPoint => SKPoint.Empty;//NumberSegment.Midpoint;
-        public override SKPoint EndPoint => SKPoint.Empty;//NumberSegment.EndPoint;
+        public override SKPoint StartPoint
+        {
+	        get { return SKPoint.Empty; }
+	        set {  }
+        }
+        public override SKPoint MidPoint => SKPoint.Empty;
+        public override SKPoint EndPoint
+        {
+	        get { return SKPoint.Empty; }
+	        set {}
+        }
 
         public SKTransformMapper(Workspace workspace, Transform transform) : base(workspace, transform)
         {

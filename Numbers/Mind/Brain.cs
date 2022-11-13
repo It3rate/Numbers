@@ -7,6 +7,8 @@ namespace Numbers.Mind
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+     
+    // Brain -> Traits, transforms
 
     public class Brain
     {
@@ -23,6 +25,5 @@ namespace Numbers.Mind
 
 	    private int traitCounter = 1 + (int)MathElementKind.Trait;
 	    public int NextTraitId() => traitCounter++;
-
     }
 }

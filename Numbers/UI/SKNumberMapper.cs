@@ -18,22 +18,43 @@ namespace Numbers.UI
 
 	    private SKDomainMapper DomainMapper => Workspace.DomainMapper(Number.Domain.Id);
 
-	    public override SKPoint StartPoint => NumberSegment.StartPoint;
+	    public override SKPoint StartPoint
+	    {
+		    get => NumberSegment.StartPoint;
+		    set
+		    {
+			    (Number.StartT, _) = DomainSegment.TFromPoint(value, false);
+			    EnsureSegment();
+            }
+	    }
 	    public override SKPoint MidPoint => NumberSegment.Midpoint;
-	    public override SKPoint EndPoint => NumberSegment.EndPoint;
+	    public override SKPoint EndPoint
+	    {
+		    get => NumberSegment.EndPoint;
+		    set
+		    {
+			    (Number.EndT, _) = DomainSegment.TFromPoint(value, false);
+			    EnsureSegment();
+		    }
+	    }
 
-        public SKSegment DomainSegment => DomainMapper.DomainSegment;
+	    public SKSegment DomainSegment => DomainMapper.DomainSegment;
 
 	    public SKNumberMapper(Workspace workspace, Number number) : base(workspace, number)
 	    {
 		    Number = number;
+		    EnsureSegment();
 	    }
 
+	    public void EnsureSegment()
+	    {
+		    var nr = Number.Ratio;
+            NumberSegment = DomainSegment.SegmentAlongLine(nr.Start, nr.End);
+	    }
         public void Draw(SKPoint offset, SKPaint paint)
         {
-	        var nr = Number.Ratio;
-		    NumberSegment = DomainSegment.SegmentAlongLine(nr.Start, nr.End);
-		    NumberSegment += offset;
+	        EnsureSegment();
+            NumberSegment += offset;
 	        if (Number.Id == Number.Domain.UnitId)
 	        {
 		        Renderer.DrawSegment(NumberSegment, Pens.HighlightPen);

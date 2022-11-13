@@ -19,9 +19,17 @@ namespace Numbers.UI
 	    public SKSegment UnitSegment;
 	    public List<SKPoint> TickPoints = new List<SKPoint>();
 
-        public override SKPoint StartPoint => DomainSegment.StartPoint;
+	    public override SKPoint StartPoint
+	    {
+		    get { return DomainSegment.StartPoint; }
+		    set { DomainSegment.StartPoint = value; }
+	    }
 	    public override SKPoint MidPoint => DomainSegment.Midpoint;
-	    public override SKPoint EndPoint => DomainSegment.EndPoint;
+	    public override SKPoint EndPoint
+	    {
+		    get { return DomainSegment.EndPoint; }
+		    set { DomainSegment.EndPoint = value; }
+	    }
 
         private static int domainIndexCounter = 0;
         private int domainIndex = -1;

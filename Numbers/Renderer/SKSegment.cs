@@ -4,10 +4,10 @@ using SkiaSharp;
 
 namespace Numbers.Renderer
 {
-    public struct SKSegment
+    public class SKSegment
     {
-        public SKPoint StartPoint { get; private set; }
-        public SKPoint EndPoint { get; private set; }
+        public SKPoint StartPoint { get; set; }
+        public SKPoint EndPoint { get; set; }
         public SKPoint Midpoint
         {
             get => (EndPoint - StartPoint).Divide(2f) + StartPoint;
