@@ -101,10 +101,10 @@ namespace Numbers.UI
         private void DrawTriangle(bool isPositive, SKPaint color, bool isUnit, params SKPoint[] points)
 		{
             Triangles.Add(points);
-			Renderer.DrawShape(points, color);
+			Renderer.FillPolyline(color, points);
 			if (!isPositive && !color.IsStroke)
 			{
-				Renderer.DrawShape(points, isUnit ? Pens.BackHatch : Pens.ForeHatch);
+				Renderer.FillPolyline(isUnit ? Pens.BackHatch : Pens.ForeHatch, points);
 			}
 		}
 

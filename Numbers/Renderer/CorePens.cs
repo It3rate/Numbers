@@ -26,6 +26,7 @@ namespace Numbers.Renderer
         public SKPaint UnitPen { get; set; }
         public SKPaint UnotPen { get; set; }
         public SKPaint UnitStrokePen { get; set; }
+        public SKPaint MarkerBrush { get; set; }
 
         public SKPaint GrayPen { get; set; }
         public SKPaint BackHatch { get; set; }
@@ -58,6 +59,7 @@ namespace Numbers.Renderer
         public SKColor UnotLineColor { get; set; }
         public SKColor UnitStrokeColor { get; set; }
         public SKColor TickColor { get; set; }
+        public SKColor MarkerColor { get; set; }
 
         public CorePens(float defaultWidth = 1f, ColorTheme colorTheme = ColorTheme.Normal)
         {
@@ -74,26 +76,28 @@ namespace Numbers.Renderer
             UnotLineColor = SKColor.Parse("#E97A7E");
             UnitStrokeColor = SKColor.Parse("#404040");
             TickColor = SKColors.Black;
+            MarkerColor = SKColors.DarkGray;
 
             BkgBrush = GetBrush(BkgColor);
 
             NumberLinePen = GetPen(TickColor, DefaultWidth * 0.75f);
             NumberLineGradient = GetPen(TickColor, DefaultWidth * 0.75f);
-            TickPen = GetPen(TickColor, DefaultWidth * .25f);
-            TickBoldPen = GetPen(TickColor, DefaultWidth * 2f);
             UnitPen = GetPen(UnitColor, DefaultWidth * 4f, SKStrokeCap.Butt);
             UnotPen = GetPen(UnotColor, DefaultWidth * 4f, SKStrokeCap.Butt);
             UnitStrokePen = GetPen(UnitStrokeColor, UnitPen.StrokeWidth * 1.4f, SKStrokeCap.Butt);
+            TickPen = GetPen(TickColor, DefaultWidth * .25f);
+            TickBoldPen = GetPen(TickColor, DefaultWidth * 2f);
+            MarkerBrush = GetBrush(MarkerColor);
 
             BackHatch = GetHatch(SKColors.Black, false);
             ForeHatch = GetHatch(SKColors.Black, true);
             HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
             HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
 
-            SegPen0 = GetPen(new SKColor(210, 250, 50, 255), DefaultWidth * 4f);
-            SegPen1 = GetPen(new SKColor(50, 250, 210, 255), DefaultWidth * 4f);
-            SegPen2 = GetPen(new SKColor(50, 50, 250, 255), DefaultWidth * 4f);
-            SegPen3 = GetPen(new SKColor(50, 250, 50, 255), DefaultWidth * 4f);
+            SegPen0 = GetPen(SKColor.Parse("#106010"), DefaultWidth * 4f);
+            SegPen1 = GetPen(SKColor.Parse("#106040"), DefaultWidth * 4f);
+            SegPen2 = GetPen(SKColor.Parse("#101060"), DefaultWidth * 4f);
+            SegPen3 = GetPen(SKColor.Parse("#004000"), DefaultWidth * 4f);
             SegPens = new List<SKPaint>() { SegPen0, SegPen1, SegPen2, SegPen3 };
 
             TextBrush = GetText(SKColor.Parse("#A0A0F0"), 20);
@@ -121,14 +125,15 @@ namespace Numbers.Renderer
         private void GenDarkTheme()
         {
 	        BkgColor = SKColor.FromHsl(200f, 14f, 8f);
-            UnitColor = SKColor.Parse("#005A5F");
-            UnitLineColor = SKColor.Parse("#7F9FF4");
-            UnotColor = SKColor.Parse("#5F0038");
-            UnotLineColor = SKColor.Parse("#E97A7E");
+            UnitColor = SKColor.Parse("#008A8F");
+            UnitLineColor = SKColor.Parse("#203070");
+            UnotColor = SKColor.Parse("#8F0058");
+            UnotLineColor = SKColor.Parse("#703020");
             TickColor = SKColors.LightGray;
             UnitPen = GetPen(UnitColor, DefaultWidth * 4f, SKStrokeCap.Butt);
             UnotPen = GetPen(UnotColor, DefaultWidth * 4f, SKStrokeCap.Butt);
             UnitStrokePen = null;
+            MarkerColor = SKColors.LightGray;
 
             BkgBrush = GetBrush(BkgColor);
             BackHatch = GetHatch(SKColors.Black, false);
@@ -138,6 +143,7 @@ namespace Numbers.Renderer
             NumberLineGradient = GetPen(TickColor, DefaultWidth * 0.75f);
             TickPen = GetPen(TickColor, DefaultWidth * 0.25f);
             TickBoldPen = GetPen(TickColor, DefaultWidth * 2f);
+            MarkerBrush = GetBrush(MarkerColor);
 
             HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
             HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);

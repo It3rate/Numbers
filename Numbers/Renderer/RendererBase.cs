@@ -61,8 +61,8 @@ namespace Numbers.Renderer
 		public abstract void GeneratePens(ColorTheme colorTheme = ColorTheme.Normal);
 		public abstract SKPath GetCirclePath(SKPoint center, float radius = 10f);
 		public abstract void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f);
-		public abstract void DrawPolyline(SKPoint[] polyline, SKPaint paint);
-		public abstract void DrawShape(SKPoint[] polyline, SKPaint paint);
+		public abstract void DrawPolyline(SKPaint paint, params SKPoint[] polyline);
+		public abstract void FillPolyline(SKPaint paint, params SKPoint[] polyline);
 		public abstract void DrawDirectedLine(SKSegment seg, SKPaint paint);
 		public abstract void DrawText(SKPoint center, string text, SKPaint paint);
 		public abstract void DrawBitmap(SKBitmap bitmap);

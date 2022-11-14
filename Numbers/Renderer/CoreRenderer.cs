@@ -48,11 +48,11 @@ namespace Numbers.Renderer
 		    var box = new SKRect(point.X - radius, point.Y - radius, point.X + radius, point.Y + radius);
 		    Canvas.DrawRoundRect(box, round, round, paint);
 	    }
-	    public override void DrawPolyline(SKPoint[] polyline, SKPaint paint)
+	    public override void DrawPolyline(SKPaint paint, params SKPoint[] polyline)
 	    {
 		    Canvas.DrawPoints(SKPointMode.Polygon, polyline, paint);
 	    }
-	    public override void DrawShape(SKPoint[] polyline, SKPaint paint)
+	    public override void FillPolyline(SKPaint paint, params SKPoint[] polyline)
 	    {
 		    var path = new SKPath
 		    {
@@ -64,7 +64,7 @@ namespace Numbers.Renderer
 	    }
 	    public override void DrawDirectedLine(SKSegment seg, SKPaint paint)
 	    {
-            DrawPolyline(seg.Points, paint);
+            DrawPolyline(paint, seg.Points);
             Canvas.DrawCircle(seg.StartPoint, 2, paint);
             var triPts = seg.EndArrow(8);
             Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);

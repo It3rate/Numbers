@@ -51,12 +51,13 @@ namespace Numbers.UI
 		    var nr = Number.Ratio;
             NumberSegment = DomainSegment.SegmentAlongLine(nr.Start, nr.End);
 	    }
-        public void DrawIfNotUnit(SKPoint offset, SKPaint paint)
+        public void DrawIfNotUnit(float offsetScale, SKPaint paint)
         {
 	        EnsureSegment();
 	        if (Number.Id != Number.Domain.UnitId)
 	        {
-                var seg = NumberSegment + offset;
+		        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale);
+		        var seg = NumberSegment + offset;
 		        Renderer.DrawDirectedLine(seg, paint);
             }
         }
@@ -65,7 +66,7 @@ namespace Numbers.UI
         {
 	        var pen = Number.EndTickPos > Number.StartTickPos ? Pens.UnitPen : Pens.UnotPen;
 	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f) - NumberSegment.PointAlongLine(0);
-	        var seg = NumberSegment + offset;
+	        var seg = NumberSegment - offset;
 	        if (Pens.UnitStrokePen != null)
 	        {
 		        Renderer.DrawSegment(seg, Pens.UnitStrokePen);

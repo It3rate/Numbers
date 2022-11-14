@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Numerics;
 using Numbers.Core;
 using Numbers.Mind;
 using Numbers.Renderer;
@@ -19,6 +20,7 @@ namespace Numbers.UI
 	    public RatioSeg UnitRatio;
 	    public SKSegment UnitSegment;
 	    public List<SKPoint> TickPoints = new List<SKPoint>();
+        public List<int> Markers = new List<int>();
 
 	    public bool ShowGradientNumberLine ;
 	    public bool ShowTicks;
@@ -56,8 +58,19 @@ namespace Numbers.UI
 	        DomainSegment = new SKSegment(startPoint, endPoint);
 	        UnitRatio = Domain.UnitFocalRatio;
 	        UnitSegment = DomainSegment.SegmentAlongLine(UnitRatio.Start, UnitRatio.End);
+	        Markers.Clear();
+	        AddUnitMarkers();
+	        AddNumberMarkers();
         }
 
+        private void AddUnitMarkers()
+        {
+	        Markers.Add(Domain.UnitId);
+        }
+        private void AddNumberMarkers()
+        {
+	        Markers.AddRange(Domain.NumberIds);
+        }
         public override SKPath HighlightAt(float t, SKPoint targetPoint)
         {
 	        var pt = DomainSegment.PointAlongLine(t);
@@ -73,18 +86,55 @@ namespace Numbers.UI
                 DrawNumberLine();
 		        DrawUnit();
 		        DrawTicks();
-                DrawIntTicks();
-                var offset = SKPoint.Empty;
-		        var step = DomainSegment.RelativeOffset(0);//10);
+		        DrawIntTicks();
+		        DrawMarkers();
+                var offset = 1f;
+                var step = 1f;
 		        var segPens = new[] { Pens.SegPen1, Pens.SegPen2 };
 
                 foreach (var numberId in Domain.NumberIds)
 		        {
 			        offset += step;
 			        var pen = Pens.SegPens[domainIndex % Pens.SegPens.Count];
-			        Workspace.NumberMapper(Domain.UnitId).DrawIfNotUnit(offset, pen);
+			        Workspace.NumberMapper(numberId).DrawIfNotUnit(offset, pen);
 		        }
 	        }
+        }
+
+        private void DrawMarkers()
+        {
+	        foreach (var id in Markers)
+	        {
+		        var num = Number.NumberStore[id];
+		        var ratio = num.Ratio;
+		        var isUnit = id == Domain.UnitId;
+		        var rem = num.Remainder;
+		        DrawMarker(num.StartValue, ratio.Start);
+		        DrawMarker(num.EndValue, ratio.End);
+            }
+        }
+        private void DrawMarker(double value, float t)
+        {
+	        var textPoint = DrawMarkerPointer(t);
+	        var txt = Math.Abs(value - (int) value) < 0.1f ? $"{value:0}" : $"{value:0.0}";
+	        Renderer.DrawText(textPoint, txt, Pens.LineTextPen);
+        }
+
+        private SKPoint DrawMarkerPointer(float t)
+        {
+	        var w = 5.0f;
+	        var markerHW = (float) (1.0 / DomainSegment.Length) * w;
+
+	        var pt = DomainSegment.PointAlongLine(t);
+	        var ptPlus = DomainSegment.PointAlongLine(t + markerHW);
+            var ptMinus = DomainSegment.PointAlongLine(t - markerHW);
+            var p0 = DomainSegment.OrthogonalPoint(pt, -w * 2);
+            var p1 = DomainSegment.OrthogonalPoint(ptPlus, -w * 4);
+            var p2 = DomainSegment.OrthogonalPoint(ptMinus, -w * 4);
+            Renderer.FillPolyline(Pens.MarkerBrush, p0, p1, p2, p0);
+            
+            var textPoint = DomainSegment.OrthogonalPoint(pt, -w * 5); ;
+            return textPoint;
         }
 
         private void DrawNumberLineGradient()
