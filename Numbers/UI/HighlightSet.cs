@@ -25,5 +25,10 @@ namespace Numbers.UI
 	    {
 		    ActiveHighlight = activeHighlight;
 	    }
+
+	    public void Clear()
+	    {
+		    ActiveHighlight = null;
+	    }
     }
 }

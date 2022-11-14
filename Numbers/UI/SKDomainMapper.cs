@@ -1,4 +1,5 @@
-﻿using Numbers.Core;
+﻿using System.Drawing;
+using Numbers.Core;
 using Numbers.Mind;
 using Numbers.Renderer;
 using SkiaSharp;
@@ -19,17 +20,27 @@ namespace Numbers.UI
 	    public SKSegment UnitSegment;
 	    public List<SKPoint> TickPoints = new List<SKPoint>();
 
-	    public override SKPoint StartPoint
+	    public bool ShowGradientNumberLine ;
+	    public bool ShowTicks;
+	    public bool ShowNumbersAsOffsets;
+	    public bool ShowKeyValues;
+	    public bool ShowValueMarkers;
+	    public bool ShowUnit;
+	    public bool ShowUnotArrow;
+	    public bool ShowMaxMinValues;
+	    public bool ShowDashedValuesOutOfRange;
+
+        public override SKPoint StartPoint
 	    {
-		    get { return DomainSegment.StartPoint; }
-		    set { DomainSegment.StartPoint = value; }
-	    }
+		    get => DomainSegment.StartPoint;
+		    set => Reset(Domain, value, EndPoint);
+        }
 	    public override SKPoint MidPoint => DomainSegment.Midpoint;
 	    public override SKPoint EndPoint
 	    {
-		    get { return DomainSegment.EndPoint; }
-		    set { DomainSegment.EndPoint = value; }
-	    }
+		    get => DomainSegment.EndPoint;
+		    set => Reset(Domain, StartPoint, value);
+        }
 
         private static int domainIndexCounter = 0;
         private int domainIndex = -1;
@@ -58,27 +69,45 @@ namespace Numbers.UI
 	        if (Domain != null)
 	        {
 		        if (domainIndex == -1) domainIndex = domainIndexCounter++;
-		        //DrawUnit();
-		        DrawNumberline();
-		        var offset = SKPoint.Empty;
+		        DrawNumberLineGradient();
+                DrawNumberLine();
+		        DrawUnit();
+                DrawTicks();
+                var offset = SKPoint.Empty;
 		        var step = DomainSegment.RelativeOffset(0);//10);
 		        var segPens = new[] { Pens.SegPen1, Pens.SegPen2 };
-		        foreach (var numberId in Domain.NumberIds)
+
+                foreach (var numberId in Domain.NumberIds)
 		        {
 			        offset += step;
 			        var pen = Pens.SegPens[domainIndex % Pens.SegPens.Count];
-			        Workspace.NumberMapper(numberId).Draw(offset, pen);
+			        Workspace.NumberMapper(Domain.UnitId).DrawIfNotUnit(offset, pen);
 		        }
 	        }
         }
 
-        private void DrawNumberline()
-	    {
-		    Renderer.DrawSegment(DomainSegment, Renderer.Pens.GrayPen);
-		    //DrawTick(0, -8, Renderer.Pens.TickBoldPen);
-		    //DrawTick(1, -8, Renderer.Pens.TickBoldPen);
+        private void DrawNumberLineGradient()
+        {
+	        if (ShowGradientNumberLine)
+	        {
+		        var pnt = CorePens.GetGradientPen(
+			        DomainSegment.StartPoint, DomainSegment.EndPoint, Pens.UnotLineColor, Pens.UnitLineColor, 10);
+		        Renderer.DrawSegment(DomainSegment, pnt);
+	        }
+        }
 
-		    var segStart = (float)Domain.MaxRange.StartTickValue;
+        private void DrawUnit()
+        {
+	        Workspace.NumberMapper(Domain.UnitId).DrawUnit();
+        }
+        private void DrawNumberLine()
+        {
+	        Renderer.DrawSegment(DomainSegment, Renderer.Pens.NumberLinePen);
+        }
+
+        private void DrawTicks()
+		    {
+                var segStart = (float)Domain.MaxRange.StartTickValue;
 		    var segLen = (float)Domain.MaxRange.LengthInTicks;
 		    var wholeTicks = Domain.WholeNumberTicks();
 		    TickPoints.Clear();

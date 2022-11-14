@@ -34,7 +34,7 @@ namespace Numbers.Renderer
 	    }
 
         public override void DrawSegment(SKSegment seg, SKPaint paint)
-	    {
+        {
 		    Canvas.DrawLine(seg.StartPoint, seg.EndPoint, paint);
 	    }
 	    public override void DrawLine(SKPoint p0, SKPoint p1, SKPaint paint)
@@ -80,12 +80,9 @@ namespace Numbers.Renderer
 		    Canvas.DrawBitmap(bitmap, new SKRect(0, 0, Width, Height));
 	    }
 
-
-
-
-        public override void GeneratePens()
+        public override void GeneratePens(ColorTheme colorTheme = ColorTheme.Normal)
 	    {
-		    Pens = new CorePens(1);
+		    Pens = new CorePens(1, colorTheme);
 	    }
     }
 }

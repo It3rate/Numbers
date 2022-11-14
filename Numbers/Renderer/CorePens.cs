@@ -4,10 +4,12 @@ namespace Numbers.Renderer
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
+    public enum ColorTheme
+    {
+        Normal,
+        Dark
+    }
     public class CorePens
     {
         public List<SKPaint> Pens = new List<SKPaint>();
@@ -15,94 +17,94 @@ namespace Numbers.Renderer
         public float DefaultWidth { get; }
         public bool IsHoverMap { get; set; }
 
-        public SKColor BkgColor { get; private set; }
-        public SKPaint BkgBrush { get; private set; }
-        public SKPaint BackHatch { get; private set; }
-        public SKPaint ForeHatch { get; private set; }
-        public SKPaint DrawPen { get; private set; }
-        public SKPaint GrayPen { get; private set; }
-        public SKPaint TickBoldPen { get; private set; }
-        public SKPaint TickPen { get; private set; }
+        public SKPaint BkgBrush { get; set; }
+        public SKPaint DrawPen { get; set; }
+        public SKPaint NumberLinePen { get; set; }
+        public SKPaint NumberLineGradient { get; set; }
+        public SKPaint TickBoldPen { get; set; }
+        public SKPaint TickPen { get; set; }
+        public SKPaint UnitPen { get; set; }
+        public SKPaint UnotPen { get; set; }
+        public SKPaint UnitStrokePen { get; set; }
 
-        public SKPaint SegPen0 { get; private set; }
-        public SKPaint SegPen1 { get; private set; }
-        public SKPaint SegPen2 { get; private set; }
-        public SKPaint SegPen3 { get; private set; }
+        public SKPaint GrayPen { get; set; }
+        public SKPaint BackHatch { get; set; }
+        public SKPaint ForeHatch { get; set; }
+
+        public SKPaint HoverPen { get; set; }
+        public SKPaint HighlightPen { get; set; }
+
+        public SKPaint SegPen0 { get; set; }
+        public SKPaint SegPen1 { get; set; }
+        public SKPaint SegPen2 { get; set; }
+        public SKPaint SegPen3 { get; set; }
         public List<SKPaint> SegPens;
 
-        public SKPaint TextBrush { get; private set; }
-        public SKPaint Seg0TextBrush { get; private set; }
-        public SKPaint Seg1TextBrush { get; private set; }
-        public SKPaint Seg2TextBrush { get; private set; }
-        public SKPaint Seg3TextBrush { get; private set; }
+        public SKPaint TextBrush { get; set; }
+        public SKPaint Seg0TextBrush { get; set; }
+        public SKPaint Seg1TextBrush { get; set; }
+        public SKPaint Seg2TextBrush { get; set; }
+        public SKPaint Seg3TextBrush { get; set; }
         public List<SKPaint> SegTextBrushes;
 
-        public SKPaint HoverPen { get; private set; }
-        public SKPaint SelectedPen { get; private set; }
-        public SKPaint UnitPen { get; private set; }
-        public SKPaint UnitGhostPen { get; private set; }
-        public SKPaint DarkPen { get; private set; }
-        public SKPaint WorkingPen { get; private set; }
-        public SKPaint HighlightPen { get; private set; }
-        public SKPaint LockedPen { get; private set; }
-        public SKPaint FocalPen { get; private set; }
-        public SKPaint BondPen { get; private set; }
-        public SKPaint BondFillPen { get; private set; }
-        public SKPaint BondSelectPen { get; private set; }
+        public SKPaint LineTextPen { get; set; }
+        public SKPaint TextBackgroundPen { get; set; }
+        public SKPaint SlugTextPen { get; set; }
 
-        public SKPaint LineTextPen { get; private set; }
-        public SKPaint TextBackgroundPen { get; private set; }
-        public SKPaint SlugTextPen { get; private set; }
+        public SKColor BkgColor { get; set; }
+        public SKColor UnitColor { get; set; }
+        public SKColor UnitLineColor { get; set; }
+        public SKColor UnotColor { get; set; }
+        public SKColor UnotLineColor { get; set; }
+        public SKColor UnitStrokeColor { get; set; }
+        public SKColor TickColor { get; set; }
 
-        public CorePens(float defaultWidth = 1f)
+        public CorePens(float defaultWidth = 1f, ColorTheme colorTheme = ColorTheme.Normal)
         {
             DefaultWidth = defaultWidth;
-            GenPens();
+            GenTheme(colorTheme);
         }
-        private void GenPens()
-        {
-	        BkgColor = SKColor.FromHsl(200f, 14f, 8f);
-	        BkgBrush = GetBrush(BkgColor);
-	        BackHatch = GetHatch(SKColors.Black, false);
-	        ForeHatch = GetHatch(SKColors.Black, true);
 
-            DrawPen = GetPen(SKColors.LightBlue, DefaultWidth * 4);
-            GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
-            TickBoldPen = GetPen(SKColors.LightCyan, DefaultWidth * 1f);
-            TickPen = GetPen(SKColors.LightGray, DefaultWidth * 0.5f);
+        private void GenNormalTheme()
+        {
+	        BkgColor = SKColor.Parse("#FFFFFF");
+            UnitColor = SKColor.Parse("#00FAFF");
+            UnitLineColor = SKColor.Parse("#7F9FF4");
+            UnotColor = SKColor.Parse("#FF0098");
+            UnotLineColor = SKColor.Parse("#E97A7E");
+            UnitStrokeColor = SKColor.Parse("#404040");
+            TickColor = SKColors.Black;
+
+            BkgBrush = GetBrush(BkgColor);
+
+            NumberLinePen = GetPen(TickColor, DefaultWidth * 0.75f);
+            NumberLineGradient = GetPen(TickColor, DefaultWidth * 0.75f);
+            TickPen = GetPen(TickColor, DefaultWidth * 1f);
+            TickBoldPen = GetPen(TickColor, DefaultWidth * 2f);
+            UnitPen = GetPen(UnitColor, DefaultWidth * 4f, SKStrokeCap.Butt);
+            UnotPen = GetPen(UnotColor, DefaultWidth * 4f, SKStrokeCap.Butt);
+            UnitStrokePen = GetPen(UnitStrokeColor, UnitPen.StrokeWidth * 1.4f, SKStrokeCap.Butt);
+
+            BackHatch = GetHatch(SKColors.Black, false);
+            ForeHatch = GetHatch(SKColors.Black, true);
+            HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
+            HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
 
             SegPen0 = GetPen(new SKColor(210, 250, 50, 255), DefaultWidth * 4f);
             SegPen1 = GetPen(new SKColor(50, 250, 210, 255), DefaultWidth * 4f);
             SegPen2 = GetPen(new SKColor(50, 50, 250, 255), DefaultWidth * 4f);
             SegPen3 = GetPen(new SKColor(50, 250, 50, 255), DefaultWidth * 4f);
-            SegPens  = new List<SKPaint>(){ SegPen0, SegPen1, SegPen2, SegPen3 };
+            SegPens = new List<SKPaint>() { SegPen0, SegPen1, SegPen2, SegPen3 };
 
             TextBrush = GetText(SKColor.Parse("#A0A0F0"), 20);
             Seg0TextBrush = GetText(SegPen0.Color, 20);
             Seg1TextBrush = GetText(SegPen1.Color, 20);
             Seg2TextBrush = GetText(SegPen2.Color, 20);
             Seg3TextBrush = GetText(SegPen3.Color, 20);
-            SegTextBrushes = new List<SKPaint>(){ Seg0TextBrush, Seg1TextBrush, Seg2TextBrush, Seg3TextBrush };
+            SegTextBrushes = new List<SKPaint>() { Seg0TextBrush, Seg1TextBrush, Seg2TextBrush, Seg3TextBrush };
 
-            HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
-            SelectedPen = GetPen(SKColors.Red, DefaultWidth * 1f);
-            UnitPen = GetPen(new SKColor(10, 200, 100, 150), DefaultWidth * 5f);
-            UnitGhostPen = GetPen(new SKColor(10, 200, 100, 50), DefaultWidth * 5f);
-            DarkPen = GetPen(SKColors.Black, DefaultWidth);
-            WorkingPen = GetPen(SKColors.LightCoral, DefaultWidth);
-            HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
-            LockedPen = GetPen(new SKColor(180, 180, 190), DefaultWidth * 1);
-            FocalPen = GetPen(new SKColor(100, 120, 210), DefaultWidth * 3);
-            BondPen = GetPen(new SKColor(100, 20, 240), DefaultWidth * 2);
-            //BondFillPen = GetPen(new SKColor(100, 20, 240, 40), DefaultWidth * 2);
-            //BondFillPen.Style = SKPaintStyle.Fill;
-            BondFillPen = new SKPaint();
-            BondFillPen.IsAntialias = true;
-            BondFillPen.Color = new SKColor(100, 20, 240, 40);
-            BondFillPen.Style = SKPaintStyle.Fill;
-            BondSelectPen = new SKPaint();
-            BondSelectPen.Color = new SKColor(50, 10, 200, 50);
-            BondSelectPen.Style = SKPaintStyle.Fill;
+            DrawPen = GetPen(SKColors.LightBlue, DefaultWidth * 4);
+            GrayPen = GetPen(SKColors.LightGray, DefaultWidth * 0.75f);
 
             LineTextPen = new SKPaint(new SKFont(SKTypeface.Default, 12f));
             LineTextPen.IsAntialias = true;
@@ -115,6 +117,71 @@ namespace Numbers.Renderer
             SlugTextPen.IsAntialias = true;
             SlugTextPen.Color = new SKColor(0x80, 0x40, 0x40);
             SlugTextPen.TextAlign = SKTextAlign.Center;
+        }
+        private void GenDarkTheme()
+        {
+	        BkgColor = SKColor.FromHsl(200f, 14f, 8f);
+            UnitColor = SKColor.Parse("#005A5F");
+            UnitLineColor = SKColor.Parse("#7F9FF4");
+            UnotColor = SKColor.Parse("#5F0038");
+            UnotLineColor = SKColor.Parse("#E97A7E");
+            TickColor = SKColors.LightGray;
+            UnitPen = GetPen(UnitColor, DefaultWidth * 4f, SKStrokeCap.Butt);
+            UnotPen = GetPen(UnotColor, DefaultWidth * 4f, SKStrokeCap.Butt);
+            UnitStrokePen = null;
+
+            BkgBrush = GetBrush(BkgColor);
+            BackHatch = GetHatch(SKColors.Black, false);
+            ForeHatch = GetHatch(SKColors.Black, true);
+
+            NumberLinePen = GetPen(TickColor, DefaultWidth * 0.75f);
+            NumberLineGradient = GetPen(TickColor, DefaultWidth * 0.75f);
+            TickPen = GetPen(TickColor, DefaultWidth * 0.5f);
+            TickBoldPen = GetPen(TickColor, DefaultWidth * 1f);
+
+            HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
+            HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
+
+            SegPen0 = GetPen(new SKColor(210, 250, 50, 255), DefaultWidth * 4f);
+            SegPen1 = GetPen(new SKColor(50, 250, 210, 255), DefaultWidth * 4f);
+            SegPen2 = GetPen(new SKColor(50, 50, 250, 255), DefaultWidth * 4f);
+            SegPen3 = GetPen(new SKColor(50, 250, 50, 255), DefaultWidth * 4f);
+            SegPens = new List<SKPaint>() { SegPen0, SegPen1, SegPen2, SegPen3 };
+
+            TextBrush = GetText(SKColor.Parse("#A0A0F0"), 20);
+            Seg0TextBrush = GetText(SegPen0.Color, 20);
+            Seg1TextBrush = GetText(SegPen1.Color, 20);
+            Seg2TextBrush = GetText(SegPen2.Color, 20);
+            Seg3TextBrush = GetText(SegPen3.Color, 20);
+            SegTextBrushes = new List<SKPaint>() { Seg0TextBrush, Seg1TextBrush, Seg2TextBrush, Seg3TextBrush };
+
+            DrawPen = GetPen(SKColors.LightBlue, DefaultWidth * 4);
+            GrayPen = GetPen(SKColors.LightGray, DefaultWidth * 0.75f);
+
+            LineTextPen = new SKPaint(new SKFont(SKTypeface.Default, 12f));
+            LineTextPen.IsAntialias = true;
+            LineTextPen.Color = new SKColor(0x40, 0x40, 0x60);
+            LineTextPen.TextAlign = SKTextAlign.Center;
+            TextBackgroundPen = GetPen(new SKColor(244, 244, 244, 220), 0);
+            TextBackgroundPen.Style = SKPaintStyle.Fill;
+
+            SlugTextPen = new SKPaint(new SKFont(SKTypeface.Default, 8f));
+            SlugTextPen.IsAntialias = true;
+            SlugTextPen.Color = new SKColor(0x80, 0x40, 0x40);
+            SlugTextPen.TextAlign = SKTextAlign.Center;
+        }
+        public void GenTheme(ColorTheme theme)
+        {
+	        switch (theme)
+	        {
+		        case ColorTheme.Dark:
+			        GenDarkTheme();
+			        break;
+		        case ColorTheme.Normal:
+                default: 
+			        GenNormalTheme();
+			        break;
+	        }
 
             Pens.Clear();
             Pens.Add(GetPen(SKColors.Black, DefaultWidth));
@@ -145,23 +212,6 @@ namespace Numbers.Renderer
             Pens.Add(GetPen(SKColors.White, DefaultWidth));
             Pens.Add(GetPen(SKColors.White, DefaultWidth));
 
-            Pens.Add(HoverPen);
-            Pens.Add(SelectedPen);
-            Pens.Add(UnitPen);
-            Pens.Add(UnitGhostPen);
-            Pens.Add(DarkPen);
-            Pens.Add(GrayPen);
-            Pens.Add(WorkingPen);
-            Pens.Add(DrawPen);
-            Pens.Add(HighlightPen);
-            Pens.Add(LockedPen);
-            Pens.Add(FocalPen);
-            Pens.Add(BondPen);
-            Pens.Add(BondFillPen);
-            Pens.Add(BondSelectPen);
-            Pens.Add(LineTextPen);
-            Pens.Add(TextBackgroundPen);
-            Pens.Add(SlugTextPen);
         }
 
 
@@ -182,7 +232,7 @@ namespace Numbers.Renderer
 
 	        return result;
         }
-        public SKPaint GetPenByOrder(int index, float widthScale = 1, bool antiAlias = true)
+        public SKPaint GetPenByOrder(int index, float widthScale = 1)
         {
 	        //uint col = (uint)((index + 3) | 0xFF000000);
 	        uint col = (uint)((index + 3) * 0x110D05) | 0xFF000000;
@@ -196,7 +246,7 @@ namespace Numbers.Renderer
 	        }
 
 	        var color = new SKColor(col);
-	        return GetPen(color, DefaultWidth * widthScale, antiAlias);
+	        return GetPen(color, DefaultWidth * widthScale);
         }
         public int IndexOfPen(SKPaint pen) => Pens.IndexOf(pen);
 
@@ -204,25 +254,62 @@ namespace Numbers.Renderer
 
         public static SKPaint GetBrush(SKColor color)
         {
-	        SKPaint pen = new SKPaint()
+	        SKPaint result = new SKPaint()
 	        {
 		        Style = SKPaintStyle.Fill,
 		        Color = color
 	        };
-	        return pen;
+	        return result;
         }
-
-        public static SKPaint GetPen(SKColor color, float width, bool antiAlias = true)
+        public static SKPaint GetPen(SKColor color, float width, SKStrokeCap cap = SKStrokeCap.Round)
         {
 	        SKPaint pen = new SKPaint()
 	        {
 		        Style = SKPaintStyle.Stroke,
 		        Color = color,
 		        StrokeWidth = width,
-		        IsAntialias = antiAlias,
-		        StrokeCap = SKStrokeCap.Round,
+		        IsAntialias = true,
+		        StrokeCap = cap,
 	        };
 	        return pen;
+        }
+
+        public static SKPaint GetGradientPen(SKPoint p0, SKPoint p1, SKColor color0, SKColor color1, float width)
+        {
+	        var shader = SKShader.CreateLinearGradient(
+		        p0,
+		        p1,
+		        new SKColor[] { color0, color1 },
+		        new float[] { 0, 1 },
+		        SKShaderTileMode.Clamp);
+
+            SKPaint result = new SKPaint()
+	        {
+		        Style = SKPaintStyle.Stroke,
+		        Color = color0,
+		        StrokeWidth = width,
+		        IsAntialias = true,
+		        StrokeCap = SKStrokeCap.Butt,
+                Shader = shader
+	        };
+	        return result;
+        }
+        public static SKPaint GetGradientBrush(SKPoint p0, SKPoint p1, SKColor color0, SKColor color1)
+        {
+	        var shader = SKShader.CreateLinearGradient(
+		        p0,
+		        p1,
+		        new SKColor[] { color0, color1 },
+		        new float[] { 0, 1 },
+		        SKShaderTileMode.Clamp);
+
+            SKPaint result = new SKPaint()
+	        {
+		        Style = SKPaintStyle.Fill,
+		        IsAntialias = true,
+                Shader = shader
+	        };
+	        return result;
         }
         public static SKPaint GetHatch(SKColor color, bool isForward = true)
         {

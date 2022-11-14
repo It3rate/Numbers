@@ -26,7 +26,6 @@ namespace Numbers.Mind
 	    public SKTransformMapper TransformMapper(int id) => (SKTransformMapper)Mappers[id];
 	    public SKNumberMapper NumberMapper(int id) => (SKNumberMapper)Mappers[id];
 
-
         //private List<int> ActiveDomainIds { get; } = new List<int>();
         //   private List<int> ActiveNumberIds { get; } = new List<int>();
         //private List<int> ActiveTransformIds { get; } = new List<int>();
@@ -44,6 +43,17 @@ namespace Numbers.Mind
         {
 	        MyBrain = brain;
 	        Renderer = renderer;
+	        Renderer.Workspaces.Add(this);
+        }
+
+        public void ClearAll()
+        {
+            Mappers.Clear();
+	        MyBrain.ClearAll();
+	        SelBegin.Clear();
+	        SelCurrent.Clear();
+	        SelHighlight.Clear();
+            SelSelection.Clear();
         }
 
         public IEnumerable<SKTransformMapper> TransformMappers(bool reverse = false)

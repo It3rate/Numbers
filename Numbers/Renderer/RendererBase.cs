@@ -28,7 +28,7 @@ namespace Numbers.Renderer
 
 		public RendererBase()
 		{
-			GeneratePens();
+            GeneratePens();
 		}
 
 		protected bool hasControl = false;
@@ -58,7 +58,7 @@ namespace Numbers.Renderer
 			return result;
 		}
 
-		public abstract void GeneratePens();
+		public abstract void GeneratePens(ColorTheme colorTheme = ColorTheme.Normal);
 		public abstract SKPath GetCirclePath(SKPoint center, float radius = 10f);
 		public abstract void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f);
 		public abstract void DrawPolyline(SKPoint[] polyline, SKPaint paint);

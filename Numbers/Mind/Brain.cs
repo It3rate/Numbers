@@ -25,5 +25,13 @@ namespace Numbers.Mind
 
 	    private int traitCounter = 1 + (int)MathElementKind.Trait;
 	    public int NextTraitId() => traitCounter++;
+
+	    public void ClearAll()
+	    {
+            //NetworkStore.Clear();
+            //FormulaStore.Clear();
+            TraitStore.Clear();
+            TransformStore.Clear();
+	    }
     }
 }

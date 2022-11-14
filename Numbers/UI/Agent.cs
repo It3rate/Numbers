@@ -16,63 +16,46 @@ namespace Numbers.UI
     {
         public static Agent Current { get; private set; }
 
-        //public UIData Data;
-        //private CommandStack<EditCommand> _editCommands;
-        //private Entity _activeEntity;
-        //private EditCommand _activeCommand;
-
-        //public readonly Dictionary<PadKind, Pad> Pads = new Dictionary<PadKind, Pad>();
-
-        //public Pad WorkingPad => PadFor(PadKind.Working);
-        //public Pad InputPad => PadFor(PadKind.Input);
-        //public Pad PadFor(PadKind kind) => Pads[kind];
+        private Brain _brain;
+        private Workspace _workspace;
 
         private readonly RendererBase _renderer;
-        //public RenderStatus RenderStatus { get; }
-
-        public int ScrollLeft { get; set; }
-        public int ScrollRight { get; set; }
 
         public bool IsDown { get; private set; }
         public bool IsDragging { get; private set; }
 
-        //private List<int> _ignoreList = new List<int>();
-        //private ElementKind _selectableKind = ElementKind.Any;
         public event EventHandler OnModeChange;
         public event EventHandler OnDisplayModeChange;
         public event EventHandler OnSelectionChange;
 
+        private ColorTheme _colorTheme = ColorTheme.Normal;
+        public ColorTheme ColorTheme
+        {
+	        get => _colorTheme;
+	        set
+	        {
+		        if (_colorTheme != value)
+		        {
+			        _colorTheme = value;
+			        _renderer.GeneratePens(_colorTheme);
+		        }
+	        }
+        }
+
+        private int _testIndex = 0;
+        private readonly int[] _tests = new int[]{0,1};
         public Agent(RendererBase renderer)
         {
             Current = this;
-            //AddPad(PadKind.None); // for empty elements
-            //AddPad(PadKind.Working);
-            //AddPad(PadKind.Input);
-            //Data = new UIData(this);
-            //_editCommands = new CommandStack<EditCommand>(this);
-
+            _brain = Brain.BrainA;
             _renderer = renderer;
-            //Renderer.Data = Data;
+            _workspace = new Workspace(_brain, _renderer);
 
-            //var entityCmd = new CreateEntityCommand(InputPad);
-            //_editCommands.Do(entityCmd);
-            //_activeEntity = entityCmd.Entity;
-
-            //MakeXY();
-
-            UIMode = UIMode.Any;
             ClearMouse();
-            test1();
+            NextTest();
         }
-
-        private Brain _brain;
-        private Workspace _workspace;
         private void test0()
         {
-	        _brain = Brain.BrainA;
-	        _workspace = new Workspace(_brain, _renderer);
-            _renderer.Workspaces.Add(_workspace);
-
 	        Trait t0 = new Trait();
 	        var unitSize = 500;
 	        var unit = t0.AddFocalByValues(0, unitSize);
@@ -93,17 +76,13 @@ namespace Numbers.UI
         }
         private void test1()
         {
-	        _brain = Brain.BrainA;
-	        _workspace = new Workspace(_brain, _renderer);
-	        _renderer.Workspaces.Add(_workspace);
-
 	        Trait t0 = new Trait();
 	        var unitSize = 500;
 	        var unit = t0.AddFocalByValues(0, unitSize);
 	        var range = t0.AddFocalByValues(-1000, 1000);
 	        var domain = t0.AddDomain(unit.Id, range.Id);
 	        //var domain2 = t0.AddDomain(unit.Id, range.Id);
-	        var val2 = t0.AddFocalByValues(900, 200);
+	        var val2 = t0.AddFocalByValues(150, 200);
 	        //var val3 = t0.AddFocalByValues(-400, 600);
 	        //var val2 = t0.AddFocalByValues(unitSize, unitSize);
 	        //var val3 = t0.AddFocalByValues(unitSize, unitSize);
@@ -116,9 +95,26 @@ namespace Numbers.UI
 	        _workspace.AddFullDomains(domain);//, domain2);
             _workspace.EnsureRenderers();
             var dm = _workspace.DomainMapper(domain.Id);
+            dm.ShowGradientNumberLine = true;
             var nm = _workspace.NumberMapper(num2.Id);
             dm.EndPoint += new SKPoint(0, -50);
         }
+
+        public void NextTest()
+        {
+	        _workspace.ClearAll();
+	        switch (_tests[_testIndex])
+	        {
+		        case 0:
+			        test0();
+			        break;
+		        case 1:
+			        test1();
+			        break;
+	        }
+	        _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
+        }
+
 
         #region Position and Keyboard
 
@@ -213,6 +209,17 @@ namespace Numbers.UI
 		            {
                         nm.SetEndValueByPoint(_highlight.SnapPoint);
                     }
+	            }
+                else if (ah.Mapper is SKDomainMapper dm)
+	            {
+		            if (SelCurrent.ActiveHighlight.T < 0.5)
+		            {
+			            dm.StartPoint = _highlight.SnapPoint;
+		            }
+		            else
+		            {
+			            dm.EndPoint = _highlight.SnapPoint;
+		            }
 	            }
             }
 
@@ -353,15 +360,15 @@ namespace Numbers.UI
                 //case Keys.E:
                 //    UIMode = UIMode.CreateEntity;
                 //    break;
-                //case Keys.T:
-                //    UIMode = UIMode.CreateTrait;
-                //    break;
+                case Keys.T:
+                    NextTest();
+                    break;
                 //case Keys.F:
                 //    UIMode = UIMode.CreateFocal;
                 //    break;
-                //case Keys.D:
-                //    UIMode = UIMode.CreateDoubleBond;
-                //    break;
+                case Keys.D:
+                    ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
+                    break;
                 //case Keys.B:
                 //    UIMode = UIMode.CreateBond;
                 //    break;

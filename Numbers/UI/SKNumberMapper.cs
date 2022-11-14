@@ -51,18 +51,26 @@ namespace Numbers.UI
 		    var nr = Number.Ratio;
             NumberSegment = DomainSegment.SegmentAlongLine(nr.Start, nr.End);
 	    }
-        public void Draw(SKPoint offset, SKPaint paint)
+        public void DrawIfNotUnit(SKPoint offset, SKPaint paint)
         {
 	        EnsureSegment();
-            NumberSegment += offset;
-	        if (Number.Id == Number.Domain.UnitId)
+	        if (Number.Id != Number.Domain.UnitId)
 	        {
-		        Renderer.DrawSegment(NumberSegment, Pens.HighlightPen);
+                var seg = NumberSegment + offset;
+		        Renderer.DrawDirectedLine(seg, paint);
             }
-	        else
+        }
+
+        public void DrawUnit()
+        {
+	        var pen = Number.EndTickPos > Number.StartTickPos ? Pens.UnitPen : Pens.UnotPen;
+	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f) - NumberSegment.PointAlongLine(0);
+	        var seg = NumberSegment + offset;
+	        if (Pens.UnitStrokePen != null)
 	        {
-		        Renderer.DrawDirectedLine(NumberSegment, paint);
+		        Renderer.DrawSegment(seg, Pens.UnitStrokePen);
             }
+            Renderer.DrawSegment(seg, pen);
         }
 
         public void SetStartValueByPoint(SKPoint newPoint)

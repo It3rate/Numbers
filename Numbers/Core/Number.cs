@@ -35,12 +35,12 @@ namespace Numbers.Core
 			NumberStore.Add(Id, this);
         }
 
-		public long StartTickLength
+		public long StartTickPos
         {
 			get => Focal.StartTickValue - Domain.UnitFocal.ZeroTick;
 			set => Focal.StartTickValue = value + Domain.UnitFocal.ZeroTick;
 		}
-		public long EndTickLength
+		public long EndTickPos
         {
 			get => Focal.EndTickValue - Domain.UnitFocal.ZeroTick;
 			set => Focal.EndTickValue = value + Domain.UnitFocal.ZeroTick;
@@ -57,8 +57,8 @@ namespace Numbers.Core
 			set => Focal.EndTickValue = (long)Math.Round(value * Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickValue);
 		}
 
-        public double StartValue => StartTickLength / (double) Domain.UnitFocal.UnitLengthInTicks;
-		public double EndValue => EndTickLength / (double) Domain.UnitFocal.UnitLengthInTicks;
+        public double StartValue => StartTickPos / (double) Domain.UnitFocal.UnitLengthInTicks;
+		public double EndValue => EndTickPos / (double) Domain.UnitFocal.UnitLengthInTicks;
 		public Complex Value => new Complex(EndValue, StartValue);
 		public Complex Floor => new Complex(Math.Floor(EndValue), Math.Ceiling(StartValue));
 		public Complex Ceiling => new Complex(Math.Ceiling(EndValue), Math.Floor(StartValue));
@@ -81,32 +81,32 @@ namespace Numbers.Core
 		public void Add(Number other)
 		{
 			var synced = SyncDomain(other);
-			StartTickLength += synced.StartTickLength;
-			EndTickLength += synced.EndTickLength;
+			StartTickPos += synced.StartTickPos;
+			EndTickPos += synced.EndTickPos;
 		}
 
 		public void Subtract(Number other)
 		{
 			var synced = SyncDomain(other);
-			StartTickLength -= synced.StartTickLength;
-			EndTickLength -= synced.EndTickLength;
+			StartTickPos -= synced.StartTickPos;
+			EndTickPos -= synced.EndTickPos;
 		}
 
 		public void Multiply(Number other)
 		{
 			var synced = SyncDomain(other);
-			var tmp = (EndTickLength * synced.EndTickLength - StartTickLength * synced.StartTickLength) / Domain.UnitFocal.UnitLengthInTicks;
-			StartTickLength = (EndTickLength * synced.StartTickLength - StartTickLength * synced.EndTickLength) / Domain.UnitFocal.UnitLengthInTicks;
-			EndTickLength = tmp;
+			var tmp = (EndTickPos * synced.EndTickPos - StartTickPos * synced.StartTickPos) / Domain.UnitFocal.UnitLengthInTicks;
+			StartTickPos = (EndTickPos * synced.StartTickPos - StartTickPos * synced.EndTickPos) / Domain.UnitFocal.UnitLengthInTicks;
+			EndTickPos = tmp;
 		}
 
 		public void Divide(Number other)
 		{
 			var synced = SyncDomain(other);
-			double end = EndTickLength;
-			double start = StartTickLength;
-			var oEnd = synced.EndTickLength;
-			var oStart = synced.StartTickLength;
+			double end = EndTickPos;
+			double start = StartTickPos;
+			var oEnd = synced.EndTickPos;
+			var oStart = synced.StartTickPos;
             // removed nan & divByZero checks, should go away anyway in final
 			if ((oStart < 0 ? -oStart : +oStart) < (oEnd < 0 ? -oEnd : +oEnd))
 			{
@@ -125,8 +125,8 @@ namespace Numbers.Core
 				start = (start * wr - end) / wd;
 				end = tmp;
 			}
-			StartTickLength = (long)(-start * Domain.UnitFocal.UnitLengthInTicks);
-			EndTickLength = (long)(end * Domain.UnitFocal.UnitLengthInTicks);
+			StartTickPos = (long)(-start * Domain.UnitFocal.UnitLengthInTicks);
+			EndTickPos = (long)(end * Domain.UnitFocal.UnitLengthInTicks);
         }
 
 		public Focal CloneFocal() => Trait.CloneFocal(Focal);
