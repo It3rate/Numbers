@@ -42,7 +42,7 @@ namespace Numbers.UI
 	        }
         }
 
-        private int _testIndex = 0;
+        private int _testIndex = 1;
         private readonly int[] _tests = new int[]{0,1};
         public Agent(RendererBase renderer)
         {
@@ -77,13 +77,13 @@ namespace Numbers.UI
         private void test1()
         {
 	        Trait t0 = new Trait();
-	        var unitSize = 500;
+	        var unitSize = 8;
 	        var unit = t0.AddFocalByValues(0, unitSize);
-	        var range = t0.AddFocalByValues(-1000, 1000);
+	        var range = t0.AddFocalByValues(-40, 40);
 	        var domain = t0.AddDomain(unit.Id, range.Id);
 	        //var domain2 = t0.AddDomain(unit.Id, range.Id);
-	        var val2 = t0.AddFocalByValues(150, 200);
-	        //var val3 = t0.AddFocalByValues(-400, 600);
+	        var val2 = t0.AddFocalByValues(15, 20);
+	        //var val3 = t0.AddFocalByValues(-40, 60);
 	        //var val2 = t0.AddFocalByValues(unitSize, unitSize);
 	        //var val3 = t0.AddFocalByValues(unitSize, unitSize);
 
@@ -97,7 +97,7 @@ namespace Numbers.UI
             var dm = _workspace.DomainMapper(domain.Id);
             dm.ShowGradientNumberLine = true;
             var nm = _workspace.NumberMapper(num2.Id);
-            dm.EndPoint += new SKPoint(0, -50);
+            //dm.EndPoint += new SKPoint(0, -50);
         }
 
         public void NextTest()

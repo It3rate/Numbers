@@ -79,7 +79,7 @@ namespace Numbers.Renderer
 
             NumberLinePen = GetPen(TickColor, DefaultWidth * 0.75f);
             NumberLineGradient = GetPen(TickColor, DefaultWidth * 0.75f);
-            TickPen = GetPen(TickColor, DefaultWidth * 1f);
+            TickPen = GetPen(TickColor, DefaultWidth * .25f);
             TickBoldPen = GetPen(TickColor, DefaultWidth * 2f);
             UnitPen = GetPen(UnitColor, DefaultWidth * 4f, SKStrokeCap.Butt);
             UnotPen = GetPen(UnotColor, DefaultWidth * 4f, SKStrokeCap.Butt);
@@ -136,8 +136,8 @@ namespace Numbers.Renderer
 
             NumberLinePen = GetPen(TickColor, DefaultWidth * 0.75f);
             NumberLineGradient = GetPen(TickColor, DefaultWidth * 0.75f);
-            TickPen = GetPen(TickColor, DefaultWidth * 0.5f);
-            TickBoldPen = GetPen(TickColor, DefaultWidth * 1f);
+            TickPen = GetPen(TickColor, DefaultWidth * 0.25f);
+            TickBoldPen = GetPen(TickColor, DefaultWidth * 2f);
 
             HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
             HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);

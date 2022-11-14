@@ -41,12 +41,14 @@ namespace Numbers.Core
 			set => Focal.StartTickValue = value + Domain.UnitFocal.ZeroTick;
 		}
 		public long EndTickPos
-        {
+		{
 			get => Focal.EndTickValue - Domain.UnitFocal.ZeroTick;
 			set => Focal.EndTickValue = value + Domain.UnitFocal.ZeroTick;
 		}
+		public long TickCount => Focal.EndTickValue - Focal.StartTickValue;
+		
 
-		public double StartT
+        public double StartT
 		{
 			get => Focal.StartTickValue / (double)Domain.MaxRange.LengthInTicks;
 			set => Focal.StartTickValue = (long)Math.Round(value * (double)Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickValue);

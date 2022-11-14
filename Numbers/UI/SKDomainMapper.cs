@@ -72,7 +72,8 @@ namespace Numbers.UI
 		        DrawNumberLineGradient();
                 DrawNumberLine();
 		        DrawUnit();
-                DrawTicks();
+		        DrawTicks();
+                DrawIntTicks();
                 var offset = SKPoint.Empty;
 		        var step = DomainSegment.RelativeOffset(0);//10);
 		        var segPens = new[] { Pens.SegPen1, Pens.SegPen2 };
@@ -106,18 +107,33 @@ namespace Numbers.UI
         }
 
         private void DrawTicks()
-		    {
-                var segStart = (float)Domain.MaxRange.StartTickValue;
-		    var segLen = (float)Domain.MaxRange.LengthInTicks;
-		    var wholeTicks = Domain.WholeNumberTicks();
-		    TickPoints.Clear();
-		    foreach (var wholeTick in wholeTicks)
-		    {
-			    var t = (wholeTick - segStart) / segLen;
-			    TickPoints.Add(DrawTick(t, -8, Renderer.Pens.TickPen));
-		    }
-	    }
-	    private SKPoint DrawTick(float t, int offset, SKPaint paint)
+        {
+	        if (Domain.Unit.TickCount <= 10)
+	        {
+		        var segStart = Domain.MaxRange.StartTickValue;
+		        var segEnd = Domain.MaxRange.EndTickValue;
+                var segLen = (float) Domain.MaxRange.LengthInTicks;
+		        for (var i = segStart; i < segEnd; i++)
+		        {
+			        var t = (i - segStart) / segLen;
+			        DrawTick(t, -8, Renderer.Pens.TickPen);
+		        }
+	        }
+        }
+        private void DrawIntTicks()
+        {
+	        var segStart = (float) Domain.MaxRange.StartTickValue;
+	        var segLen = (float) Domain.MaxRange.LengthInTicks;
+	        var wholeTicks = Domain.WholeNumberTicks();
+	        TickPoints.Clear();
+	        foreach (var wholeTick in wholeTicks)
+	        {
+		        var t = (wholeTick - segStart) / segLen;
+		        TickPoints.Add(DrawTick(t, -8, Renderer.Pens.TickBoldPen));
+	        }
+        }
+
+        private SKPoint DrawTick(float t, int offset, SKPaint paint)
 	    {
 		    var pts = DomainSegment.PerpendicularLine(t, offset);
 		    Renderer.DrawLine(pts.Item1, pts.Item2, paint);
