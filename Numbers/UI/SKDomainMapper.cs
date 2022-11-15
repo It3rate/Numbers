@@ -44,6 +44,7 @@ namespace Numbers.UI
 		    get => DomainSegment.EndPoint;
 		    set => Reset(Domain, StartPoint, value);
         }
+	    public SKPoint[] EndPoints => new SKPoint[] {StartPoint, EndPoint};
 
         private static int domainIndexCounter = 0;
         private int domainIndex = -1;
@@ -76,6 +77,18 @@ namespace Numbers.UI
         {
 	        var pt = DomainSegment.PointAlongLine(t);
 	        return Renderer.GetCirclePath(pt);
+        }
+
+        public void SetValueByKind(SKPoint newPoint, UIKind kind)
+        {
+	        if (kind.IsMajor())
+	        {
+		        EndPoint = newPoint;
+	        }
+	        else
+	        {
+		        StartPoint = newPoint;
+            }
         }
 
         public void Draw()

@@ -108,30 +108,44 @@ namespace Numbers.Mind
         {
 	        highlight.Reset();
 	        highlight.OrginalPoint = input;
+            // number segments and units
             foreach (var nm in NumberMappers(true))
             {
 	            var isSameMapper = ignoreSet.ActiveHighlight != null && ignoreSet.ActiveHighlight.Mapper == nm;
-
-		        if (!isSameMapper && input.DistanceTo(nm.StartPoint) < maxDist)
+	            var kind = UIKind.Number | (nm.IsUnit ? UIKind.Unit : UIKind.None);
+	            if (!isSameMapper && input.DistanceTo(nm.StartPoint) < maxDist)
 		        {
-			        highlight.Set(input, nm.StartPoint, nm, 0);
+			        highlight.Set(input, nm.StartPoint, nm, 0, kind | UIKind.Point);
 			        goto Found;
 		        }
 		        if (!isSameMapper && input.DistanceTo(nm.EndPoint) < maxDist)
 		        {
-			        highlight.Set(input, nm.EndPoint, nm, 1);
+			        highlight.Set(input, nm.EndPoint, nm, 1, kind | UIKind.Major | UIKind.Point);
 			        goto Found;
 		        }
             }
 
 	        foreach (var dm in DomainMappers())
 	        {
+                // Domain segment endpoints
+		        for (int i = 0; i < dm.EndPoints.Length; i++)
+		        {
+			        var dmPt = dm.EndPoints[i];
+			        if (input.DistanceTo(dmPt) < maxDist)
+			        {
+				        var kind = UIKind.Domain | UIKind.Point | (i > 0 ? UIKind.Major : UIKind.None);
+				        highlight.Set(input, dmPt, dm, (float) i, kind);
+				        goto Found;
+			        }
+		        }
+                // domain number line bold ticks
 		        foreach (var dmTickPoint in dm.TickPoints)
 		        {
 			        if (input.DistanceTo(dmTickPoint) < maxDist/2f)
 			        {
-				        var (t, _) = dm.DomainSegment.TFromPoint(dmTickPoint, false);
-                        highlight.Set(input, dmTickPoint, dm, t);
+				        var kind = UIKind.Tick | UIKind.Major;
+                        var (t, _) = dm.DomainSegment.TFromPoint(dmTickPoint, false);
+                        highlight.Set(input, dmTickPoint, dm, t, kind);
 				        goto Found;
 			        }
 		        }

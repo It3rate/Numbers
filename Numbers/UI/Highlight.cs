@@ -24,43 +24,96 @@ namespace Numbers.UI
 
 	    }
         public SKMapper Mapper { get; set; }
-	    public float T { get; set; }
-	    //public Number Range { get; set; } // will set selection ranges with a length trait number eventually
-	    public bool IsSet => Mapper != null;
+        public float T { get; set; }
+        public UIKind Kind { get; set; }
+        //public Number Range { get; set; } // will set selection ranges with a length trait number eventually
+        public bool IsSet => Mapper != null;
 
-	    public Highlight()
-	    {
-	    }
-	    private Highlight(SKPoint orgPoint, SKMapper mapper, float t)
+        public Highlight()
+        {
+        }
+        private Highlight(SKPoint orgPoint, SKMapper mapper, float t, UIKind kind)
 	    {
 		    OrginalPoint = orgPoint;
 		    Mapper = mapper;
 		    T = t;
+		    Kind = kind;
 	    }
 
-        public void Set(SKPoint orgPoint, SKPoint snapPoint, SKMapper mapper, float t)
+        public void Set(SKPoint orgPoint, SKPoint snapPoint, SKMapper mapper, float t, UIKind kind)
         {
 	        OrginalPoint = orgPoint;
 	        SnapPoint = snapPoint;
             Mapper = mapper;
 		    T = t;
-	    }
+		    Kind = kind;
+        }
 	    public void Reset()
         {
 	        OrginalPoint = SKPoint.Empty;
 	        SnapPoint = SKPoint.Empty;
             Mapper = null;
             T = 0;
-	    }
+            Kind = UIKind.None;
+        }
 
 	    public Highlight Clone()
 	    {
-            return new Highlight(new SKPoint(OrginalPoint.X, OrginalPoint.Y), Mapper, T);
+            return new Highlight(new SKPoint(OrginalPoint.X, OrginalPoint.Y), Mapper, T, Kind);
 	    }
 
 	    public SKPath HighlightPath()
 	    {
 		    return Mapper.HighlightAt(T, OrginalPoint);
+	    }
+    }
+
+    [Flags]
+    public enum UIKind
+    {
+	    None = 0x00,
+        Major = 0x01,
+
+        Label = 0x10,
+        Marker = 0x20,
+        Tick = 0x40,
+        Unit = 0x80,
+
+        Number = 0x100,
+        Domain = 0x200,
+        Transform = 0x400,
+        Shape = 0x800,
+
+        Point = 0x1000,
+        Line = 0x2000,
+        Area = 0x4000,
+        Volume = 0x8000,
+    }
+    public static class HighlightExtensions
+    {
+	    public static bool IsMajor(this UIKind kind)
+	    {
+		    return (kind & UIKind.Major) != UIKind.None;
+	    }
+	    public static bool IsNumber(this UIKind kind)
+	    {
+		    return (kind & UIKind.Number) != UIKind.None;
+	    }
+	    public static bool IsDomain(this UIKind kind)
+	    {
+		    return (kind & UIKind.Domain) != UIKind.None;
+	    }
+        public static bool IsDomainPoint(this UIKind kind)
+	    {
+		    return kind.IsDomain() && (kind & UIKind.Point) != UIKind.None;
+	    }
+        public static bool IsMinorTick(this UIKind kind)
+	    {
+		    return !kind.IsMajor() && (kind & UIKind.Tick) != UIKind.None;
+	    }
+	    public static bool IsBoldTick(this UIKind kind)
+	    {
+		    return kind.IsMajor() && (kind & UIKind.Tick) != UIKind.None;
 	    }
     }
 }

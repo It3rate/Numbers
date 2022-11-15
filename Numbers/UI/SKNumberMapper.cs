@@ -60,7 +60,6 @@ namespace Numbers.UI
 	        if (Number.Id != Number.Domain.UnitId)
 	        {
 		        var dir = Number.Direction;
-		        Console.WriteLine(dir);
 		        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
 		        var seg = NumberSegment + offset;
 		        Renderer.DrawDirectedLine(seg, Number.IsUnitPerspective, paint);
@@ -77,6 +76,18 @@ namespace Numbers.UI
 		        Renderer.DrawSegment(seg, Pens.UnitStrokePen);
             }
             Renderer.DrawSegment(seg, pen);
+        }
+
+        public void SetValueByKind(SKPoint newPoint, UIKind kind)
+        {
+	        if (kind.IsMajor())
+	        {
+		        SetEndValueByPoint(newPoint);
+	        }
+	        else
+	        {
+		        SetStartValueByPoint(newPoint);
+	        }
         }
         public void SetStartValueByPoint(SKPoint newPoint)
         {

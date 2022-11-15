@@ -192,54 +192,47 @@ namespace Numbers.UI
         }
 
         private float _minDragDistance = 4f;
+        private Dictionary<int, Complex> _numValues = new Dictionary<int, Complex>();
         public bool MouseDrag(SKPoint mousePoint)
         {
-            if (UIMode == UIMode.Pan)
-            {
-                //Data.SetPanAndZoom(_startMatrix, _downRawMousePoint, _rawMousePoint - _downRawMousePoint, 1f);
-            }
-            else if (SelHighlight.HasHighlight && !IsDragging)
+	            Console.WriteLine(SelBegin.HasHighlight + " isdragging " + IsDragging);
+            if (SelBegin.HasHighlight && !IsDragging)
             {
 	            var dist = (mousePoint - SelBegin.Position).Length;
                 if (dist > _minDragDistance)
                 {
                     IsDragging = true;
 					SelCurrent.Set(_highlight.Clone());
+					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm && nm.IsUnitOrUnot)
+					{
+						nm.Number.Domain.GetNumberValues(_numValues);
+					}
                 }
             }
 
             if (IsDragging)
             {
-	            var ah = SelCurrent.ActiveHighlight;
-	            if (ah.Mapper is SKNumberMapper nm)
+                var actHighlight = SelCurrent.ActiveHighlight;
+	            var actKind = actHighlight.Kind;
+	            if (actHighlight.Mapper is SKNumberMapper nm)
 	            {
-		            var numValues = nm.IsUnitOrUnot ? nm.Number.Domain.GetNumberValues() : null;
-
-                    if (SelCurrent.ActiveHighlight.T < 0.5)
-		            {
-			            nm.SetStartValueByPoint(_highlight.SnapPoint);
-                    }
-		            else
-		            {
-                        nm.SetEndValueByPoint(_highlight.SnapPoint);
-                    }
-
-                    if (nm.IsUnitOrUnot)
+		            nm.SetValueByKind(_highlight.SnapPoint, actHighlight.Kind);
+		            if (_numValues.Count > 0) // todo: Check for preserve numbers flag.
                     {
-	                    nm.Number.Domain.SetNumberValues(numValues);
+	                    nm.Number.Domain.SetNumberValues(_numValues);
                     }
 	            }
-                else if (ah.Mapper is SKDomainMapper dm)
+                else if (actHighlight.Mapper is SKDomainMapper dm)
 	            {
-		            if (SelCurrent.ActiveHighlight.T < 0.5)
+		            if (actKind.IsDomainPoint())
 		            {
-			            dm.StartPoint = _highlight.SnapPoint;
+			            dm.SetValueByKind(_highlight.SnapPoint, actHighlight.Kind);
 		            }
-		            else
+		            else if (actKind.IsBoldTick())
 		            {
-			            dm.EndPoint = _highlight.SnapPoint;
+			            //dm.SetValueByHighlight(_highlight);
 		            }
-	            }
+                }
             }
 
             return true;
@@ -507,6 +500,7 @@ namespace Numbers.UI
         {
             IsDown = false;
             IsDragging = false;
+            _numValues.Clear();
             SetSelectable(UIMode);
             if (_workspace != null)
             {

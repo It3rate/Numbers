@@ -71,23 +71,25 @@ namespace Numbers.Core
 		        yield return Number.NumberStore[id];
 	        }
         }
-        public Dictionary<int, Complex> GetNumberValues()
+        public void GetNumberValues(Dictionary<int, Complex> dict)
         {
-            var result = new Dictionary<int, Complex>();
+            dict.Clear();
 	        foreach (var num in Numbers())
 	        {
 		        if (!num.IsUnit)
 		        {
-			        result.Add(num.Id, num.Value);
+			        dict.Add(num.Id, num.Value);
                 }
 	        }
-	        return result;
         }
-        public void SetNumberValues(Dictionary<int, Complex> values)
+        public void SetNumberValues(Dictionary<int, Complex> values, params int[] ignoreIds)
         {
 	        foreach (var num in values)
 	        {
-		        Number.NumberStore[num.Key].Value = num.Value;
+		        if (!ignoreIds.Contains(num.Key))
+		        {
+			        Number.NumberStore[num.Key].Value = num.Value;
+                }
 	        }
         }
 
