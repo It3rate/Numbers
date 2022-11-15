@@ -11,7 +11,7 @@ namespace Numbers.Core
 	    long StartTickValue { get; set; }
 	    long EndTickValue { get; set; }
 	    long LengthInTicks { get; }
-	    Pointing Direction { get; }
+	    int Direction { get; }
 	    RatioSeg RatioIn(Domain domain);
     }
 
@@ -48,7 +48,7 @@ namespace Numbers.Core
 		    EndId = endId;
 		    Id = focalCounter++;
         }
-        public Pointing Direction => StartTickValue < EndTickValue ? Pointing.Left : Pointing.Right;
+        public int Direction => StartTickValue <= EndTickValue ? 1 : -1;
         public RatioSeg RatioIn(Domain domain)
         {
 	        var mx = domain.MaxRange;

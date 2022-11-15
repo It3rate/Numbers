@@ -17,8 +17,11 @@ namespace Numbers.UI
 	    public SKSegment NumberSegment { get; private set; }
 
 	    private SKDomainMapper DomainMapper => Workspace.DomainMapper(Number.Domain.Id);
+	    public bool IsUnitOrUnot => Number.IsUnitOrUnot;
+	    public bool IsUnit => Number.IsUnit;
+        public bool IsUnot => Number.IsUnot;
 
-	    public override SKPoint StartPoint
+        public override SKPoint StartPoint
 	    {
 		    get => NumberSegment.StartPoint;
 		    set
@@ -51,21 +54,23 @@ namespace Numbers.UI
 		    var nr = Number.Ratio;
             NumberSegment = DomainSegment.SegmentAlongLine(nr.Start, nr.End);
 	    }
-        public void DrawIfNotUnit(float offsetScale, SKPaint paint)
+        public void DrawNumber(float offsetScale, SKPaint paint)
         {
 	        EnsureSegment();
 	        if (Number.Id != Number.Domain.UnitId)
 	        {
-		        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale);
+		        var dir = Number.Direction;
+		        Console.WriteLine(dir);
+		        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
 		        var seg = NumberSegment + offset;
-		        Renderer.DrawDirectedLine(seg, paint);
+		        Renderer.DrawDirectedLine(seg, Number.IsUnitPerspective, paint);
             }
         }
-
         public void DrawUnit()
         {
-	        var pen = Number.EndTickPos > Number.StartTickPos ? Pens.UnitPen : Pens.UnotPen;
-	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f) - NumberSegment.PointAlongLine(0);
+	        var dir = Number.Direction;
+            var pen = dir > 0 ? Pens.UnitPen : Pens.UnotPen;
+	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - NumberSegment.PointAlongLine(0);
 	        var seg = NumberSegment - offset;
 	        if (Pens.UnitStrokePen != null)
 	        {
@@ -73,7 +78,6 @@ namespace Numbers.UI
             }
             Renderer.DrawSegment(seg, pen);
         }
-
         public void SetStartValueByPoint(SKPoint newPoint)
         {
 	        var dm = DomainMapper.DomainSegment;

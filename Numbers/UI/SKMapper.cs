@@ -40,6 +40,6 @@ namespace Numbers.UI
 
         public abstract SKPath HighlightAt(float t, SKPoint targetPoint);
 
-        //public abstract void DrawIfNotUnit();
+        //public abstract void DrawNumber();
     }
 }

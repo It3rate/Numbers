@@ -62,7 +62,7 @@ namespace Numbers.Renderer
 		    path.AddPoly(polyline, true);
 		    Canvas.DrawPath(path, paint);
 	    }
-	    public override void DrawDirectedLine(SKSegment seg, SKPaint paint)
+	    public override void DrawDirectedLine(SKSegment seg, bool isUnitPerspective, SKPaint paint)
 	    {
             DrawPolyline(paint, seg.Points);
             Canvas.DrawCircle(seg.StartPoint, 2, paint);

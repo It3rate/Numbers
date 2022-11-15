@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System.Drawing;
+using SkiaSharp;
 
 namespace Numbers.Renderer
 {
@@ -35,6 +36,8 @@ namespace Numbers.Renderer
         public SKPaint HoverPen { get; set; }
         public SKPaint HighlightPen { get; set; }
 
+        public SKPaint UnotInlinePen { get; set; }
+        public SKPaint UnitInlinePen { get; set; }
         public SKPaint SegPen0 { get; set; }
         public SKPaint SegPen1 { get; set; }
         public SKPaint SegPen2 { get; set; }
@@ -94,10 +97,12 @@ namespace Numbers.Renderer
             HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
             HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
 
-            SegPen0 = GetPen(SKColor.Parse("#106010"), DefaultWidth * 4f);
-            SegPen1 = GetPen(SKColor.Parse("#106040"), DefaultWidth * 4f);
-            SegPen2 = GetPen(SKColor.Parse("#101060"), DefaultWidth * 4f);
-            SegPen3 = GetPen(SKColor.Parse("#004000"), DefaultWidth * 4f);
+            UnitInlinePen = GetPen(UnitColor, DefaultWidth * 2f);
+            UnotInlinePen = GetPen(UnotColor, DefaultWidth * 2f);
+            SegPen0 = GetPen(SKColor.Parse("#106010"), DefaultWidth * 5f);
+            SegPen1 = GetPen(SKColor.Parse("#106040"), DefaultWidth * 5f);
+            SegPen2 = GetPen(SKColor.Parse("#101060"), DefaultWidth * 5f);
+            SegPen3 = GetPen(SKColor.Parse("#004000"), DefaultWidth * 5f);
             SegPens = new List<SKPaint>() { SegPen0, SegPen1, SegPen2, SegPen3 };
 
             TextBrush = GetText(SKColor.Parse("#A0A0F0"), 20);
@@ -148,7 +153,9 @@ namespace Numbers.Renderer
             HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
             HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
 
-            SegPen0 = GetPen(new SKColor(210, 250, 50, 255), DefaultWidth * 4f);
+            UnitInlinePen = GetPen(UnitColor, DefaultWidth * 1f);
+            UnotInlinePen = GetPen(UnotColor, DefaultWidth * 1f);
+            SegPen0 = GetPen(new SKColor(200, 240, 50, 255), DefaultWidth * 4f);
             SegPen1 = GetPen(new SKColor(50, 250, 210, 255), DefaultWidth * 4f);
             SegPen2 = GetPen(new SKColor(50, 50, 250, 255), DefaultWidth * 4f);
             SegPen3 = GetPen(new SKColor(50, 250, 50, 255), DefaultWidth * 4f);

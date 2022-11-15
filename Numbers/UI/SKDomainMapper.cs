@@ -22,13 +22,14 @@ namespace Numbers.UI
 	    public List<SKPoint> TickPoints = new List<SKPoint>();
         public List<int> Markers = new List<int>();
 
-	    public bool ShowGradientNumberLine ;
+	    public bool ShowGradientNumberLine;
 	    public bool ShowTicks;
 	    public bool ShowNumbersAsOffsets;
 	    public bool ShowKeyValues;
-	    public bool ShowValueMarkers;
+	    public bool ShowValueMarkers = true;
 	    public bool ShowUnit;
-	    public bool ShowUnotArrow;
+	    public bool ShowUnitMarkers;
+        public bool ShowUnotArrow;
 	    public bool ShowMaxMinValues;
 	    public bool ShowDashedValuesOutOfRange;
 
@@ -95,8 +96,19 @@ namespace Numbers.UI
                 foreach (var numberId in Domain.NumberIds)
 		        {
 			        offset += step;
+			        var num = Workspace.NumberMapper(numberId);
 			        var pen = Pens.SegPens[domainIndex % Pens.SegPens.Count];
-			        Workspace.NumberMapper(numberId).DrawIfNotUnit(offset, pen);
+			        num.DrawNumber(offset, pen);
+			        if (Domain.IsUnitPerspective)
+			        {
+				        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
+				        num.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
+                    }
+			        else
+			        {
+				        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
+				        num.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
+			        }
 		        }
 	        }
         }
@@ -109,14 +121,23 @@ namespace Numbers.UI
 		        var ratio = num.Ratio;
 		        var isUnit = id == Domain.UnitId;
 		        var rem = num.Remainder;
-		        DrawMarker(num.StartValue, ratio.Start);
-		        DrawMarker(num.EndValue, ratio.End);
+		        DrawMarker(num, true);
+		        DrawMarker(num, false);
             }
         }
-        private void DrawMarker(double value, float t)
+        private void DrawMarker(Number num, bool isStart)
         {
-	        var textPoint = DrawMarkerPointer(t);
-	        var txt = Math.Abs(value - (int) value) < 0.1f ? $"{value:0}" : $"{value:0.0}";
+	        if ((!ShowValueMarkers && !num.IsUnitOrUnot) || (!ShowUnitMarkers && num.IsUnitOrUnot))
+	        {
+		        return;
+	        }
+	        var value = isStart ? -num.StartValue : num.EndValue;
+	        var t = isStart ? num.Ratio.Start : num.Ratio.End;
+	        var suffix = isStart ? "i" : "";
+	        var unitLabel = num.IsUnitOrUnot && isStart ? "0" : num.IsUnit ? "1" : num.IsUnot ? "i" : "";
+
+            var textPoint = DrawMarkerPointer(t);
+	        var txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
 	        Renderer.DrawText(textPoint, txt, Pens.LineTextPen);
         }
 
@@ -158,7 +179,7 @@ namespace Numbers.UI
 
         private void DrawTicks()
         {
-	        if (Domain.Unit.TickCount <= 10)
+	        if (DomainSegment.Length / Domain.MaxRange.LengthInTicks >= 4)
 	        {
 		        var segStart = Domain.MaxRange.StartTickValue;
 		        var segEnd = Domain.MaxRange.EndTickValue;

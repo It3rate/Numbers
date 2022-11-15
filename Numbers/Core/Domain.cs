@@ -39,7 +39,9 @@ namespace Numbers.Core
         }
         public UnitFocal UnitFocal { get; private set; }
         public RatioSeg UnitFocalRatio => UnitFocal.RatioIn(this);
-        
+        public bool IsUnitPerspective => UnitFocal.Direction >= 0;
+
+
         public int UnitId { get; set; }
         public Number Unit => Number.NumberStore[UnitId];
 
@@ -69,20 +71,40 @@ namespace Numbers.Core
 		        yield return Number.NumberStore[id];
 	        }
         }
+        public Dictionary<int, Complex> GetNumberValues()
+        {
+            var result = new Dictionary<int, Complex>();
+	        foreach (var num in Numbers())
+	        {
+		        if (!num.IsUnit)
+		        {
+			        result.Add(num.Id, num.Value);
+                }
+	        }
+	        return result;
+        }
+        public void SetNumberValues(Dictionary<int, Complex> values)
+        {
+	        foreach (var num in values)
+	        {
+		        Number.NumberStore[num.Key].Value = num.Value;
+	        }
+        }
+
         public long[] WholeNumberTicks()
         {
 	        var result = new List<long>();
 	        var rangeStart = MaxRange.StartTickValue;
 	        var rangeEnd = MaxRange.EndTickValue;
             var rangeLen = MaxRange.LengthInTicks;
-	        var unitLen = Math.Max(Math.Abs(UnitFocal.LengthInTicks), 1);
+	        var unitLen = UnitFocal.LengthInTicks;
 	        var zero = UnitFocal.StartTickValue;
 
 	        var tick = rangeStart + ((zero - rangeStart) % unitLen);
 	        while (tick <= rangeEnd)
 	        {
                 result.Add(tick);
-                tick += unitLen;
+                tick += Math.Abs(unitLen);
 	        }
 
 	        return result.ToArray();

@@ -9,8 +9,6 @@ namespace Numbers.Core
     using System.Text;
     using System.Threading.Tasks;
 
-    public enum Pointing { Left, Right }
-
     /// <summary>
     /// Traits are measurable properties on objects. They can be composed of multiple domains (like mph or dollars/day or lwh) but do not need to be.
     /// </summary>
@@ -95,8 +93,8 @@ namespace Numbers.Core
 	    public long Start(Focal focal) => ValueStore[focal.StartId];
 	    public long End(Focal focal) => ValueStore[focal.EndId];
 	    public long Ticks(Focal focal) => End(focal) - Start(focal);
-	    public long RightMost(Focal focal) => focal.Direction == Pointing.Left ? End(focal) : Start(focal);
-	    public long LeftMost(Focal focal) => focal.Direction == Pointing.Left ? Start(focal) : End(focal);
+	    public long RightMost(Focal focal) => focal.Direction == -1 ? End(focal) : Start(focal);
+	    public long LeftMost(Focal focal) => focal.Direction == -1 ? Start(focal) : End(focal);
 
         // _transform Methods
         public UnitFocal Unit(Domain domain) => domain.UnitFocal;

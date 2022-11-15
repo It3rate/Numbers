@@ -26,7 +26,20 @@ namespace Numbers.Core
 		public Trait Trait => Domain.Trait;
 		public Focal Focal => Trait.FocalStore[FocalId];
 
-		public Number(Domain domain, int focalId)
+		public bool IsUnitOrUnot => Domain.UnitId == Id;
+		public bool IsUnit => IsUnitOrUnot && Direction == 1;
+		public bool IsUnot => IsUnitOrUnot && Direction == -1;
+        public bool IsUnitPerspective => Domain.IsUnitPerspective;
+        public int Direction => StartTickUnitPos <= EndTickUnitPos ? 1 : -1;
+        public int Sign()
+        { 
+	        var unitDir = Domain.UnitFocal.Direction;
+	        var sv = -StartValue * unitDir;
+	        var ev = EndValue * unitDir;
+            return StartValue < EndValue ? 1 : StartValue == EndValue ? 0 : -1;
+        }
+
+        public Number(Domain domain, int focalId)
 		{
 			Id = numberCounter++;
 			Domain = domain;
@@ -35,12 +48,22 @@ namespace Numbers.Core
 			NumberStore.Add(Id, this);
         }
 
-		public long StartTickPos
+        public long StartTickUnitPos
+        {
+	        get => -Focal.StartTickValue;
+	        set => Focal.StartTickValue = -value;
+        }
+        public long EndTickUnitPos
+        {
+	        get => Focal.EndTickValue;
+	        set => Focal.EndTickValue = value;
+        }
+        public long StartValueInTicks
         {
 			get => Focal.StartTickValue - Domain.UnitFocal.ZeroTick;
 			set => Focal.StartTickValue = value + Domain.UnitFocal.ZeroTick;
 		}
-		public long EndTickPos
+		public long EndValueInTicks
 		{
 			get => Focal.EndTickValue - Domain.UnitFocal.ZeroTick;
 			set => Focal.EndTickValue = value + Domain.UnitFocal.ZeroTick;
@@ -59,9 +82,21 @@ namespace Numbers.Core
 			set => Focal.EndTickValue = (long)Math.Round(value * Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickValue);
 		}
 
-        public double StartValue => StartTickPos / (double) Domain.UnitFocal.UnitLengthInTicks;
-		public double EndValue => EndTickPos / (double) Domain.UnitFocal.UnitLengthInTicks;
-		public Complex Value => new Complex(EndValue, StartValue);
+        public double StartValue
+        {
+	        get => StartValueInTicks / (double) Domain.UnitFocal.UnitLengthInTicks;
+	        set => StartValueInTicks = (long)Math.Round(value * Domain.UnitFocal.UnitLengthInTicks); 
+        }
+        public double EndValue
+		{
+			get => EndValueInTicks / (double) Domain.UnitFocal.UnitLengthInTicks;
+			set => EndValueInTicks = (long) Math.Round(value * Domain.UnitFocal.UnitLengthInTicks);
+		}
+		public Complex Value
+		{
+			get => new Complex(EndValue, StartValue);
+			set { StartValue = value.Imaginary; EndValue = value.Real;}
+		}
 		public Complex Floor => new Complex(Math.Floor(EndValue), Math.Ceiling(StartValue));
 		public Complex Ceiling => new Complex(Math.Ceiling(EndValue), Math.Floor(StartValue));
 		public Complex Round => new Complex(Math.Round(EndValue), Math.Round(StartValue));
@@ -83,32 +118,32 @@ namespace Numbers.Core
 		public void Add(Number other)
 		{
 			var synced = SyncDomain(other);
-			StartTickPos += synced.StartTickPos;
-			EndTickPos += synced.EndTickPos;
+			StartValueInTicks += synced.StartValueInTicks;
+			EndValueInTicks += synced.EndValueInTicks;
 		}
 
 		public void Subtract(Number other)
 		{
 			var synced = SyncDomain(other);
-			StartTickPos -= synced.StartTickPos;
-			EndTickPos -= synced.EndTickPos;
+			StartValueInTicks -= synced.StartValueInTicks;
+			EndValueInTicks -= synced.EndValueInTicks;
 		}
 
 		public void Multiply(Number other)
 		{
 			var synced = SyncDomain(other);
-			var tmp = (EndTickPos * synced.EndTickPos - StartTickPos * synced.StartTickPos) / Domain.UnitFocal.UnitLengthInTicks;
-			StartTickPos = (EndTickPos * synced.StartTickPos - StartTickPos * synced.EndTickPos) / Domain.UnitFocal.UnitLengthInTicks;
-			EndTickPos = tmp;
+			var tmp = (EndValueInTicks * synced.EndValueInTicks - StartValueInTicks * synced.StartValueInTicks) / Domain.UnitFocal.UnitLengthInTicks;
+			StartValueInTicks = (EndValueInTicks * synced.StartValueInTicks - StartValueInTicks * synced.EndValueInTicks) / Domain.UnitFocal.UnitLengthInTicks;
+			EndValueInTicks = tmp;
 		}
 
 		public void Divide(Number other)
 		{
 			var synced = SyncDomain(other);
-			double end = EndTickPos;
-			double start = StartTickPos;
-			var oEnd = synced.EndTickPos;
-			var oStart = synced.StartTickPos;
+			double end = EndValueInTicks;
+			double start = StartValueInTicks;
+			var oEnd = synced.EndValueInTicks;
+			var oStart = synced.StartValueInTicks;
             // removed nan & divByZero checks, should go away anyway in final
 			if ((oStart < 0 ? -oStart : +oStart) < (oEnd < 0 ? -oEnd : +oEnd))
 			{
@@ -127,8 +162,8 @@ namespace Numbers.Core
 				start = (start * wr - end) / wd;
 				end = tmp;
 			}
-			StartTickPos = (long)(-start * Domain.UnitFocal.UnitLengthInTicks);
-			EndTickPos = (long)(end * Domain.UnitFocal.UnitLengthInTicks);
+			StartValueInTicks = (long)(-start * Domain.UnitFocal.UnitLengthInTicks);
+			EndValueInTicks = (long)(end * Domain.UnitFocal.UnitLengthInTicks);
         }
 
 		public Focal CloneFocal() => Trait.CloneFocal(Focal);

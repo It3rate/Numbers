@@ -63,7 +63,7 @@ namespace Numbers.Renderer
 		public abstract void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f);
 		public abstract void DrawPolyline(SKPaint paint, params SKPoint[] polyline);
 		public abstract void FillPolyline(SKPaint paint, params SKPoint[] polyline);
-		public abstract void DrawDirectedLine(SKSegment seg, SKPaint paint);
+		public abstract void DrawDirectedLine(SKSegment seg, bool isUnitPerspective, SKPaint paint);
 		public abstract void DrawText(SKPoint center, string text, SKPaint paint);
 		public abstract void DrawBitmap(SKBitmap bitmap);
 		public abstract void DrawSegment(SKSegment seg, SKPaint paint);

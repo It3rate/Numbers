@@ -1,4 +1,5 @@
-﻿using Numbers.Core;
+﻿using System.Numerics;
+using Numbers.Core;
 using Numbers.Mind;
 using Numbers.Renderer;
 
@@ -72,7 +73,17 @@ namespace Numbers.UI
 	        var sel = new Selection(num2);
 	        var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
-	        _workspace.AddFullDomains(domain, domain2);
+	        _workspace.EnsureRenderers();
+
+	        var dm = _workspace.DomainMapper(domain.Id);
+	        dm.ShowGradientNumberLine = false;
+	        dm.ShowValueMarkers = false;
+	        dm.ShowUnitMarkers = false;
+	        dm = _workspace.DomainMapper(domain2.Id);
+	        dm.ShowGradientNumberLine = false;
+	        dm.ShowValueMarkers = false;
+	        dm.ShowUnitMarkers = false;
+            _workspace.AddFullDomains(domain, domain2);
         }
         private void test1()
         {
@@ -93,6 +104,7 @@ namespace Numbers.UI
 	        //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
 	        _workspace.AddFullDomains(domain);//, domain2);
+
             _workspace.EnsureRenderers();
             var dm = _workspace.DomainMapper(domain.Id);
             dm.ShowGradientNumberLine = true;
@@ -201,6 +213,8 @@ namespace Numbers.UI
 	            var ah = SelCurrent.ActiveHighlight;
 	            if (ah.Mapper is SKNumberMapper nm)
 	            {
+		            var numValues = nm.IsUnitOrUnot ? nm.Number.Domain.GetNumberValues() : null;
+
                     if (SelCurrent.ActiveHighlight.T < 0.5)
 		            {
 			            nm.SetStartValueByPoint(_highlight.SnapPoint);
@@ -208,6 +222,11 @@ namespace Numbers.UI
 		            else
 		            {
                         nm.SetEndValueByPoint(_highlight.SnapPoint);
+                    }
+
+                    if (nm.IsUnitOrUnot)
+                    {
+	                    nm.Number.Domain.SetNumberValues(numValues);
                     }
 	            }
                 else if (ah.Mapper is SKDomainMapper dm)

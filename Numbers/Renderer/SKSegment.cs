@@ -214,13 +214,24 @@ namespace Numbers.Renderer
 
         public SKPoint[] EndArrow(float dist = 8f)
         {
-            var result = new SKPoint[3];
-            var p0 = SKPointFromEnd(dist);
-            result[0] = OrthogonalPoint(p0, -dist / 2f);
-            result[1] = EndPoint;
-            result[2] = OrthogonalPoint(p0, dist / 2f);
+	        var result = new SKPoint[3];
+	        var p0 = SKPointFromEnd(dist);
+	        result[0] = OrthogonalPoint(p0, -dist / 2f);
+	        result[1] = EndPoint ;
+	        result[2] = OrthogonalPoint(p0, dist / 2f);
 
-            return result;
+	        return result;
         }
+        //public SKPoint[] EndArrow(bool unitPerspective, float dist = 8f)
+        //{
+	       // var result = new SKPoint[4];
+	       // var p0 = unitPerspective ? SKPointFromEnd(dist) : EndPoint;
+	       // result[0] = OrthogonalPoint(p0, -dist / 2f);
+	       // result[1] = unitPerspective ? EndPoint : SKPointFromEnd(dist);
+	       // result[2] = OrthogonalPoint(p0, dist / 2f);
+	       // result[3] = result[0];
+
+	       // return result;
+        //}
     }
 }
