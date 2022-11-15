@@ -59,14 +59,14 @@ namespace Numbers.UI
         {
 	        Trait t0 = new Trait();
 	        var unitSize = 500;
-	        var unit = t0.AddFocalByValues(0, unitSize);
-	        var range = t0.AddFocalByValues(-1000, 1000);
+	        var unit = t0.AddFocalByPositions(0, unitSize);
+	        var range = t0.AddFocalByPositions(-1000, 1000);
 	        var domain = t0.AddDomain(unit.Id, range.Id);
 	        var domain2 = t0.AddDomain(unit.Id, range.Id);
-	        var val2 = t0.AddFocalByValues(900, 200);
-	        var val3 = t0.AddFocalByValues(-400, 600);
-	        //var val2 = t0.AddFocalByValues(unitSize, unitSize);
-	        //var val3 = t0.AddFocalByValues(unitSize, unitSize);
+	        var val2 = t0.AddFocalByPositions(900, 200);
+	        var val3 = t0.AddFocalByPositions(-400, 600);
+	        //var val2 = t0.AddFocalByPositions(unitSize, unitSize);
+	        //var val3 = t0.AddFocalByPositions(unitSize, unitSize);
 
             var num2 = new Number(domain, val2.Id);
 	        var num3 = new Number(domain2, val3.Id);
@@ -89,14 +89,14 @@ namespace Numbers.UI
         {
 	        Trait t0 = new Trait();
 	        var unitSize = 8;
-	        var unit = t0.AddFocalByValues(0, unitSize);
-	        var range = t0.AddFocalByValues(-40, 40);
+	        var unit = t0.AddFocalByPositions(3, 3+unitSize);
+	        var range = t0.AddFocalByPositions(-40, 40);
 	        var domain = t0.AddDomain(unit.Id, range.Id);
 	        //var domain2 = t0.AddDomain(unit.Id, range.Id);
-	        var val2 = t0.AddFocalByValues(15, 20);
-	        //var val3 = t0.AddFocalByValues(-40, 60);
-	        //var val2 = t0.AddFocalByValues(unitSize, unitSize);
-	        //var val3 = t0.AddFocalByValues(unitSize, unitSize);
+	        var val2 = t0.AddFocalByPositions(15, 20);
+	        //var val3 = t0.AddFocalByPositions(-40, 60);
+	        //var val2 = t0.AddFocalByPositions(unitSize, unitSize);
+	        //var val3 = t0.AddFocalByPositions(unitSize, unitSize);
 
 	        var num2 = new Number(domain, val2.Id);
 	        //var num3 = new Number(domain2, val3.Id);
@@ -195,7 +195,6 @@ namespace Numbers.UI
         private Dictionary<int, Complex> _numValues = new Dictionary<int, Complex>();
         public bool MouseDrag(SKPoint mousePoint)
         {
-	            Console.WriteLine(SelBegin.HasHighlight + " isdragging " + IsDragging);
             if (SelBegin.HasHighlight && !IsDragging)
             {
 	            var dist = (mousePoint - SelBegin.Position).Length;
@@ -212,23 +211,23 @@ namespace Numbers.UI
 
             if (IsDragging)
             {
-                var actHighlight = SelCurrent.ActiveHighlight;
-	            var actKind = actHighlight.Kind;
-	            if (actHighlight.Mapper is SKNumberMapper nm)
+                var activeHighlight = SelCurrent.ActiveHighlight;
+	            var activeKind = activeHighlight.Kind;
+	            if (activeHighlight.Mapper is SKNumberMapper nm)
 	            {
-		            nm.SetValueByKind(_highlight.SnapPoint, actHighlight.Kind);
+		            nm.SetValueByKind(_highlight.SnapPoint, activeHighlight.Kind);
 		            if (_numValues.Count > 0) // todo: Check for preserve numbers flag.
                     {
 	                    nm.Number.Domain.SetNumberValues(_numValues);
                     }
 	            }
-                else if (actHighlight.Mapper is SKDomainMapper dm)
+                else if (activeHighlight.Mapper is SKDomainMapper dm)
 	            {
-		            if (actKind.IsDomainPoint())
+		            if (activeKind.IsDomainPoint())
 		            {
-			            dm.SetValueByKind(_highlight.SnapPoint, actHighlight.Kind);
+			            dm.SetValueByKind(_highlight.SnapPoint, activeHighlight.Kind);
 		            }
-		            else if (actKind.IsBoldTick())
+		            else if (activeKind.IsBoldTick())
 		            {
 			            //dm.SetValueByHighlight(_highlight);
 		            }

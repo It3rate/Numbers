@@ -67,9 +67,10 @@ namespace Numbers.UI
         }
         public void DrawUnit()
         {
-	        var dir = Number.Direction;
+	        EnsureSegment();
+            var dir = Number.Direction;
             var pen = dir > 0 ? Pens.UnitPen : Pens.UnotPen;
-	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - NumberSegment.PointAlongLine(0);
+	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - NumberSegment.StartPoint;
 	        var seg = NumberSegment - offset;
 	        if (Pens.UnitStrokePen != null)
 	        {
@@ -78,33 +79,32 @@ namespace Numbers.UI
             Renderer.DrawSegment(seg, pen);
         }
 
+        public float TFromPoint(SKPoint point)
+        {
+	        var ds = DomainMapper.DomainSegment;
+	        var pt = ds.ProjectPointOnto(point);
+            var (t, _) = ds.TFromPoint(pt, false);
+	        t = (float)(Math.Round(t * ds.Length) / ds.Length);
+	        return t;
+        }
         public void SetValueByKind(SKPoint newPoint, UIKind kind)
         {
-	        if (kind.IsMajor())
-	        {
-		        SetEndValueByPoint(newPoint);
-	        }
+            if (kind.IsMajor())
+            {
+                SetEndValueByPoint(newPoint);
+            }
 	        else
-	        {
-		        SetStartValueByPoint(newPoint);
-	        }
+            {
+	            SetStartValueByPoint(newPoint);
+            }
         }
         public void SetStartValueByPoint(SKPoint newPoint)
         {
-	        var dm = DomainMapper.DomainSegment;
-	        var pt = dm.ProjectPointOnto(newPoint);
-	        var (t, _) = dm.TFromPoint(pt, false);
-            t = (float)(Math.Round(t * dm.Length) / dm.Length);
-
-            Number.StartT = 1.0 - t;
+	        Number.StartT = TFromPoint(newPoint);
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {
-	        var dm = DomainMapper.DomainSegment;
-	        var pt = dm.ProjectPointOnto(newPoint);
-	        var (t, _) = dm.TFromPoint(pt, false);
-	        t = (float)(Math.Round(t * dm.Length) / dm.Length);
-            Number.EndT = t;
+	        Number.EndT = TFromPoint(newPoint);
         }
 
         public override SKPath HighlightAt(float t, SKPoint targetPoint)

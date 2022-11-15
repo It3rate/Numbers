@@ -204,11 +204,11 @@ namespace Numbers.Renderer
             var pp = ProjectPointOnto(point, clamp);
             var v0 = EndPoint - StartPoint;
             var v1 = pp - StartPoint;
-            var sign = Math.Sign(v0.X) != Math.Sign(v1.X) || Math.Sign(v0.Y) != Math.Sign(v1.Y) ? -1f : 1f;
-            var l0 = v0.Length;
-            var l1 = v1.Length * sign;
+            var sign = 1;//Math.Sign(v0.X) != Math.Sign(v1.X) || Math.Sign(v0.Y) != Math.Sign(v1.Y) ? -1f : 1f;
+            var totalLen = v0.Length;
+            var ptLen = v1.Length * sign;
 
-            var t = l1 / l0;
+            var t = ptLen / totalLen;
             return (t, pp);
         }
 

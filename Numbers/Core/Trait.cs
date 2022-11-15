@@ -50,7 +50,7 @@ namespace Numbers.Core
 
 	    public Focal CloneFocal(Focal focal)
 	    {
-		    return AddFocalByValues(focal.StartTickValue, focal.EndTickValue);
+		    return AddFocalByPositions(focal.StartTickValue, focal.EndTickValue);
 	    }
         public Focal AddFocalByIndexes(int startIndex, int endIndex)
 	    {
@@ -58,20 +58,20 @@ namespace Numbers.Core
 		    FocalStore.Add(result.Id, result);
 		    return result;
         }
-	    public Focal AddFocalByValues(long start, long end)
+	    public Focal AddFocalByPositions(long start, long end)
 	    {
 		    var index = ValueStore.Count;
 		    ValueStore.Add(start);
 		    ValueStore.Add(end);
 		    return AddFocalByIndexes(index, index + 1);
 	    }
-	    public Focal AddFocalByIndexValue(int startIndex, long end)
+	    public Focal AddFocalByIndex_Position(int startIndex, long end)
 	    {
 		    var index = ValueStore.Count;
 		    ValueStore.Add(end);
 		    return AddFocalByIndexes(startIndex, index);
 	    }
-	    public Focal AddFocalByValueIndex(long start, int endIndex)
+	    public Focal AddFocalByPosition_Index(long start, int endIndex)
 	    {
 		    var index = ValueStore.Count;
 		    ValueStore.Add(start);
