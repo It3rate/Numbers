@@ -30,7 +30,7 @@ namespace Numbers.Core
 		public bool IsUnit => IsUnitOrUnot && Direction == 1;
 		public bool IsUnot => IsUnitOrUnot && Direction == -1;
         public bool IsUnitPerspective => Domain.IsUnitPerspective;
-        public int Direction => StartTickUnitPos <= EndTickUnitPos ? 1 : -1;
+        public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
         public int Sign()
         { 
 	        var unitDir = Domain.UnitFocal.Direction;
@@ -48,20 +48,20 @@ namespace Numbers.Core
 			NumberStore.Add(Id, this);
         }
 
-        public long StartTickUnitPos
+        public long StartTickPosition
         {
-	        get => -Focal.StartTickValue;
-	        set => Focal.StartTickValue = -value;
+	        get => Focal.StartTickValue;
+	        set => Focal.StartTickValue = value;
         }
-        public long EndTickUnitPos
+        public long EndTickPosition
         {
 	        get => Focal.EndTickValue;
 	        set => Focal.EndTickValue = value;
         }
         public long StartValueInTicks
         {
-			get => Focal.StartTickValue - Domain.UnitFocal.ZeroTick;
-			set => Focal.StartTickValue = value + Domain.UnitFocal.ZeroTick;
+			get => -Focal.StartTickValue + Domain.UnitFocal.ZeroTick;
+			set => Focal.StartTickValue = Domain.UnitFocal.ZeroTick - value;
 		}
 		public long EndValueInTicks
 		{

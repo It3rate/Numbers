@@ -78,11 +78,11 @@ namespace Numbers.UI
 	        var dm = _workspace.DomainMapper(domain.Id);
 	        dm.ShowGradientNumberLine = false;
 	        dm.ShowValueMarkers = false;
-	        dm.ShowUnitMarkers = false;
 	        dm = _workspace.DomainMapper(domain2.Id);
 	        dm.ShowGradientNumberLine = false;
 	        dm.ShowValueMarkers = false;
 	        dm.ShowUnitMarkers = false;
+	        dm.ShowUnits = false;
             _workspace.AddFullDomains(domain, domain2);
         }
         private void test1()
@@ -108,6 +108,9 @@ namespace Numbers.UI
             _workspace.EnsureRenderers();
             var dm = _workspace.DomainMapper(domain.Id);
             dm.ShowGradientNumberLine = true;
+            dm.ShowNumberOffsets = true;
+            dm.ShowUnitMarkers = true;
+            dm.ShowUnits = true;
             var nm = _workspace.NumberMapper(num2.Id);
             //dm.EndPoint += new SKPoint(0, -50);
         }

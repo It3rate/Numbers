@@ -24,10 +24,10 @@ namespace Numbers.UI
 
 	    public bool ShowGradientNumberLine;
 	    public bool ShowTicks;
-	    public bool ShowNumbersAsOffsets;
+	    public bool ShowNumberOffsets;
 	    public bool ShowKeyValues;
 	    public bool ShowValueMarkers = true;
-	    public bool ShowUnit;
+	    public bool ShowUnits;
 	    public bool ShowUnitMarkers;
 	    public bool ShowUnotArrow;
 	    public bool ShowMaxMinValues;
@@ -105,9 +105,9 @@ namespace Numbers.UI
 			    DrawTicks();
 			    DrawIntTicks();
 			    DrawMarkers();
-			    var offset = 1f;
-			    var step = 1f;
-			    var segPens = new[] {Pens.SegPen1, Pens.SegPen2};
+			    var offset = ShowNumberOffsets ? 1f : 0f;
+			    var step = ShowNumberOffsets ? 1f : 0f;
+                var segPens = new[] {Pens.SegPen1, Pens.SegPen2};
 
 			    foreach (var numberId in Domain.NumberIds)
 			    {
@@ -189,7 +189,10 @@ namespace Numbers.UI
 
 	    private void DrawUnit()
 	    {
-		    Workspace.NumberMapper(Domain.UnitId).DrawUnit();
+		    if (ShowUnits)
+		    {
+			    Workspace.NumberMapper(Domain.UnitId).DrawUnit();
+            }
 	    }
 
 	    private void DrawNumberLine()
@@ -215,7 +218,7 @@ namespace Numbers.UI
 	    private void DrawIntTicks()
 	    {
 		    var segStart = (float)Domain.MaxRange.StartTickValue;
-		    var zeroTick = (float)Domain.Unit.StartTickUnitPos;
+		    var zeroTick = (float)Domain.Unit.StartTickPosition;
             var segLen = (float) Domain.MaxRange.LengthInTicks;
 		    var wholeTicks = Domain.WholeNumberTicks();
 		    TickPoints.Clear();
