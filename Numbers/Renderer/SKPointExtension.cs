@@ -10,6 +10,7 @@ namespace Numbers.Renderer
 
         public static float Angle(this SKPoint a) => (float)Math.Atan2(a.Y, a.X);
         public static float AngleDegrees(this SKPoint a) => a.Angle() * 180f / 2f;
+        public static SKPoint MidpointTo(this SKPoint a, SKPoint b) => new SKPoint((b.X - a.X) / 2f + a.X, (b.Y - a.Y) / 2f + a.Y);
 
         public static SKPoint PointAtRadiansAndDistance(this SKPoint a, float angle, float distance) =>
             new SKPoint(a.X + (float)Math.Cos(angle) * distance, a.Y + (float)Math.Sin(angle) * distance);

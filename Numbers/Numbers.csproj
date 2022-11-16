@@ -123,6 +123,7 @@
     <Compile Include="UI\SKMapper.cs" />
     <Compile Include="UI\SKNumberMapper.cs" />
     <Compile Include="UI\SKTransformMapper.cs" />
+    <Compile Include="UI\SKWorkspaceMapper.cs" />
     <EmbeddedResource Include="CoreForm.resx">
       <DependentUpon>CoreForm.cs</DependentUpon>
     </EmbeddedResource>

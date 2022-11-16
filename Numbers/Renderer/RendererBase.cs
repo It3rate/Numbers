@@ -5,6 +5,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Numbers.Core;
 using Numbers.Mind;
+using Numbers.UI;
 
 namespace Numbers.Renderer
 {
@@ -13,6 +14,7 @@ namespace Numbers.Renderer
         public Brain _brain { get; private set; }
         public List<Workspace> Workspaces { get; } = new List<Workspace>();
         public Workspace CurrentWorkspace { get; private set; }
+        public SKWorkspaceMapper CurrentWorkspaceMap => _brain.WorkspaceMappers[CurrentWorkspace.Id];
 
         //public RenderStatus Status { get; set; }
         public int Width { get; protected set; }
@@ -26,8 +28,9 @@ namespace Numbers.Renderer
 		public SKBitmap Bitmap { get; set; }
 		public bool ShowBitmap { get; set; }
 
-		public RendererBase()
+		public RendererBase(Brain brain)
 		{
+			_brain = brain;
             GeneratePens();
 		}
 
@@ -99,17 +102,15 @@ namespace Numbers.Renderer
 		public void DrawOnCanvas(SKCanvas canvas)
 		{
 			Canvas = canvas;
-			foreach (var workspace in Workspaces)
+			foreach (var workspace in _brain.Workspaces)
 			{
 				if (workspace.IsActive)
 				{
-					_brain = workspace.MyBrain;
 					CurrentWorkspace = workspace;
 					BeginDraw();
 					Draw();
 					EndDraw();
 					CurrentWorkspace = null;
-					_brain = null;
                 }
 			}
 		}

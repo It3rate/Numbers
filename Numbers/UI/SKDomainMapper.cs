@@ -78,8 +78,7 @@ namespace Numbers.UI
 
 	    public override SKPath HighlightAt(float t, SKPoint targetPoint)
 	    {
-		    var pt = DomainSegment.PointAlongLine(t);
-		    return Renderer.GetCirclePath(pt);
+		    return Renderer.GetCirclePath(targetPoint);
 	    }
 
 	    public void SetValueByKind(SKPoint newPoint, UIKind kind)
@@ -112,7 +111,7 @@ namespace Numbers.UI
 			    foreach (var numberId in Domain.NumberIds)
 			    {
 				    offset += step;
-				    var num = Workspace.NumberMapper(numberId);
+				    var num = WorkspaceMapper.NumberMapper(numberId);
 				    var pen = Pens.SegPens[domainIndex % Pens.SegPens.Count];
 				    num.DrawNumber(offset, pen);
 				    if (Domain.IsUnitPerspective)
@@ -191,7 +190,7 @@ namespace Numbers.UI
 	    {
 		    if (ShowUnits)
 		    {
-			    Workspace.NumberMapper(Domain.UnitId).DrawUnit();
+			    WorkspaceMapper.NumberMapper(Domain.UnitId).DrawUnit();
             }
 	    }
 

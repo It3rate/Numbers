@@ -15,15 +15,14 @@ namespace Numbers.Renderer
 
     public class CoreRenderer : RendererBase
     {
-        public CoreRenderer()
+        public CoreRenderer(Brain brain) : base(brain)
         {
         }
 
 	    public override void Draw()
 	    {
 		    base.Draw();
-		    CurrentWorkspace.EnsureRenderers();
-            CurrentWorkspace.Draw();
+		    CurrentWorkspaceMap.Draw();
         }
 
 	    public override SKPath GetCirclePath(SKPoint center, float radius = 10)

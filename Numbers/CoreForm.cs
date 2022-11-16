@@ -24,7 +24,8 @@ namespace Numbers
 	        DoubleBuffered = true;
             InitializeComponent();
 
-            _renderer = new CoreRenderer();
+            var brain = Brain.BrainA;
+            _renderer = new CoreRenderer(brain);
             _control = _renderer.AddAsControl(corePanel, false);
             _control.MouseDown += OnMouseDown;
             _control.MouseMove += OnMouseMove;
@@ -36,7 +37,7 @@ namespace Numbers
             KeyUp += OnKeyUp;
             KeyPreview = true;
 
-            _agent = new Agent(_renderer);
+            _agent = new Agent(brain, _renderer);
         }
         private void OnMouseDown(object sender, MouseEventArgs e)
         {

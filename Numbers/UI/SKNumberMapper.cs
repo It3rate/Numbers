@@ -14,9 +14,10 @@ namespace Numbers.UI
     public class SKNumberMapper : SKMapper
     {
         public Number Number { get; }
-	    public SKSegment NumberSegment { get; private set; }
+        public SKSegment NumberSegment { get; private set; }
+        public SKSegment RenderSegment { get; private set; }
 
-	    private SKDomainMapper DomainMapper => Workspace.DomainMapper(Number.Domain.Id);
+        private SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain.Id);
 	    public bool IsUnitOrUnot => Number.IsUnitOrUnot;
 	    public bool IsUnit => Number.IsUnit;
         public bool IsUnot => Number.IsUnot;
@@ -61,8 +62,8 @@ namespace Numbers.UI
 	        {
 		        var dir = Number.Direction;
 		        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
-		        var seg = NumberSegment + offset;
-		        Renderer.DrawDirectedLine(seg, Number.IsUnitPerspective, paint);
+		        RenderSegment = NumberSegment + offset;
+		        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
             }
         }
         public void DrawUnit()
@@ -72,12 +73,12 @@ namespace Numbers.UI
             Console.WriteLine(dir);
             var pen = dir > 0 ? Pens.UnitPen : Pens.UnotPen;
 	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - NumberSegment.StartPoint;
-	        var seg = NumberSegment - offset;
+	        RenderSegment = NumberSegment - offset;
 	        if (Pens.UnitStrokePen != null)
 	        {
-		        Renderer.DrawSegment(seg, Pens.UnitStrokePen);
+		        Renderer.DrawSegment(RenderSegment, Pens.UnitStrokePen);
             }
-            Renderer.DrawSegment(seg, pen);
+            Renderer.DrawSegment(RenderSegment, pen);
         }
 
         public float TFromPoint(SKPoint point)
@@ -110,8 +111,7 @@ namespace Numbers.UI
 
         public override SKPath HighlightAt(float t, SKPoint targetPoint)
         {
-	        var pt = NumberSegment.PointAlongLine(t);
-	        return Renderer.GetCirclePath(pt);
+	        return Renderer.GetCirclePath(targetPoint);
         }
     }
 }

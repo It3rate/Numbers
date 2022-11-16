@@ -17,10 +17,18 @@ namespace Numbers.UI
     {
         public static Agent Current { get; private set; }
 
-        private Brain _brain;
-        private Workspace _workspace;
+        private Brain Brain { get; }
+        private Workspace Workspace { get; }
+        protected SKWorkspaceMapper WorkspaceMapper
+        {
+	        get
+	        {
+		        Brain.WorkspaceMappers.TryGetValue(Workspace.Id, out var mapper);
+		        return mapper;
+	        }
+        }
 
-        private readonly RendererBase _renderer;
+        private RendererBase Renderer { get; }
 
         public bool IsDown { get; private set; }
         public bool IsDragging { get; private set; }
@@ -38,26 +46,26 @@ namespace Numbers.UI
 		        if (_colorTheme != value)
 		        {
 			        _colorTheme = value;
-			        _renderer.GeneratePens(_colorTheme);
+			        Renderer.GeneratePens(_colorTheme);
 		        }
 	        }
         }
 
         private int _testIndex = 1;
         private readonly int[] _tests = new int[]{0,1};
-        public Agent(RendererBase renderer)
+        public Agent(Brain brain, RendererBase renderer)
         {
+            Brain = brain;
+            Renderer = renderer;
             Current = this;
-            _brain = Brain.BrainA;
-            _renderer = renderer;
-            _workspace = new Workspace(_brain, _renderer);
+            Workspace = new Workspace(Brain);
 
             ClearMouse();
             NextTest();
         }
         private void test0()
         {
-	        Trait t0 = new Trait();
+            Trait t0 = new Trait();
 	        var unitSize = 500;
 	        var unit = t0.AddFocalByPositions(0, unitSize);
 	        var range = t0.AddFocalByPositions(-1000, 1000);
@@ -73,27 +81,31 @@ namespace Numbers.UI
 	        var sel = new Selection(num2);
 	        var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
-	        _workspace.EnsureRenderers();
+            Workspace.AddFullDomains(domain, domain2);
 
-	        var dm = _workspace.DomainMapper(domain.Id);
-	        dm.ShowGradientNumberLine = false;
-	        dm.ShowValueMarkers = false;
-	        dm = _workspace.DomainMapper(domain2.Id);
+	        var wm = new SKWorkspaceMapper(Workspace, Renderer, 150, 10, 600, 600);
+
+	        var dm = wm.GetOrCreateDomainMapper(domain, wm.GetVerticalSegment(.5f, 50));
 	        dm.ShowGradientNumberLine = false;
 	        dm.ShowValueMarkers = false;
 	        dm.ShowUnitMarkers = false;
 	        dm.ShowUnits = false;
-            _workspace.AddFullDomains(domain, domain2);
+
+            var dm2 = wm.GetOrCreateDomainMapper(domain2, wm.GetHorizontalSegment(.5f, 50));
+	        dm2.ShowGradientNumberLine = false;
+	        dm2.ShowValueMarkers = true;
+	        dm2.ShowUnitMarkers = false;
+            dm2.ShowUnits = true;
         }
         private void test1()
         {
 	        Trait t0 = new Trait();
-	        var unitSize = 8;
+	        var unitSize = 4;
 	        var unit = t0.AddFocalByPositions(3, 3+unitSize);
 	        var range = t0.AddFocalByPositions(-40, 40);
 	        var domain = t0.AddDomain(unit.Id, range.Id);
 	        //var domain2 = t0.AddDomain(unit.Id, range.Id);
-	        var val2 = t0.AddFocalByPositions(15, 20);
+	        var val2 = t0.AddFocalByPositions(-15, 20);
 	        //var val3 = t0.AddFocalByPositions(-40, 60);
 	        //var val2 = t0.AddFocalByPositions(unitSize, unitSize);
 	        //var val3 = t0.AddFocalByPositions(unitSize, unitSize);
@@ -103,22 +115,22 @@ namespace Numbers.UI
 	        //var sel = new Selection(num2);
 	        //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
-	        _workspace.AddFullDomains(domain);//, domain2);
-
-            _workspace.EnsureRenderers();
-            var dm = _workspace.DomainMapper(domain.Id);
+	        Workspace.AddFullDomains(domain);//, domain2);
+            var wm = new SKWorkspaceMapper(Workspace, Renderer, 20,20, 800, 800);
+            var dm = wm.GetOrCreateDomainMapper(domain, wm.GetHorizontalSegment(.3f, 100));
             dm.ShowGradientNumberLine = true;
             dm.ShowNumberOffsets = true;
             dm.ShowUnitMarkers = true;
             dm.ShowUnits = true;
-            var nm = _workspace.NumberMapper(num2.Id);
+            wm.EnsureRenderers();
+            var nm = wm.NumberMapper(num2.Id);
             //dm.EndPoint += new SKPoint(0, -50);
         }
 
         public void NextTest()
         {
-	        _workspace.ClearAll();
-	        switch (_tests[_testIndex])
+	        ClearAll();
+            switch (_tests[_testIndex])
 	        {
 		        case 0:
 			        test0();
@@ -130,6 +142,12 @@ namespace Numbers.UI
 	        _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
         }
 
+        private void ClearAll()
+        {
+            Workspace.ClearAll();
+	        WorkspaceMapper?.ClearAll();
+        }
+
 
         #region Position and Keyboard
 
@@ -139,10 +157,10 @@ namespace Numbers.UI
         public SKPoint GetTransformedPoint(SKPoint point) => point;// Data.Matrix.Invert().MapPoint(point);
 
         private Highlight _highlight = new Highlight();
-        private HighlightSet SelBegin => _workspace.SelBegin;
-        private HighlightSet SelCurrent   => _workspace.SelCurrent;
-        private HighlightSet SelHighlight => _workspace.SelHighlight;
-        private HighlightSet SelSelection => _workspace.SelSelection;
+        private HighlightSet SelBegin => Workspace.SelBegin;
+        private HighlightSet SelCurrent   => Workspace.SelCurrent;
+        private HighlightSet SelHighlight => Workspace.SelHighlight;
+        private HighlightSet SelSelection => Workspace.SelSelection;
 
         public bool MouseDown(MouseEventArgs e)
         {
@@ -150,7 +168,7 @@ namespace Numbers.UI
             _rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
             _downRawMousePoint = _rawMousePoint;
-	        _workspace.GetSnapPoint(_highlight, SelCurrent, mousePoint);
+            WorkspaceMapper.GetSnapPoint(_highlight, SelCurrent, mousePoint);
             SelHighlight.Set(_highlight);
 
             //Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, false, _selectableKind);
@@ -184,7 +202,7 @@ namespace Numbers.UI
             var result = false;
             _rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
-            _workspace.GetSnapPoint(_highlight, SelCurrent, mousePoint);
+            WorkspaceMapper.GetSnapPoint(_highlight, SelCurrent, mousePoint);
             SelHighlight.Set(_highlight);
 
             if (IsDown)
@@ -504,7 +522,7 @@ namespace Numbers.UI
             IsDragging = false;
             _numValues.Clear();
             SetSelectable(UIMode);
-            if (_workspace != null)
+            if (Workspace != null)
             {
 	            SelBegin?.Reset();
 	            SelCurrent?.Reset();

@@ -64,7 +64,7 @@ namespace Numbers.UI
 
 	    public SKPath HighlightPath()
 	    {
-		    return Mapper.HighlightAt(T, OrginalPoint);
+		    return Mapper.HighlightAt(T, SnapPoint);
 	    }
     }
 

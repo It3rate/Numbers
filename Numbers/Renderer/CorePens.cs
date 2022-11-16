@@ -94,7 +94,7 @@ namespace Numbers.Renderer
 
             BackHatch = GetHatch(SKColors.Black, false);
             ForeHatch = GetHatch(SKColors.Black, true);
-            HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
+            HoverPen = GetPen(SKColor.Parse("#80D02020"), DefaultWidth * 2);
             HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
 
             UnitInlinePen = GetPen(UnitColor, DefaultWidth * 2f);

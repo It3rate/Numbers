@@ -1,4 +1,5 @@
 ﻿using Numbers.Core;
+using Numbers.UI;
 
 namespace Numbers.Mind
 {
@@ -16,6 +17,7 @@ namespace Numbers.Mind
 	    public static Brain BrainB = new Brain();
 
         public List<Workspace> Workspaces { get; } = new List<Workspace>();
+        public Dictionary<int, SKWorkspaceMapper> WorkspaceMappers = new Dictionary<int, SKWorkspaceMapper>(); // todo: Move all mappers to SK side
 
         public Trait ValueTrait { get; private set; }
 	    public Dictionary<int, Network> NetworkStore { get; } = new Dictionary<int, Network>();

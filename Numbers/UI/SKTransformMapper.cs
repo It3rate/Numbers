@@ -21,8 +21,8 @@ namespace Numbers.UI
 		private CorePens Pens => Renderer.Pens;
 		private List<SKPoint[]> Triangles { get; } = new List<SKPoint[]>();
 
-		private SKDomainMapper SelectionMapper => Workspace.DomainMapper(Transform.Selection[0].Domain.Id);
-		private SKDomainMapper RepeatMapper => Workspace.DomainMapper(Transform.Repeat.Domain.Id);
+		private SKDomainMapper SelectionMapper => WorkspaceMapper.DomainMapper(Transform.Selection[0].Domain.Id);
+		private SKDomainMapper RepeatMapper => WorkspaceMapper.DomainMapper(Transform.Repeat.Domain.Id);
 
         //public SKDomainMapper SelectionMapper => 
         public override SKPoint StartPoint
@@ -87,7 +87,7 @@ namespace Numbers.UI
             DrawTriangle(r0_s0 >= 0, unitAA_Pen, true, s0Unot, r0Unot, org);
             DrawTriangle(r1_s1 >= 0, unitBB_Pen, true, s1Unot, r1Unot, org);
 
-            DrawEquation(selNum, repNum, repDr.DomainSegment.StartPoint + new SKPoint(500, -200), Pens.TextBrush);
+            DrawEquation(selNum, repNum, new SKPoint(900, 500), Pens.TextBrush);
 			DrawAreaValues(selNum, repNum);
 			//DrawUnitBox(GetUnitBoxPoints(), unitRect_Pen);
 			//DrawXFormedUnitBox(GetUnitBoxPoints(), unitXformRect_Pen);
@@ -157,7 +157,7 @@ namespace Numbers.UI
 			DrawTextOnSegment(r1_s1Txt, selSeg.PointAlongLine(selRatio.End), repSeg.PointAlongLine(repRatio.End), unitText);
 
             var total = r0_s1 + r1_s0 + r0_s0 + r1_s1;
-			Canvas.DrawText($"{total:0.0}", selSeg.StartPoint.X, repSeg.EndPoint.Y, Pens.TextBrush);
+			Canvas.DrawText($"area: {total:0.0}", 30, 50, Pens.TextBrush);
         }
 
 		private SKPoint[] GetUnitBoxPoints() // cw from org

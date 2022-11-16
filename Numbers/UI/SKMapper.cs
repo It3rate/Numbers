@@ -27,7 +27,15 @@ namespace Numbers.UI
         //public SKPath[] SalientAreas { get; private set; }
 
         protected Workspace Workspace { get; }
-        protected RendererBase Renderer => Workspace.Renderer;
+        protected SKWorkspaceMapper WorkspaceMapper
+        {
+	        get
+	        {
+		        Workspace.MyBrain.WorkspaceMappers.TryGetValue(Workspace.Id, out var mapper);
+		        return mapper;
+	        }
+        }
+        protected RendererBase Renderer => WorkspaceMapper.Renderer;
         protected SKCanvas Canvas => Renderer.Canvas;
         protected CorePens Pens => Renderer.Pens;
 
