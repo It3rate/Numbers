@@ -41,35 +41,35 @@ namespace Numbers
         }
         private void OnMouseDown(object sender, MouseEventArgs e)
         {
-	        if (_agent == null ||  _agent.MouseDown(e))
+	        if (_agent.MouseDown(e))
 	        {
 		        Redraw();
 	        }
         }
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-	        if (_agent == null ||  _agent.MouseMove(e))
+	        if (_agent.MouseMove(e))
 	        {
 		        Redraw();
 	        }
         }
         private void OnMouseUp(object sender, MouseEventArgs e)
         {
-	        if (_agent == null ||  _agent.MouseUp(e))
+	        if (_agent.MouseUp(e))
 	        {
 		        Redraw();
 	        }
         }
         private void OnMouseDoubleClick(object sender, MouseEventArgs e)
         {
-	        if (_agent == null ||  _agent.MouseDoubleClick(e))
+	        if (_agent.MouseDoubleClick(e))
 	        {
 		        Redraw();
 	        }
         }
         private void OnMouseWheel(object sender, MouseEventArgs e)
         {
-	        if (_agent == null ||  _agent.MouseWheel(e))
+	        if (_agent.MouseWheel(e))
 	        {
 		        Redraw();
 	        }
@@ -77,7 +77,7 @@ namespace Numbers
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-	        if (_agent == null ||  _agent.KeyDown(e))
+	        if (_agent.KeyDown(e))
 	        {
 		        Redraw();
 	        }

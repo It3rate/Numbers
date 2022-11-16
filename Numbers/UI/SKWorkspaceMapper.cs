@@ -8,8 +8,6 @@ namespace Numbers.UI
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     public class SKWorkspaceMapper
     {
@@ -21,9 +19,9 @@ namespace Numbers.UI
 	    public SKPoint BottomRight { get; set; }
 
 	    public Dictionary<int, SKMapper> Mappers = new Dictionary<int, SKMapper>();
-	    public SKDomainMapper DomainMapper(int id) => (SKDomainMapper)Mappers[id];
-	    public SKTransformMapper TransformMapper(int id) => (SKTransformMapper)Mappers[id];
-	    public SKNumberMapper NumberMapper(int id) => (SKNumberMapper)Mappers[id];
+	    public SKDomainMapper DomainMapper(int id) => (SKDomainMapper)Mappers[id]; // todo: slow to get domain from domain id (nested in traits).
+	    public SKTransformMapper TransformMapper(int id) => GetOrCreateTransformMapper(id);
+	    public SKNumberMapper NumberMapper(int id) => GetOrCreateNumberMapper(id);
 
 	    public SKPoint Center => TopLeft.MidpointTo(BottomRight);
 	    public float Width => BottomRight.X - TopLeft.X;
@@ -60,7 +58,7 @@ namespace Numbers.UI
             highlight.Reset();
             highlight.OrginalPoint = input;
             // number segments and units
-            foreach (var nm in NumberMappers(true))
+            foreach (var nm in NumberMappersByDomain(true))
             {
                 if (nm.RenderSegment != null)
                 {
@@ -151,7 +149,19 @@ namespace Numbers.UI
 		        }
 	        }
         }
-        public IEnumerable<SKNumberMapper> NumberMappers(bool reverse = false)
+
+        public IEnumerable<SKNumberMapper> AllNumberMappers()
+        {
+	        foreach (var mapper in Mappers.Values)
+	        {
+		        if (mapper is SKNumberMapper nm)
+		        {
+			        yield return nm;
+                }
+	        }
+        }
+
+        public IEnumerable<SKNumberMapper> NumberMappersByDomain(bool reverse = false)
         {
 	        foreach (var mapper in Mappers.Values)
 	        {
@@ -227,20 +237,28 @@ namespace Numbers.UI
 	        if (!Mappers.TryGetValue(domain.Id, out var result))
 	        {
 		        var seg = line ?? NextDefaultLine();
-		        result = new SKDomainMapper(Workspace, domain, seg.StartPoint, seg.EndPoint);// DomainRenderer(this, domain, startPoint, endPoint);
+		        result = new SKDomainMapper(Workspace, domain, seg.StartPoint, seg.EndPoint);
 		        Mappers[domain.Id] = result;
 	        }
 	        return (SKDomainMapper)result;
         }
+        public SKNumberMapper GetOrCreateNumberMapper(int id)
+        {
+	        return GetOrCreateNumberMapper(Workspace.NumberStore[id]);
+        }
         public SKNumberMapper GetOrCreateNumberMapper(Number number)
         {
-	        if (!Mappers.TryGetValue(number.Id, out var result))
+            if (!Mappers.TryGetValue(number.Id, out var result))
 	        {
-		        result = new SKNumberMapper(Workspace, number); // DomainRenderer(this, domain, startPoint, endPoint);
+		        result = new SKNumberMapper(Workspace, number);
 		        Mappers[number.Id] = result;
 	        }
 
 	        return (SKNumberMapper)result;
+        }
+        public SKTransformMapper GetOrCreateTransformMapper(int id)
+        {
+	        return GetOrCreateTransformMapper(Workspace.MyBrain.TransformStore[id]);
         }
         public SKTransformMapper GetOrCreateTransformMapper(Transform transform)
         {

@@ -31,13 +31,13 @@ namespace Numbers.Core
 	    public int EndId { get; set; } // ref to end point position
         public long StartTickPosition
 	    {
-		    get => Trait.PositionStore[StartId];
-		    set => Trait.PositionStore[StartId] = value;
+		    get => PositionStore[StartId];
+		    set => PositionStore[StartId] = value;
 	    }
 	    public long EndTickPosition
         {
-		    get => Trait.PositionStore[EndId];
-		    set => Trait.PositionStore[EndId] = value;
+		    get => PositionStore[EndId];
+		    set => PositionStore[EndId] = value;
 	    }
 	    public long LengthInTicks => EndTickPosition - StartTickPosition;
 
@@ -56,6 +56,8 @@ namespace Numbers.Core
 	        var end = (EndTickPosition - maxRange.StartTickPosition) / (float)(maxRange.LengthInTicks);
             return new RatioSeg(start, end);
         }
+
+        public static List<long> PositionStore { get; } = new List<long>(4096);
     }
 
     public class RatioSeg

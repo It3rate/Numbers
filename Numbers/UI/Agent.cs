@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Linq;
+using System.Numerics;
 using Numbers.Core;
 using Numbers.Mind;
 using Numbers.Renderer;
@@ -32,6 +33,7 @@ namespace Numbers.UI
 
         public bool IsDown { get; private set; }
         public bool IsDragging { get; private set; }
+        public bool IsPaused { get; set; } = true;
 
         public event EventHandler OnModeChange;
         public event EventHandler OnDisplayModeChange;
@@ -51,8 +53,8 @@ namespace Numbers.UI
 	        }
         }
 
-        private int _testIndex = 1;
-        private readonly int[] _tests = new int[]{0,1};
+        private int _testIndex = 2;
+        private readonly int[] _tests = new int[]{0,1,2};
         public Agent(Brain brain, RendererBase renderer)
         {
             Brain = brain;
@@ -63,7 +65,47 @@ namespace Numbers.UI
             ClearMouse();
             NextTest();
         }
-        private void test0()
+
+        private List<Domain> CreateDomainLines(Trait trait, params long[] focalPositions)
+        {
+	        var result = new List<Domain>();
+            var wm = Brain.WorkspaceMappers[Workspace.Id];
+	        var unit = trait.FocalStore.Values.First();
+	        var padding = 1.4;
+	        long maxPos = (long)(focalPositions.Max() * padding);
+	        long minPos = (long)(focalPositions.Min() * padding);
+            var range = trait.AddFocalByUnitPositions(minPos, maxPos);
+            var yt = 0.1f;
+            var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
+            for (int i = 1; i < focalPositions.Length; i += 2)
+	        {
+		        var domain = trait.AddDomain(unit.Id, range.Id);
+		        result.Add(domain);
+                var focal = trait.AddFocalByUnitPositions(focalPositions[i-1], focalPositions[i]);
+		        var num = new Number(domain, focal.Id);
+		        Workspace.AddDomain(domain);
+		        var dm = wm.GetOrCreateDomainMapper(domain, wm.GetHorizontalSegment(yt, 100));
+	            dm.ShowGradientNumberLine = true;
+	            dm.ShowNumberOffsets = true;
+	            dm.ShowUnitMarkers = true;
+	            dm.ShowUnits = true;
+		        yt += ytStep;
+	        }
+
+            return result;
+        }
+
+        private SKWorkspaceMapper test2()
+        {
+	        Trait t0 = new Trait();
+	        var unitSize = 8;
+	        var unit = t0.AddFocalByUnitPositions(0, unitSize);
+	        var wm = new SKWorkspaceMapper(Workspace, Renderer, 20, 20, 800, 800);
+            CreateDomainLines(t0, 20, 50, -30, 40, -45, 64, -4, -10);
+            return wm;
+        }
+
+        private SKWorkspaceMapper test0()
         {
             Trait t0 = new Trait();
 	        var unitSize = 8;
@@ -96,8 +138,9 @@ namespace Numbers.UI
 	        dm2.ShowValueMarkers = true;
 	        dm2.ShowUnitMarkers = false;
             dm2.ShowUnits = false;
+            return wm;
         }
-        private void test1()
+        private SKWorkspaceMapper test1()
         {
 	        Trait t0 = new Trait();
 	        var unitSize = 4;
@@ -125,21 +168,31 @@ namespace Numbers.UI
             wm.EnsureRenderers();
             var nm = wm.NumberMapper(num2.Id);
             //dm.EndPoint += new SKPoint(0, -50);
+            return wm;
         }
+
 
         public void NextTest()
         {
+	        IsPaused = true;
 	        ClearAll();
+	        SKWorkspaceMapper wm;
             switch (_tests[_testIndex])
 	        {
 		        case 0:
-			        test0();
+			        wm = test0();
 			        break;
 		        case 1:
-			        test1();
+			        wm = test1();
 			        break;
-	        }
+		        case 2:
+                default:
+			        wm = test2();
+			        break;
+            }
 	        _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
+            wm.EnsureRenderers();
+            IsPaused = false;
         }
 
         private void ClearAll()
@@ -164,6 +217,8 @@ namespace Numbers.UI
 
         public bool MouseDown(MouseEventArgs e)
         {
+            if(IsPaused)return false;
+
             // Add to selection if ctrl down etc.
             _rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
@@ -199,6 +254,8 @@ namespace Numbers.UI
         }
         public bool MouseMove(MouseEventArgs e)
         {
+	        if (IsPaused) return false;
+
             var result = false;
             _rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
@@ -213,9 +270,10 @@ namespace Numbers.UI
         }
 
         private float _minDragDistance = 4f;
-        private Dictionary<int, Complex> _numValues = new Dictionary<int, Complex>();
         public bool MouseDrag(SKPoint mousePoint)
         {
+	        if (IsPaused) return false;
+
             if (SelBegin.HasHighlight && !IsDragging)
             {
 	            var dist = (mousePoint - SelBegin.Position).Length;
@@ -225,8 +283,8 @@ namespace Numbers.UI
 					SelCurrent.Set(_highlight.Clone());
 					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm && nm.IsUnitOrUnot)
 					{
-						nm.Number.Domain.GetNumberValues(_numValues);
-					}
+						Workspace.SaveNumberValues();
+                    }
                 }
             }
 
@@ -237,10 +295,7 @@ namespace Numbers.UI
 	            if (activeHighlight.Mapper is SKNumberMapper nm)
 	            {
 		            nm.SetValueByKind(_highlight.SnapPoint, activeHighlight.Kind);
-		            if (_numValues.Count > 0) // todo: Check for preserve numbers flag.
-                    {
-	                    nm.Number.Domain.SetNumberValues(_numValues);
-                    }
+		            Workspace.RestoreNumberValues();
 	            }
                 else if (activeHighlight.Mapper is SKDomainMapper dm)
 	            {
@@ -260,6 +315,8 @@ namespace Numbers.UI
 
         public bool MouseUp(MouseEventArgs e)
         {
+	        if (IsPaused) return false;
+
             // If dragging or creating, check for last point merge
             // If rect select, add contents to selection (also done in move).
             // If not dragging or creating and dist < selMax, click select
@@ -307,6 +364,8 @@ namespace Numbers.UI
         }
         public bool MouseDoubleClick(MouseEventArgs e)
         {
+	        if (IsPaused) return false;
+
             if (CurrentKey == Keys.Space && e.Button == MouseButtons.Left)
             {
                 //Data.ResetZoom();
@@ -317,6 +376,8 @@ namespace Numbers.UI
         public float ScaleTickSize { get; set; } = 0.2f;
         public bool MouseWheel(MouseEventArgs e)
         {
+	        if (IsPaused) return false;
+
             var scale = 1f + (Math.Sign(e.Delta) * ScaleTickSize);
             var rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
@@ -379,6 +440,12 @@ namespace Numbers.UI
         // ctrl defaults to 'create' causing select to be exclusive to focals or singleBond points.
         public bool KeyDown(KeyEventArgs e)
         {
+	        if (CurrentKey == Keys.Escape)
+	        {
+		        IsPaused = !IsPaused;
+	        }
+	        if (IsPaused) return false;
+
             CurrentKey = e.KeyCode;
             _isControlDown = e.Control;
             _isShiftDown = e.Shift;
@@ -389,9 +456,9 @@ namespace Numbers.UI
                 case Keys.Escape:
                     UIMode = UIMode.Any;
                     break;
-                //case Keys.E:
-                //    UIMode = UIMode.CreateEntity;
-                //    break;
+                case Keys.E:
+                    Workspace.LockValuesOnDrag = true;
+                    break;
                 case Keys.T:
                     NextTest();
                     break;
@@ -464,6 +531,7 @@ namespace Numbers.UI
                 CurrentKey = Keys.None;
                 _isControlDown = e.Control;
                 _isShiftDown = e.Shift;
+                Workspace.LockValuesOnDrag = false;
                 //_isAltDown = e.Alt;
                 //_startMatrix = Data.Matrix;
                 //if (UIMode.IsMomentary())
@@ -520,7 +588,7 @@ namespace Numbers.UI
         {
             IsDown = false;
             IsDragging = false;
-            _numValues.Clear();
+            Workspace.ClearNumberValues();
             SetSelectable(UIMode);
             if (Workspace != null)
             {

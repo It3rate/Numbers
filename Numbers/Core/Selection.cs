@@ -1,4 +1,6 @@
-﻿namespace Numbers.Core
+﻿using Numbers.Mind;
+
+namespace Numbers.Core
 {
     using System;
     using System.Collections.Generic;
@@ -19,7 +21,7 @@
         public int Count => NumberIds.Length;
 
         //public Number NumberAt(int index) => Number.NumberStore[NumberIds[index]];
-        public Number this[int i] => Number.NumberStore[NumberIds[i]];
+        public Number this[int i] => Workspace.NumberStore[NumberIds[i]];
 
         public Selection(params int[] numberIds)
         {

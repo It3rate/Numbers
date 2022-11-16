@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System.Numerics;
+using System.Reflection.Emit;
 using Numbers.Core;
 using Numbers.Renderer;
 using Numbers.UI;
@@ -22,9 +23,7 @@ namespace Numbers.Mind
 	    public readonly Brain MyBrain;
         public bool IsActive { get; set; } = true;
 
-        //private List<int> ActiveDomainIds { get; } = new List<int>();
-        //   private List<int> ActiveNumberIds { get; } = new List<int>();
-        //private List<int> ActiveTransformIds { get; } = new List<int>();
+        public static Dictionary<int, Number> NumberStore { get; } = new Dictionary<int, Number>();
 
         public HighlightSet SelBegin = new HighlightSet();
         public HighlightSet SelCurrent = new HighlightSet();
@@ -34,6 +33,8 @@ namespace Numbers.Mind
         public Stack<Selection> SelectionStack { get; } = new Stack<Selection>();
 	    public Stack<Formula> FormulaStack { get; } = new Stack<Formula>();
         public Stack<Number> ResultStack { get; } = new Stack<Number>(); // can have multiple results?
+
+        public bool LockValuesOnDrag { get; set; }
 
         public Workspace(Brain brain)
         {
@@ -58,25 +59,33 @@ namespace Numbers.Mind
 		        ActiveIds.Add(element.Id);
 	        }
         }
+        public void AddDomain(Domain domain)
+        {
+	        ActiveIds.Add(domain.Id);
+	        ActiveIds.AddRange(domain.NumberIds);
+	        ActiveIds.Add(domain.UnitFocalId);
+        }
         public void AddFullDomains(params Domain[] domains)
         {
 	        foreach (var domain in domains)
 	        {
-		        ActiveIds.Add(domain.Id);
-		        ActiveIds.AddRange(domain.NumberIds);
-		        ActiveIds.Add(domain.UnitFocalId);
+		        AddDomain(domain);
 	        }
+        }
+        public void RemoveDomain(Domain domain)
+        {
+	        ActiveIds.Remove(domain.Id);
+	        foreach (var numberId in domain.NumberIds)
+	        {
+		        ActiveIds.Remove(numberId);
+	        }
+	        ActiveIds.Remove(domain.UnitFocalId);
         }
         public void RemoveFullDomains(params Domain[] domains)
         {
 	        foreach (var domain in domains)
 	        {
-		        ActiveIds.Remove(domain.Id);
-		        foreach (var numberId in domain.NumberIds)
-		        {
-			        ActiveIds.Remove(numberId);
-		        }
-		        ActiveIds.Remove(domain.UnitFocalId);
+		        RemoveDomain(domain);
 	        }
         }
         public void RemoveElements(params IMathElement[] elements)
@@ -87,5 +96,42 @@ namespace Numbers.Mind
 	        }
         }
 
+        private readonly Dictionary<int, Complex> _numValues = new Dictionary<int, Complex>();
+        private readonly List<int> _ignoreIds = new List<int>();
+        public void SaveNumberValues(params int[] ignoreIds)
+        {
+	        ClearNumberValues();
+            _ignoreIds.AddRange(ignoreIds);
+            foreach (var kvp in NumberStore)
+            {
+	            _numValues.Add(kvp.Key, kvp.Value.Value);
+            }
+        }
+
+        public void RestoreNumberValues()
+        {
+	        foreach (var kvp in _numValues)
+	        {
+		        var id = kvp.Key;
+		        var storedValue = kvp.Value;
+		        if (!_ignoreIds.Contains(id))
+		        {
+			        if (LockValuesOnDrag)
+			        {
+				        Workspace.NumberStore[id].Value = storedValue;
+                    }
+			        else
+			        {
+
+			        }
+		        }
+            }
+        }
+
+        public void ClearNumberValues()
+        {
+            _numValues.Clear();
+            _ignoreIds.Clear();
+        }
     }
 }

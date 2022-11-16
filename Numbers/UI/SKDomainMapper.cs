@@ -158,7 +158,7 @@ namespace Numbers.UI
 	    {
 		    foreach (var id in Markers)
 		    {
-			    var num = Number.NumberStore[id];
+			    var num = Workspace.NumberStore[id];
 			    var ratio = num.Ratio;
 			    var isUnit = id == Domain.UnitId;
 			    var rem = num.Remainder;
@@ -237,7 +237,7 @@ namespace Numbers.UI
 
 	    private void DrawTicks()
 	    {
-		    if (DomainSegment.Length / Domain.MaxRange.LengthInTicks >= 4)
+		    if (DomainSegment.Length / Domain.MaxRange.LengthInTicks >= 3)
 		    {
 			    var segStart = Domain.MaxRange.StartTickPosition;
 			    var segEnd = Domain.MaxRange.EndTickPosition;

@@ -41,7 +41,7 @@ namespace Numbers.UI
 
         public SKMapper(Workspace workspace, IMathElement element)
         {
-	        Id = _mapperCounter++;
+	        Id = element.Id;// _mapperCounter++;
 	        Workspace = workspace;
 	        MathElement = element;
         }

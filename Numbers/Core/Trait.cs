@@ -23,9 +23,7 @@ namespace Numbers.Core
         public Dictionary<int, Transform> TransformStore => _brain.TransformStore;
         public Dictionary<int, Trait> TraitStore => _brain.TraitStore;
 
-	    public static List<long> PositionStore { get; } = new List<long>(4096);
-
-	    public Dictionary<int, Focal> FocalStore { get; } = new Dictionary<int, Focal>();
+        public Dictionary<int, Focal> FocalStore { get; } = new Dictionary<int, Focal>();
         public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
 
 	    public Trait()
@@ -36,8 +34,8 @@ namespace Numbers.Core
 
 	    public int AddPosition(long position)
 	    {
-            PositionStore.Add(position);
-            return PositionStore.Count - 1;
+		    Focal.PositionStore.Add(position);
+            return Focal.PositionStore.Count - 1;
 	    }
 
 	    public Transform AddTransform(Selection selection, Number repeats, TransformKind kind)
@@ -63,21 +61,21 @@ namespace Numbers.Core
         // Focals are pre-number, positions, not value interpretations.
 	    public Focal AddFocalByUnitPositions(long start, long end)
 	    {
-		    var index = PositionStore.Count;
-		    PositionStore.Add(start);
-		    PositionStore.Add(end);
+		    var index = Focal.PositionStore.Count;
+		    Focal.PositionStore.Add(start);
+		    Focal.PositionStore.Add(end);
 		    return AddFocalByIndexes(index, index + 1);
 	    }
 	    public Focal AddFocalByIndex_Position(int startIndex, long end)
 	    {
-		    var index = PositionStore.Count;
-		    PositionStore.Add(end);
+		    var index = Focal.PositionStore.Count;
+		    Focal.PositionStore.Add(end);
 		    return AddFocalByIndexes(startIndex, index);
 	    }
 	    public Focal AddFocalByPosition_Index(long start, int endIndex)
 	    {
-		    var index = PositionStore.Count;
-		    PositionStore.Add(start);
+		    var index = Focal.PositionStore.Count;
+		    Focal.PositionStore.Add(start);
 		    return AddFocalByIndexes(index, endIndex);
 	    }
 
@@ -93,8 +91,8 @@ namespace Numbers.Core
 	    }
 
         // Focal Methods
-	    public long Start(Focal focal) => PositionStore[focal.StartId];
-	    public long End(Focal focal) => PositionStore[focal.EndId];
+	    public long Start(Focal focal) => Focal.PositionStore[focal.StartId];
+	    public long End(Focal focal) => Focal.PositionStore[focal.EndId];
 	    public long Ticks(Focal focal) => End(focal) - Start(focal);
 	    public long RightMost(Focal focal) => focal.Direction == -1 ? End(focal) : Start(focal);
 	    public long LeftMost(Focal focal) => focal.Direction == -1 ? Start(focal) : End(focal);

@@ -42,7 +42,7 @@ namespace Numbers.Core
         public bool IsUnitPerspective => UnitFocal.Direction >= 0;
 
         public int UnitId { get; set; }
-        public Number Unit => Number.NumberStore[UnitId];
+        public Number Unit => Workspace.NumberStore[UnitId];
 
         public int MaxRangeId { get; set; }
         public Focal MaxRange => Trait.FocalStore[MaxRangeId];
@@ -67,7 +67,7 @@ namespace Numbers.Core
         {
 	        foreach (var id in NumberIds)
 	        {
-		        yield return Number.NumberStore[id];
+		        yield return Workspace.NumberStore[id];
 	        }
         }
         public void GetNumberValues(Dictionary<int, Complex> dict)
@@ -87,7 +87,7 @@ namespace Numbers.Core
 	        {
 		        if (!ignoreIds.Contains(num.Key))
 		        {
-			        Number.NumberStore[num.Key].Value = num.Value;
+			        Workspace.NumberStore[num.Key].Value = num.Value;
                 }
 	        }
         }

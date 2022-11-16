@@ -1,4 +1,6 @@
 ﻿
+using Numbers.Mind;
+
 namespace Numbers.Core
 {
 	using System;
@@ -12,9 +14,7 @@ namespace Numbers.Core
 	    public MathElementKind Kind => MathElementKind.Number;
 	    private static int numberCounter = 1 + (int)MathElementKind.Number;
 
-		public static Dictionary<int, Number> NumberStore { get; } = new Dictionary<int, Number>();
-
-		public Number this[int i] => NumberStore[i];
+	    public Number this[int i] => Workspace.NumberStore[i];
 
 		public int Id { get; set; }
 		public int DomainId { get; set; }
@@ -45,7 +45,7 @@ namespace Numbers.Core
 			Domain = domain;
 			FocalId = focalId;
 			domain.NumberIds.Add(Id);
-			NumberStore.Add(Id, this);
+			Workspace.NumberStore.Add(Id, this);
         }
 
         public long StartTickPosition
@@ -70,7 +70,6 @@ namespace Numbers.Core
 		}
 		public long TickCount => Focal.EndTickPosition - Focal.StartTickPosition;
 		
-
         public double StartT
 		{
 			get => Focal.StartTickPosition / (double)Domain.MaxRange.LengthInTicks;
