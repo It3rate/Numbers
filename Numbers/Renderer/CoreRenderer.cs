@@ -68,10 +68,11 @@ namespace Numbers.Renderer
             var triPts = seg.EndArrow(8);
             Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
         }
-	    public override void DrawText(SKPoint center, string text, SKPaint paint)
+
+	    public override void DrawText(SKPoint center, string text, SKPaint paint, SKPaint background)
 	    {
 		    var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
-		    Canvas.DrawRoundRect(rect, 5, 5, Pens.TextBackgroundPen);
+		    Canvas.DrawRoundRect(rect, 5, 5, background ?? Pens.TextBackgroundPen);
 		    Canvas.DrawText(text, center.X, center.Y, paint);
 	    }
 	    public override void DrawBitmap(SKBitmap bitmap)

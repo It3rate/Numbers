@@ -91,13 +91,20 @@ namespace Numbers.Core
 		{
 			get => EndValueInTicks / (double) Domain.UnitFocal.UnitLengthInTicks;
 			set => EndValueInTicks = (long) Math.Round(value * Domain.UnitFocal.UnitLengthInTicks);
-		}
-		public Complex Value
-		{
-			get => new Complex(EndValue, StartValue);
-			set { StartValue = value.Imaginary; EndValue = value.Real;}
-		}
-		public Complex Floor => new Complex(Math.Floor(EndValue), Math.Ceiling(StartValue));
+        }
+        public Complex Value
+        {
+	        get => new Complex(EndValue, StartValue);
+	        set { StartValue = value.Imaginary; EndValue = value.Real; }
+        }
+
+        public long WholePartStart => (long)Math.Round(StartValue);
+        public long NumeratorPartStart => StartValueInTicks % DenominatorPart;
+        public long WholePartEnd => (long)Math.Round(EndValue);
+        public long NumeratorPartEnd => EndValueInTicks % DenominatorPart;
+        public long DenominatorPart => Math.Abs(Domain.Unit.TickCount);
+
+        public Complex Floor => new Complex(Math.Floor(EndValue), Math.Ceiling(StartValue));
 		public Complex Ceiling => new Complex(Math.Ceiling(EndValue), Math.Floor(StartValue));
 		public Complex Round => new Complex(Math.Round(EndValue), Math.Round(StartValue));
 		public Complex Remainder => Value - Floor;

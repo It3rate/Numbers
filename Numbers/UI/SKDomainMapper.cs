@@ -32,8 +32,9 @@ namespace Numbers.UI
 	    public bool ShowUnotArrow;
 	    public bool ShowMaxMinValues;
 	    public bool ShowDashedValuesOutOfRange;
+	    public bool ShowFractions;
 
-	    public override SKPoint StartPoint
+        public override SKPoint StartPoint
 	    {
 		    get => DomainSegment.StartPoint;
 		    set => Reset(Domain, value, EndPoint);
@@ -148,14 +149,42 @@ namespace Numbers.UI
 			    return;
 		    }
 
-		    var value = isStart ? -num.StartValue : num.EndValue;
+		    var value = isStart ? num.StartValue : num.EndValue;
 		    var t = isStart ? num.Ratio.Start : num.Ratio.End;
 		    var suffix = isStart ? "i" : "";
 		    var unitLabel = num.IsUnitOrUnot && isStart ? "0" : num.IsUnit ? "1" : num.IsUnot ? "i" : "";
 
 		    var textPoint = DrawMarkerPointer(t);
-		    var txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
-		    Renderer.DrawText(textPoint, txt, Pens.LineTextPen);
+
+		    var txt = "";
+		    var txtPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;
+		    if (ShowFractions)
+		    {
+			    var whole = isStart ? num.WholePartStart.ToString() : num.WholePartEnd.ToString();
+			    string fraction = "";
+			    if (num.DenominatorPart != 0)
+			    {
+				    var numerator = isStart ? num.NumeratorPartStart : num.NumeratorPartEnd;
+				    if (numerator != 0)
+				    {
+					    fraction = " " + numerator.ToString() + "/" + num.DenominatorPart.ToString();
+                    }
+			    }
+			    txt = whole + fraction + suffix;
+		    }
+		    else
+		    {
+				txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
+		    }
+
+		    if (isStart)
+            {
+				Renderer.DrawText(textPoint, txt, txtPaint, Pens.TextBackgroundPen);
+		    }
+		    else
+		    {
+                Renderer.DrawText(textPoint, txt, txtPaint, Pens.TextBackgroundPen);
+            }
 	    }
 
 	    private SKPoint DrawMarkerPointer(float t)

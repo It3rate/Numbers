@@ -64,6 +64,11 @@ namespace Numbers.Renderer
         public SKColor TickColor { get; set; }
         public SKColor MarkerColor { get; set; }
 
+        public SKColor UnitTextColor { get; set; }
+        public SKColor UnotTextColor { get; set; }
+        public SKPaint UnitMarkerText { get; set; }
+        public SKPaint UnotMarkerText { get; set; }
+
         public CorePens(float defaultWidth = 1f, ColorTheme colorTheme = ColorTheme.Normal)
         {
             DefaultWidth = defaultWidth;
@@ -80,6 +85,11 @@ namespace Numbers.Renderer
             UnitStrokeColor = SKColor.Parse("#404040");
             TickColor = SKColors.Black;
             MarkerColor = SKColors.DarkGray;
+
+            UnitTextColor = SKColor.Parse("#006070");
+            UnotTextColor = SKColor.Parse("#600040");
+            UnitMarkerText = GetText(UnitTextColor, 12, "Arial", false, true);
+            UnotMarkerText = GetText(UnotTextColor, 12, "Arial", false, true);
 
             BkgBrush = GetBrush(BkgColor);
 
@@ -119,6 +129,7 @@ namespace Numbers.Renderer
             LineTextPen.IsAntialias = true;
             LineTextPen.Color = new SKColor(0x40, 0x40, 0x60);
             LineTextPen.TextAlign = SKTextAlign.Center;
+
             TextBackgroundPen = GetPen(new SKColor(244, 244, 244, 220), 0);
             TextBackgroundPen.Style = SKPaintStyle.Fill;
 
@@ -134,6 +145,12 @@ namespace Numbers.Renderer
             UnitLineColor = SKColor.Parse("#203070");
             UnotColor = SKColor.Parse("#8F0058");
             UnotLineColor = SKColor.Parse("#703020");
+
+            UnitTextColor = SKColor.Parse("#80C0D0");
+            UnotTextColor = SKColor.Parse("#D080A0");
+            UnitMarkerText = GetText(UnitTextColor, 12, "Arial", false, true);
+            UnotMarkerText = GetText(UnotTextColor, 12, "Arial", false, true);
+
             TickColor = SKColors.LightGray;
             UnitPen = GetPen(UnitColor, DefaultWidth * 4f, SKStrokeCap.Butt);
             UnotPen = GetPen(UnotColor, DefaultWidth * 4f, SKStrokeCap.Butt);
@@ -153,15 +170,15 @@ namespace Numbers.Renderer
             HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
             HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
 
-            UnitInlinePen = GetPen(UnitColor, DefaultWidth * 1f);
-            UnotInlinePen = GetPen(UnotColor, DefaultWidth * 1f);
-            SegPen0 = GetPen(new SKColor(200, 240, 50, 255), DefaultWidth * 4f);
+            UnitInlinePen = GetPen(UnitColor, DefaultWidth * 2.5f);
+            UnotInlinePen = GetPen(UnotColor, DefaultWidth * 2.5f);
+            SegPen0 = GetPen(SKColors.Black, DefaultWidth * 4f);
             SegPen1 = GetPen(new SKColor(50, 250, 210, 255), DefaultWidth * 4f);
             SegPen2 = GetPen(new SKColor(50, 50, 250, 255), DefaultWidth * 4f);
             SegPen3 = GetPen(new SKColor(50, 250, 50, 255), DefaultWidth * 4f);
             SegPens = new List<SKPaint>() { SegPen0, SegPen1, SegPen2, SegPen3 };
 
-            TextBrush = GetText(SKColor.Parse("#A0A0F0"), 20);
+            TextBrush = GetText(SKColor.Parse("#A0404060"), 20);
             Seg0TextBrush = GetText(SegPen0.Color, 20);
             Seg1TextBrush = GetText(SegPen1.Color, 20);
             Seg2TextBrush = GetText(SegPen2.Color, 20);
@@ -175,7 +192,7 @@ namespace Numbers.Renderer
             LineTextPen.IsAntialias = true;
             LineTextPen.Color = new SKColor(0x40, 0x40, 0x60);
             LineTextPen.TextAlign = SKTextAlign.Center;
-            TextBackgroundPen = GetPen(new SKColor(244, 244, 244, 220), 0);
+            TextBackgroundPen = GetPen(SKColor.Parse("#80303040"), 0);
             TextBackgroundPen.Style = SKPaintStyle.Fill;
 
             SlugTextPen = new SKPaint(new SKFont(SKTypeface.Default, 8f));
@@ -347,10 +364,11 @@ namespace Numbers.Renderer
 	        return result;
         }
 
-        public static SKPaint GetText(SKColor color, int fontSize, string fontName = "Arial", bool isBold = false)
+        public static SKPaint GetText(SKColor color, int fontSize, string fontName = "Arial", bool isBold = false, bool isCentered = false)
         {
 	        var result = new SKPaint { TextSize = fontSize, Color = color };
 	        result.IsAntialias = true;
+	        result.TextAlign = isCentered ? SKTextAlign.Center : SKTextAlign.Left;
 	        result.Typeface = SKTypeface.FromFamilyName(
 		        fontName,
 		        isBold ? SKFontStyle.Bold : SKFontStyle.Normal);

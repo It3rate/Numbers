@@ -41,7 +41,6 @@ namespace Numbers.Core
         public RatioSeg UnitFocalRatio => UnitFocal.RatioIn(this);
         public bool IsUnitPerspective => UnitFocal.Direction >= 0;
 
-
         public int UnitId { get; set; }
         public Number Unit => Number.NumberStore[UnitId];
 
