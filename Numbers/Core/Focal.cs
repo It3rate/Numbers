@@ -8,8 +8,8 @@ namespace Numbers.Core
 
     public interface IFocal : IMathElement
     {
-	    long StartTickValue { get; set; }
-	    long EndTickValue { get; set; }
+	    long StartTickPosition { get; set; }
+	    long EndTickPosition { get; set; }
 	    long LengthInTicks { get; }
 	    int Direction { get; }
 	    RatioSeg RatioIn(Domain domain);
@@ -27,19 +27,19 @@ namespace Numbers.Core
 	    //bool endRangeOverflow;
 
 	    //public Trait Trait { get; }
-	    public int StartId { get; set; } // ref to start point value
-	    public int EndId { get; set; } // ref to end point value
-	    public long StartTickValue
+	    public int StartId { get; set; } // ref to start point position
+	    public int EndId { get; set; } // ref to end point position
+        public long StartTickPosition
 	    {
-		    get => Trait.ValueStore[StartId];
-		    set => Trait.ValueStore[StartId] = value;
+		    get => Trait.PositionStore[StartId];
+		    set => Trait.PositionStore[StartId] = value;
 	    }
-	    public long EndTickValue
+	    public long EndTickPosition
         {
-		    get => Trait.ValueStore[EndId];
-		    set => Trait.ValueStore[EndId] = value;
+		    get => Trait.PositionStore[EndId];
+		    set => Trait.PositionStore[EndId] = value;
 	    }
-	    public long LengthInTicks => EndTickValue - StartTickValue;
+	    public long LengthInTicks => EndTickPosition - StartTickPosition;
 
 	    public Focal(int startId, int endId)
 	    {
@@ -48,12 +48,12 @@ namespace Numbers.Core
 		    EndId = endId;
 		    Id = focalCounter++;
         }
-        public int Direction => StartTickValue <= EndTickValue ? 1 : -1;
+        public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
         public RatioSeg RatioIn(Domain domain)
         {
-	        var mx = domain.MaxRange;
-	        var start = (StartTickValue - mx.StartTickValue) / (float)(mx.LengthInTicks);
-	        var end = (EndTickValue - mx.StartTickValue) / (float)(mx.LengthInTicks);
+	        var maxRange = domain.MaxRange;
+	        var start = (StartTickPosition - maxRange.StartTickPosition) / (float)(maxRange.LengthInTicks);
+	        var end = (EndTickPosition - maxRange.StartTickPosition) / (float)(maxRange.LengthInTicks);
             return new RatioSeg(start, end);
         }
     }

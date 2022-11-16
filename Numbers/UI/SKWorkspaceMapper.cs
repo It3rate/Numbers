@@ -28,10 +28,11 @@ namespace Numbers.UI
 	    public SKPoint Center => TopLeft.MidpointTo(BottomRight);
 	    public float Width => BottomRight.X - TopLeft.X;
 	    public float Height => BottomRight.Y - TopLeft.Y;
+        // these are pointing clockwise 
 	    public SKSegment TopSegment => new SKSegment(TopLeft.X, TopLeft.Y, BottomRight.X, TopLeft.Y);
 	    public SKSegment RightSegment => new SKSegment(BottomRight.X, TopLeft.Y, BottomRight.X, BottomRight.Y);
-	    public SKSegment BottomSegment => new SKSegment(TopLeft.X, BottomRight.Y, BottomRight.X, BottomRight.Y);
-	    public SKSegment LeftSegment => new SKSegment(TopLeft.X, TopLeft.Y, TopLeft.X, BottomRight.Y);
+	    public SKSegment BottomSegment => new SKSegment(BottomRight.X, BottomRight.Y, TopLeft.X, BottomRight.Y);
+	    public SKSegment LeftSegment => new SKSegment(TopLeft.X, BottomRight.Y, TopLeft.X, TopLeft.Y);
 
 	    private static float defaultLineT = 0.1f;
 

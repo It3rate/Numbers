@@ -129,6 +129,31 @@ namespace Numbers.UI
 		    }
 	    }
 
+	    private void DrawUnit()
+	    {
+		    if (ShowUnits)
+		    {
+			    WorkspaceMapper.NumberMapper(Domain.UnitId).DrawUnit();
+            }
+	    }
+
+	    private void DrawNumberLineGradient()
+	    {
+		    if (ShowGradientNumberLine)
+		    {
+			    var pnt = CorePens.GetGradientPen(
+				    DomainSegment.StartPoint, DomainSegment.EndPoint, Pens.UnotLineColor, Pens.UnitLineColor, 10);
+			    Renderer.DrawSegment(DomainSegment, pnt);
+		    }
+		    else if(!ShowUnits) // if not showing units at least color the line
+		    {
+			    var pnt = CorePens.GetGradientPen(
+				    DomainSegment.StartPoint, DomainSegment.EndPoint, Pens.UnotLineColor, Pens.UnitLineColor, 3);
+			    Renderer.DrawSegment(DomainSegment, pnt);
+
+            }
+	    }
+
 	    private void DrawMarkers()
 	    {
 		    foreach (var id in Markers)
@@ -205,24 +230,6 @@ namespace Numbers.UI
 		    return textPoint;
 	    }
 
-	    private void DrawNumberLineGradient()
-	    {
-		    if (ShowGradientNumberLine)
-		    {
-			    var pnt = CorePens.GetGradientPen(
-				    DomainSegment.StartPoint, DomainSegment.EndPoint, Pens.UnotLineColor, Pens.UnitLineColor, 10);
-			    Renderer.DrawSegment(DomainSegment, pnt);
-		    }
-	    }
-
-	    private void DrawUnit()
-	    {
-		    if (ShowUnits)
-		    {
-			    WorkspaceMapper.NumberMapper(Domain.UnitId).DrawUnit();
-            }
-	    }
-
 	    private void DrawNumberLine()
 	    {
 		    Renderer.DrawSegment(DomainSegment, Renderer.Pens.NumberLinePen);
@@ -232,8 +239,8 @@ namespace Numbers.UI
 	    {
 		    if (DomainSegment.Length / Domain.MaxRange.LengthInTicks >= 4)
 		    {
-			    var segStart = Domain.MaxRange.StartTickValue;
-			    var segEnd = Domain.MaxRange.EndTickValue;
+			    var segStart = Domain.MaxRange.StartTickPosition;
+			    var segEnd = Domain.MaxRange.EndTickPosition;
 			    var segLen = (float) Domain.MaxRange.LengthInTicks;
 			    for (var i = segStart; i < segEnd; i++)
 			    {
@@ -245,7 +252,7 @@ namespace Numbers.UI
 
 	    private void DrawIntTicks()
 	    {
-		    var segStart = (float)Domain.MaxRange.StartTickValue;
+		    var segStart = (float)Domain.MaxRange.StartTickPosition;
 		    var zeroTick = (float)Domain.Unit.StartTickPosition;
             var segLen = (float) Domain.MaxRange.LengthInTicks;
 		    var wholeTicks = Domain.WholeNumberTicks();

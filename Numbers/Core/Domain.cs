@@ -95,11 +95,11 @@ namespace Numbers.Core
         public long[] WholeNumberTicks()
         {
 	        var result = new List<long>();
-	        var rangeStart = MaxRange.StartTickValue;
-	        var rangeEnd = MaxRange.EndTickValue;
+	        var rangeStart = MaxRange.StartTickPosition;
+	        var rangeEnd = MaxRange.EndTickPosition;
             var rangeLen = MaxRange.LengthInTicks;
 	        var unitLen = UnitFocal.LengthInTicks;
-	        var zero = UnitFocal.StartTickValue;
+	        var zero = UnitFocal.StartTickPosition;
 
 	        var tick = rangeStart + ((zero - rangeStart) % unitLen);
 	        while (tick <= rangeEnd)

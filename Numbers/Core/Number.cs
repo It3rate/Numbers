@@ -50,36 +50,36 @@ namespace Numbers.Core
 
         public long StartTickPosition
         {
-	        get => Focal.StartTickValue;
-	        set => Focal.StartTickValue = value;
+	        get => Focal.StartTickPosition;
+	        set => Focal.StartTickPosition = value;
         }
         public long EndTickPosition
         {
-	        get => Focal.EndTickValue;
-	        set => Focal.EndTickValue = value;
+	        get => Focal.EndTickPosition;
+	        set => Focal.EndTickPosition = value;
         }
         public long StartValueInTicks
         {
-			get => -Focal.StartTickValue + Domain.UnitFocal.ZeroTick;
-			set => Focal.StartTickValue = Domain.UnitFocal.ZeroTick - value;
+			get => -Focal.StartTickPosition + Domain.UnitFocal.ZeroTick;
+			set => Focal.StartTickPosition = Domain.UnitFocal.ZeroTick - value;
 		}
 		public long EndValueInTicks
 		{
-			get => Focal.EndTickValue - Domain.UnitFocal.ZeroTick;
-			set => Focal.EndTickValue = value + Domain.UnitFocal.ZeroTick;
+			get => Focal.EndTickPosition - Domain.UnitFocal.ZeroTick;
+			set => Focal.EndTickPosition = value + Domain.UnitFocal.ZeroTick;
 		}
-		public long TickCount => Focal.EndTickValue - Focal.StartTickValue;
+		public long TickCount => Focal.EndTickPosition - Focal.StartTickPosition;
 		
 
         public double StartT
 		{
-			get => Focal.StartTickValue / (double)Domain.MaxRange.LengthInTicks;
-			set => Focal.StartTickValue = (long)Math.Round(value * (double)Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickValue);
+			get => Focal.StartTickPosition / (double)Domain.MaxRange.LengthInTicks;
+			set => Focal.StartTickPosition = (long)Math.Round(value * (double)Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickPosition);
 		}
 		public double EndT
 		{
-			get => Focal.EndTickValue / (double)Domain.MaxRange.LengthInTicks;
-			set => Focal.EndTickValue = (long)Math.Round(value * Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickValue);
+			get => Focal.EndTickPosition / (double)Domain.MaxRange.LengthInTicks;
+			set => Focal.EndTickPosition = (long)Math.Round(value * Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickPosition);
 		}
 
         public double StartValue

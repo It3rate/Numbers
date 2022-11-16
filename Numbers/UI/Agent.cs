@@ -66,49 +66,49 @@ namespace Numbers.UI
         private void test0()
         {
             Trait t0 = new Trait();
-	        var unitSize = 500;
-	        var unit = t0.AddFocalByPositions(0, unitSize);
-	        var range = t0.AddFocalByPositions(-1000, 1000);
-	        var domain = t0.AddDomain(unit.Id, range.Id);
-	        var domain2 = t0.AddDomain(unit.Id, range.Id);
-	        var val2 = t0.AddFocalByPositions(900, 200);
-	        var val3 = t0.AddFocalByPositions(-400, 600);
-	        //var val2 = t0.AddFocalByPositions(unitSize, unitSize);
-	        //var val3 = t0.AddFocalByPositions(unitSize, unitSize);
+	        var unitSize = 8;
+	        var unit = t0.AddFocalByUnitPositions(0, unitSize);
+	        var range = t0.AddFocalByUnitPositions(-16, 16);
+	        var hDomain = t0.AddDomain(unit.Id, range.Id);
+	        var vDomain = t0.AddDomain(unit.Id, range.Id);
+	        var hFocal = t0.AddFocalByUnitPositions(-2, 9);
+	        var vFocal = t0.AddFocalByUnitPositions(4, 6);
+	        //var val2 = t0.AddFocalByUnitPositions(unitSize, unitSize);
+	        //var val3 = t0.AddFocalByUnitPositions(unitSize, unitSize);
 
-            var num2 = new Number(domain, val2.Id);
-	        var num3 = new Number(domain2, val3.Id);
-	        var sel = new Selection(num2);
-	        var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
+            var hNum = new Number(hDomain, hFocal.Id);
+	        var vNum = new Number(vDomain, vFocal.Id);
+	        var hSel = new Selection(hNum);
+	        var transform = t0.AddTransform(hSel, vNum, TransformKind.Blend);
 
-            Workspace.AddFullDomains(domain, domain2);
+            Workspace.AddFullDomains(hDomain, vDomain);
 
 	        var wm = new SKWorkspaceMapper(Workspace, Renderer, 150, 10, 600, 600);
 
-	        var dm = wm.GetOrCreateDomainMapper(domain, wm.GetVerticalSegment(.5f, 50));
+	        var dm = wm.GetOrCreateDomainMapper(hDomain, wm.GetHorizontalSegment(.5f, 50));
 	        dm.ShowGradientNumberLine = false;
-	        dm.ShowValueMarkers = false;
+	        dm.ShowValueMarkers = true;
 	        dm.ShowUnitMarkers = false;
 	        dm.ShowUnits = false;
 
-            var dm2 = wm.GetOrCreateDomainMapper(domain2, wm.GetHorizontalSegment(.5f, 50));
+            var dm2 = wm.GetOrCreateDomainMapper(vDomain, wm.GetVerticalSegment(.5f, 50));
 	        dm2.ShowGradientNumberLine = false;
 	        dm2.ShowValueMarkers = true;
 	        dm2.ShowUnitMarkers = false;
-            dm2.ShowUnits = true;
+            dm2.ShowUnits = false;
         }
         private void test1()
         {
 	        Trait t0 = new Trait();
 	        var unitSize = 4;
-	        var unit = t0.AddFocalByPositions(3, 3+unitSize);
-	        var range = t0.AddFocalByPositions(-40, 40);
+	        var unit = t0.AddFocalByUnitPositions(3, 3+unitSize);
+	        var range = t0.AddFocalByUnitPositions(-40, 40);
 	        var domain = t0.AddDomain(unit.Id, range.Id);
 	        //var domain2 = t0.AddDomain(unit.Id, range.Id);
-	        var val2 = t0.AddFocalByPositions(-15, 20);
-	        //var val3 = t0.AddFocalByPositions(-40, 60);
-	        //var val2 = t0.AddFocalByPositions(unitSize, unitSize);
-	        //var val3 = t0.AddFocalByPositions(unitSize, unitSize);
+	        var val2 = t0.AddFocalByUnitPositions(-15, 20);
+	        //var val3 = t0.AddFocalByUnitPositions(-40, 60);
+	        //var val2 = t0.AddFocalByUnitPositions(unitSize, unitSize);
+	        //var val3 = t0.AddFocalByUnitPositions(unitSize, unitSize);
 
 	        var num2 = new Number(domain, val2.Id);
 	        //var num3 = new Number(domain2, val3.Id);

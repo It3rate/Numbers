@@ -70,7 +70,6 @@ namespace Numbers.UI
         {
 	        EnsureSegment();
             var dir = Number.Direction;
-            Console.WriteLine(dir);
             var pen = dir > 0 ? Pens.UnitPen : Pens.UnotPen;
 	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - NumberSegment.StartPoint;
 	        RenderSegment = NumberSegment - offset;

@@ -16,15 +16,15 @@
         public Focal FocalBase { get; }
 		public long Offset { get; set; } = 0;
 
-		public long StartTickValue
+		public long StartTickPosition
 		{
-			get=>FocalBase.StartTickValue + Offset;
-			set {var fb = FocalBase; fb.StartTickValue = value - Offset;}
+			get=>FocalBase.StartTickPosition + Offset;
+			set {var fb = FocalBase; fb.StartTickPosition = value - Offset;}
 		}
-		public long EndTickValue 
+		public long EndTickPosition 
 		{
-			get => FocalBase.EndTickValue + Offset;
-			set { var fb = FocalBase; fb.EndTickValue = value - Offset; }
+			get => FocalBase.EndTickPosition + Offset;
+			set { var fb = FocalBase; fb.EndTickPosition = value - Offset; }
 		}
 		public long LengthInTicks => FocalBase.LengthInTicks == 0 ? 1 : FocalBase.LengthInTicks;
 
@@ -38,9 +38,9 @@
 		public RatioSeg RatioIn(Domain domain) => FocalBase.RatioIn(domain);
 
         // A unit tick is always positive direction (greater than zero). A unot is a unit flipped around zero, so same length pointing in opposite direction.
-        public long UnitTick => StartTickValue >= EndTickValue ? StartTickValue : EndTickValue;
-		public long ZeroTick => StartTickValue;
+        public long UnitTick => StartTickPosition >= EndTickPosition ? StartTickPosition : EndTickPosition;
+		public long ZeroTick => StartTickPosition;
 		public long UnotTick => ZeroTick - UnitTick;
-		public long UnitLengthInTicks => EndTickValue - StartTickValue == 0 ? 1 : EndTickValue - StartTickValue;
+		public long UnitLengthInTicks => EndTickPosition - StartTickPosition == 0 ? 1 : EndTickPosition - StartTickPosition;
     }
 }
