@@ -14,7 +14,7 @@ namespace Numbers.UI
     public class SKNumberMapper : SKMapper
     {
         public Number Number { get; }
-        public SKSegment NumberSegment { get; private set; }
+        public SKSegment NumberSegment { get; set; }
         public SKSegment RenderSegment { get; private set; }
 
         private SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain.Id);
@@ -27,7 +27,7 @@ namespace Numbers.UI
 		    get => NumberSegment.StartPoint;
 		    set
 		    {
-			    (Number.StartT, _) = DomainSegment.TFromPoint(value, false);
+			    (Number.StartT, _) = UnitSegment.TFromPoint(value, false);
 			    EnsureSegment();
             }
 	    }
@@ -37,29 +37,29 @@ namespace Numbers.UI
 		    get => NumberSegment.EndPoint;
 		    set
 		    {
-			    (Number.EndT, _) = DomainSegment.TFromPoint(value, false);
+			    (Number.EndT, _) = UnitSegment.TFromPoint(value, false);
 			    EnsureSegment();
 		    }
 	    }
 
-	    public SKSegment DomainSegment => DomainMapper.DomainSegment;
+	    public SKSegment UnitSegment => DomainMapper.UnitSegment;
 
 	    public SKNumberMapper(Workspace workspace, Number number) : base(workspace, number)
 	    {
 		    Number = number;
-		    EnsureSegment();
+		    //EnsureSegment();
 	    }
 
 	    public void EnsureSegment()
 	    {
-		    var nr = Number.Ratio;
-            NumberSegment = DomainSegment.SegmentAlongLine(nr.Start, nr.End);
+		    var val = Number.ValueInUnitPerspective;
+            NumberSegment = UnitSegment.SegmentAlongLine((float)val.Imaginary, (float)val.Real);
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
         {
-	        EnsureSegment();
 	        if (Number.Id != Number.Domain.UnitId)
 	        {
+				EnsureSegment();
 		        var dir = Number.Direction;
 		        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
 		        RenderSegment = NumberSegment + offset;
@@ -82,17 +82,31 @@ namespace Numbers.UI
 
         public float TFromPoint(SKPoint point)
         {
-	        var ds = DomainMapper.DomainSegment;
-	        var pt = ds.ProjectPointOnto(point);
-            var (t, _) = ds.TFromPoint(pt, false);
-	        t = (float)(Math.Round(t * ds.Length) / ds.Length);
+	        var us = DomainMapper.UnitSegment;
+	        var pt = us.ProjectPointOnto(point, false);
+            var (t, _) = us.TFromPoint(pt, false);
+	        t = (float)(Math.Round(t * us.Length) / us.Length);
+	        //Console.WriteLine(t);
 	        return t;
         }
         public void SetValueByKind(SKPoint newPoint, UIKind kind)
         {
-            if (kind.IsMajor())
+	        if (kind.IsUnit())
+	        {
+	            var ds = DomainMapper.DisplayLine;
+	            var pt = ds.ProjectPointOnto(newPoint);
+	            if (kind.IsMajor())
+	            {
+		            NumberSegment.EndPoint = pt;
+	            }
+	            else
+	            {
+		            NumberSegment.StartPoint = pt;
+	            }
+	        }
+	        else if (kind.IsMajor())
             {
-                SetEndValueByPoint(newPoint);
+	            SetEndValueByPoint(newPoint);
             }
 	        else
             {

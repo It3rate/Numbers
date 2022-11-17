@@ -25,8 +25,12 @@ namespace Numbers.Core
 		public Domain Domain { get; set; }
 		public Trait Trait => Domain.Trait;
 		public Focal Focal => Trait.FocalStore[FocalId];
+		public Focal Unit => Trait.FocalStore[Domain.UnitFocalId];
+		public long ZeroTick => Unit.StartTickPosition;
+		public long UnitLength => Unit.LengthInTicks;
+		public long AbsUnitLength => Unit.AbsLengthInTicks;
 
-		public bool IsUnitOrUnot => Domain.UnitId == Id;
+        public bool IsUnitOrUnot => Domain.UnitId == Id;
 		public bool IsUnit => IsUnitOrUnot && Direction == 1;
 		public bool IsUnot => IsUnitOrUnot && Direction == -1;
         public bool IsUnitPerspective => Domain.IsUnitPerspective;
@@ -60,42 +64,43 @@ namespace Numbers.Core
         }
         public long StartValueInTicks
         {
-			get => -Focal.StartTickPosition + Domain.UnitFocal.ZeroTick;
-			set => Focal.StartTickPosition = Domain.UnitFocal.ZeroTick - value;
+			get => -Focal.StartTickPosition + ZeroTick;
+			set => Focal.StartTickPosition = ZeroTick - value;
 		}
 		public long EndValueInTicks
 		{
-			get => Focal.EndTickPosition - Domain.UnitFocal.ZeroTick;
-			set => Focal.EndTickPosition = value + Domain.UnitFocal.ZeroTick;
+			get => Focal.EndTickPosition - ZeroTick;
+			set => Focal.EndTickPosition = value + ZeroTick;
 		}
 		public long TickCount => Focal.EndTickPosition - Focal.StartTickPosition;
 		
         public double StartT
-		{
-			get => Focal.StartTickPosition / (double)Domain.MaxRange.LengthInTicks;
-			set => Focal.StartTickPosition = (long)Math.Round(value * (double)Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickPosition);
+        {
+	        get => (Focal.StartTickPosition - ZeroTick) / (double)UnitLength;
+	        set => Focal.StartTickPosition = (long)Math.Round(value * UnitLength + ZeroTick);
 		}
 		public double EndT
 		{
-			get => Focal.EndTickPosition / (double)Domain.MaxRange.LengthInTicks;
-			set => Focal.EndTickPosition = (long)Math.Round(value * Domain.MaxRange.LengthInTicks + Domain.MaxRange.StartTickPosition);
+			get => (Focal.EndTickPosition - ZeroTick) / (double)UnitLength;
+			set => Focal.EndTickPosition = (long)Math.Round(value * UnitLength + ZeroTick);
 		}
 
         public double StartValue
         {
-	        get => StartValueInTicks / (double) Domain.UnitFocal.UnitLengthInTicks;
-	        set => StartValueInTicks = (long)Math.Round(value * Domain.UnitFocal.UnitLengthInTicks); 
+	        get => StartValueInTicks / (double) UnitLength;
+	        set => StartValueInTicks = (long)Math.Round(value * UnitLength); 
         }
         public double EndValue
 		{
-			get => EndValueInTicks / (double) Domain.UnitFocal.UnitLengthInTicks;
-			set => EndValueInTicks = (long) Math.Round(value * Domain.UnitFocal.UnitLengthInTicks);
+			get => EndValueInTicks / (double) UnitLength;
+			set => EndValueInTicks = (long) Math.Round(value * UnitLength);
         }
         public Complex Value
         {
 	        get => new Complex(EndValue, StartValue);
 	        set { StartValue = value.Imaginary; EndValue = value.Real; }
         }
+        public Complex ValueInUnitPerspective => new Complex(EndValue, -StartValue);
 
         public long WholePartStart => (long)Math.Round(StartValue);
         public long NumeratorPartStart => StartValueInTicks % DenominatorPart;
@@ -108,7 +113,7 @@ namespace Numbers.Core
 		public Complex Round => new Complex(Math.Round(EndValue), Math.Round(StartValue));
 		public Complex Remainder => Value - Floor;
 
-		public RatioSeg Ratio => Focal.RatioIn(Domain);
+		public RatioSeg Ratio => Domain.FocalAsRatio(Focal);
         public Number SyncDomain(Number other)
 		{
 			return other;//.Clone();
@@ -138,8 +143,8 @@ namespace Numbers.Core
 		public void Multiply(Number other)
 		{
 			var synced = SyncDomain(other);
-			var tmp = (EndValueInTicks * synced.EndValueInTicks - StartValueInTicks * synced.StartValueInTicks) / Domain.UnitFocal.UnitLengthInTicks;
-			StartValueInTicks = (EndValueInTicks * synced.StartValueInTicks - StartValueInTicks * synced.EndValueInTicks) / Domain.UnitFocal.UnitLengthInTicks;
+			var tmp = (EndValueInTicks * synced.EndValueInTicks - StartValueInTicks * synced.StartValueInTicks) / UnitLength;
+			StartValueInTicks = (EndValueInTicks * synced.StartValueInTicks - StartValueInTicks * synced.EndValueInTicks) / UnitLength;
 			EndValueInTicks = tmp;
 		}
 
@@ -168,8 +173,8 @@ namespace Numbers.Core
 				start = (start * wr - end) / wd;
 				end = tmp;
 			}
-			StartValueInTicks = (long)(-start * Domain.UnitFocal.UnitLengthInTicks);
-			EndValueInTicks = (long)(end * Domain.UnitFocal.UnitLengthInTicks);
+			StartValueInTicks = (long)(-start * UnitLength);
+			EndValueInTicks = (long)(end * UnitLength);
         }
 
 		public Focal CloneFocal() => Trait.CloneFocal(Focal);

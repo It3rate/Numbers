@@ -35,6 +35,7 @@ namespace Numbers.Mind
         public Stack<Number> ResultStack { get; } = new Stack<Number>(); // can have multiple results?
 
         public bool LockValuesOnDrag { get; set; }
+        public bool LockTicksOnDrag { get; set; }
 
         public Workspace(Brain brain)
         {
@@ -120,7 +121,7 @@ namespace Numbers.Mind
 			        {
 				        Workspace.NumberStore[id].Value = storedValue;
                     }
-			        else
+			        else if(LockTicksOnDrag)
 			        {
 
 			        }

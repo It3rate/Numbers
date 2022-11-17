@@ -95,7 +95,11 @@ namespace Numbers.UI
 	    {
 		    return (kind & UIKind.Major) != UIKind.None;
 	    }
-	    public static bool IsNumber(this UIKind kind)
+	    public static bool IsUnit(this UIKind kind)
+	    {
+		    return (kind & UIKind.Unit) != UIKind.None;
+	    }
+        public static bool IsNumber(this UIKind kind)
 	    {
 		    return (kind & UIKind.Number) != UIKind.None;
 	    }

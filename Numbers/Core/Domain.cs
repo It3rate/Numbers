@@ -38,7 +38,7 @@ namespace Numbers.Core
 	        set { _unitFocalFocalId = value; UnitFocal = new UnitFocal(Trait.FocalStore[UnitFocalId]);}
         }
         public UnitFocal UnitFocal { get; private set; }
-        public RatioSeg UnitFocalRatio => UnitFocal.RatioIn(this);
+        public RatioSeg UnitFocalRatio => FocalAsRatio(UnitFocal.FocalBase);
         public bool IsUnitPerspective => UnitFocal.Direction >= 0;
 
         public int UnitId { get; set; }
@@ -46,7 +46,9 @@ namespace Numbers.Core
 
         public int MaxRangeId { get; set; }
         public Focal MaxRange => Trait.FocalStore[MaxRangeId];
-        public double MaxRangeValue => MaxRange.LengthInTicks / (double)UnitFocal.LengthInTicks;
+        public Complex MaxRangeValue => FocalAsValue(MaxRange);
+        public long MaxRangeLengthTicks => MaxRange.LengthInTicks;
+        public double MaxRangeLengthValue => MaxRange.LengthInTicks / (double)UnitFocal.LengthInTicks;
 
         public Domain(int traitId, int unitFocalId, int maxRangeId)
         {
@@ -92,6 +94,7 @@ namespace Numbers.Core
 	        }
         }
 
+
         public long[] WholeNumberTicks()
         {
 	        var result = new List<long>();
@@ -109,6 +112,30 @@ namespace Numbers.Core
 	        }
 
 	        return result.ToArray();
+        }
+
+        public Complex FocalAsValue(Focal focal)
+        {
+	        return PositionsAsValue(focal.StartTickPosition, focal.EndTickPosition);
+        }
+        public Complex PositionsAsValue(long startTick, long endTick)
+        {
+	        var zt = UnitFocal.ZeroTick;
+	        var len = (double)UnitFocal.UnitLengthInTicks;
+	        var sv = (-startTick + zt) / len;
+	        var ev = (endTick - zt) / len;
+	        return new Complex(ev, sv);
+        }
+        public RatioSeg FocalAsRatio(Focal focal)
+        {
+	        return PositionsAsRatio(focal.StartTickPosition, focal.EndTickPosition);
+        }
+        public RatioSeg PositionsAsRatio(long startTick, long endTick)
+        {
+	        var maxRange = MaxRange;
+	        var start = (startTick - maxRange.StartTickPosition) / (float)(maxRange.LengthInTicks);
+	        var end = (endTick - maxRange.StartTickPosition) / (float)(maxRange.LengthInTicks);
+	        return new RatioSeg(start, end);
         }
 
 

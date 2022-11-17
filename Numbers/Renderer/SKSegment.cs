@@ -202,13 +202,13 @@ namespace Numbers.Renderer
         public (float, SKPoint) TFromPoint(SKPoint point, bool clamp)
         {
             var pp = ProjectPointOnto(point, clamp);
-            var v0 = EndPoint - StartPoint;
-            var v1 = pp - StartPoint;
-            var sign = 1;//Math.Sign(v0.X) != Math.Sign(v1.X) || Math.Sign(v0.Y) != Math.Sign(v1.Y) ? -1f : 1f;
-            var totalLen = v0.Length;
-            var ptLen = v1.Length * sign;
-
+            var segLen = EndPoint - StartPoint;
+            var ptOffset = pp - StartPoint;
+            var sign = (segLen.X * ptOffset.X >= 0) && (segLen.Y * ptOffset.Y >= 0) ? 1f : -1f;
+            var totalLen = segLen.LengthSquared;
+            var ptLen = ptOffset.LengthSquared;
             var t = ptLen / totalLen;
+            t = (float)(Math.Sqrt(t) * sign);
             return (t, pp);
         }
 

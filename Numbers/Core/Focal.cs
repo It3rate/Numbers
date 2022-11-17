@@ -12,7 +12,6 @@ namespace Numbers.Core
 	    long EndTickPosition { get; set; }
 	    long LengthInTicks { get; }
 	    int Direction { get; }
-	    RatioSeg RatioIn(Domain domain);
     }
 
     public class Focal : IFocal
@@ -40,8 +39,9 @@ namespace Numbers.Core
 		    set => PositionStore[EndId] = value;
 	    }
 	    public long LengthInTicks => EndTickPosition - StartTickPosition;
+	    public long AbsLengthInTicks => Math.Abs(LengthInTicks);
 
-	    public Focal(int startId, int endId)
+        public Focal(int startId, int endId)
 	    {
 		    //Trait = trait;
 		    StartId = startId;
@@ -49,13 +49,6 @@ namespace Numbers.Core
 		    Id = focalCounter++;
         }
         public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
-        public RatioSeg RatioIn(Domain domain)
-        {
-	        var maxRange = domain.MaxRange;
-	        var start = (StartTickPosition - maxRange.StartTickPosition) / (float)(maxRange.LengthInTicks);
-	        var end = (EndTickPosition - maxRange.StartTickPosition) / (float)(maxRange.LengthInTicks);
-            return new RatioSeg(start, end);
-        }
 
         public static List<long> PositionStore { get; } = new List<long>(4096);
     }
@@ -69,6 +62,11 @@ namespace Numbers.Core
 	    {
 		    Start = start;
 		    End = end;
+	    }
+
+	    public override string ToString()
+	    {
+		    return $"[{Start:0.00},{End:0.00}]";
 	    }
     }
 }

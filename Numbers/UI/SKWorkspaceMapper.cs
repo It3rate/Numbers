@@ -98,7 +98,7 @@ namespace Numbers.UI
                     if (input.DistanceTo(dmTickPoint) < maxDist / 2f)
                     {
                         var kind = UIKind.Tick | UIKind.Major;
-                        var (t, _) = dm.DomainSegment.TFromPoint(dmTickPoint, false);
+                        var (t, _) = dm.DisplayLine.TFromPoint(dmTickPoint, false);
                         highlight.Set(input, dmTickPoint, dm, t, kind);
                         goto Found;
                     }
@@ -237,7 +237,7 @@ namespace Numbers.UI
 	        if (!Mappers.TryGetValue(domain.Id, out var result))
 	        {
 		        var seg = line ?? NextDefaultLine();
-		        result = new SKDomainMapper(Workspace, domain, seg.StartPoint, seg.EndPoint);
+		        result = new SKDomainMapper(Workspace, domain, seg.StartPoint, seg.EndPoint, 0.2f, 0.1f);
 		        Mappers[domain.Id] = result;
 	        }
 	        return (SKDomainMapper)result;

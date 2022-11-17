@@ -16,11 +16,36 @@ namespace Numbers.UI
     public class SKDomainMapper : SKMapper
     {
 	    public Domain Domain { get; private set; }
-	    public SKSegment DomainSegment { get; private set; }
-	    public RatioSeg UnitRatio;
-	    public SKSegment UnitSegment;
+     //   public RatioSeg UnitRatio;
+	    //public SKSegment UnitSegment;
+	    public RatioSeg UnitRatio => Domain.UnitFocalRatio;
+	    private SKNumberMapper UnitMapper => WorkspaceMapper.NumberMapper(Domain.UnitId);
+        public SKSegment UnitSegment => UnitMapper.NumberSegment;
 	    public List<SKPoint> TickPoints = new List<SKPoint>();
 	    public List<int> Markers = new List<int>();
+
+	    public SKSegment DisplayLine { get; private set; }
+
+	    public Complex DisplayRange()
+	    {
+		    var us = UnitSegment;
+		    var usLen = UnitSegment.Length;
+		    var dlLen = DisplayLine.Length;
+            var (zeroT, zeroPt) = DisplayLine.TFromPoint(us.StartPoint, false);
+            var start = zeroT * dlLen;
+            var end = (1.0f - zeroT) * dlLen;
+
+            return new Complex(end / usLen, start / usLen);
+	    }
+	    public RatioSeg DisplayRatio()
+	    {
+		    var dv = Domain.MaxRangeValue;
+		    var dr = DisplayRange();
+		    var len = Domain.MaxRangeLengthValue;
+		    var sv = (dv.Imaginary - dr.Imaginary) / len;
+		    var ev = (len - (dv.Real - dr.Real)) / len;
+            return new RatioSeg((float) sv, (float)ev); 
+	    }
 
 	    public bool ShowGradientNumberLine;
 	    public bool ShowTicks;
@@ -36,13 +61,13 @@ namespace Numbers.UI
 
         public override SKPoint StartPoint
 	    {
-		    get => DomainSegment.StartPoint;
+		    get => DisplayLine.StartPoint;
 		    set => Reset(Domain, value, EndPoint);
 	    }
-	    public override SKPoint MidPoint => DomainSegment.Midpoint;
+	    public override SKPoint MidPoint => DisplayLine.Midpoint;
 	    public override SKPoint EndPoint
 	    {
-		    get => DomainSegment.EndPoint;
+		    get => DisplayLine.EndPoint;
 		    set => Reset(Domain, StartPoint, value);
 	    }
 	    public SKPoint[] EndPoints => new SKPoint[] {StartPoint, EndPoint};
@@ -50,8 +75,17 @@ namespace Numbers.UI
 	    private static int domainIndexCounter = 0;
 	    private int domainIndex = -1;
 
-	    public SKDomainMapper(Workspace workspace, Domain domain, SKPoint startPoint, SKPoint endPoint) : base(workspace, domain)
+	    public SKDomainMapper(Workspace workspace, Domain domain, SKPoint startPoint, SKPoint endPoint, float unitStartT, float unitWidthT) : base(workspace, domain)
 	    {
+		    //DisplayRange = displayRange == default ? domain.FocalAsValue(domain.MaxRange) : displayRange;
+		    base.MathElement = domain;
+		    Domain = domain;
+		    DisplayLine = new SKSegment(startPoint, endPoint);
+		    var unit = Domain.Unit;
+		    //var rs = RatioInDisplay(unit);
+		    var unitMapper = WorkspaceMapper.NumberMapper(unit.Id);
+		    unitMapper.NumberSegment = DisplayLine.SegmentAlongLine(unitStartT, unitStartT + unitWidthT);
+
 		    Reset(domain, startPoint, endPoint);
 	    }
 
@@ -59,15 +93,24 @@ namespace Numbers.UI
 	    {
 		    base.MathElement = domain;
 		    Domain = domain;
-		    DomainSegment = new SKSegment(startPoint, endPoint);
-		    UnitRatio = Domain.UnitFocalRatio;
-		    UnitSegment = DomainSegment.SegmentAlongLine(UnitRatio.Start, UnitRatio.End);
+		    DisplayLine = new SKSegment(startPoint, endPoint);
+		    //UnitMapper = WorkspaceMapper.NumberMapper(Domain.UnitId);
+            //UnitRatio = Domain.UnitFocalRatio;
+            //UnitSegment = DisplayLine.SegmentAlongLine(UnitRatio.Start, UnitRatio.End); // todo: base on visible section of domain line
 		    Markers.Clear();
 		    AddUnitMarkers();
 		    AddNumberMarkers();
 	    }
 
-	    private void AddUnitMarkers()
+	    private RatioSeg RatioInDisplay(Number num)
+	    {
+		    var displayRatio = DisplayRatio();
+		    var displayLen = displayRatio.Start + displayRatio.End;
+		    var numRatio = num.Ratio;
+		    return new RatioSeg((numRatio.Start - displayRatio.Start) / displayLen, (numRatio.End - displayRatio.Start) / displayLen);
+	    }
+
+        private void AddUnitMarkers()
 	    {
 		    Markers.Add(Domain.UnitId);
 	    }
@@ -94,16 +137,17 @@ namespace Numbers.UI
 		    }
 	    }
 
-	    public void Draw()
+        public void Draw()
 	    {
-		    if (Domain != null)
+		    //UnitMapper = WorkspaceMapper.NumberMapper(Domain.UnitId);
+
+            if (Domain != null)
 		    {
 			    if (domainIndex == -1) domainIndex = domainIndexCounter++;
 			    DrawNumberLineGradient();
 			    DrawNumberLine();
 			    DrawUnit();
 			    DrawTicks();
-			    DrawIntTicks();
 			    DrawMarkers();
 			    var offset = ShowNumberOffsets ? 1f : 0f;
 			    var step = ShowNumberOffsets ? 1f : 0f;
@@ -142,14 +186,14 @@ namespace Numbers.UI
 		    if (ShowGradientNumberLine)
 		    {
 			    var pnt = CorePens.GetGradientPen(
-				    DomainSegment.StartPoint, DomainSegment.EndPoint, Pens.UnotLineColor, Pens.UnitLineColor, 10);
-			    Renderer.DrawSegment(DomainSegment, pnt);
+				    DisplayLine.StartPoint, DisplayLine.EndPoint, Pens.UnotLineColor, Pens.UnitLineColor, 10);
+			    Renderer.DrawSegment(DisplayLine, pnt);
 		    }
 		    else if(!ShowUnits) // if not showing units at least color the line
 		    {
 			    var pnt = CorePens.GetGradientPen(
-				    DomainSegment.StartPoint, DomainSegment.EndPoint, Pens.UnotLineColor, Pens.UnitLineColor, 3);
-			    Renderer.DrawSegment(DomainSegment, pnt);
+				    DisplayLine.StartPoint, DisplayLine.EndPoint, Pens.UnotLineColor, Pens.UnitLineColor, 3);
+			    Renderer.DrawSegment(DisplayLine, pnt);
 
             }
 	    }
@@ -159,9 +203,9 @@ namespace Numbers.UI
 		    foreach (var id in Markers)
 		    {
 			    var num = Workspace.NumberStore[id];
-			    var ratio = num.Ratio;
-			    var isUnit = id == Domain.UnitId;
-			    var rem = num.Remainder;
+			    //var ratio = RatioInDisplay(num);//num.Ratio;//
+			    //var isUnit = id == Domain.UnitId;
+			    //var rem = num.Remainder;
 			    DrawMarker(num, true);
 			    DrawMarker(num, false);
 		    }
@@ -175,7 +219,9 @@ namespace Numbers.UI
 		    }
 
 		    var value = isStart ? num.StartValue : num.EndValue;
-		    var t = isStart ? num.Ratio.Start : num.Ratio.End;
+            var val = num.ValueInUnitPerspective;
+            var t = (float)(isStart ? val.Imaginary : val.Real);
+            //var t = isStart ? dr.Start : dr.End;
 		    var suffix = isStart ? "i" : "";
 		    var unitLabel = num.IsUnitOrUnot && isStart ? "0" : num.IsUnit ? "1" : num.IsUnot ? "i" : "";
 
@@ -215,58 +261,72 @@ namespace Numbers.UI
 	    private SKPoint DrawMarkerPointer(float t)
 	    {
 		    var w = 5.0f;
-		    var markerHW = (float) (1.0 / DomainSegment.Length) * w;
-
-		    var pt = DomainSegment.PointAlongLine(t);
-		    var ptPlus = DomainSegment.PointAlongLine(t + markerHW);
-		    var ptMinus = DomainSegment.PointAlongLine(t - markerHW);
-		    var p0 = DomainSegment.OrthogonalPoint(pt, -w * 2);
-		    var p1 = DomainSegment.OrthogonalPoint(ptPlus, -w * 4);
-		    var p2 = DomainSegment.OrthogonalPoint(ptMinus, -w * 4);
+		    var unitSeg = UnitSegment;
+		    var markerHW = (float) (1.0 / UnitSegment.Length) * w;
+		    var pt = unitSeg.PointAlongLine(t);
+		    var ptPlus = unitSeg.PointAlongLine(t + markerHW);
+		    var ptMinus = unitSeg.PointAlongLine(t - markerHW);
+		    var p0 = unitSeg.OrthogonalPoint(pt, -w * 2);
+		    var p1 = unitSeg.OrthogonalPoint(ptPlus, -w * 4);
+		    var p2 = unitSeg.OrthogonalPoint(ptMinus, -w * 4);
 		    Renderer.FillPolyline(Pens.MarkerBrush, p0, p1, p2, p0);
 
-		    var textPoint = DomainSegment.OrthogonalPoint(pt, -w * 5);
-		    ;
+		    var textPoint = unitSeg.OrthogonalPoint(pt, -w * 5);
+		    
 		    return textPoint;
 	    }
 
 	    private void DrawNumberLine()
 	    {
-		    Renderer.DrawSegment(DomainSegment, Renderer.Pens.NumberLinePen);
+		    Renderer.DrawSegment(DisplayLine, Renderer.Pens.NumberLinePen);
 	    }
 
-	    private void DrawTicks()
+	    public long[] WholeNumberTicks()
 	    {
-		    if (DomainSegment.Length / Domain.MaxRange.LengthInTicks >= 3)
+		    var result = new List<long>();
+		    var dr = DisplayRange();
+		    var start = (int)Math.Ceiling(-dr.Imaginary);
+		    var end = (int)Math.Floor(dr.Real);
+		    for (var i = start; i <= end; i++)
 		    {
-			    var segStart = Domain.MaxRange.StartTickPosition;
-			    var segEnd = Domain.MaxRange.EndTickPosition;
-			    var segLen = (float) Domain.MaxRange.LengthInTicks;
-			    for (var i = segStart; i < segEnd; i++)
-			    {
-				    var t = (i - segStart) / segLen;
-				    DrawTick(t, -8, Renderer.Pens.TickPen);
-			    }
+			    result.Add(i);
 		    }
+		    return result.ToArray();
 	    }
+        private void DrawTicks()
+	    {
+            var dr = DisplayRange();
+            var wholeTicks = WholeNumberTicks();
 
-	    private void DrawIntTicks()
-	    {
-		    var segStart = (float)Domain.MaxRange.StartTickPosition;
-		    var zeroTick = (float)Domain.Unit.StartTickPosition;
-            var segLen = (float) Domain.MaxRange.LengthInTicks;
-		    var wholeTicks = Domain.WholeNumberTicks();
-		    TickPoints.Clear();
-		    foreach (var wholeTick in wholeTicks)
-		    {
-			    var t = (wholeTick - segStart) / segLen;
-			    TickPoints.Add(DrawTick(t, -8, Renderer.Pens.TickBoldPen));
+		    var tickCount = (float)Domain.Unit.TickCount;
+		    var tickLen = UnitSegment.Length / tickCount;
+		    var showMinorTicks = tickLen >= 3;
+
+            TickPoints.Clear();
+            foreach (var wholeTick in wholeTicks)
+            {
+                TickPoints.Add(DrawTick(wholeTick, -8, Renderer.Pens.TickBoldPen));
 		    }
-	    }
+
+            if (showMinorTicks)
+            {
+	            for (var i = wholeTicks[0] - 1; i < wholeTicks[wholeTicks.Length - 1] + 1; i++)
+	            {
+		            for (int j = 0; j < tickCount; j++)
+		            {
+			            var t = i + j / tickCount;
+			            if (t > -dr.Imaginary && t < dr.Real)
+			            {
+				            DrawTick(t, -8, Renderer.Pens.TickPen);
+			            }
+		            }
+	            }
+            }
+        }
 
 	    private SKPoint DrawTick(float t, int offset, SKPaint paint)
 	    {
-		    var pts = DomainSegment.PerpendicularLine(t, offset);
+		    var pts = UnitSegment.PerpendicularLine(t, offset);
 		    Renderer.DrawLine(pts.Item1, pts.Item2, paint);
 		    return pts.Item1;
 	    }

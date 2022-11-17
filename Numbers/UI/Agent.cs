@@ -72,8 +72,8 @@ namespace Numbers.UI
             var wm = Brain.WorkspaceMappers[Workspace.Id];
 	        var unit = trait.FocalStore.Values.First();
 	        var padding = 1.4;
-	        long maxPos = (long)(focalPositions.Max() * padding);
-	        long minPos = (long)(focalPositions.Min() * padding);
+	        long maxPos = (long)Math.Max((focalPositions.Max() * padding), unit.AbsLengthInTicks * padding);
+	        long minPos = (long)Math.Min((focalPositions.Min() * padding), -unit.AbsLengthInTicks * padding);
             var range = trait.AddFocalByUnitPositions(minPos, maxPos);
             var yt = 0.1f;
             var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
@@ -457,8 +457,11 @@ namespace Numbers.UI
                     UIMode = UIMode.Any;
                     break;
                 case Keys.E:
-                    Workspace.LockValuesOnDrag = true;
-                    break;
+	                Workspace.LockValuesOnDrag = true;
+	                break;
+                case Keys.W:
+	                Workspace.LockTicksOnDrag = true;
+	                break;
                 case Keys.T:
                     NextTest();
                     break;
@@ -532,6 +535,7 @@ namespace Numbers.UI
                 _isControlDown = e.Control;
                 _isShiftDown = e.Shift;
                 Workspace.LockValuesOnDrag = false;
+                Workspace.LockTicksOnDrag = false;
                 //_isAltDown = e.Alt;
                 //_startMatrix = Data.Matrix;
                 //if (UIMode.IsMomentary())

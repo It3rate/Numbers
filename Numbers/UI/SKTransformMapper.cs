@@ -36,6 +36,7 @@ namespace Numbers.UI
 	        get { return SKPoint.Empty; }
 	        set {}
         }
+        private SKPoint SKOrigin => SelectionMapper.UnitSegment.StartPoint;
 
         public SKTransformMapper(Workspace workspace, Transform transform) : base(workspace, transform)
         {
@@ -64,17 +65,17 @@ namespace Numbers.UI
 			r0_s0 = -repNum.StartValue * selNum.StartValue;
 			r1_s1 = repNum.EndValue * selNum.EndValue;
 
-			var org = selDr.DomainSegment.PointAlongLine(0.5f);
+			var org = selDr.DisplayLine.PointAlongLine(0.5f);
 
-			var s0Unit = selDr.DomainSegment.PointAlongLine(selRatio.Start);
-			var s1Unit = selDr.DomainSegment.PointAlongLine(selRatio.End);
-			var r0Unit = repDr.DomainSegment.PointAlongLine(repRatio.Start);
-			var r1Unit = repDr.DomainSegment.PointAlongLine(repRatio.End);
+			var s0Unit = selDr.DisplayLine.PointAlongLine(selRatio.Start);
+			var s1Unit = selDr.DisplayLine.PointAlongLine(selRatio.End);
+			var r0Unit = repDr.DisplayLine.PointAlongLine(repRatio.Start);
+			var r1Unit = repDr.DisplayLine.PointAlongLine(repRatio.End);
 
-			var s0Unot = selDr.DomainSegment.PointAlongLine(1f - selRatio.Start);
-			var s1Unot = selDr.DomainSegment.PointAlongLine(1f - selRatio.End);
-			var r0Unot = repDr.DomainSegment.PointAlongLine(1f - repRatio.Start);
-			var r1Unot = repDr.DomainSegment.PointAlongLine(1f - repRatio.End);
+			var s0Unot = selDr.DisplayLine.PointAlongLine(1f - selRatio.Start);
+			var s1Unot = selDr.DisplayLine.PointAlongLine(1f - selRatio.End);
+			var r0Unot = repDr.DisplayLine.PointAlongLine(1f - repRatio.Start);
+			var r1Unot = repDr.DisplayLine.PointAlongLine(1f - repRatio.End);
 
 
             DrawTriangle(r0_s1 >= 0, unotBA_Brush, false, r0Unot, s1Unit, org);
@@ -143,8 +144,8 @@ namespace Numbers.UI
         }
 		private void DrawAreaValues(Number selNum, Number repNum, bool unitPerspective = true)
 		{
-            var selSeg = SelectionMapper.DomainSegment;
-			var repSeg = RepeatMapper.DomainSegment;
+            var selSeg = SelectionMapper.DisplayLine;
+			var repSeg = RepeatMapper.DisplayLine;
 
 			var r0_s1Txt = $"{r0_s1:0.0}i";
 			var r1_s0Txt = $"{r1_s0:0.0}i";
@@ -194,7 +195,6 @@ namespace Numbers.UI
 			DrawUnitBox(cwPts, pen);
 		}
 
-		private SKPoint SKOrigin => SelectionMapper.UnitSegment.StartPoint;
 		private void TransformPoints(SKPoint[] pts)
 		{
 			var org = SKOrigin;

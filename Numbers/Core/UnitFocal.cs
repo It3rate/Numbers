@@ -16,15 +16,25 @@
         public Focal FocalBase { get; }
 		public long Offset { get; set; } = 0;
 
-		public long StartTickPosition
+		public Focal EquivalentFocal => FocalBase; // todo: Probably the whole offset idea is wrong, merge UnitFocal with Focal. Verify UnitTick etc work.
+
+        public long StartTickPosition
 		{
 			get=>FocalBase.StartTickPosition + Offset;
-			set {var fb = FocalBase; fb.StartTickPosition = value - Offset;}
+			set
+			{
+				var fb = FocalBase;
+				fb.StartTickPosition = value - Offset;
+			}
 		}
 		public long EndTickPosition 
 		{
 			get => FocalBase.EndTickPosition + Offset;
-			set { var fb = FocalBase; fb.EndTickPosition = value - Offset; }
+			set
+			{
+				var fb = FocalBase;
+				fb.EndTickPosition = value - Offset;
+			}
 		}
 		public long LengthInTicks => FocalBase.LengthInTicks == 0 ? 1 : FocalBase.LengthInTicks;
 
@@ -35,7 +45,6 @@
 		}
 
 		public int Direction => FocalBase.Direction;
-		public RatioSeg RatioIn(Domain domain) => FocalBase.RatioIn(domain);
 
         // A unit tick is always positive direction (greater than zero). A unot is a unit flipped around zero, so same length pointing in opposite direction.
         public long UnitTick => StartTickPosition >= EndTickPosition ? StartTickPosition : EndTickPosition;
