@@ -88,6 +88,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Range.cs" />
     <Compile Include="Core\Domain.cs" />
     <Compile Include="Core\Focal.cs" />
     <Compile Include="Core\Formula.cs" />

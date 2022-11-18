@@ -54,7 +54,7 @@ namespace Numbers.UI
         public void EnsureSegment()
         {
             var val = DomainMapper.UnitSign == 1 ? Number.ValueInUnitPerspective : Number.ValueInUnotPerspective;
-            NumberSegment = UnitSegment.SegmentAlongLine((float)val.Imaginary, (float)val.Real);
+            NumberSegment = UnitSegment.SegmentAlongLine((float)val.Start, (float)val.End);
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
         {

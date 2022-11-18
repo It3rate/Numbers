@@ -37,7 +37,7 @@ namespace Numbers.Core
 	        get => Trait.FocalStore[UnitFocalId];
 	        private set => UnitFocalId = value.Id;
         }
-        public RatioSeg UnitFocalRatio => FocalAsRatio(UnitFocal);
+        public Range UnitFocalRange => FocalAsRatio(UnitFocal);
         public bool IsUnitPerspective => UnitFocal.Direction >= 0;
 
         public int UnitId { get; set; }
@@ -45,7 +45,7 @@ namespace Numbers.Core
 
         public int MaxRangeId { get; set; }
         public IFocal MaxRange => Trait.FocalStore[MaxRangeId];
-        public Complex MaxRangeValue => FocalAsValue(MaxRange);
+        public Range MaxRangeValue => FocalAsValue(MaxRange);
         public long MaxRangeLengthTicks => MaxRange.LengthInTicks;
         public double MaxRangeLengthValue => MaxRange.LengthInTicks / (double)UnitFocal.LengthInTicks;
 
@@ -71,7 +71,7 @@ namespace Numbers.Core
 		        yield return Workspace.NumberStore[id];
 	        }
         }
-        public void GetNumberValues(Dictionary<int, Complex> dict)
+        public void GetNumberValues(Dictionary<int, Range> dict)
         {
             dict.Clear();
 	        foreach (var num in Numbers())
@@ -82,7 +82,7 @@ namespace Numbers.Core
                 }
 	        }
         }
-        public void SetNumberValues(Dictionary<int, Complex> values, params int[] ignoreIds)
+        public void SetNumberValues(Dictionary<int, Range> values, params int[] ignoreIds)
         {
 	        foreach (var num in values)
 	        {
@@ -113,28 +113,28 @@ namespace Numbers.Core
 	        return result.ToArray();
         }
 
-        public Complex FocalAsValue(IFocal focal)
+        public Range FocalAsValue(IFocal focal)
         {
 	        return PositionsAsValue(focal.StartTickPosition, focal.EndTickPosition);
         }
-        public Complex PositionsAsValue(long startTick, long endTick)
+        public Range PositionsAsValue(long startTick, long endTick)
         {
 	        var zeroTick = UnitFocal.StartTickPosition;
 	        var len = (double)UnitFocal.NonZeroLength;
 	        var sv = (-startTick + zeroTick) / len;
 	        var ev = (endTick - zeroTick) / len;
-	        return new Complex(ev, sv);
+	        return new Range(sv, ev);
         }
-        public RatioSeg FocalAsRatio(IFocal focal)
+        public Range FocalAsRatio(IFocal focal)
         {
 	        return PositionsAsRatio(focal.StartTickPosition, focal.EndTickPosition);
         }
-        public RatioSeg PositionsAsRatio(long startTick, long endTick)
+        public Range PositionsAsRatio(long startTick, long endTick)
         {
 	        var maxRange = MaxRange;
 	        var start = (startTick - maxRange.StartTickPosition) / (float)(maxRange.LengthInTicks);
 	        var end = (endTick - maxRange.StartTickPosition) / (float)(maxRange.LengthInTicks);
-	        return new RatioSeg(start, end);
+	        return new Range(start, end);
         }
 
 

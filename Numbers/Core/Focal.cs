@@ -78,22 +78,4 @@ namespace Numbers.Core
 		    return CreateByIds(MyTrait, StartId, EndId);
 	    }
     }
-
-    // todo: probably remove RatioSeg, maybe its just a complex number.
-    public class RatioSeg
-    {
-	    public float Start { get; set; }
-	    public float End { get; set; }
-
-	    public RatioSeg(float start, float end)
-	    {
-		    Start = start;
-		    End = end;
-	    }
-
-	    public override string ToString()
-	    {
-		    return $"[{Start:0.00},{End:0.00}]";
-	    }
-    }
 }

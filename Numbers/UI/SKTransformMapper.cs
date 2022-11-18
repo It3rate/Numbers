@@ -43,8 +43,8 @@ namespace Numbers.UI
 	        Transform = transform;
         }
 
-        private RatioSeg selRatio;
-        private RatioSeg repRatio;
+        private Range _selRange;
+        private Range _repRange;
         private double r0_s1;
         private double r1_s0;
         private double r0_s0;
@@ -58,8 +58,8 @@ namespace Numbers.UI
 			var selDr = SelectionMapper;
 			var repDr = RepeatMapper;
 
-			selRatio = selNum.Ratio;
-			repRatio = repNum.Ratio;
+			_selRange = selNum.Range;
+			_repRange = repNum.Range;
 			r0_s1 = repNum.StartValue * selNum.EndValue;
 			r1_s0 = repNum.EndValue * selNum.StartValue;
 			r0_s0 = -repNum.StartValue * selNum.StartValue;
@@ -67,15 +67,15 @@ namespace Numbers.UI
 
 			var org = selDr.DisplayLine.PointAlongLine(0.5f);
 
-			var s0Unit = selDr.DisplayLine.PointAlongLine(selRatio.Start);
-			var s1Unit = selDr.DisplayLine.PointAlongLine(selRatio.End);
-			var r0Unit = repDr.DisplayLine.PointAlongLine(repRatio.Start);
-			var r1Unit = repDr.DisplayLine.PointAlongLine(repRatio.End);
+			var s0Unit = selDr.DisplayLine.PointAlongLine(_selRange.StartF);
+			var s1Unit = selDr.DisplayLine.PointAlongLine(_selRange.EndF);
+			var r0Unit = repDr.DisplayLine.PointAlongLine(_repRange.StartF);
+			var r1Unit = repDr.DisplayLine.PointAlongLine(_repRange.EndF);
 
-			var s0Unot = selDr.DisplayLine.PointAlongLine(1f - selRatio.Start);
-			var s1Unot = selDr.DisplayLine.PointAlongLine(1f - selRatio.End);
-			var r0Unot = repDr.DisplayLine.PointAlongLine(1f - repRatio.Start);
-			var r1Unot = repDr.DisplayLine.PointAlongLine(1f - repRatio.End);
+			var s0Unot = selDr.DisplayLine.PointAlongLine(1f - _selRange.StartF);
+			var s1Unot = selDr.DisplayLine.PointAlongLine(1f - _selRange.EndF);
+			var r0Unot = repDr.DisplayLine.PointAlongLine(1f - _repRange.StartF);
+			var r1Unot = repDr.DisplayLine.PointAlongLine(1f - _repRange.EndF);
 
 
             DrawTriangle(r0_s1 >= 0, unotBA_Brush, false, r0Unot, s1Unit, org);
@@ -114,8 +114,8 @@ namespace Numbers.UI
 			var selTxt = $"({sel.StartValue:0.00}i → {sel.EndValue:0.00})";
 			var repTxt = $"({rep.StartValue:0.00}i → {rep.EndValue:0.00})";
 			var result = sel.Value * rep.Value;
-			var resultTxt = $"({result.Imaginary:0.00}i → {result.Real:0.00})";
-			var areaTxt = $"area:  {result.Imaginary + result.Real:0.00}";
+			var resultTxt = $"({result.Start:0.00}i → {result.End:0.00})";
+			var areaTxt = $"area:  {result.Start + result.End:0.00}";
 
 			Canvas.DrawText(selTxt, location.X, location.Y, Pens.Seg0TextBrush);
 			Canvas.DrawText(repTxt, location.X, location.Y + 30, Pens.Seg1TextBrush);
@@ -152,10 +152,10 @@ namespace Numbers.UI
 			var r0_s0Txt = $"{r0_s0:0.0}";
             var r1_s1Txt = $"{r1_s1:0.0}";
 
-            DrawTextOnSegment(r0_s1Txt, selSeg.PointAlongLine(selRatio.End), repSeg.PointAlongLine(1 - repRatio.Start), unotText);
-            DrawTextOnSegment(r1_s0Txt, selSeg.PointAlongLine(selRatio.Start), repSeg.PointAlongLine(1 - repRatio.End), unotText);
-			DrawTextOnSegment(r0_s0Txt, selSeg.PointAlongLine(selRatio.Start), repSeg.PointAlongLine(repRatio.Start), unitText);
-			DrawTextOnSegment(r1_s1Txt, selSeg.PointAlongLine(selRatio.End), repSeg.PointAlongLine(repRatio.End), unitText);
+            DrawTextOnSegment(r0_s1Txt, selSeg.PointAlongLine(_selRange.EndF), repSeg.PointAlongLine(1 - _repRange.StartF), unotText);
+            DrawTextOnSegment(r1_s0Txt, selSeg.PointAlongLine(_selRange.StartF), repSeg.PointAlongLine(1 - _repRange.EndF), unotText);
+			DrawTextOnSegment(r0_s0Txt, selSeg.PointAlongLine(_selRange.StartF), repSeg.PointAlongLine(_repRange.StartF), unitText);
+			DrawTextOnSegment(r1_s1Txt, selSeg.PointAlongLine(_selRange.EndF), repSeg.PointAlongLine(_repRange.EndF), unitText);
 
             var total = r0_s1 + r1_s0 + r0_s0 + r1_s1;
 			Canvas.DrawText($"area: {total:0.0}", 30, 50, Pens.TextBrush);
@@ -204,12 +204,12 @@ namespace Numbers.UI
             var sNum = Transform.Selection[0].Value;
             var prod = rNum * sNum;
 
-            var ri = (float)rNum.Imaginary;
-			var ru = (float)rNum.Real;
-			var si = (float)sNum.Imaginary;
-			var su = (float)sNum.Real;
-			var prodI = (float)prod.Imaginary;
-			var prodU = (float)prod.Real;
+            var ri = (float)rNum.Start;
+			var ru = (float)rNum.End;
+			var si = (float)sNum.Start;
+			var su = (float)sNum.End;
+			var prodI = (float)prod.Start;
+			var prodU = (float)prod.End;
             SKPoint pt = SKPoint.Empty;
 			float x, y = 0;
 

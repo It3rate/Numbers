@@ -23,9 +23,9 @@ namespace Numbers.UI
 	    public SKSegment DisplayLine { get; private set; }
 
 	    public int UnitSign => Domain.Unit.Direction;
-	    public RatioSeg UnitRatio => Domain.UnitFocalRatio;
+	    public Range UnitRange => Domain.UnitFocalRange;
 
-        public Complex DisplayRange()
+        public Range DisplayRange()
 	    {
 		    var us = UnitSegment;
 		    var usLen = UnitSegment.Length;
@@ -34,16 +34,16 @@ namespace Numbers.UI
             var start = zeroT * dlLen;
             var end = (1.0f - zeroT) * dlLen;
 
-            return new Complex(end / usLen, start / usLen);
+            return new Range(start / usLen, end / usLen);
 	    }
-	    public RatioSeg DisplayRatio()
+	    public Range DisplayRatio()
 	    {
 		    var dv = Domain.MaxRangeValue;
 		    var dr = DisplayRange();
 		    var len = Domain.MaxRangeLengthValue;
-		    var sv = (dv.Imaginary - dr.Imaginary) / len;
-		    var ev = (len - (dv.Real - dr.Real)) / len;
-            return new RatioSeg((float) sv, (float)ev); 
+		    var sv = (dv.Start - dr.Start) / len;
+		    var ev = (len - (dv.End - dr.End)) / len;
+            return new Range(sv, ev); 
 	    }
 
 	    public bool ShowGradientNumberLine;
@@ -93,19 +93,19 @@ namespace Numbers.UI
 		    Domain = domain;
 		    DisplayLine = new SKSegment(startPoint, endPoint);
 		    //UnitMapper = WorkspaceMapper.NumberMapper(Domain.UnitId);
-            //UnitRatio = Domain.UnitFocalRatio;
-            //UnitSegment = DisplayLine.SegmentAlongLine(UnitRatio.Start, UnitRatio.End); // todo: base on visible section of domain line
+            //UnitRange = Domain.UnitFocalRange;
+            //UnitSegment = DisplayLine.SegmentAlongLine(UnitRange.StartF, UnitRange.EndF); // todo: base on visible section of domain line
 		    Markers.Clear();
 		    AddUnitMarkers();
 		    AddNumberMarkers();
 	    }
 
-	    private RatioSeg RatioInDisplay(Number num)
+	    private Range RatioInDisplay(Number num)
 	    {
 		    var displayRatio = DisplayRatio();
-		    var displayLen = displayRatio.Start + displayRatio.End;
-		    var numRatio = num.Ratio;
-		    return new RatioSeg((numRatio.Start - displayRatio.Start) / displayLen, (numRatio.End - displayRatio.Start) / displayLen);
+		    var displayLen = displayRatio.StartF + displayRatio.EndF;
+		    var numRatio = num.Range;
+		    return new Range((numRatio.StartF - displayRatio.StartF) / displayLen, (numRatio.EndF - displayRatio.StartF) / displayLen);
 	    }
 
         private void AddUnitMarkers()
@@ -201,7 +201,7 @@ namespace Numbers.UI
 		    foreach (var id in Markers)
 		    {
 			    var num = Workspace.NumberStore[id];
-			    //var ratio = RatioInDisplay(num);//num.Ratio;//
+			    //var ratio = RatioInDisplay(num);//num.Range;//
 			    //var isUnit = id == Domain.UnitId;
 			    //var rem = num.Remainder;
 			    DrawMarker(num, true);
@@ -220,8 +220,8 @@ namespace Numbers.UI
 		    var value = isStart ? num.StartValue : num.EndValue;
             var val = sign == 1 ? num.ValueInUnitPerspective : num.ValueInUnotPerspective; //num.ValueInUnitPerspective;
             
-            var t = (float)(isStart ? val.Imaginary : val.Real);
-            //var t = isStart ? dr.Start : dr.End;
+            var t = (float)(isStart ? val.Start : val.End);
+            //var t = isStart ? dr.StartF : dr.EndF;
 		    var suffix = isStart ? "i" : "";
 		    var unitLabel = num.IsUnitOrUnot && isStart ? "0" : num.IsUnit ? "1" : num.IsUnot ? "i" : "";
 
@@ -286,8 +286,8 @@ namespace Numbers.UI
 	    {
 		    var result = new List<long>();
 		    var dr = DisplayRange();
-		    var start = (int)Math.Ceiling(-dr.Imaginary);
-		    var end = (int)Math.Floor(dr.Real);
+		    var start = (int)Math.Ceiling(-dr.Start);
+		    var end = (int)Math.Floor(dr.End);
 		    for (var i = start; i <= end; i++)
 		    {
 			    result.Add(i);
@@ -316,7 +316,7 @@ namespace Numbers.UI
 		            for (int j = 0; j < tickCount; j++)
 		            {
 			            var t = i + j / tickCount;
-			            if (t > -dr.Imaginary && t < dr.Real)
+			            if (t > -dr.Start && t < dr.End)
 			            {
 				            DrawTick(t * sign, -8 * sign, Renderer.Pens.TickPen);
 			            }

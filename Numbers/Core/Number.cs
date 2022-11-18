@@ -95,13 +95,13 @@ namespace Numbers.Core
 			get => EndValueInTicks / (double) UnitLength;
 			set => EndValueInTicks = (long) Math.Round(value * UnitLength);
         }
-        public Complex Value
+        public Range Value
         {
-	        get => new Complex(EndValue, StartValue);
-	        set { StartValue = value.Imaginary; EndValue = value.Real; }
+	        get => new Range(StartValue, EndValue);
+	        set { StartValue = value.Start; EndValue = value.End; }
         }
-        public Complex ValueInUnitPerspective => new Complex(EndValue, -StartValue);
-        public Complex ValueInUnotPerspective => new Complex(-StartValue, -EndValue);
+        public Range ValueInUnitPerspective => new Range(-StartValue, EndValue);
+        public Range ValueInUnotPerspective => new Range(-EndValue , -StartValue);
 
         public long WholePartStart => (long)Math.Round(StartValue);
         public long NumeratorPartStart => StartValueInTicks % DenominatorPart;
@@ -109,12 +109,12 @@ namespace Numbers.Core
         public long NumeratorPartEnd => EndValueInTicks % DenominatorPart;
         public long DenominatorPart => Math.Abs(Domain.Unit.TickCount);
 
-        public Complex Floor => new Complex(Math.Floor(EndValue), Math.Ceiling(StartValue));
-		public Complex Ceiling => new Complex(Math.Ceiling(EndValue), Math.Floor(StartValue));
-		public Complex Round => new Complex(Math.Round(EndValue), Math.Round(StartValue));
-		public Complex Remainder => Value - Floor;
+        public Range Floor => new Range(Math.Ceiling(StartValue), Math.Floor(EndValue));
+		public Range Ceiling => new Range(Math.Floor(StartValue), Math.Ceiling(EndValue));
+		public Range Round => new Range(Math.Round(StartValue), Math.Round(EndValue));
+		public Range Remainder => Value - Floor;
 
-		public RatioSeg Ratio => Domain.FocalAsRatio(Focal);
+		public Range Range => Domain.FocalAsRatio(Focal);
         public Number SyncDomain(Number other)
 		{
 			return other;//.Clone();
@@ -183,7 +183,7 @@ namespace Numbers.Core
 		public override string ToString()
 		{
 			var v = Value;
-			return $"[{-v.Imaginary:0.00}->{v.Real:0.00}]";
+			return $"[{-v.Start:0.00}->{v.End:0.00}]";
 		}
 	}
 }

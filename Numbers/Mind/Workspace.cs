@@ -97,7 +97,7 @@ namespace Numbers.Mind
 	        }
         }
 
-        private readonly Dictionary<int, Complex> _numValues = new Dictionary<int, Complex>();
+        private readonly Dictionary<int, Range> _numValues = new Dictionary<int, Range>();
         private readonly List<int> _ignoreIds = new List<int>();
         public void SaveNumberValues(params int[] ignoreIds)
         {
