@@ -232,12 +232,13 @@ namespace Numbers.UI
 	        }
         }
 
-        public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null)
+        public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
         {
 	        if (!Mappers.TryGetValue(domain.Id, out var result))
 	        {
 		        var seg = line ?? NextDefaultLine();
-		        result = new SKDomainMapper(Workspace, domain, seg.StartPoint, seg.EndPoint, 0.2f, 0.1f);
+		        var uSeg = unitLine ?? line.SegmentAlongLine(.45f, .55f);
+		        result = new SKDomainMapper(Workspace, domain, seg, uSeg);
 		        Mappers[domain.Id] = result;
 	        }
 	        return (SKDomainMapper)result;

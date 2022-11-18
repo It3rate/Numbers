@@ -16,17 +16,16 @@ namespace Numbers.UI
     public class SKDomainMapper : SKMapper
     {
 	    public Domain Domain { get; private set; }
-     //   public RatioSeg UnitRatio;
-	    //public SKSegment UnitSegment;
-	    public RatioSeg UnitRatio => Domain.UnitFocalRatio;
 	    private SKNumberMapper UnitMapper => WorkspaceMapper.NumberMapper(Domain.UnitId);
         public SKSegment UnitSegment => UnitMapper.NumberSegment;
 	    public List<SKPoint> TickPoints = new List<SKPoint>();
 	    public List<int> Markers = new List<int>();
-
 	    public SKSegment DisplayLine { get; private set; }
 
-	    public Complex DisplayRange()
+	    public int UnitSign => Domain.Unit.Direction;
+	    public RatioSeg UnitRatio => Domain.UnitFocalRatio;
+
+        public Complex DisplayRange()
 	    {
 		    var us = UnitSegment;
 		    var usLen = UnitSegment.Length;
@@ -75,18 +74,17 @@ namespace Numbers.UI
 	    private static int domainIndexCounter = 0;
 	    private int domainIndex = -1;
 
-	    public SKDomainMapper(Workspace workspace, Domain domain, SKPoint startPoint, SKPoint endPoint, float unitStartT, float unitWidthT) : base(workspace, domain)
+	    public SKDomainMapper(Workspace workspace, Domain domain, SKSegment displayLine, SKSegment unitSegment) : base(workspace, domain)
 	    {
-		    //DisplayRange = displayRange == default ? domain.FocalAsValue(domain.MaxRange) : displayRange;
 		    base.MathElement = domain;
 		    Domain = domain;
-		    DisplayLine = new SKSegment(startPoint, endPoint);
+		    DisplayLine = displayLine;
 		    var unit = Domain.Unit;
-		    //var rs = RatioInDisplay(unit);
 		    var unitMapper = WorkspaceMapper.NumberMapper(unit.Id);
-		    unitMapper.NumberSegment = DisplayLine.SegmentAlongLine(unitStartT, unitStartT + unitWidthT);
+		    unitMapper.NumberSegment = new SKSegment(displayLine.ProjectPointOnto(unitSegment.StartPoint), displayLine.ProjectPointOnto(unitSegment.EndPoint));
+		    //unitMapper.NumberSegment = DisplayLine.SegmentAlongLine(unitStartT, unitStartT + unitWidthT);
 
-		    Reset(domain, startPoint, endPoint);
+            Reset(domain, displayLine.StartPoint, displayLine.EndPoint);
 	    }
 
 	    public void Reset(Domain domain, SKPoint startPoint, SKPoint endPoint)
@@ -225,7 +223,7 @@ namespace Numbers.UI
 		    var suffix = isStart ? "i" : "";
 		    var unitLabel = num.IsUnitOrUnot && isStart ? "0" : num.IsUnit ? "1" : num.IsUnot ? "i" : "";
 
-		    var textPoint = DrawMarkerPointer(t);
+		    var textPoint = DrawMarkerPointer(t * UnitSign);
 
 		    var txt = "";
 		    var txtPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;
@@ -260,7 +258,7 @@ namespace Numbers.UI
 
 	    private SKPoint DrawMarkerPointer(float t)
 	    {
-		    var w = 5.0f;
+		    var w = 5.0f * UnitSign;
 		    var unitSeg = UnitSegment;
 		    var markerHW = (float) (1.0 / UnitSegment.Length) * w;
 		    var pt = unitSeg.PointAlongLine(t);
@@ -298,14 +296,14 @@ namespace Numbers.UI
             var dr = DisplayRange();
             var wholeTicks = WholeNumberTicks();
 
-		    var tickCount = (float)Domain.Unit.TickCount;
+		    var tickCount = (float)Domain.Unit.AbsUnitLength;
 		    var tickLen = UnitSegment.Length / tickCount;
 		    var showMinorTicks = tickLen >= 3;
-
+		    var sign = UnitSign;
             TickPoints.Clear();
             foreach (var wholeTick in wholeTicks)
             {
-                TickPoints.Add(DrawTick(wholeTick, -8, Renderer.Pens.TickBoldPen));
+                TickPoints.Add(DrawTick(wholeTick * sign, -8 * sign, Renderer.Pens.TickBoldPen));
 		    }
 
             if (showMinorTicks)
@@ -317,7 +315,7 @@ namespace Numbers.UI
 			            var t = i + j / tickCount;
 			            if (t > -dr.Imaginary && t < dr.Real)
 			            {
-				            DrawTick(t, -8, Renderer.Pens.TickPen);
+				            DrawTick(t * sign, -8 * sign, Renderer.Pens.TickPen);
 			            }
 		            }
 	            }

@@ -75,6 +75,7 @@ namespace Numbers.UI
 	        long maxPos = (long)Math.Max((focalPositions.Max() * padding), unit.AbsLengthInTicks * padding);
 	        long minPos = (long)Math.Min((focalPositions.Min() * padding), -unit.AbsLengthInTicks * padding);
             var range = trait.AddFocalByUnitPositions(minPos, maxPos);
+            var rangeLen = (double)range.LengthInTicks;
             var yt = 0.1f;
             var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
             for (int i = 1; i < focalPositions.Length; i += 2)
@@ -84,7 +85,12 @@ namespace Numbers.UI
                 var focal = trait.AddFocalByUnitPositions(focalPositions[i-1], focalPositions[i]);
 		        var num = new Number(domain, focal.Id);
 		        Workspace.AddDomain(domain);
-		        var dm = wm.GetOrCreateDomainMapper(domain, wm.GetHorizontalSegment(yt, 100));
+		        var displaySeg = wm.GetHorizontalSegment(yt, 100);
+		        var y = displaySeg.StartPoint.Y;
+		        var unitStart = (-minPos / rangeLen) * displaySeg.Length + displaySeg.StartPoint.X;
+		        var unitEnd = ((-minPos + unit.LengthInTicks) / rangeLen) * displaySeg.Length + displaySeg.StartPoint.X;
+                var unitSeg = new SKSegment((float)unitStart, y, (float)unitEnd, y);
+		        var dm = wm.GetOrCreateDomainMapper(domain, displaySeg, unitSeg);
 	            dm.ShowGradientNumberLine = true;
 	            dm.ShowNumberOffsets = true;
 	            dm.ShowUnitMarkers = true;
@@ -100,8 +106,8 @@ namespace Numbers.UI
 	        Trait t0 = new Trait();
 	        var unitSize = 8;
 	        var unit = t0.AddFocalByUnitPositions(0, unitSize);
-	        var wm = new SKWorkspaceMapper(Workspace, Renderer, 20, 20, 800, 800);
-            CreateDomainLines(t0, 20, 50, -30, 40, -45, 64, -4, -10);
+	        var wm = new SKWorkspaceMapper(Workspace, Renderer, 20, 20, 1000, 800);
+            CreateDomainLines(t0, 20, 10, 30, 40, 35, 24, -4, -20);
             return wm;
         }
 

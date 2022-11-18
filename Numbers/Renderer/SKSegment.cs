@@ -10,7 +10,7 @@ namespace Numbers.Renderer
         public SKPoint EndPoint { get; set; }
         public SKPoint Midpoint
         {
-            get => (EndPoint - StartPoint).Divide(2f) + StartPoint;
+            get => Vector.Divide(2f) + StartPoint;
             set
             {
                 var dif = Midpoint - StartPoint;
@@ -86,7 +86,8 @@ namespace Numbers.Renderer
         public SKPoint RelativeOffset (float offset) => OrthogonalPoint(SKPoint.Empty, offset);
         public SKPoint OffsetAlongLine(float t, float offset) => OrthogonalPoint(PointAlongLine(t), offset);
         public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Math.Max(MathF.tolerance, Length));
-        public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(MathF.tolerance, Length)); 
+        public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(MathF.tolerance, Length));
+        public SKPoint Vector => EndPoint - StartPoint;
         public SKSegment SegmentAlongLine(float startT, float endT, float offsetT = 0)
         {
 	        var startPoint = PointAlongLine(startT, offsetT);
@@ -128,7 +129,7 @@ namespace Numbers.Renderer
         {
             get
             {
-                var dif = EndPoint - StartPoint;
+                var dif = Vector;
                 return (float)Math.Atan2(dif.Y, dif.X);
             }
             set
@@ -157,7 +158,7 @@ namespace Numbers.Renderer
 
         public SKPoint OrthogonalPoint(SKPoint pt, float offset)
         {
-            var angle = (EndPoint - StartPoint).Angle();
+            var angle = Vector.Angle();
             return pt.PointAtRadiansAndDistance(angle + (float)Math.PI / 2f, offset);
         }
 
@@ -175,7 +176,7 @@ namespace Numbers.Renderer
         public SKPoint ProjectPointOnto(SKPoint p, bool clamp = true)
         {
             SKPoint result;
-            var e1 = EndPoint - StartPoint;
+            var e1 = Vector;
             var e2 = p - StartPoint;
             var dp = e1.DotProduct(e2);
             var len2 = e1.SquaredLength();
@@ -199,10 +200,24 @@ namespace Numbers.Renderer
             return result;
         }
 
+        // positive if same direction (1 is collinear), negative is opposite direction (-1 is collinear), 0 if orthogonal.
+        public double CosineSimilarity(SKSegment seg)
+        {
+	        var e1 = Vector;
+	        var e2 = seg.Vector;
+	        var dp = e1.DotProduct(e2);
+	        var norm = Math.Sqrt((e1.X * e1.X + e1.Y * e1.Y) * (e2.X * e2.X + e2.Y * e2.Y));
+	        return dp / norm;
+        }
+
+        public int DirectionOnLine(SKSegment seg)
+        {
+	        return CosineSimilarity(seg) >= 0 ? 1 : -1;
+        }
         public (float, SKPoint) TFromPoint(SKPoint point, bool clamp)
         {
             var pp = ProjectPointOnto(point, clamp);
-            var segLen = EndPoint - StartPoint;
+            var segLen = Vector;
             var ptOffset = pp - StartPoint;
             var sign = (segLen.X * ptOffset.X >= 0) && (segLen.Y * ptOffset.Y >= 0) ? 1f : -1f;
             var totalLen = segLen.LengthSquared;
@@ -233,5 +248,10 @@ namespace Numbers.Renderer
 
 	       // return result;
         //}
+
+        public override string ToString()
+        {
+	        return $"[{StartPoint},{EndPoint}]";
+        }
     }
 }

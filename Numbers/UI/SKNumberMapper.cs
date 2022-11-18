@@ -21,6 +21,7 @@ namespace Numbers.UI
 	    public bool IsUnitOrUnot => Number.IsUnitOrUnot;
 	    public bool IsUnit => Number.IsUnit;
         public bool IsUnot => Number.IsUnot;
+        public int UnitSign => DomainMapper.UnitSign;
 
         public override SKPoint StartPoint
 	    {
@@ -49,10 +50,10 @@ namespace Numbers.UI
 		    Number = number;
 		    //EnsureSegment();
 	    }
-
-	    public void EnsureSegment()
-	    {
-		    var val = Number.ValueInUnitPerspective;
+        public int SegmentDirection => DomainMapper.DisplayLine.DirectionOnLine(NumberSegment);
+        public void EnsureSegment()
+        {
+            var val = DomainMapper.UnitSign == 1 ? Number.ValueInUnitPerspective : Number.ValueInUnotPerspective;
             NumberSegment = UnitSegment.SegmentAlongLine((float)val.Imaginary, (float)val.Real);
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
@@ -61,14 +62,20 @@ namespace Numbers.UI
 	        {
 				EnsureSegment();
 		        var dir = Number.Direction;
-		        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
+		        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir * UnitSign);
 		        RenderSegment = NumberSegment + offset;
 		        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
             }
         }
         public void DrawUnit()
         {
-	        EnsureSegment();
+            // Unit is a special case where we don't want it's direction set by the unit direction of the line (itself).
+            // So don't call EnsureSegment here.
+	        if (SegmentDirection != UnitSign)
+	        {
+                // Invert unit if dragging past zero point.
+		        Number.EndTickPosition = Number.AbsUnitLength * SegmentDirection + Number.StartTickPosition;
+            }
             var dir = Number.Direction;
             var pen = dir > 0 ? Pens.UnitPen : Pens.UnotPen;
 	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - NumberSegment.StartPoint;

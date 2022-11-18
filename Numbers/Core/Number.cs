@@ -101,6 +101,7 @@ namespace Numbers.Core
 	        set { StartValue = value.Imaginary; EndValue = value.Real; }
         }
         public Complex ValueInUnitPerspective => new Complex(EndValue, -StartValue);
+        public Complex ValueInUnotPerspective => new Complex(-EndValue, StartValue);
 
         public long WholePartStart => (long)Math.Round(StartValue);
         public long NumeratorPartStart => StartValueInTicks % DenominatorPart;
