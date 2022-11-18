@@ -23,14 +23,14 @@ namespace Numbers.Core
         public int FocalId { get; set; }
 
 		public Domain Domain { get; set; }
-		public Trait Trait => Domain.Trait;
+		public Trait Trait => Domain.MyTrait;
 		public IFocal Focal => Trait.FocalStore[FocalId];
-		public IFocal Unit => Trait.FocalStore[Domain.UnitFocalId];
-		public long ZeroTick => Unit.StartTickPosition;
-		public long UnitLength => Unit.LengthInTicks;
-		public long AbsUnitLength => Unit.AbsLengthInTicks;
+		public IFocal UnitFocal => Domain.UnitFocal;
+		public long ZeroTick => UnitFocal.StartTickPosition;
+		public long UnitLength => UnitFocal.LengthInTicks;
+		public long AbsUnitLength => UnitFocal.AbsLengthInTicks;
 
-        public bool IsUnitOrUnot => Domain.UnitId == Id;
+        public bool IsUnitOrUnot => Domain.UnitNumberId == Id;
 		public bool IsUnit => IsUnitOrUnot && Direction == 1;
 		public bool IsUnot => IsUnitOrUnot && Direction == -1;
         public bool IsUnitPerspective => Domain.IsUnitPerspective;
@@ -51,6 +51,10 @@ namespace Numbers.Core
 			domain.NumberIds.Add(Id);
 			Workspace.NumberStore.Add(Id, this);
         }
+
+        //public Number(Domain domain, Range value)
+        //{
+        //}
 
         public long StartTickPosition
         {
@@ -107,14 +111,14 @@ namespace Numbers.Core
         public long NumeratorPartStart => StartValueInTicks % DenominatorPart;
         public long WholePartEnd => (long)Math.Round(EndValue);
         public long NumeratorPartEnd => EndValueInTicks % DenominatorPart;
-        public long DenominatorPart => Math.Abs(Domain.Unit.TickCount);
+        public long DenominatorPart => Math.Abs(Domain.UnitNumber.TickCount);
 
         public Range Floor => new Range(Math.Ceiling(StartValue), Math.Floor(EndValue));
 		public Range Ceiling => new Range(Math.Floor(StartValue), Math.Ceiling(EndValue));
 		public Range Round => new Range(Math.Round(StartValue), Math.Round(EndValue));
 		public Range Remainder => Value - Floor;
 
-		public Range Range => Domain.FocalAsRatio(Focal);
+		public Range Range => Focal.RangeInBasis(Domain.MinMaxFocal);
         public Number SyncDomain(Number other)
 		{
 			return other;//.Clone();

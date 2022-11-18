@@ -16,14 +16,13 @@ namespace Numbers.UI
     public class SKDomainMapper : SKMapper
     {
 	    public Domain Domain { get; private set; }
-	    private SKNumberMapper UnitMapper => WorkspaceMapper.NumberMapper(Domain.UnitId);
+	    private SKNumberMapper UnitMapper => WorkspaceMapper.NumberMapper(Domain.UnitNumberId);
         public SKSegment UnitSegment => UnitMapper.NumberSegment;
 	    public List<SKPoint> TickPoints = new List<SKPoint>();
 	    public List<int> Markers = new List<int>();
 	    public SKSegment DisplayLine { get; private set; }
 
-	    public int UnitSign => Domain.Unit.Direction;
-	    public Range UnitRange => Domain.UnitFocalRange;
+	    public int UnitSign => Domain.UnitNumber.Direction;
 
         public Range DisplayRange()
 	    {
@@ -38,9 +37,9 @@ namespace Numbers.UI
 	    }
 	    public Range DisplayRatio()
 	    {
-		    var dv = Domain.MaxRangeValue;
+		    var dv = Domain.MinMaxRange;
 		    var dr = DisplayRange();
-		    var len = Domain.MaxRangeLengthValue;
+		    var len = Domain.MinMaxRange.Length;
 		    var sv = (dv.Start - dr.Start) / len;
 		    var ev = (len - (dv.End - dr.End)) / len;
             return new Range(sv, ev); 
@@ -79,7 +78,7 @@ namespace Numbers.UI
 		    base.MathElement = domain;
 		    Domain = domain;
 		    DisplayLine = displayLine;
-		    var unit = Domain.Unit;
+		    var unit = Domain.UnitNumber;
 		    var unitMapper = WorkspaceMapper.NumberMapper(unit.Id);
 		    unitMapper.NumberSegment = new SKSegment(displayLine.ProjectPointOnto(unitSegment.StartPoint), displayLine.ProjectPointOnto(unitSegment.EndPoint));
 		    //unitMapper.NumberSegment = DisplayLine.SegmentAlongLine(unitStartT, unitStartT + unitWidthT);
@@ -92,7 +91,7 @@ namespace Numbers.UI
 		    base.MathElement = domain;
 		    Domain = domain;
 		    DisplayLine = new SKSegment(startPoint, endPoint);
-		    //UnitMapper = WorkspaceMapper.NumberMapper(Domain.UnitId);
+		    //UnitMapper = WorkspaceMapper.NumberMapper(Domain.UnitNumberId);
             //UnitRange = Domain.UnitFocalRange;
             //UnitSegment = DisplayLine.SegmentAlongLine(UnitRange.StartF, UnitRange.EndF); // todo: base on visible section of domain line
 		    Markers.Clear();
@@ -110,7 +109,7 @@ namespace Numbers.UI
 
         private void AddUnitMarkers()
 	    {
-		    Markers.Add(Domain.UnitId);
+		    Markers.Add(Domain.UnitNumberId);
 	    }
 
 	    private void AddNumberMarkers()
@@ -137,7 +136,7 @@ namespace Numbers.UI
 
         public void Draw()
 	    {
-		    //UnitMapper = WorkspaceMapper.NumberMapper(Domain.UnitId);
+		    //UnitMapper = WorkspaceMapper.NumberMapper(Domain.UnitNumberId);
 
             if (Domain != null)
 		    {
@@ -175,7 +174,7 @@ namespace Numbers.UI
 	    {
 		    if (ShowUnits)
 		    {
-			    WorkspaceMapper.NumberMapper(Domain.UnitId).DrawUnit();
+			    WorkspaceMapper.NumberMapper(Domain.UnitNumberId).DrawUnit();
             }
 	    }
 
@@ -202,7 +201,7 @@ namespace Numbers.UI
 		    {
 			    var num = Workspace.NumberStore[id];
 			    //var ratio = RatioInDisplay(num);//num.Range;//
-			    //var isUnit = id == Domain.UnitId;
+			    //var isUnit = id == Domain.UnitNumberId;
 			    //var rem = num.Remainder;
 			    DrawMarker(num, true);
 			    DrawMarker(num, false);
@@ -299,7 +298,7 @@ namespace Numbers.UI
             var dr = DisplayRange();
             var wholeTicks = WholeNumberTicks();
 
-		    var tickCount = (float)Domain.Unit.AbsUnitLength;
+		    var tickCount = (float)Domain.UnitNumber.AbsUnitLength;
 		    var tickLen = UnitSegment.Length / tickCount;
 		    var showMinorTicks = tickLen >= 3;
 		    var sign = UnitSign;

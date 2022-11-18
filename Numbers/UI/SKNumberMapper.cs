@@ -58,7 +58,7 @@ namespace Numbers.UI
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
         {
-	        if (Number.Id != Number.Domain.UnitId)
+	        if (Number.Id != Number.Domain.UnitNumberId)
 	        {
 				EnsureSegment();
 		        var dir = Number.Direction;
@@ -69,7 +69,7 @@ namespace Numbers.UI
         }
         public void DrawUnit()
         {
-            // Unit is a special case where we don't want it's direction set by the unit direction of the line (itself).
+            // UnitNumber is a special case where we don't want it's direction set by the unit direction of the line (itself).
             // So don't call EnsureSegment here.
 	        if (SegmentDirection != UnitSign)
 	        {

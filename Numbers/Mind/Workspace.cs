@@ -64,7 +64,6 @@ namespace Numbers.Mind
         {
 	        ActiveIds.Add(domain.Id);
 	        ActiveIds.AddRange(domain.NumberIds);
-	        ActiveIds.Add(domain.UnitFocalId);
         }
         public void AddFullDomains(params Domain[] domains)
         {
@@ -80,7 +79,6 @@ namespace Numbers.Mind
 	        {
 		        ActiveIds.Remove(numberId);
 	        }
-	        ActiveIds.Remove(domain.UnitFocalId);
         }
         public void RemoveFullDomains(params Domain[] domains)
         {
@@ -98,24 +96,25 @@ namespace Numbers.Mind
         }
 
         private readonly Dictionary<int, Range> _numValues = new Dictionary<int, Range>();
-        private readonly List<int> _ignoreIds = new List<int>();
         public void SaveNumberValues(params int[] ignoreIds)
         {
 	        ClearNumberValues();
-            _ignoreIds.AddRange(ignoreIds);
             foreach (var kvp in NumberStore)
             {
-	            _numValues.Add(kvp.Key, kvp.Value.Value);
+	            if(!ignoreIds.Contains(kvp.Key))
+	            {
+					_numValues.Add(kvp.Key, kvp.Value.Value);
+	            }
             }
         }
 
-        public void RestoreNumberValues()
+        public void RestoreNumberValues(params int[] ignoreIds)
         {
 	        foreach (var kvp in _numValues)
 	        {
 		        var id = kvp.Key;
 		        var storedValue = kvp.Value;
-		        if (!_ignoreIds.Contains(id))
+		        if (!ignoreIds.Contains(id))
 		        {
 			        if (LockValuesOnDrag)
 			        {
@@ -132,7 +131,6 @@ namespace Numbers.Mind
         public void ClearNumberValues()
         {
             _numValues.Clear();
-            _ignoreIds.Clear();
         }
     }
 }

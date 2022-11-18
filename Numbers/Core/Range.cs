@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Numerics;
 
 namespace Numbers.Core
 {
@@ -111,8 +112,9 @@ namespace Numbers.Core
             return new Range((-real1 + imaginary1 * num1) / (imaginary2 + real2 * num1), (imaginary1 + real1 * num1) / (imaginary2 + real2 * num1));
         }
 
-        public static double DirectedLength(Range value) => value.End - value.Start;
-        public static double AbsLength(Range value) => Math.Abs(value.End - value.Start);
+        public static double DirectedLength(Range value) => value.End + value.Start;
+        public static double AbsLength(Range value) => Math.Abs(value.End + value.Start);
+
         public static Range Conjugate(Range a) => new Range(a.End, -a.Start);
         public static Range Reciprocal(Range value) => value.End == 0.0 && value.Start == 0.0 ? Range.Zero : Range.Unit / value;
         public static Range Square(Range a) => new Range(a.Start * a.Start + (a.End * a.End) * -1, 0); // value * value;

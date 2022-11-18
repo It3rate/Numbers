@@ -16,6 +16,8 @@ namespace Numbers.Core
         long AbsLengthInTicks { get; }
         long NonZeroLength { get; }
         int Direction { get; }
+        Range RangeInBasis(IFocal basis);
+        Range RangeAsBasis(IFocal nonBasis);
         IFocal Clone();
     }
 
@@ -73,9 +75,24 @@ namespace Numbers.Core
             return result;
 	    }
 
+	    public Range RangeInBasis(IFocal basis)
+	    {
+		    var len = (double) (basis.NonZeroLength);
+            var start = (basis.StartTickPosition - StartTickPosition) / len;
+		    var end = (EndTickPosition - basis.StartTickPosition) / len;
+		    return new Range(start, end);
+        }
+	    public Range RangeAsBasis(IFocal nonBasis)
+	    {
+		    var len = (double)(NonZeroLength);
+            var start = (nonBasis.StartTickPosition - StartTickPosition) / len;
+		    var end = (nonBasis.EndTickPosition - StartTickPosition) / len;
+		    return new Range(-start, end);
+        }
+
 	    public IFocal Clone()
 	    {
-		    return CreateByIds(MyTrait, StartId, EndId);
+		    return CreateByValues(MyTrait, StartTickPosition, EndTickPosition);
 	    }
     }
 }

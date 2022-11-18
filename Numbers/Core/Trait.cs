@@ -63,7 +63,7 @@ namespace Numbers.Core
         public long UnitTicks(Domain domain) => domain.UnitFocal.LengthInTicks;
         public long UnitStart(Domain domain) => domain.UnitFocal.StartTickPosition;
         public long UnitEnd(Domain domain) => domain.UnitFocal.EndTickPosition;
-        public long RangeTicks(Domain domain) => domain.MaxRange.LengthInTicks;
+        public long RangeTicks(Domain domain) => domain.MinMaxFocal.LengthInTicks;
 
 
     }
