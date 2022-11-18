@@ -74,7 +74,7 @@ namespace Numbers.UI
 	        var padding = 1.4;
 	        long maxPos = (long)Math.Max((focalPositions.Max() * padding), unit.AbsLengthInTicks * padding);
 	        long minPos = (long)Math.Min((focalPositions.Min() * padding), -unit.AbsLengthInTicks * padding);
-            var range = trait.AddFocalByUnitPositions(minPos, maxPos);
+            var range = FocalRef.CreateByValues(trait, minPos, maxPos);
             var rangeLen = (double)range.LengthInTicks;
             var yt = 0.1f;
             var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
@@ -82,7 +82,7 @@ namespace Numbers.UI
 	        {
 		        var domain = trait.AddDomain(unit.Id, range.Id);
 		        result.Add(domain);
-                var focal = trait.AddFocalByUnitPositions(focalPositions[i-1], focalPositions[i]);
+                var focal = FocalRef.CreateByValues(trait, focalPositions[i-1], focalPositions[i]);
 		        var num = new Number(domain, focal.Id);
 		        Workspace.AddDomain(domain);
 		        var displaySeg = wm.GetHorizontalSegment(yt, 100);
@@ -103,31 +103,31 @@ namespace Numbers.UI
 
         private SKWorkspaceMapper test2()
         {
-	        Trait t0 = new Trait();
+	        Trait trait = new Trait();
 	        var unitSize = 8;
-	        var unit = t0.AddFocalByUnitPositions(0, unitSize);
+	        var unit = FocalRef.CreateByValues(trait, 0, unitSize);// t0.AddFocalByUnitPositions(0, unitSize);
 	        var wm = new SKWorkspaceMapper(Workspace, Renderer, 20, 20, 1000, 800);
-            CreateDomainLines(t0, 20, 10, 30, 40, 35, 24, -4, -20);
+            CreateDomainLines(trait, 20, 10, 30, 40, 35, 24, -4, -20);
             return wm;
         }
 
         private SKWorkspaceMapper test0()
         {
-            Trait t0 = new Trait();
+            Trait trait = new Trait();
 	        var unitSize = 8;
-	        var unit = t0.AddFocalByUnitPositions(0, unitSize);
-	        var range = t0.AddFocalByUnitPositions(-16, 16);
-	        var hDomain = t0.AddDomain(unit.Id, range.Id);
-	        var vDomain = t0.AddDomain(unit.Id, range.Id);
-	        var hFocal = t0.AddFocalByUnitPositions(-2, 9);
-	        var vFocal = t0.AddFocalByUnitPositions(4, 6);
-	        //var val2 = t0.AddFocalByUnitPositions(unitSize, unitSize);
-	        //var val3 = t0.AddFocalByUnitPositions(unitSize, unitSize);
+	        var unit = FocalRef.CreateByValues(trait, 0, unitSize);
+	        var range = FocalRef.CreateByValues(trait, -16, 16);
+	        var hDomain = trait.AddDomain(unit.Id, range.Id);
+	        var vDomain = trait.AddDomain(unit.Id, range.Id);
+	        var hFocal = FocalRef.CreateByValues(trait, -2, 9);
+	        var vFocal = FocalRef.CreateByValues(trait, 4, 6);
+	        //var val2 = FocalRef.CreateByValues(t0, unitSize, unitSize);
+	        //var val3 = FocalRef.CreateByValues(t0, unitSize, unitSize);
 
             var hNum = new Number(hDomain, hFocal.Id);
 	        var vNum = new Number(vDomain, vFocal.Id);
 	        var hSel = new Selection(hNum);
-	        var transform = t0.AddTransform(hSel, vNum, TransformKind.Blend);
+	        var transform = trait.AddTransform(hSel, vNum, TransformKind.Blend);
 
             Workspace.AddFullDomains(hDomain, vDomain);
 
@@ -148,16 +148,16 @@ namespace Numbers.UI
         }
         private SKWorkspaceMapper test1()
         {
-	        Trait t0 = new Trait();
+	        Trait trait = new Trait();
 	        var unitSize = 4;
-	        var unit = t0.AddFocalByUnitPositions(3, 3+unitSize);
-	        var range = t0.AddFocalByUnitPositions(-40, 40);
-	        var domain = t0.AddDomain(unit.Id, range.Id);
+	        var unit = FocalRef.CreateByValues(trait, 3, 3+unitSize);
+	        var range = FocalRef.CreateByValues(trait, -40, 40);
+	        var domain = trait.AddDomain(unit.Id, range.Id);
 	        //var domain2 = t0.AddDomain(unit.Id, range.Id);
-	        var val2 = t0.AddFocalByUnitPositions(-15, 20);
-	        //var val3 = t0.AddFocalByUnitPositions(-40, 60);
-	        //var val2 = t0.AddFocalByUnitPositions(unitSize, unitSize);
-	        //var val3 = t0.AddFocalByUnitPositions(unitSize, unitSize);
+	        var val2 = FocalRef.CreateByValues(trait, -15, 20);
+	        //var val3 = FocalRef.CreateByValues(t0, -40, 60);
+	        //var val2 = FocalRef.CreateByValues(t0, unitSize, unitSize);
+	        //var val3 = FocalRef.CreateByValues(t0, unitSize, unitSize);
 
 	        var num2 = new Number(domain, val2.Id);
 	        //var num3 = new Number(domain2, val3.Id);

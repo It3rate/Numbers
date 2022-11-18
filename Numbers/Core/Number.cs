@@ -24,8 +24,8 @@ namespace Numbers.Core
 
 		public Domain Domain { get; set; }
 		public Trait Trait => Domain.Trait;
-		public Focal Focal => Trait.FocalStore[FocalId];
-		public Focal Unit => Trait.FocalStore[Domain.UnitFocalId];
+		public IFocal Focal => Trait.FocalStore[FocalId];
+		public IFocal Unit => Trait.FocalStore[Domain.UnitFocalId];
 		public long ZeroTick => Unit.StartTickPosition;
 		public long UnitLength => Unit.LengthInTicks;
 		public long AbsUnitLength => Unit.AbsLengthInTicks;
@@ -101,7 +101,7 @@ namespace Numbers.Core
 	        set { StartValue = value.Imaginary; EndValue = value.Real; }
         }
         public Complex ValueInUnitPerspective => new Complex(EndValue, -StartValue);
-        public Complex ValueInUnotPerspective => new Complex(-EndValue, StartValue);
+        public Complex ValueInUnotPerspective => new Complex(-StartValue, -EndValue);
 
         public long WholePartStart => (long)Math.Round(StartValue);
         public long NumeratorPartStart => StartValueInTicks % DenominatorPart;
@@ -178,8 +178,7 @@ namespace Numbers.Core
 			EndValueInTicks = (long)(end * UnitLength);
         }
 
-		public Focal CloneFocal() => Trait.CloneFocal(Focal);
-		public Number Clone() => new Number(Domain, CloneFocal().Id);
+		public Number Clone() => new Number(Domain, Focal.Clone().Id);
 
 		public override string ToString()
 		{

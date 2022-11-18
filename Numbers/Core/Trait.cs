@@ -23,19 +23,14 @@ namespace Numbers.Core
         public Dictionary<int, Transform> TransformStore => _brain.TransformStore;
         public Dictionary<int, Trait> TraitStore => _brain.TraitStore;
 
-        public Dictionary<int, Focal> FocalStore { get; } = new Dictionary<int, Focal>();
+        public Dictionary<int, long> PositionStore { get; } = new Dictionary<int, long>(4096);
+        public Dictionary<int, FocalRef> FocalStore { get; } = new Dictionary<int, FocalRef>();
         public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
 
 	    public Trait()
 	    {
 		    Id = Brain.BrainA.NextTraitId();
             TraitStore.Add(Id, this);
-	    }
-
-	    public int AddPosition(long position)
-	    {
-		    Focal.PositionStore.Add(position);
-            return Focal.PositionStore.Count - 1;
 	    }
 
 	    public Transform AddTransform(Selection selection, Number repeats, TransformKind kind)
@@ -45,60 +40,26 @@ namespace Numbers.Core
             return result;
 	    }
 
-
-	    public Focal CloneFocal(Focal focal)
-	    {
-		    return AddFocalByUnitPositions(focal.StartTickPosition, focal.EndTickPosition);
-	    }
-        public Focal AddFocalByIndexes(int startIndex, int endIndex)
-	    {
-		    var result = new Focal(startIndex, endIndex);
-		    FocalStore.Add(result.Id, result);
-		    return result;
-        }
-        // Focal values are always added as unit perspective positions, because
-        // there is no unit defined that allows the start point to be interpreted as a unot perspective.
-        // Focals are pre-number, positions, not value interpretations.
-	    public Focal AddFocalByUnitPositions(long start, long end)
-	    {
-		    var index = Focal.PositionStore.Count;
-		    Focal.PositionStore.Add(start);
-		    Focal.PositionStore.Add(end);
-		    return AddFocalByIndexes(index, index + 1);
-	    }
-	    public Focal AddFocalByIndex_Position(int startIndex, long end)
-	    {
-		    var index = Focal.PositionStore.Count;
-		    Focal.PositionStore.Add(end);
-		    return AddFocalByIndexes(startIndex, index);
-	    }
-	    public Focal AddFocalByPosition_Index(long start, int endIndex)
-	    {
-		    var index = Focal.PositionStore.Count;
-		    Focal.PositionStore.Add(start);
-		    return AddFocalByIndexes(index, endIndex);
-	    }
-
 	    public Domain AddDomain(int unitIndex, int rangeIndex)
 	    {
 		    var result = new Domain(Id, unitIndex, rangeIndex);
 		    DomainStore.Add(result.Id, result);
 		    return result;
 	    }
-	    public Domain AddDomain(Focal unit, Focal range)
+	    public Domain AddDomain(FocalRef unit, FocalRef range)
 	    {
 		    return AddDomain(unit.Id, range.Id);
 	    }
 
         // Focal Methods
-	    public long Start(Focal focal) => Focal.PositionStore[focal.StartId];
-	    public long End(Focal focal) => Focal.PositionStore[focal.EndId];
-	    public long Ticks(Focal focal) => End(focal) - Start(focal);
-	    public long RightMost(Focal focal) => focal.Direction == -1 ? End(focal) : Start(focal);
-	    public long LeftMost(Focal focal) => focal.Direction == -1 ? Start(focal) : End(focal);
+        public long Start(IFocal focal) => focal.StartTickPosition;// PositionStore[focal.StartId];
+	    public long End(IFocal focal) => focal.EndTickPosition;//PositionStore[focal.EndId];
+        public long Ticks(IFocal focal) => End(focal) - Start(focal);
+	    public long RightMost(IFocal focal) => focal.Direction == -1 ? End(focal) : Start(focal);
+	    public long LeftMost(IFocal focal) => focal.Direction == -1 ? Start(focal) : End(focal);
 
         // _transform Methods
-        public UnitFocal Unit(Domain domain) => domain.UnitFocal;
+        public IFocal Unit(Domain domain) => domain.UnitFocal;
         public long UnitTicks(Domain domain) => domain.UnitFocal.LengthInTicks;
         public long UnitStart(Domain domain) => domain.UnitFocal.StartTickPosition;
         public long UnitEnd(Domain domain) => domain.UnitFocal.EndTickPosition;

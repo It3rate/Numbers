@@ -31,21 +31,20 @@ namespace Numbers.Core
         public int TraitId { get; set; }
         public Trait Trait => _brain.TraitStore[TraitId];
 
-	    private int _unitFocalFocalId;
-        public int UnitFocalId
+        public int UnitFocalId { get; set; }
+        public IFocal UnitFocal
         {
-	        get => _unitFocalFocalId;
-	        set { _unitFocalFocalId = value; UnitFocal = new UnitFocal(Trait.FocalStore[UnitFocalId]);}
+	        get => Trait.FocalStore[UnitFocalId];
+	        private set => UnitFocalId = value.Id;
         }
-        public UnitFocal UnitFocal { get; private set; }
-        public RatioSeg UnitFocalRatio => FocalAsRatio(UnitFocal.FocalBase);
+        public RatioSeg UnitFocalRatio => FocalAsRatio(UnitFocal);
         public bool IsUnitPerspective => UnitFocal.Direction >= 0;
 
         public int UnitId { get; set; }
         public Number Unit => Workspace.NumberStore[UnitId];
 
         public int MaxRangeId { get; set; }
-        public Focal MaxRange => Trait.FocalStore[MaxRangeId];
+        public IFocal MaxRange => Trait.FocalStore[MaxRangeId];
         public Complex MaxRangeValue => FocalAsValue(MaxRange);
         public long MaxRangeLengthTicks => MaxRange.LengthInTicks;
         public double MaxRangeLengthValue => MaxRange.LengthInTicks / (double)UnitFocal.LengthInTicks;
@@ -58,9 +57,9 @@ namespace Numbers.Core
             MaxRangeId = maxRangeId;
             UnitId = AddNumber(unitFocalId).Id;
         }
-        public Domain(Trait trait, Focal unit, Focal range) : this(trait.Id, unit.Id, range.Id) { }
+        public Domain(Trait trait, FocalRef unit, FocalRef range) : this(trait.Id, unit.Id, range.Id) { }
 
-        public Number AddNumber(Focal focal) => AddNumber(focal.Id);
+        public Number AddNumber(FocalRef focal) => AddNumber(focal.Id);
         public Number AddNumber(int focalId)
         {
 	        return new Number(this, focalId); // Number class holds the static list of added numbers.
@@ -114,19 +113,19 @@ namespace Numbers.Core
 	        return result.ToArray();
         }
 
-        public Complex FocalAsValue(Focal focal)
+        public Complex FocalAsValue(IFocal focal)
         {
 	        return PositionsAsValue(focal.StartTickPosition, focal.EndTickPosition);
         }
         public Complex PositionsAsValue(long startTick, long endTick)
         {
-	        var zt = UnitFocal.ZeroTick;
-	        var len = (double)UnitFocal.UnitLengthInTicks;
-	        var sv = (-startTick + zt) / len;
-	        var ev = (endTick - zt) / len;
+	        var zeroTick = UnitFocal.StartTickPosition;
+	        var len = (double)UnitFocal.NonZeroLength;
+	        var sv = (-startTick + zeroTick) / len;
+	        var ev = (endTick - zeroTick) / len;
 	        return new Complex(ev, sv);
         }
-        public RatioSeg FocalAsRatio(Focal focal)
+        public RatioSeg FocalAsRatio(IFocal focal)
         {
 	        return PositionsAsRatio(focal.StartTickPosition, focal.EndTickPosition);
         }

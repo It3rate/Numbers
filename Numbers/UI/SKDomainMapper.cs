@@ -216,14 +216,16 @@ namespace Numbers.UI
 			    return;
 		    }
 
+		    var sign = UnitSign;
 		    var value = isStart ? num.StartValue : num.EndValue;
-            var val = num.ValueInUnitPerspective;
+            var val = sign == 1 ? num.ValueInUnitPerspective : num.ValueInUnotPerspective; //num.ValueInUnitPerspective;
+            
             var t = (float)(isStart ? val.Imaginary : val.Real);
             //var t = isStart ? dr.Start : dr.End;
 		    var suffix = isStart ? "i" : "";
 		    var unitLabel = num.IsUnitOrUnot && isStart ? "0" : num.IsUnit ? "1" : num.IsUnot ? "i" : "";
 
-		    var textPoint = DrawMarkerPointer(t * UnitSign);
+		    var textPoint = DrawMarkerPointer(t);
 
 		    var txt = "";
 		    var txtPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;
@@ -243,6 +245,7 @@ namespace Numbers.UI
 		    }
 		    else
 		    {
+			    value = t;
 				txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
 		    }
 
