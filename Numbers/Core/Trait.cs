@@ -40,32 +40,15 @@ namespace Numbers.Core
             return result;
 	    }
 
-	    public Domain AddDomain(int unitIndex, int rangeIndex)
+	    public Domain AddDomain(int basisIndex, int rangeIndex)
 	    {
-		    var result = new Domain(Id, unitIndex, rangeIndex);
+		    var result = new Domain(Id, basisIndex, rangeIndex);
 		    DomainStore.Add(result.Id, result);
 		    return result;
 	    }
-	    public Domain AddDomain(FocalRef unit, FocalRef range)
+	    public Domain AddDomain(FocalRef basis, FocalRef range)
 	    {
-		    return AddDomain(unit.Id, range.Id);
+		    return AddDomain(basis.Id, range.Id);
 	    }
-
-        // Focal Methods
-        public long Start(IFocal focal) => focal.StartTickPosition;// PositionStore[focal.StartId];
-	    public long End(IFocal focal) => focal.EndTickPosition;//PositionStore[focal.EndId];
-        public long Ticks(IFocal focal) => End(focal) - Start(focal);
-	    public long RightMost(IFocal focal) => focal.Direction == -1 ? End(focal) : Start(focal);
-	    public long LeftMost(IFocal focal) => focal.Direction == -1 ? Start(focal) : End(focal);
-
-        // _transform Methods
-        public IFocal Unit(Domain domain) => domain.UnitFocal;
-        public long UnitTicks(Domain domain) => domain.UnitFocal.LengthInTicks;
-        public long UnitStart(Domain domain) => domain.UnitFocal.StartTickPosition;
-        public long UnitEnd(Domain domain) => domain.UnitFocal.EndTickPosition;
-        public long RangeTicks(Domain domain) => domain.MinMaxFocal.LengthInTicks;
-
-
     }
-
 }

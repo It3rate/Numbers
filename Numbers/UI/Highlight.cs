@@ -26,7 +26,7 @@ namespace Numbers.UI
         public SKMapper Mapper { get; set; }
         public float T { get; set; }
         public UIKind Kind { get; set; }
-        //public Number Range { get; set; } // will set selection ranges with a length trait number eventually
+        //public Number RangeInMinMax { get; set; } // will set selection ranges with a length trait number eventually
         public bool IsSet => Mapper != null;
 
         public Highlight()

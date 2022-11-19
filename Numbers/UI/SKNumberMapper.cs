@@ -18,7 +18,7 @@ namespace Numbers.UI
         public SKSegment RenderSegment { get; private set; }
 
         private SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain.Id);
-	    public bool IsUnitOrUnot => Number.IsUnitOrUnot;
+	    public bool IsUnitOrUnot => Number.IsBasis;
 	    public bool IsUnit => Number.IsUnit;
         public bool IsUnot => Number.IsUnot;
         public int UnitSign => DomainMapper.UnitSign;
@@ -28,7 +28,7 @@ namespace Numbers.UI
 		    get => NumberSegment.StartPoint;
 		    set
 		    {
-			    (Number.StartT, _) = UnitSegment.TFromPoint(value, false);
+			    Number.StartValue = -UnitSegment.TFromPoint(value, false).Item1;
 			    EnsureSegment();
             }
 	    }
@@ -38,7 +38,7 @@ namespace Numbers.UI
 		    get => NumberSegment.EndPoint;
 		    set
 		    {
-			    (Number.EndT, _) = UnitSegment.TFromPoint(value, false);
+			    Number.EndValue = UnitSegment.TFromPoint(value, false).Item1;
 			    EnsureSegment();
 		    }
 	    }
@@ -58,7 +58,7 @@ namespace Numbers.UI
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
         {
-	        if (Number.Id != Number.Domain.UnitNumberId)
+	        if (Number.Id != Number.Domain.BasisNumberId)
 	        {
 				EnsureSegment();
 		        var dir = Number.Direction;
@@ -69,12 +69,12 @@ namespace Numbers.UI
         }
         public void DrawUnit()
         {
-            // UnitNumber is a special case where we don't want it's direction set by the unit direction of the line (itself).
+            // BasisNumber is a special case where we don't want it's direction set by the unit direction of the line (itself).
             // So don't call EnsureSegment here.
 	        if (SegmentDirection != UnitSign)
 	        {
                 // Invert unit if dragging past zero point.
-		        Number.EndTickPosition = Number.AbsUnitLength * SegmentDirection + Number.StartTickPosition;
+		        Number.Focal.EndTickPosition = Number.AbsBasisTicks * SegmentDirection + Number.Focal.StartTickPosition;
             }
             var dir = Number.Direction;
             var pen = dir > 0 ? Pens.UnitPen : Pens.UnotPen;
@@ -122,11 +122,11 @@ namespace Numbers.UI
         }
         public void SetStartValueByPoint(SKPoint newPoint)
         {
-	        Number.StartT = TFromPoint(newPoint);
+	        Number.StartValue = -TFromPoint(newPoint);
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {
-	        Number.EndT = TFromPoint(newPoint);
+	        Number.EndValue = TFromPoint(newPoint);
         }
 
         public override SKPath HighlightAt(float t, SKPoint targetPoint)

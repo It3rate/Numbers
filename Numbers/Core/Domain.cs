@@ -14,10 +14,10 @@ namespace Numbers.Core
     // the trait then needs to 'know' how measurable it is, and the units are calibrated to that, which seems overspecified
     // (eg 'length' knows a nanometer is min and a light year max, cms and inches calibrate to this. Hmm, no).
     // So each 'situation' has sig-fig/precision metadata. Working in metal units vs working in wood units. A metal length trait and a wood length trait, convertible.
-    // This is what domains are. UnitFocal size(s), min tick size, max ranges, confidence/probability data at limits of measure (gaussian precision etc).
+    // This is what domains are. BasisFocal size(s), min tick size, max ranges, confidence/probability data at limits of measure (gaussian precision etc).
     // E.g. changing the domain 'tolerance' could change neat writing into messy.
 
-    // Min size is tick size. UnitFocal is start/end point (only one focal allowed for a unit). MinMaxFocal is bounds in ticks. todo: add conversion methods etc.
+    // Min size is tick size. BasisFocal is start/end point (only one focal allowed for a unit). MinMaxFocal is bounds in ticks. todo: add conversion methods etc.
     public class Domain : IMathElement
     {
 	    private Brain _brain => Brain.BrainA;
@@ -30,9 +30,9 @@ namespace Numbers.Core
         public int TraitId { get; }
         public Trait MyTrait => _brain.TraitStore[TraitId];
 
-        public int UnitNumberId { get; set; }
-        public Number UnitNumber => Workspace.NumberStore[UnitNumberId];
-        public IFocal UnitFocal => MyTrait.FocalStore[UnitNumber.FocalId];
+        public int BasisNumberId { get; set; }
+        public Number BasisNumber => Workspace.NumberStore[BasisNumberId];
+        public IFocal BasisFocal => MyTrait.FocalStore[BasisNumber.FocalId];
 
         public List<int> NumberIds { get; } = new List<int>();
         public IEnumerable<Number> Numbers()
@@ -43,20 +43,33 @@ namespace Numbers.Core
 	        }
         }
 
-        public bool IsUnitPerspective => UnitFocal.Direction >= 0;
+        public bool IsUnitPerspective => BasisFocal.Direction >= 0;
 
         public int MinMaxFocalId { get; set; }
         public IFocal MinMaxFocal => MyTrait.FocalStore[MinMaxFocalId];
-        public Range MinMaxRange => MinMaxFocal.RangeInBasis(UnitFocal);
+        public Range MinMaxRange => MinMaxFocal.RangeInBasis(BasisFocal);
 
         public Domain(int traitId, int unitFocalId, int minMaxFocalId)
         {
 	        Id = domainCounter++;
             TraitId = traitId;
             MinMaxFocalId = minMaxFocalId;
-            UnitNumberId = new Number(this, unitFocalId).Id; 
+            BasisNumberId = new Number(this, unitFocalId).Id; 
         }
         public Domain(Trait trait, FocalRef unit, FocalRef range) : this(trait.Id, unit.Id, range.Id) { }
+
+        public double ValueFromStartTickPosition(long startPos) => (BasisFocal.StartTickPosition - startPos) / (double)BasisFocal.NonZeroLength;
+        public double ValueFromEndTickPosition(long endPos) => (endPos - BasisFocal.StartTickPosition) / (double)BasisFocal.NonZeroLength;
+        public long StartTickPositionFrom(double value) => (long)-Math.Round(value * BasisFocal.LengthInTicks) + BasisFocal.StartTickPosition;
+        public long EndTickPositionFrom(double value) => (long)Math.Round(value * BasisFocal.LengthInTicks) + BasisFocal.StartTickPosition;
+        public FocalRef FocalFromRange(Range range)
+        {
+	        var bf = BasisFocal;
+	        var len = bf.LengthInTicks;
+	        var start = (long)-Math.Round(range.Start * len) + bf.StartTickPosition;
+	        var end = (long)Math.Round(range.End * len) + bf.StartTickPosition;
+            return FocalRef.CreateByValues(MyTrait, start, end);
+        }
 
         public void SaveNumberValues(Dictionary<int, Range> dict, params int[] ignoreIds)
         {

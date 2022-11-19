@@ -16,6 +16,8 @@ namespace Numbers.Core
         long AbsLengthInTicks { get; }
         long NonZeroLength { get; }
         int Direction { get; }
+        void Reset(long start, long end);
+        void Reset(IFocal focal);
         Range RangeInBasis(IFocal basis);
         Range RangeAsBasis(IFocal nonBasis);
         IFocal Clone();
@@ -75,7 +77,17 @@ namespace Numbers.Core
             return result;
 	    }
 
-	    public Range RangeInBasis(IFocal basis)
+	    public void Reset(long start, long end)
+	    {
+		    StartTickPosition = start;
+		    EndTickPosition = end;
+	    }
+	    public void Reset(IFocal focal)
+	    {
+            Reset(focal.StartTickPosition, focal.EndTickPosition);
+	    }
+
+        public Range RangeInBasis(IFocal basis)
 	    {
 		    var len = (double) (basis.NonZeroLength);
             var start = (basis.StartTickPosition - StartTickPosition) / len;
@@ -93,6 +105,24 @@ namespace Numbers.Core
 	    public IFocal Clone()
 	    {
 		    return CreateByValues(MyTrait, StartTickPosition, EndTickPosition);
+        }
+	    public override bool Equals(object obj)
+	    {
+		    return obj is FocalRef other && Equals(other);
+	    }
+	    public bool Equals(FocalRef value)
+	    {
+		    return StartTickPosition.Equals(value.StartTickPosition) && EndTickPosition.Equals(value.EndTickPosition);
+	    }
+
+	    public override int GetHashCode()
+	    {
+		    unchecked
+		    {
+			    var hashCode = StartTickPosition.GetHashCode();
+			    hashCode = (hashCode * 397) ^ EndTickPosition.GetHashCode();
+			    return hashCode;
+		    }
 	    }
     }
 }

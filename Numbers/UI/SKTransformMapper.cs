@@ -58,8 +58,8 @@ namespace Numbers.UI
 			var selDr = SelectionMapper;
 			var repDr = RepeatMapper;
 
-			_selRange = selNum.Range;
-			_repRange = repNum.Range;
+			_selRange = selNum.RangeInMinMax;
+			_repRange = repNum.RangeInMinMax;
 			r0_s1 = repNum.StartValue * selNum.EndValue;
 			r1_s0 = repNum.EndValue * selNum.StartValue;
 			r0_s0 = -repNum.StartValue * selNum.StartValue;
