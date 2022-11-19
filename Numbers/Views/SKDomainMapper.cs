@@ -1,19 +1,12 @@
-﻿using System.Drawing;
-using System.Numerics;
+﻿using System;
+using System.Collections.Generic;
 using Numbers.Core;
-using Numbers.Mind;
-using Numbers.Renderer;
+using Numbers.UI;
 using SkiaSharp;
 
-namespace Numbers.UI
+namespace Numbers.Views
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class SKDomainMapper : SKMapper
+	public class SKDomainMapper : SKMapper
     {
 	    public Domain Domain { get; private set; }
 	    private SKNumberMapper UnitMapper => WorkspaceMapper.NumberMapper(Domain.BasisNumberId);
@@ -25,24 +18,26 @@ namespace Numbers.UI
 	    public int UnitSign => Domain.BasisNumber.Direction;
 
         public Range DisplayRange()
-	    {
-		    var us = UnitSegment;
-		    var usLen = UnitSegment.Length;
-		    var dlLen = DisplayLine.Length;
-            var (zeroT, zeroPt) = DisplayLine.TFromPoint(us.StartPoint, false);
-            var start = zeroT * dlLen;
-            var end = (1.0f - zeroT) * dlLen;
+        {
+	        return Domain.MinMaxRange;
+      //      var us = UnitSegment;
+		    //var usLen = UnitSegment.Length;
+		    //var dlLen = DisplayLine.Length;
+      //      var (zeroT, zeroPt) = DisplayLine.TFromPoint(us.StartPoint, false);
+      //      var start = zeroT * dlLen;
+      //      var end = (1.0f - zeroT) * dlLen;
 
-            return new Range(start / usLen, end / usLen);
+      //      return new Range(start / usLen, end / usLen);
 	    }
 	    public Range DisplayRatio()
 	    {
-		    var dv = Domain.MinMaxRange;
-		    var dr = DisplayRange();
-		    var len = Domain.MinMaxRange.Length;
-		    var sv = (dv.Start - dr.Start) / len;
-		    var ev = (len - (dv.End - dr.End)) / len;
-            return new Range(sv, ev); 
+		    return Domain.MinMaxRange;
+		    //var dv = Domain.MinMaxRange;
+		    //var dr = DisplayRange();
+		    //var len = Domain.MinMaxRange.Length;
+		    //var sv = (dv.Start - dr.Start) / len;
+		    //var ev = (len - (dv.End - dr.End)) / len;
+      //      return new Range(sv, ev); 
 	    }
 
 	    public bool ShowGradientNumberLine;
@@ -308,7 +303,7 @@ namespace Numbers.UI
                 TickPoints.Add(DrawTick(wholeTick * sign, -8 * sign, Renderer.Pens.TickBoldPen));
 		    }
 
-            if (showMinorTicks)
+            if (showMinorTicks && wholeTicks.Length > 0) // todo: minor ticks shouldn't be dependent on major ones (may be zoomed in past major ticks).
             {
 	            for (var i = wholeTicks[0] - 1; i < wholeTicks[wholeTicks.Length - 1] + 1; i++)
 	            {

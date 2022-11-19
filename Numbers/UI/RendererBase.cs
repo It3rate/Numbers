@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Numbers.Core;
+using Numbers.Views;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
-using Numbers.Core;
-using Numbers.Mind;
-using Numbers.UI;
 
-namespace Numbers.Renderer
+namespace Numbers.UI
 {
 	public abstract class RendererBase
 	{

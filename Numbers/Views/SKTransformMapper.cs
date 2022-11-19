@@ -1,19 +1,10 @@
-﻿using System.Drawing;
-using System.Net;
-using System.Windows.Forms;
+﻿using System.Collections.Generic;
 using Numbers.Core;
-using Numbers.Mind;
-using Numbers.Renderer;
+using Numbers.UI;
 using SkiaSharp;
 
-namespace Numbers.UI
+namespace Numbers.Views
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-
 	public class SKTransformMapper : SKMapper
 	{
 		public Transform Transform { get; set; }

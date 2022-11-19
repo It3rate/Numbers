@@ -1,15 +1,12 @@
-﻿using Numbers.Core;
-using Numbers.Mind;
-using Numbers.Renderer;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Numbers.Core;
+using Numbers.UI;
 using SkiaSharp;
 
-namespace Numbers.UI
+namespace Numbers.Views
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    public class SKWorkspaceMapper
+	public class SKWorkspaceMapper
     {
 	    public int Id => Workspace.Id;
 

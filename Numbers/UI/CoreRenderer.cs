@@ -1,19 +1,10 @@
-﻿using System.Drawing;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using Numbers.Core;
+using Numbers.Views;
 using SkiaSharp;
-using Numbers.Core;
-using Numbers.Mind;
-using Numbers.UI;
 
-namespace Numbers.Renderer
+namespace Numbers.UI
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class CoreRenderer : RendererBase
+	public class CoreRenderer : RendererBase
     {
         public CoreRenderer(Brain brain) : base(brain)
         {

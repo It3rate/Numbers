@@ -1,17 +1,11 @@
-﻿using Numbers.Core;
-using Numbers.Mind;
-using Numbers.Renderer;
+﻿using System;
+using Numbers.Core;
+using Numbers.UI;
 using SkiaSharp;
 
-namespace Numbers.UI
+namespace Numbers.Views
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class SKNumberMapper : SKMapper
+	public class SKNumberMapper : SKMapper
     {
         public Number Number { get; }
         public SKSegment NumberSegment { get; set; }

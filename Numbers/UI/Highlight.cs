@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using Numbers.Views;
+using SkiaSharp;
 
 namespace Numbers.UI
 {

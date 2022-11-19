@@ -1,6 +1,4 @@
-﻿using Numbers.Mind;
-
-namespace Numbers.Core
+﻿namespace Numbers.Core
 {
     using System;
     using System.Collections.Generic;

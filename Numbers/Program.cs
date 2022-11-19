@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Numbers.Core;
-using Numbers.Mind;
 
 namespace Numbers
 {

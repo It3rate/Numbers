@@ -1,19 +1,10 @@
-﻿using System.Numerics;
-using System.Reflection.Emit;
-using Numbers.Core;
-using Numbers.Renderer;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Numbers.UI;
-using SkiaSharp;
 
-namespace Numbers.Mind
+namespace Numbers.Core
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class Workspace
+	public class Workspace
     {
 	    private static int _idCounter = 1;
 	    public int Id { get; }

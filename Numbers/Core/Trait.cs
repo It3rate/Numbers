@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Numbers.Mind;
 
 namespace Numbers.Core
 {

@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Numerics;
 using Numbers.Core;
-using Numbers.Mind;
 
 namespace Numbers.Core
 {
@@ -48,6 +47,8 @@ namespace Numbers.Core
         public int MinMaxFocalId { get; set; }
         public IFocal MinMaxFocal => MyTrait.FocalStore[MinMaxFocalId];
         public Range MinMaxRange => MinMaxFocal.RangeInBasis(BasisFocal);
+        //public Range MinMaxRange => MinMaxFocal.UnitTRangeIn(BasisFocal);
+        //public Range MinMaxRange => BasisFocal.UnitTRangeIn(MinMaxFocal);
 
         public Domain(int traitId, int unitFocalId, int minMaxFocalId)
         {

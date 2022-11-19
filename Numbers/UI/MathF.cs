@@ -1,11 +1,7 @@
-﻿namespace Numbers.Renderer
-{
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
+﻿using System;
 
+namespace Numbers.UI
+{
 	public class MathF
 	{
 		public static float tolerance = 0.0001f;

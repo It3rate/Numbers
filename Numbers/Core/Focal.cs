@@ -1,5 +1,4 @@
 ﻿using System.Windows.Forms;
-using Numbers.Mind;
 
 namespace Numbers.Core
 {
@@ -20,6 +19,7 @@ namespace Numbers.Core
         void Reset(IFocal focal);
         Range RangeInBasis(IFocal basis);
         Range RangeAsBasis(IFocal nonBasis);
+        Range UnitTRangeIn(IFocal basis);
         IFocal Clone();
     }
 
@@ -101,8 +101,15 @@ namespace Numbers.Core
 		    var end = (nonBasis.EndTickPosition - StartTickPosition) / len;
 		    return new Range(-start, end);
         }
+	    public Range UnitTRangeIn(IFocal basis)
+	    {
+		    var len = (double)Math.Abs(basis.NonZeroLength);
+		    var start = StartTickPosition / len;
+		    var end = EndTickPosition / len;
+		    return new Range(start, end);
+	    }
 
-	    public IFocal Clone()
+        public IFocal Clone()
 	    {
 		    return CreateByValues(MyTrait, StartTickPosition, EndTickPosition);
         }

@@ -1,12 +1,10 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
 using SkiaSharp;
 
-namespace Numbers.Renderer
+namespace Numbers.UI
 {
-    using System;
-    using System.Collections.Generic;
-
-    public enum ColorTheme
+	public enum ColorTheme
     {
         Normal,
         Dark

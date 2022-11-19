@@ -1,15 +1,9 @@
-﻿using Numbers.Core;
-using Numbers.UI;
+﻿using System.Collections.Generic;
+using Numbers.Views;
 
-namespace Numbers.Mind
+namespace Numbers.Core
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-     
-    // Brain -> Traits, transforms
+	// Brain -> Traits, transforms
 
     public class Brain
     {

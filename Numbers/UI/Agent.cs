@@ -1,20 +1,15 @@
-﻿using System.Linq;
-using System.Numerics;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 using Numbers.Core;
-using Numbers.Mind;
-using Numbers.Renderer;
+using Numbers.Views;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 
 namespace Numbers.UI
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
-    using OpenTK.Graphics.OpenGL;
-    using SkiaSharp;
-    using SkiaSharp.Views.Desktop;
-
-    public class Agent : IAgent
+	public class Agent : IAgent
     {
         public static Agent Current { get; private set; }
 
@@ -116,11 +111,11 @@ namespace Numbers.UI
             Trait trait = new Trait();
 	        var unitSize = 8;
 	        var unit = FocalRef.CreateByValues(trait, 0, unitSize);
-	        var range = FocalRef.CreateByValues(trait, -16, 16);
+	        var range = FocalRef.CreateByValues(trait, -16* unitSize, 16 * unitSize);
 	        var hDomain = trait.AddDomain(unit.Id, range.Id);
 	        var vDomain = trait.AddDomain(unit.Id, range.Id);
-	        var hFocal = FocalRef.CreateByValues(trait, -2, 9);
-	        var vFocal = FocalRef.CreateByValues(trait, 4, 6);
+	        var hFocal = FocalRef.CreateByValues(trait, -2 * unitSize, 9 * unitSize);
+	        var vFocal = FocalRef.CreateByValues(trait, 3 * unitSize, 6 * unitSize);
 	        //var val2 = FocalRef.CreateByValues(t0, unitSize, unitSize);
 	        //var val3 = FocalRef.CreateByValues(t0, unitSize, unitSize);
 
@@ -131,7 +126,7 @@ namespace Numbers.UI
 
             Workspace.AddFullDomains(hDomain, vDomain);
 
-	        var wm = new SKWorkspaceMapper(Workspace, Renderer, 150, 10, 600, 600);
+	        var wm = new SKWorkspaceMapper(Workspace, Renderer, 150, 10, 800, 800);
 
 	        var dm = wm.GetOrCreateDomainMapper(hDomain, wm.GetHorizontalSegment(.5f, 50));
 	        dm.ShowGradientNumberLine = false;

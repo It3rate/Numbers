@@ -1,7 +1,7 @@
 ﻿using System;
 using SkiaSharp;
 
-namespace Numbers.Renderer
+namespace Numbers.Views
 {
     public static class SkPointExtension
     {

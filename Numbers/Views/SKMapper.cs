@@ -1,18 +1,10 @@
-﻿using System.Security.Permissions;
-using Numbers.Core;
-using Numbers.Mind;
-using Numbers.Renderer;
+﻿using Numbers.Core;
+using Numbers.UI;
 using SkiaSharp;
 
-namespace Numbers.UI
+namespace Numbers.Views
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public abstract class SKMapper
+	public abstract class SKMapper
     {
         private static int _mapperCounter = 1;
         public int Id { get; private set; }
