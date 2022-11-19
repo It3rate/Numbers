@@ -14,10 +14,6 @@ namespace Numbers.Views
 	    public abstract SKPoint MidPoint { get; }
         public abstract SKPoint EndPoint { get; set; }
 
-        //   public SKPoint[] SalientPoints { get; private set; }
-        //public SKSegment[] SalientSegments { get; private set; }
-        //public SKPath[] SalientAreas { get; private set; }
-
         protected Workspace Workspace { get; }
         protected SKWorkspaceMapper WorkspaceMapper
         {
@@ -27,7 +23,7 @@ namespace Numbers.Views
 		        return mapper;
 	        }
         }
-        protected RendererBase Renderer => WorkspaceMapper.Renderer;
+        protected CoreRenderer Renderer => WorkspaceMapper.Renderer;
         protected SKCanvas Canvas => Renderer.Canvas;
         protected CorePens Pens => Renderer.Pens;
 
@@ -40,6 +36,5 @@ namespace Numbers.Views
 
         public abstract SKPath HighlightAt(float t, SKPoint targetPoint);
 
-        //public abstract void DrawNumber();
     }
 }

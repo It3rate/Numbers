@@ -12,8 +12,8 @@ namespace Numbers.UI
     public class Program
     {
 	    private Brain MyBrain { get; }
-        private RendererBase Renderer { get; }
-        public Program(Brain brain, RendererBase renderer)
+        private CoreRenderer Renderer { get; }
+        public Program(Brain brain, CoreRenderer renderer)
         {
 	        MyBrain = brain;
 	        Renderer = renderer;

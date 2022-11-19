@@ -15,7 +15,7 @@ namespace Numbers
 {
     public partial class CoreForm : Form
     {
-	    private readonly RendererBase _renderer;
+	    private readonly CoreRenderer _renderer;
 	    private readonly Control _control;
 	    private readonly IAgent _agent;
 

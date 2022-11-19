@@ -116,7 +116,6 @@
     <Compile Include="UI\IAgent.cs" />
     <Compile Include="UI\MathF.cs" />
     <Compile Include="UI\Program.cs" />
-    <Compile Include="UI\RendererBase.cs" />
     <Compile Include="Views\SKAgentMapper.cs" />
     <Compile Include="Views\SKPointExtension.cs" />
     <Compile Include="Views\SKSegment.cs" />

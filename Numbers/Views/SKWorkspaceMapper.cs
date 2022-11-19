@@ -11,7 +11,7 @@ namespace Numbers.Views
 	    public int Id => Workspace.Id;
 
 	    public Workspace Workspace { get; set; }
-	    public readonly RendererBase Renderer;
+	    public readonly CoreRenderer Renderer;
         public SKPoint TopLeft { get; set; }
 	    public SKPoint BottomRight { get; set; }
 
@@ -31,7 +31,7 @@ namespace Numbers.Views
 
 	    private static float defaultLineT = 0.1f;
 
-        public SKWorkspaceMapper(Workspace workspace, RendererBase renderer, float left, float top, float width, float height)
+        public SKWorkspaceMapper(Workspace workspace, CoreRenderer renderer, float left, float top, float width, float height)
         {
             Workspace = workspace;
             Renderer = renderer;

@@ -26,7 +26,7 @@ namespace Numbers.UI
         private Program Program { get; }
         public bool IsPaused { get; set; } = true;
 
-        private RendererBase Renderer { get; }
+        private CoreRenderer Renderer { get; }
 
         public bool IsDown { get; private set; }
         public bool IsDragging { get; private set; }
@@ -82,7 +82,7 @@ namespace Numbers.UI
 
         private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
 
-        public Agent(Brain myBrain, RendererBase renderer)
+        public Agent(Brain myBrain, CoreRenderer renderer)
         {
             MyBrain = myBrain;
             Renderer = renderer;

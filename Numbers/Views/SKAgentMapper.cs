@@ -13,8 +13,8 @@ namespace Numbers.Views
     public class SKAgentMapper
     {
 	    public IAgent Agent { get; set; }
-	    public RendererBase Renderer { get; set; }
-        public SKAgentMapper(IAgent agent, RendererBase renderer)
+	    public CoreRenderer Renderer { get; set; }
+        public SKAgentMapper(IAgent agent, CoreRenderer renderer)
         {
 	        Agent = agent;
 	        Renderer = renderer;
