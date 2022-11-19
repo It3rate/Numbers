@@ -112,7 +112,7 @@ namespace Numbers.Core
         {
             // todo: eventually all math on Numbers will be in ticks, allowing preservation of precision etc. Requires syncing of basis, domains.
 	        Value += other.Value;
-		}
+        }
         public void Subtract(Number other)
 		{
 			Value -= other.Value;
@@ -120,18 +120,41 @@ namespace Numbers.Core
         public void Multiply(Number other)
 		{
 			Value *= other.Value;
-		}
+        }
         public void Divide(Number other)
 		{
 			Value /= other.Value;
         }
 
-		public Number Clone() => new Number(Domain, Focal.Clone().Id);
+        public Number Clone() => new Number(Domain, Focal.Clone().Id);
 
 		public override string ToString()
 		{
 			var v = Value;
 			return $"[{-v.Start:0.00}->{v.End:0.00}]";
 		}
-	}
+		public override bool Equals(object obj)
+		{
+			return obj is Number other && Equals(other);
+		}
+		public bool Equals(Number value)
+		{
+			return StartTickPosition.Equals(value.StartTickPosition) && 
+			       EndTickPosition.Equals(value.EndTickPosition) &&
+			       Focal.StartTickPosition.Equals(value.StartTickPosition) &&
+			       Focal.EndTickPosition.Equals(value.EndTickPosition);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+                var hashCode = StartTickPosition.GetHashCode();
+                hashCode = (hashCode * 397) ^ EndTickPosition.GetHashCode();
+                hashCode = (hashCode * 17) ^ Focal.StartTickPosition.GetHashCode();
+                hashCode = (hashCode * 13) ^ Focal.EndTickPosition.GetHashCode();
+                return hashCode;
+			}
+		}
+    }
 }

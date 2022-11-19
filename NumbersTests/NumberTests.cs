@@ -32,10 +32,16 @@ namespace NumbersTests
 		    var n3 = new Number(d, f3.Id);
 		    var f4 = FocalRef.CreateByValues(trait, 50, -45);
 		    var n4 = new Number(d, f4.Id);
+		    var f5 = FocalRef.CreateByValues(trait, 53, 69);
+		    var n5 = new Number(d, f5.Id);
 
-		    Assert.AreEqual(n0.Kind, MathElementKind.Number);
+            Assert.AreEqual(n0.Kind, MathElementKind.Number);
+            var n0b = n0.Clone();
+            Assert.AreEqual(n0, n0b);
+            n0b.Add(n3);
+            Assert.AreNotEqual(n0, n0b);
 
-            Assert.AreEqual(uf.AbsLengthInTicks, n0.AbsBasisTicks);
+           Assert.AreEqual(uf.AbsLengthInTicks, n0.AbsBasisTicks);
 		    Assert.AreEqual(1, n0.Direction);
 		    Assert.AreEqual(-1, n4.Direction);
 		    Assert.AreEqual(n1.DomainId, n0.Domain.Id);
@@ -50,12 +56,27 @@ namespace NumbersTests
             Assert.AreEqual(n2.CeilingRange.End, 0, _err);
             Assert.AreEqual(n3.FloorRange.Start, 5, _err);
             Assert.AreEqual(n3.FloorRange.End, 4, _err);
+            Assert.AreEqual(n5.RoundedRange.Start, -5, _err);
+            Assert.AreEqual(n5.RoundedRange.End, 7, _err);
+            Assert.AreEqual(n5.RemainderRange.Start, -0.3, _err);
+            Assert.AreEqual(n5.RemainderRange.End, 0.9, _err);
+
             Assert.IsFalse(n3.IsUnit);
             Assert.IsTrue(d.BasisNumber.IsUnit);
             Assert.IsTrue(n4.IsUnitPerspective);
             Assert.IsFalse(n4.IsUnotPerspective);
             Assert.AreEqual(n3.RangeInMinMax.Start, -0.472636, _err);
             Assert.AreEqual(n3.RangeInMinMax.End, 0.519900, _err);
+
+            n1.Subtract(n2);
+            Assert.AreEqual(n1.Value, new Range(-3.2, 3));
+            n2.Add(n3);
+            Assert.AreEqual(n3.Value, new Range(5, 4.5));
+            n3.Multiply(n4);
+            Assert.AreEqual(n3.Value, new Range(-45,4.8));
+            n4.Divide(n5);
+            Assert.AreEqual(n4.Value, new Range(-0.8, -0.1));
+
         }
     }
 
