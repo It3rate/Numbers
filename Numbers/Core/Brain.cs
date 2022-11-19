@@ -7,6 +7,7 @@ namespace Numbers.Core
 
     public class Brain
     {
+	    public static Brain ActiveBrain => BrainA;
 	    public static Brain BrainA = new Brain();
 	    public static Brain BrainB = new Brain();
 
@@ -18,6 +19,7 @@ namespace Numbers.Core
         public Dictionary<int, Formula> FormulaStore { get; } = new Dictionary<int, Formula>();
 	    public Dictionary<int, Trait> TraitStore { get; } = new Dictionary<int, Trait>();
 	    public Dictionary<int, Transform> TransformStore { get; } = new Dictionary<int, Transform>();
+	    public Dictionary<int, Number> NumberStore { get; } = new Dictionary<int, Number>();
 
 	    private int traitCounter = 1 + (int)MathElementKind.Trait;
 	    public int NextTraitId() => traitCounter++;
@@ -29,5 +31,6 @@ namespace Numbers.Core
             TraitStore.Clear();
             TransformStore.Clear();
 	    }
+
     }
 }

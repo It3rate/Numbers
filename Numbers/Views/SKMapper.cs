@@ -9,6 +9,7 @@ namespace Numbers.Views
         private static int _mapperCounter = 1;
         public int Id { get; private set; }
 
+        public Brain MyBrain => Brain.ActiveBrain;
         public IMathElement MathElement { get; protected set; }
 	    public abstract SKPoint StartPoint { get; set; }
 	    public abstract SKPoint MidPoint { get; }

@@ -7,7 +7,7 @@ using SkiaSharp;
 namespace Numbers.Views
 {
 	public class SKDomainMapper : SKMapper
-    {
+	{
 	    public Domain Domain { get; private set; }
 	    private SKNumberMapper UnitMapper => WorkspaceMapper.NumberMapper(Domain.BasisNumberId);
         public SKSegment UnitSegment => UnitMapper.NumberSegment;
@@ -194,7 +194,7 @@ namespace Numbers.Views
 	    {
 		    foreach (var id in Markers)
 		    {
-			    var num = Workspace.NumberStore[id];
+			    var num = MyBrain.NumberStore[id];
 			    //var ratio = RatioInDisplay(num);//num.RangeInMinMax;//
 			    //var isUnit = id == Domain.BasisNumberId;
 			    //var rem = num.RemainderRange;

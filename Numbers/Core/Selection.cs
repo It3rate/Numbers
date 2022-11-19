@@ -11,7 +11,9 @@
     /// </summary>
     public class Selection : IMathElement
     {
-	    public MathElementKind Kind => MathElementKind.Selection;
+	    public Brain MyBrain => Brain.ActiveBrain;
+
+        public MathElementKind Kind => MathElementKind.Selection;
 	    public int Id { get; }
         private static int SelectionCounter = 1 + (int)MathElementKind.Selection;
 
@@ -19,7 +21,7 @@
         public int Count => NumberIds.Length;
 
         //public Number NumberAt(int index) => Number.NumberStore[NumberIds[index]];
-        public Number this[int i] => Workspace.NumberStore[NumberIds[i]];
+        public Number this[int i] => MyBrain.NumberStore[NumberIds[i]];
 
         public Selection(params int[] numberIds)
         {

@@ -12,8 +12,8 @@ namespace Numbers.UI
 	public class Agent : IAgent
     {
         public static Agent Current { get; private set; }
+        public Brain MyBrain => Brain.ActiveBrain;
 
-        public Brain MyBrain { get; }
         public Workspace Workspace { get; }
         protected SKWorkspaceMapper WorkspaceMapper
         {
@@ -82,12 +82,11 @@ namespace Numbers.UI
 
         private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
 
-        public Agent(Brain myBrain, CoreRenderer renderer)
+        public Agent(CoreRenderer renderer)
         {
-            MyBrain = myBrain;
             Renderer = renderer;
             Current = this;
-            Workspace = new Workspace(MyBrain);
+            Workspace = new Workspace();
             Program = new Program(MyBrain, Renderer);
 
             ClearMouse();

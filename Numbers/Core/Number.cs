@@ -12,7 +12,8 @@ namespace Numbers.Core
 		public MathElementKind Kind => MathElementKind.Number;
 		private static int numberCounter = 1 + (int) MathElementKind.Number;
 
-		public Number this[int i] => Workspace.NumberStore[i];
+		public Brain MyBrain => Brain.ActiveBrain;
+        public Number this[int i] => MyBrain.NumberStore[i];
 
 		public int Id { get; set; }
 		public int DomainId
@@ -46,7 +47,7 @@ namespace Numbers.Core
 			Domain = domain;
 			FocalId = focalId;
 			domain.NumberIds.Add(Id);
-			Workspace.NumberStore.Add(Id, this);
+			MyBrain.NumberStore.Add(Id, this);
 		}
 
 		public Number(Domain domain, Range value) : this(domain, domain.FocalFromRange(value).Id)

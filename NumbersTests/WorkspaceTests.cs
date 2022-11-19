@@ -12,7 +12,7 @@ namespace NumbersTests
     [TestClass]
     public class WorkspaceTests
     {
-	    private Brain _brain;
+	    private Brain MyBrain => Brain.ActiveBrain;
 	    private Workspace _workspace;
 	    private Trait _trait;
         private FocalRef _unitFocal;
@@ -22,8 +22,7 @@ namespace NumbersTests
 	    [TestInitialize]
 	    public void Init()
 	    {
-            _brain = Brain.BrainA;
-            _workspace = new Workspace(_brain);
+            _workspace = new Workspace();
 
 		    _trait = new Trait();
 		    _unitFocal = FocalRef.CreateByValues(_trait, -4, 6);

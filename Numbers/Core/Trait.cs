@@ -13,14 +13,13 @@ namespace Numbers.Core
     /// </summary>
     public class Trait : IMathElement
     {
-        public Brain _brain = Brain.BrainA;
-
-	    public MathElementKind Kind => MathElementKind.Trait;
+	    public Brain MyBrain => Brain.ActiveBrain;
+        public MathElementKind Kind => MathElementKind.Trait;
         public int Id { get; }
         public string Name { get; private set; }
 
-        public Dictionary<int, Transform> TransformStore => _brain.TransformStore;
-        public Dictionary<int, Trait> TraitStore => _brain.TraitStore;
+        public Dictionary<int, Transform> TransformStore => MyBrain.TransformStore;
+        public Dictionary<int, Trait> TraitStore => MyBrain.TraitStore;
 
         public Dictionary<int, long> PositionStore { get; } = new Dictionary<int, long>(4096);
         public Dictionary<int, FocalRef> FocalStore { get; } = new Dictionary<int, FocalRef>();
@@ -28,7 +27,7 @@ namespace Numbers.Core
 
 	    public Trait()
 	    {
-		    Id = Brain.BrainA.NextTraitId();
+		    Id = MyBrain.NextTraitId();
             TraitStore.Add(Id, this);
 	    }
 

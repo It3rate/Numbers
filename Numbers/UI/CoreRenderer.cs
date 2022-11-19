@@ -10,10 +10,10 @@ namespace Numbers.UI
 {
 	public class CoreRenderer
     {
-	    public Brain _brain { get; private set; }
-	    public List<Workspace> Workspaces { get; } = new List<Workspace>();
+	    public Brain MyBrain => Brain.ActiveBrain;
+        public List<Workspace> Workspaces { get; } = new List<Workspace>();
 	    public Workspace CurrentWorkspace { get; private set; }
-	    public SKWorkspaceMapper CurrentWorkspaceMapper => _brain.WorkspaceMappers[CurrentWorkspace.Id];
+	    public SKWorkspaceMapper CurrentWorkspaceMapper => MyBrain.WorkspaceMappers[CurrentWorkspace.Id];
 	    public SKAgentMapper CurrentAgentMapper { get; set; }
 
 	    public int Width { get; protected set; }
@@ -25,9 +25,8 @@ namespace Numbers.UI
 	    public SKBitmap Bitmap { get; set; }
 	    public bool ShowBitmap { get; set; }
 
-        public CoreRenderer(Brain brain)
+        public CoreRenderer()
         {
-	        _brain = brain;
 	        GeneratePens();
         }
 
@@ -182,7 +181,7 @@ namespace Numbers.UI
 	    public void DrawOnCanvas(SKCanvas canvas)
 	    {
 		    Canvas = canvas;
-		    foreach (var workspace in _brain.Workspaces)
+		    foreach (var workspace in MyBrain.Workspaces)
 		    {
 			    if (workspace.IsActive)
 			    {

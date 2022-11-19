@@ -237,7 +237,7 @@ namespace Numbers.Views
         }
         public SKNumberMapper GetOrCreateNumberMapper(int id)
         {
-	        return GetOrCreateNumberMapper(Workspace.NumberStore[id]);
+	        return GetOrCreateNumberMapper(Workspace.MyBrain.NumberStore[id]);
         }
         public SKNumberMapper GetOrCreateNumberMapper(Number number)
         {

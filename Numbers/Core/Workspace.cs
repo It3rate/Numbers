@@ -9,17 +9,13 @@ namespace Numbers.Core
 	    private static int _idCounter = 1;
 	    public int Id { get; }
 
+        public Brain MyBrain => Brain.ActiveBrain;
         private List<int> ActiveIds { get; } = new List<int>();
-
-	    public readonly Brain MyBrain;
         public bool IsActive { get; set; } = true;
 
-        public static Dictionary<int, Number> NumberStore { get; } = new Dictionary<int, Number>();
-
-        public Workspace(Brain brain)
+        public Workspace()
         {
 	        Id = _idCounter++;
-            MyBrain = brain;
             MyBrain.Workspaces.Add(this);
         }
 
@@ -73,7 +69,7 @@ namespace Numbers.Core
         public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
         {
 	        numValues.Clear();
-            foreach (var kvp in NumberStore)
+            foreach (var kvp in MyBrain.NumberStore)
             {
 	            if(!ignoreIds.Contains(kvp.Key))
 	            {
@@ -90,7 +86,7 @@ namespace Numbers.Core
 		        var storedValue = kvp.Value;
 		        if (!ignoreIds.Contains(id))
 		        {
-			        NumberStore[id].Value = storedValue;
+			        MyBrain.NumberStore[id].Value = storedValue;
 		        }
             }
         }

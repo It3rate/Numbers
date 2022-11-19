@@ -19,7 +19,7 @@ namespace Numbers.Core
     // Min size is tick size. BasisFocal is start/end point (only one focal allowed for a unit). MinMaxFocal is bounds in ticks. todo: add conversion methods etc.
     public class Domain : IMathElement
     {
-	    private Brain _brain => Brain.BrainA;
+	    public Brain MyBrain => Brain.ActiveBrain;
 
 	    public  MathElementKind Kind => MathElementKind.Domain;
         private static int domainCounter = 1 + (int)MathElementKind.Domain;
@@ -27,10 +27,10 @@ namespace Numbers.Core
         public int Id { get; }
 
         public int TraitId { get; }
-        public Trait MyTrait => _brain.TraitStore[TraitId];
+        public Trait MyTrait => MyBrain.TraitStore[TraitId];
 
         public int BasisNumberId { get; set; }
-        public Number BasisNumber => Workspace.NumberStore[BasisNumberId];
+        public Number BasisNumber => MyBrain.NumberStore[BasisNumberId];
         public IFocal BasisFocal => MyTrait.FocalStore[BasisNumber.FocalId];
 
         public List<int> NumberIds { get; } = new List<int>();
@@ -38,7 +38,7 @@ namespace Numbers.Core
         {
 	        foreach (var id in NumberIds)
 	        {
-		        yield return Workspace.NumberStore[id];
+		        yield return MyBrain.NumberStore[id];
 	        }
         }
 
@@ -89,7 +89,7 @@ namespace Numbers.Core
 	        {
 		        if (!ignoreIds.Contains(kvp.Key))
 		        {
-			        Workspace.NumberStore[kvp.Key].Value = kvp.Value;
+			        MyBrain.NumberStore[kvp.Key].Value = kvp.Value;
                 }
 	        }
         }
