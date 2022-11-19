@@ -11,6 +11,8 @@ namespace Numbers.Core
 
         public Brain MyBrain => Brain.ActiveBrain;
         private List<int> ActiveIds { get; } = new List<int>();
+        public int ActiveElementCount => ActiveIds.Count;
+
         public bool IsActive { get; set; } = true;
 
         public Workspace()
@@ -19,43 +21,11 @@ namespace Numbers.Core
             MyBrain.Workspaces.Add(this);
         }
 
-        public void ClearAll()
-        {
-	        MyBrain.ClearAll();
-        }
-
         public void AddElements(params IMathElement[] elements)
         {
 	        foreach (var element in elements)
 	        {
 		        ActiveIds.Add(element.Id);
-	        }
-        }
-        public void AddDomain(Domain domain)
-        {
-	        ActiveIds.Add(domain.Id);
-	        ActiveIds.AddRange(domain.NumberIds);
-        }
-        public void AddFullDomains(params Domain[] domains)
-        {
-	        foreach (var domain in domains)
-	        {
-		        AddDomain(domain);
-	        }
-        }
-        public void RemoveDomain(Domain domain)
-        {
-	        ActiveIds.Remove(domain.Id);
-	        foreach (var numberId in domain.NumberIds)
-	        {
-		        ActiveIds.Remove(numberId);
-	        }
-        }
-        public void RemoveFullDomains(params Domain[] domains)
-        {
-	        foreach (var domain in domains)
-	        {
-		        RemoveDomain(domain);
 	        }
         }
         public void RemoveElements(params IMathElement[] elements)
@@ -66,29 +36,60 @@ namespace Numbers.Core
 	        }
         }
 
-        public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
+        public void AddTraits(bool includeChildren, params Trait[] traits)
         {
-	        numValues.Clear();
-            foreach (var kvp in MyBrain.NumberStore)
-            {
-	            if(!ignoreIds.Contains(kvp.Key))
-	            {
-					numValues.Add(kvp.Key, kvp.Value.Value);
-	            }
-            }
+	        foreach (var trait in traits)
+	        {
+		        ActiveIds.Add(trait.Id);
+		        if (includeChildren)
+		        {
+			        AddDomains(includeChildren,trait.DomainStore.Values.ToArray());
+		        }
+	        }
+        }
+        public void RemoveTraits(bool includeChildren, params Trait[] traits)
+        {
+	        foreach (var trait in traits)
+	        {
+		        ActiveIds.Remove(trait.Id);
+		        if (includeChildren)
+		        {
+			        RemoveDomains(includeChildren, trait.DomainStore.Values.ToArray());
+		        }
+	        }
         }
 
-        public void RestoreNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
+        public void AddDomains(bool includeChildren, params Domain[] domains)
         {
-	        foreach (var kvp in numValues)
+	        foreach (var domain in domains)
 	        {
-		        var id = kvp.Key;
-		        var storedValue = kvp.Value;
-		        if (!ignoreIds.Contains(id))
+		        ActiveIds.Add(domain.Id);
+		        if (includeChildren)
 		        {
-			        MyBrain.NumberStore[id].Value = storedValue;
+			        ActiveIds.AddRange(domain.NumberIds);
 		        }
-            }
+	        }
         }
+        public void RemoveDomains(bool includeChildren, params Domain[] domains)
+        {
+	        foreach (var domain in domains)
+	        {
+		        ActiveIds.Remove(domain.Id);
+		        if (includeChildren)
+		        {
+			        foreach (var numberId in domain.NumberIds)
+			        {
+				        ActiveIds.Remove(numberId);
+			        }
+		        }
+	        }
+        }
+
+        public void ClearAll()
+        {
+	        MyBrain.ClearAll();
+            ActiveIds.Clear();
+        }
+
     }
 }

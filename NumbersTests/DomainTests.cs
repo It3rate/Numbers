@@ -42,12 +42,12 @@ namespace NumbersTests
             var n0 = new Number(_domain, f0.Id);
             var n1 = new Number(_domain, f0.Clone().Id);
             var n2 = new Number(_domain, f0.Clone().Id);
-            Assert.AreEqual(_domain.NumberIds.Count, 4); // includes unit basis
-            
+            Assert.AreEqual(_domain.NumberIds.Count, 5); // includes unit basis and minmax
+
             var dict = new Dictionary<int, Range>();
 
             _domain.SaveNumberValues(dict, _domain.BasisNumberId);
-            Assert.AreEqual(dict.Count, 3); // does not include unit
+            Assert.AreEqual(dict.Count, 4); // does not include unit
             var saved = n1.Focal.EndTickPosition;
             n1.Focal.EndTickPosition = 22;
             Assert.AreNotEqual(n1.Focal.EndTickPosition, saved);

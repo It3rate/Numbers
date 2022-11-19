@@ -37,7 +37,7 @@ namespace Numbers.UI
                 result.Add(domain);
                 var focal = FocalRef.CreateByValues(trait, focalPositions[i - 1], focalPositions[i]);
                 var num = new Number(domain, focal.Id);
-                workspace.AddDomain(domain);
+                workspace.AddDomains(true, domain);
                 var displaySeg = wm.GetHorizontalSegment(yt, 100);
                 var y = displaySeg.StartPoint.Y;
                 var unitStart = (-minPos / rangeLen) * displaySeg.Length + displaySeg.StartPoint.X;
@@ -80,7 +80,7 @@ namespace Numbers.UI
             var hSel = new Selection(hNum);
             var transform = trait.AddTransform(hSel, vNum, TransformKind.Blend);
 
-            agent.Workspace.AddFullDomains(hDomain, vDomain);
+            agent.Workspace.AddDomains(true, hDomain, vDomain);
 
             var wm = new SKWorkspaceMapper(agent.Workspace, Renderer, 150, 10, 800, 800);
 
@@ -115,7 +115,7 @@ namespace Numbers.UI
             //var sel = new Selection(num2);
             //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
-            agent.Workspace.AddFullDomains(domain);//, domain2);
+            agent.Workspace.AddDomains(true, domain);//, domain2);
             var wm = new SKWorkspaceMapper(agent.Workspace, Renderer, 20, 20, 800, 800);
             var dm = wm.GetOrCreateDomainMapper(domain, wm.GetHorizontalSegment(.3f, 100));
             dm.ShowGradientNumberLine = true;

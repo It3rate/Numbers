@@ -169,7 +169,7 @@ namespace Numbers.UI
 					SelCurrent.Set(_highlight.Clone());
 					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm && nm.IsUnitOrUnot)
 					{
-						Workspace.SaveNumberValues(SavedNumbers);
+						SaveNumberValues(SavedNumbers);
                     }
                 }
             }
@@ -183,7 +183,7 @@ namespace Numbers.UI
 		            nm.SetValueByKind(_highlight.SnapPoint, activeHighlight.Kind);
 		            if (LockValuesOnDrag)
 		            {
-						Workspace.RestoreNumberValues(SavedNumbers);
+						RestoreNumberValues(SavedNumbers);
 		            }
 	            }
                 else if (activeHighlight.Mapper is SKDomainMapper dm)
@@ -479,6 +479,30 @@ namespace Numbers.UI
 	        SelCurrent.Clear();
 	        SelHighlight.Clear();
 	        SelSelection.Clear();
+        }
+
+        public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
+        {
+	        numValues.Clear();
+	        foreach (var kvp in MyBrain.NumberStore)
+	        {
+		        if (!ignoreIds.Contains(kvp.Key))
+		        {
+			        numValues.Add(kvp.Key, kvp.Value.Value);
+		        }
+	        }
+        }
+        public void RestoreNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
+        {
+	        foreach (var kvp in numValues)
+	        {
+		        var id = kvp.Key;
+		        var storedValue = kvp.Value;
+		        if (!ignoreIds.Contains(id))
+		        {
+			        MyBrain.NumberStore[id].Value = storedValue;
+		        }
+	        }
         }
     }
 

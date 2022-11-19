@@ -52,8 +52,8 @@ namespace Numbers.Views
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
         {
-	        if (Number.Id != Number.Domain.BasisNumberId)
-	        {
+	        if (Number.Id != Number.Domain.BasisNumberId && Number.Id != Number.Domain.MinMaxNumberId)
+            {
 				EnsureSegment();
 		        var dir = Number.Direction;
 		        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir * UnitSign);

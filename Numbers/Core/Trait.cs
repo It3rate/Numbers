@@ -20,7 +20,6 @@ namespace Numbers.Core
 
         public Dictionary<int, Transform> TransformStore => MyBrain.TransformStore;
         public Dictionary<int, Trait> TraitStore => MyBrain.TraitStore;
-
         public Dictionary<int, long> PositionStore { get; } = new Dictionary<int, long>(4096);
         public Dictionary<int, FocalRef> FocalStore { get; } = new Dictionary<int, FocalRef>();
         public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();

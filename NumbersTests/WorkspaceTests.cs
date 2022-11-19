@@ -33,6 +33,21 @@ namespace NumbersTests
 	    [TestMethod]
 	    public void CoreWorkspaceTests()
 	    {
-	    }
+            _workspace.AddDomains(true, _domain);
+            Assert.AreEqual(_workspace.ActiveElementCount, 3); // domain, unit and range
+
+            var f5 = FocalRef.CreateByValues(_trait, 20, 90);
+            var n5 = new Number(_domain, f5.Id);
+            _workspace.AddElements(n5);
+            Assert.AreEqual(_workspace.ActiveElementCount, 4);
+            _workspace.ClearAll();
+            Assert.AreEqual(_workspace.ActiveElementCount, 0);
+            _workspace.AddDomains(true, _domain);
+            Assert.AreEqual(_workspace.ActiveElementCount, 4);
+            _workspace.ClearAll();
+            Assert.AreEqual(_workspace.ActiveElementCount, 0);
+            _workspace.AddDomains(false, _domain);
+            Assert.AreEqual(_workspace.ActiveElementCount, 1);
+        }
     }
 }

@@ -28,11 +28,6 @@ namespace Numbers.Core
 
         public int TraitId { get; }
         public Trait MyTrait => MyBrain.TraitStore[TraitId];
-
-        public int BasisNumberId { get; set; }
-        public Number BasisNumber => MyBrain.NumberStore[BasisNumberId];
-        public IFocal BasisFocal => MyTrait.FocalStore[BasisNumber.FocalId];
-
         public List<int> NumberIds { get; } = new List<int>();
         public IEnumerable<Number> Numbers()
         {
@@ -42,20 +37,26 @@ namespace Numbers.Core
 	        }
         }
 
-        public bool IsUnitPerspective => BasisFocal.Direction >= 0;
+        public int BasisNumberId { get; set; }
+        public Number BasisNumber => MyBrain.NumberStore[BasisNumberId];
+        public IFocal BasisFocal => MyTrait.FocalStore[BasisNumber.FocalId];
+        public int BasisFocalId => BasisNumber.FocalId;
 
-        public int MinMaxFocalId { get; set; }
+        public int MinMaxNumberId { get; set; }
+        public Number MinMaxNumber => MyBrain.NumberStore[MinMaxNumberId];
         public IFocal MinMaxFocal => MyTrait.FocalStore[MinMaxFocalId];
+        public int MinMaxFocalId => MinMaxNumber.FocalId;
         public Range MinMaxRange => MinMaxFocal.RangeInBasis(BasisFocal);
-        //public Range MinMaxRange => MinMaxFocal.UnitTRangeIn(BasisFocal);
-        //public Range MinMaxRange => BasisFocal.UnitTRangeIn(MinMaxFocal);
+
+        public bool IsUnitPerspective => BasisFocal.Direction == 1;
+        public bool IsUnotPerspective => BasisFocal.Direction == -1;
 
         public Domain(int traitId, int unitFocalId, int minMaxFocalId)
         {
 	        Id = domainCounter++;
             TraitId = traitId;
-            MinMaxFocalId = minMaxFocalId;
-            BasisNumberId = new Number(this, unitFocalId).Id; 
+            BasisNumberId = new Number(this, unitFocalId).Id;
+            MinMaxNumberId = new Number(this, minMaxFocalId).Id;
         }
         public Domain(Trait trait, FocalRef unit, FocalRef range) : this(trait.Id, unit.Id, range.Id) { }
 
