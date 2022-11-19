@@ -104,8 +104,8 @@ namespace Numbers.Core
 	    public Range UnitTRangeIn(IFocal basis)
 	    {
 		    var len = (double)Math.Abs(basis.NonZeroLength);
-		    var start = StartTickPosition / len;
-		    var end = EndTickPosition / len;
+		    var start = (StartTickPosition - basis.StartTickPosition) / len;
+		    var end = (EndTickPosition - basis.StartTickPosition) / len;
 		    return new Range(start, end);
 	    }
 

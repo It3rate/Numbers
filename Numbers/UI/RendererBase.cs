@@ -13,7 +13,8 @@ namespace Numbers.UI
         public Brain _brain { get; private set; }
         public List<Workspace> Workspaces { get; } = new List<Workspace>();
         public Workspace CurrentWorkspace { get; private set; }
-        public SKWorkspaceMapper CurrentWorkspaceMap => _brain.WorkspaceMappers[CurrentWorkspace.Id];
+        public SKWorkspaceMapper CurrentWorkspaceMapper => _brain.WorkspaceMappers[CurrentWorkspace.Id];
+        public SKAgentMapper CurrentAgentMapper { get; set; }
 
         //public RenderStatus Status { get; set; }
         public int Width { get; protected set; }

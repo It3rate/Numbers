@@ -117,11 +117,6 @@ namespace Numbers.Views
 	        {
 		        domainMapper.Draw();
 	        }
-
-	        if (Workspace.SelHighlight.HasHighlight) // todo: highlight using a different way.
-	        {
-		        Renderer.Canvas.DrawPath(Workspace.SelHighlight.ActiveHighlight.HighlightPath(), Renderer.Pens.HoverPen);
-	        }
         }
 
         public IEnumerable<SKTransformMapper> TransformMappers(bool reverse = false)

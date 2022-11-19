@@ -13,27 +13,40 @@ namespace Numbers.UI
     {
         public static Agent Current { get; private set; }
 
-        private Brain Brain { get; }
-        private Workspace Workspace { get; }
+        public Brain MyBrain { get; }
+        public Workspace Workspace { get; }
         protected SKWorkspaceMapper WorkspaceMapper
         {
 	        get
 	        {
-		        Brain.WorkspaceMappers.TryGetValue(Workspace.Id, out var mapper);
+		        MyBrain.WorkspaceMappers.TryGetValue(Workspace.Id, out var mapper);
 		        return mapper;
 	        }
         }
+        private Program Program { get; }
+        public bool IsPaused { get; set; } = true;
 
         private RendererBase Renderer { get; }
 
         public bool IsDown { get; private set; }
         public bool IsDragging { get; private set; }
-        public bool IsPaused { get; set; } = true;
 
         public event EventHandler OnModeChange;
         public event EventHandler OnDisplayModeChange;
         public event EventHandler OnSelectionChange;
 
+        private Highlight _highlight = new Highlight();
+        public HighlightSet SelBegin { get; } = new HighlightSet();
+        public HighlightSet SelCurrent { get; } = new HighlightSet();
+        public HighlightSet SelHighlight { get; } = new HighlightSet();
+        public HighlightSet SelSelection { get; } = new HighlightSet();
+
+        public Stack<Selection> SelectionStack { get; } = new Stack<Selection>();
+        public Stack<Formula> FormulaStack { get; } = new Stack<Formula>();
+        public Stack<Number> ResultStack { get; } = new Stack<Number>(); // can have multiple results?
+
+        public bool LockValuesOnDrag { get; set; }
+        public bool LockTicksOnDrag { get; set; }
         private ColorTheme _colorTheme = ColorTheme.Normal;
         public ColorTheme ColorTheme
         {
@@ -48,182 +61,57 @@ namespace Numbers.UI
 	        }
         }
 
-        private int _testIndex = 2;
-        private readonly int[] _tests = new int[]{0,1,2};
-        public Agent(Brain brain, RendererBase renderer)
+        private SKPoint _rawMousePoint;
+        private float _minDragDistance = 4f;
+        public float ScaleTickSize { get; set; } = 0.2f;
+        private Keys CurrentKey;
+        private UIMode _uiMode = UIMode.Any;
+        public UIMode UIMode
         {
-            Brain = brain;
+	        get => _uiMode;
+	        set
+	        {
+		        if (value != _uiMode)
+		        {
+			        _uiMode = value;
+			        OnModeChange?.Invoke(this, new EventArgs());
+			        SetSelectable(UIMode);
+		        }
+	        }
+        }
+
+        private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
+
+        public Agent(Brain myBrain, RendererBase renderer)
+        {
+            MyBrain = myBrain;
             Renderer = renderer;
             Current = this;
-            Workspace = new Workspace(Brain);
+            Workspace = new Workspace(MyBrain);
+            Program = new Program(MyBrain, Renderer);
 
             ClearMouse();
-            NextTest();
+            Program.NextTest(this);
         }
 
-        private List<Domain> CreateDomainLines(Trait trait, params long[] focalPositions)
+        public void ClearAll()
         {
-	        var result = new List<Domain>();
-            var wm = Brain.WorkspaceMappers[Workspace.Id];
-	        var unit = trait.FocalStore.Values.First();
-	        var padding = 1.4;
-	        long maxPos = (long)Math.Max((focalPositions.Max() * padding), unit.AbsLengthInTicks * padding);
-	        long minPos = (long)Math.Min((focalPositions.Min() * padding), -unit.AbsLengthInTicks * padding);
-            var range = FocalRef.CreateByValues(trait, minPos, maxPos);
-            var rangeLen = (double)range.LengthInTicks;
-            var yt = 0.1f;
-            var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
-            for (int i = 1; i < focalPositions.Length; i += 2)
-	        {
-		        var domain = trait.AddDomain(unit.Id, range.Id);
-		        result.Add(domain);
-                var focal = FocalRef.CreateByValues(trait, focalPositions[i-1], focalPositions[i]);
-		        var num = new Number(domain, focal.Id);
-		        Workspace.AddDomain(domain);
-		        var displaySeg = wm.GetHorizontalSegment(yt, 100);
-		        var y = displaySeg.StartPoint.Y;
-		        var unitStart = (-minPos / rangeLen) * displaySeg.Length + displaySeg.StartPoint.X;
-		        var unitEnd = ((-minPos + unit.LengthInTicks) / rangeLen) * displaySeg.Length + displaySeg.StartPoint.X;
-                var unitSeg = new SKSegment((float)unitStart, y, (float)unitEnd, y);
-		        var dm = wm.GetOrCreateDomainMapper(domain, displaySeg, unitSeg);
-	            dm.ShowGradientNumberLine = true;
-	            dm.ShowNumberOffsets = true;
-	            dm.ShowUnitMarkers = true;
-	            dm.ShowUnits = true;
-		        yt += ytStep;
-	        }
-
-            return result;
-        }
-
-        private SKWorkspaceMapper test2()
-        {
-	        Trait trait = new Trait();
-	        var unitSize = 8;
-	        var unit = FocalRef.CreateByValues(trait, 0, unitSize);// t0.AddFocalByUnitPositions(0, unitSize);
-	        var wm = new SKWorkspaceMapper(Workspace, Renderer, 20, 20, 1000, 800);
-            CreateDomainLines(trait, 20, 10, 30, 40, 35, 24, -4, -20);
-            return wm;
-        }
-
-        private SKWorkspaceMapper test0()
-        {
-            Trait trait = new Trait();
-	        var unitSize = 8;
-	        var unit = FocalRef.CreateByValues(trait, 0, unitSize);
-	        var range = FocalRef.CreateByValues(trait, -16* unitSize, 16 * unitSize);
-	        var hDomain = trait.AddDomain(unit.Id, range.Id);
-	        var vDomain = trait.AddDomain(unit.Id, range.Id);
-	        var hFocal = FocalRef.CreateByValues(trait, -2 * unitSize, 9 * unitSize);
-	        var vFocal = FocalRef.CreateByValues(trait, 3 * unitSize, 6 * unitSize);
-	        //var val2 = FocalRef.CreateByValues(t0, unitSize, unitSize);
-	        //var val3 = FocalRef.CreateByValues(t0, unitSize, unitSize);
-
-            var hNum = new Number(hDomain, hFocal.Id);
-	        var vNum = new Number(vDomain, vFocal.Id);
-	        var hSel = new Selection(hNum);
-	        var transform = trait.AddTransform(hSel, vNum, TransformKind.Blend);
-
-            Workspace.AddFullDomains(hDomain, vDomain);
-
-	        var wm = new SKWorkspaceMapper(Workspace, Renderer, 150, 10, 800, 800);
-
-	        var dm = wm.GetOrCreateDomainMapper(hDomain, wm.GetHorizontalSegment(.5f, 50));
-	        dm.ShowGradientNumberLine = false;
-	        dm.ShowValueMarkers = true;
-	        dm.ShowUnitMarkers = false;
-	        dm.ShowUnits = false;
-
-            var dm2 = wm.GetOrCreateDomainMapper(vDomain, wm.GetVerticalSegment(.5f, 50));
-	        dm2.ShowGradientNumberLine = false;
-	        dm2.ShowValueMarkers = true;
-	        dm2.ShowUnitMarkers = false;
-            dm2.ShowUnits = false;
-            return wm;
-        }
-        private SKWorkspaceMapper test1()
-        {
-	        Trait trait = new Trait();
-	        var unitSize = 4;
-	        var unit = FocalRef.CreateByValues(trait, 3, 3+unitSize);
-	        var range = FocalRef.CreateByValues(trait, -40, 40);
-	        var domain = trait.AddDomain(unit.Id, range.Id);
-	        //var domain2 = t0.AddDomain(unit.Id, range.Id);
-	        var val2 = FocalRef.CreateByValues(trait, -15, 20);
-	        //var val3 = FocalRef.CreateByValues(t0, -40, 60);
-	        //var val2 = FocalRef.CreateByValues(t0, unitSize, unitSize);
-	        //var val3 = FocalRef.CreateByValues(t0, unitSize, unitSize);
-
-	        var num2 = new Number(domain, val2.Id);
-	        //var num3 = new Number(domain2, val3.Id);
-	        //var sel = new Selection(num2);
-	        //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
-
-	        Workspace.AddFullDomains(domain);//, domain2);
-            var wm = new SKWorkspaceMapper(Workspace, Renderer, 20,20, 800, 800);
-            var dm = wm.GetOrCreateDomainMapper(domain, wm.GetHorizontalSegment(.3f, 100));
-            dm.ShowGradientNumberLine = true;
-            dm.ShowNumberOffsets = true;
-            dm.ShowUnitMarkers = true;
-            dm.ShowUnits = true;
-            wm.EnsureRenderers();
-            var nm = wm.NumberMapper(num2.Id);
-            //dm.EndPoint += new SKPoint(0, -50);
-            return wm;
-        }
-
-
-        public void NextTest()
-        {
-	        IsPaused = true;
-	        ClearAll();
-	        SKWorkspaceMapper wm;
-            switch (_tests[_testIndex])
-	        {
-		        case 0:
-			        wm = test0();
-			        break;
-		        case 1:
-			        wm = test1();
-			        break;
-		        case 2:
-                default:
-			        wm = test2();
-			        break;
-            }
-	        _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
-            wm.EnsureRenderers();
-            IsPaused = false;
-        }
-
-        private void ClearAll()
-        {
+            ClearHighlights();
             Workspace.ClearAll();
 	        WorkspaceMapper?.ClearAll();
         }
 
-
         #region Position and Keyboard
 
-        private bool _creatingOnDown = false;
-        private SKPoint _downRawMousePoint;
-        private SKPoint _rawMousePoint;
         public SKPoint GetTransformedPoint(SKPoint point) => point;// Data.Matrix.Invert().MapPoint(point);
-
-        private Highlight _highlight = new Highlight();
-        private HighlightSet SelBegin => Workspace.SelBegin;
-        private HighlightSet SelCurrent   => Workspace.SelCurrent;
-        private HighlightSet SelHighlight => Workspace.SelHighlight;
-        private HighlightSet SelSelection => Workspace.SelSelection;
 
         public bool MouseDown(MouseEventArgs e)
         {
-            if(IsPaused)return false;
+            if(IsPaused){return false;}
 
             // Add to selection if ctrl down etc.
             _rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
-            _downRawMousePoint = _rawMousePoint;
             WorkspaceMapper.GetSnapPoint(_highlight, SelCurrent, mousePoint);
             SelHighlight.Set(_highlight);
 
@@ -250,12 +138,11 @@ namespace Numbers.UI
             }
 
             IsDown = true;
-            _creatingOnDown = _isControlDown;
             return true;
         }
         public bool MouseMove(MouseEventArgs e)
         {
-	        if (IsPaused) return false;
+	        if (IsPaused) {return false;}
 
             var result = false;
             _rawMousePoint = e.Location.ToSKPoint();
@@ -270,10 +157,9 @@ namespace Numbers.UI
             return true;
         }
 
-        private float _minDragDistance = 4f;
         public bool MouseDrag(SKPoint mousePoint)
         {
-	        if (IsPaused) return false;
+	        if (IsPaused) {return false;}
 
             if (SelBegin.HasHighlight && !IsDragging)
             {
@@ -284,7 +170,7 @@ namespace Numbers.UI
 					SelCurrent.Set(_highlight.Clone());
 					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm && nm.IsUnitOrUnot)
 					{
-						Workspace.SaveNumberValues();
+						Workspace.SaveNumberValues(SavedNumbers);
                     }
                 }
             }
@@ -296,7 +182,10 @@ namespace Numbers.UI
 	            if (activeHighlight.Mapper is SKNumberMapper nm)
 	            {
 		            nm.SetValueByKind(_highlight.SnapPoint, activeHighlight.Kind);
-		            Workspace.RestoreNumberValues();
+		            if (LockValuesOnDrag)
+		            {
+						Workspace.RestoreNumberValues(SavedNumbers);
+		            }
 	            }
                 else if (activeHighlight.Mapper is SKDomainMapper dm)
 	            {
@@ -316,7 +205,7 @@ namespace Numbers.UI
 
         public bool MouseUp(MouseEventArgs e)
         {
-	        if (IsPaused) return false;
+	        if (IsPaused) {return false;}
 
             // If dragging or creating, check for last point merge
             // If rect select, add contents to selection (also done in move).
@@ -365,7 +254,7 @@ namespace Numbers.UI
         }
         public bool MouseDoubleClick(MouseEventArgs e)
         {
-	        if (IsPaused) return false;
+	        if (IsPaused) {return false;}
 
             if (CurrentKey == Keys.Space && e.Button == MouseButtons.Left)
             {
@@ -374,10 +263,9 @@ namespace Numbers.UI
             return true;
         }
 
-        public float ScaleTickSize { get; set; } = 0.2f;
         public bool MouseWheel(MouseEventArgs e)
         {
-	        if (IsPaused) return false;
+	        if (IsPaused) {return false;}
 
             var scale = 1f + (Math.Sign(e.Delta) * ScaleTickSize);
             var rawMousePoint = e.Location.ToSKPoint();
@@ -386,21 +274,6 @@ namespace Numbers.UI
             return true;
         }
 
-        private Keys CurrentKey;
-        private UIMode _uiMode = UIMode.Any;
-        public UIMode UIMode
-        {
-            get => _uiMode;
-            set
-            {
-                if (value != _uiMode)
-                {
-                    _uiMode = value;
-                    OnModeChange?.Invoke(this, new EventArgs());
-                    SetSelectable(UIMode);
-                }
-            }
-        }
 
         private void SetSelectable(UIMode uiMode)
         {
@@ -445,7 +318,7 @@ namespace Numbers.UI
 	        {
 		        IsPaused = !IsPaused;
 	        }
-	        if (IsPaused) return false;
+	        if (IsPaused) {return false;}
 
             CurrentKey = e.KeyCode;
             _isControlDown = e.Control;
@@ -458,13 +331,13 @@ namespace Numbers.UI
                     UIMode = UIMode.Any;
                     break;
                 case Keys.E:
-	                Workspace.LockValuesOnDrag = true;
+	                LockValuesOnDrag = true;
 	                break;
                 case Keys.W:
-	                Workspace.LockTicksOnDrag = true;
+	                LockTicksOnDrag = true;
 	                break;
                 case Keys.T:
-                    NextTest();
+                    Program.NextTest(this);
                     break;
                 //case Keys.F:
                 //    UIMode = UIMode.CreateFocal;
@@ -535,8 +408,8 @@ namespace Numbers.UI
                 CurrentKey = Keys.None;
                 _isControlDown = e.Control;
                 _isShiftDown = e.Shift;
-                Workspace.LockValuesOnDrag = false;
-                Workspace.LockTicksOnDrag = false;
+                LockValuesOnDrag = false;
+                LockTicksOnDrag = false;
                 //_isAltDown = e.Alt;
                 //_startMatrix = Data.Matrix;
                 //if (UIMode.IsMomentary())
@@ -593,7 +466,7 @@ namespace Numbers.UI
         {
             IsDown = false;
             IsDragging = false;
-            Workspace.ClearNumberValues();
+            SavedNumbers.Clear();
             SetSelectable(UIMode);
             if (Workspace != null)
             {
@@ -601,10 +474,13 @@ namespace Numbers.UI
 	            SelCurrent?.Reset();
             }
         }
-        public void Clear()
+        public void ClearHighlights()
         {
+	        SelBegin.Clear();
+	        SelCurrent.Clear();
+	        SelHighlight.Clear();
+	        SelSelection.Clear();
         }
-
     }
 
     [Flags]

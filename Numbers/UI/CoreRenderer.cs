@@ -13,7 +13,8 @@ namespace Numbers.UI
 	    public override void Draw()
 	    {
 		    base.Draw();
-		    CurrentWorkspaceMap.Draw();
+		    CurrentWorkspaceMapper.Draw();
+            CurrentAgentMapper?.Draw();
         }
 
 	    public override SKPath GetCirclePath(SKPoint center, float radius = 10)

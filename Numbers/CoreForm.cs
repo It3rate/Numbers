@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Numbers.Core;
 using Numbers.UI;
+using Numbers.Views;
 
 namespace Numbers
 {
@@ -37,6 +38,7 @@ namespace Numbers
             KeyPreview = true;
 
             _agent = new Agent(brain, _renderer);
+            _renderer.CurrentAgentMapper = new SKAgentMapper(_agent, _renderer);
         }
         private void OnMouseDown(object sender, MouseEventArgs e)
         {

@@ -16,18 +16,6 @@ namespace Numbers.Core
 
         public static Dictionary<int, Number> NumberStore { get; } = new Dictionary<int, Number>();
 
-        public HighlightSet SelBegin = new HighlightSet();
-        public HighlightSet SelCurrent = new HighlightSet();
-        public HighlightSet SelHighlight = new HighlightSet();
-        public HighlightSet SelSelection = new HighlightSet();
-
-        public Stack<Selection> SelectionStack { get; } = new Stack<Selection>();
-	    public Stack<Formula> FormulaStack { get; } = new Stack<Formula>();
-        public Stack<Number> ResultStack { get; } = new Stack<Number>(); // can have multiple results?
-
-        public bool LockValuesOnDrag { get; set; }
-        public bool LockTicksOnDrag { get; set; }
-
         public Workspace(Brain brain)
         {
 	        Id = _idCounter++;
@@ -38,10 +26,6 @@ namespace Numbers.Core
         public void ClearAll()
         {
 	        MyBrain.ClearAll();
-	        SelBegin.Clear();
-	        SelCurrent.Clear();
-	        SelHighlight.Clear();
-            SelSelection.Clear();
         }
 
         public void AddElements(params IMathElement[] elements)
@@ -86,42 +70,29 @@ namespace Numbers.Core
 	        }
         }
 
-        private readonly Dictionary<int, Range> _numValues = new Dictionary<int, Range>();
-        public void SaveNumberValues(params int[] ignoreIds)
+        public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
         {
-	        ClearNumberValues();
+	        numValues.Clear();
             foreach (var kvp in NumberStore)
             {
 	            if(!ignoreIds.Contains(kvp.Key))
 	            {
-					_numValues.Add(kvp.Key, kvp.Value.Value);
+					numValues.Add(kvp.Key, kvp.Value.Value);
 	            }
             }
         }
 
-        public void RestoreNumberValues(params int[] ignoreIds)
+        public void RestoreNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
         {
-	        foreach (var kvp in _numValues)
+	        foreach (var kvp in numValues)
 	        {
 		        var id = kvp.Key;
 		        var storedValue = kvp.Value;
 		        if (!ignoreIds.Contains(id))
 		        {
-			        if (LockValuesOnDrag)
-			        {
-				        Workspace.NumberStore[id].Value = storedValue;
-                    }
-			        else if(LockTicksOnDrag)
-			        {
-
-			        }
+			        NumberStore[id].Value = storedValue;
 		        }
             }
-        }
-
-        public void ClearNumberValues()
-        {
-            _numValues.Clear();
         }
     }
 }
