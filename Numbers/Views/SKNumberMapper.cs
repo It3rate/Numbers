@@ -44,7 +44,6 @@ namespace Numbers.Views
 		    Number = number;
 		    //EnsureSegment();
 	    }
-        public int SegmentDirection => DomainMapper.DisplayLine.DirectionOnLine(NumberSegment);
         public void EnsureSegment()
         {
             var val = DomainMapper.UnitSign == 1 ? Number.ValueInUnitPerspective : Number.ValueInUnotPerspective;
@@ -52,14 +51,12 @@ namespace Numbers.Views
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
         {
-	        if (Number.Id != Number.Domain.BasisNumberId && Number.Id != Number.Domain.MinMaxNumberId)
-            {
-				EnsureSegment();
-		        var dir = Number.Direction;
-		        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir * UnitSign);
-		        RenderSegment = NumberSegment + offset;
-		        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
-            }
+			EnsureSegment();
+			var sign = DomainMapper.UnitDirectionOnDomainLine;
+			var dir = Number.Direction;
+	        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir * sign);
+	        RenderSegment = NumberSegment + offset;
+	        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
         }
 
         public void DrawUnit()

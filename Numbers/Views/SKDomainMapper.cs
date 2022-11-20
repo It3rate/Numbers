@@ -64,7 +64,6 @@ namespace Numbers.Views
 		    DisplayLine = new SKSegment(startPoint, endPoint);
             AddValidNumbers();
 	    }
-
 	    private void AddValidNumbers()
 	    {
 		    ValidNumberIds.Clear();
@@ -77,7 +76,7 @@ namespace Numbers.Views
 		    {
 			    foreach (var id in Domain.NumberIds)
 			    {
-				    if (Workspace.IsElementActive(id))
+				    if (Workspace.IsElementActive(id) && id != Domain.BasisNumberId && id != Domain.MinMaxNumberId)
 				    {
 					    ValidNumberIds.Add(id);
 				    }
@@ -102,66 +101,25 @@ namespace Numbers.Views
 	    {
             if (Domain != null)
 		    {
-			    DrawNumberLineGradient();
 			    DrawNumberLine();
 			    DrawUnit();
 			    DrawTicks();
 			    DrawMarkers();
-			    var offset = ShowNumberOffsets ? 1f : 0f;
-			    var step = ShowNumberOffsets ? 1f : 0f;
-                var segPens = new[] {Pens.SegPen1, Pens.SegPen2};
-
-			    foreach (var numberId in Domain.NumberIds)
-			    {
-				    offset += step;
-				    var num = WorkspaceMapper.NumberMapper(numberId);
-				    var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
-				    num.DrawNumber(offset, pen);
-				    if (Domain.IsUnitPerspective)
-				    {
-					    var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
-					    num.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
-				    }
-				    else
-				    {
-					    var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
-					    num.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
-				    }
-			    }
+                DrawNumbers();
 		    }
 	    }
-
-	    private void DrawUnit()
+        private void DrawUnit()
 	    {
 		    if (ShowUnits)
 		    {
 			    WorkspaceMapper.NumberMapper(Domain.BasisNumberId).DrawUnit();
             }
 	    }
-	    private void DrawNumberLineGradient()
-	    {
-		    if (ShowGradientNumberLine)
-		    {
-			    var pnt = CorePens.GetGradientPen(
-				    DisplayLine.StartPoint, DisplayLine.EndPoint, Pens.UnotLineColor, Pens.UnitLineColor, 10);
-			    Renderer.DrawSegment(DisplayLine, pnt);
-		    }
-		    else if(!ShowUnits) // if not showing units at least color the line
-		    {
-			    var pnt = CorePens.GetGradientPen(
-				    DisplayLine.StartPoint, DisplayLine.EndPoint, Pens.UnotLineColor, Pens.UnitLineColor, 3);
-			    Renderer.DrawSegment(DisplayLine, pnt);
-
-            }
-	    }
 	    private void DrawMarkers()
 	    {
-		    foreach (var id in ValidNumberIds)
+            foreach (var id in ValidNumberIds)
 		    {
 			    var num = MyBrain.NumberStore[id];
-			    //var ratio = RatioInDisplay(num);//num.RangeInMinMax;//
-			    //var isUnit = id == Domain.BasisNumberId;
-			    //var rem = num.RemainderRange;
 			    DrawMarker(num, true);
 			    DrawMarker(num, false);
 		    }
@@ -173,12 +131,8 @@ namespace Numbers.Views
 			    return;
 		    }
 
-		    var sign = UnitSign;
 		    var value = isStart ? num.StartValue : num.EndValue;
-            var val = sign == 1 ? num.ValueInUnitPerspective : num.ValueInUnotPerspective; //num.ValueInUnitPerspective;
-            
-            var t = (float)(isStart ? val.Start : val.End);
-            //var t = isStart ? dr.StartF : dr.EndF;
+		    var t = (float)(isStart ? -value : value);
 		    var suffix = isStart ? "i" : "";
 		    var unitLabel = num.IsBasis && isStart ? "0" : num.IsUnit ? "1" : num.IsUnot ? "i" : "";
 
@@ -202,7 +156,6 @@ namespace Numbers.Views
 		    }
 		    else
 		    {
-			    value = t;
 				txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
 		    }
 
@@ -217,7 +170,8 @@ namespace Numbers.Views
 	    }
 	    private SKPoint DrawMarkerPointer(float t)
 	    {
-		    var w = 5.0f * UnitSign;
+		    var sign = UnitDirectionOnDomainLine;
+            var w = 5.0f * sign;
 		    var unitSeg = UnitSegment;
 		    var markerHW = (float) (1.0 / UnitSegment.Length) * w;
 		    var pt = unitSeg.PointAlongLine(t);
@@ -234,7 +188,21 @@ namespace Numbers.Views
 	    }
 	    private void DrawNumberLine()
 	    {
-		    Renderer.DrawSegment(DisplayLine, Renderer.Pens.NumberLinePen);
+		    var sign = UnitDirectionOnDomainLine;
+		    var gsp = sign == 1 ? DisplayLine.StartPoint : DisplayLine.EndPoint;
+		    var gep = sign == 1 ? DisplayLine.EndPoint : DisplayLine.StartPoint;
+            if (ShowGradientNumberLine)
+		    {
+			    var pnt = CorePens.GetGradientPen(gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 10);
+			    Renderer.DrawSegment(DisplayLine, pnt);
+		    }
+		    else if (!ShowUnits) // if not showing units at least color the line
+		    {
+			    var pnt = CorePens.GetGradientPen( gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 3);
+			    Renderer.DrawSegment(DisplayLine, pnt);
+		    }
+
+            Renderer.DrawSegment(DisplayLine, Renderer.Pens.NumberLinePen);
 	    }
         private void DrawTicks()
 	    {
@@ -265,6 +233,30 @@ namespace Numbers.Views
 	        return pts.Item1;
         }
 
+        private void DrawNumbers()
+        {
+	        var offset = ShowNumberOffsets ? 1f : 0f;
+	        var step = ShowNumberOffsets ? 1f : 0f;
+	        foreach (var numberId in ValidNumberIds)
+	        {
+		        offset += step;
+		        var num = WorkspaceMapper.NumberMapper(numberId);
+		        var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
+		        num.DrawNumber(offset, pen);
+
+		        if (Domain.IsUnitPerspective)
+		        {
+			        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
+			        num.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
+		        }
+		        else
+		        {
+			        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
+			        num.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
+		        }
+	        }
+
+        }
         public override SKPath GetHighlightAt(float t, SKPoint targetPoint)
 	    {
 		    return Renderer.GetCirclePath(targetPoint);
