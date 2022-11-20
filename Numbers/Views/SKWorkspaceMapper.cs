@@ -32,6 +32,7 @@ namespace Numbers.Views
 
 	    private static float defaultLineT = 0.1f;
         public const float SnapDistance = 5.0f;
+        public bool ShowFractions { get; set; }
 
         public SKWorkspaceMapper(Workspace workspace, CoreRenderer renderer, float left, float top, float width, float height)
         {

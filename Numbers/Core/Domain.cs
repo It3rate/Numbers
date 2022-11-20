@@ -62,6 +62,8 @@ namespace Numbers.Core
         }
         public Domain(Trait trait, FocalRef unit, FocalRef range) : this(trait.Id, unit.Id, range.Id) { }
 
+        public Number CreateNumberByPositions(long start, long end) => new Number(this, start, end);
+        public Number CreateNumberByValues(double start, double end) => new Number(this, new Range(start, end));
         public double ValueFromStartTickPosition(long startPos) => (BasisFocal.StartTickPosition - startPos) / (double)BasisFocal.NonZeroLength;
         public double ValueFromEndTickPosition(long endPos) => (endPos - BasisFocal.StartTickPosition) / (double)BasisFocal.NonZeroLength;
         public long StartTickPositionFrom(double value) => (long)-Math.Round(value * BasisFocal.LengthInTicks) + BasisFocal.StartTickPosition;

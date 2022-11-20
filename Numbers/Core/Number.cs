@@ -1,4 +1,6 @@
 ﻿
+using System.Dynamic;
+
 namespace Numbers.Core
 {
 	using System;
@@ -51,8 +53,9 @@ namespace Numbers.Core
 		}
 
 		public Number(Domain domain, Range value) : this(domain, domain.FocalFromRange(value).Id) { }
+		public Number(Domain domain, long start, long end) : this(domain, FocalRef.CreateByValues(domain.MyTrait, start, end).Id) { }
 
-		private long StartTickPosition
+        private long StartTickPosition
 		{
 			get => Focal.StartTickPosition;
 			set => Focal.StartTickPosition = value;

@@ -36,7 +36,7 @@ namespace Numbers.Views
 	    public bool ShowUnotArrow;
 	    public bool ShowMaxMinValues;
 	    public bool ShowDashedValuesOutOfRange;
-	    public bool ShowFractions;
+	    public bool ShowFractions => WorkspaceMapper.ShowFractions;
 
         public override SKPoint StartPoint
 	    {

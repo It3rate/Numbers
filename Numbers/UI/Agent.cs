@@ -351,6 +351,9 @@ namespace Numbers.UI
                 case Keys.E:
 	                LockBasisOnDrag = true;
 	                break;
+                case Keys.F:
+	                WorkspaceMapper.ShowFractions = !WorkspaceMapper.ShowFractions;
+	                break;
                 case Keys.W:
 	                LockTicksOnDrag = true;
 	                break;
