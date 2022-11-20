@@ -50,9 +50,7 @@ namespace Numbers.Core
 			MyBrain.NumberStore.Add(Id, this);
 		}
 
-		public Number(Domain domain, Range value) : this(domain, domain.FocalFromRange(value).Id)
-		{
-		}
+		public Number(Domain domain, Range value) : this(domain, domain.FocalFromRange(value).Id) { }
 
 		private long StartTickPosition
 		{

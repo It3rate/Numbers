@@ -25,7 +25,11 @@ namespace Numbers.UI
             var unitSize = 8;
             var unit = FocalRef.CreateByValues(trait, 0, unitSize);// t0.AddFocalByUnitPositions(0, unitSize);
             var wm = new SKWorkspaceMapper(agent.Workspace, Renderer, 20, 20, 1000, 800);
-            CreateDomainLines(agent.Workspace, trait, 20, 10);//, 30, 40, 35, 24, -4, -20);
+            var domains = CreateDomainLines(agent.Workspace, trait, 20, 10, 30, 40, 35, 24, -4, -20);
+            var d0 = domains[0];
+            var d1n2 = MyBrain.NumberStore[ domains[1].NumberIds[2]];
+            var nn = new Number(d0, d1n2.FocalId);
+            agent.Workspace.AddElements(nn);
             return wm;
         }
         private SKWorkspaceMapper test0(IAgent agent)
@@ -123,17 +127,17 @@ namespace Numbers.UI
         {
 	        var result = new List<Domain>();
 	        var wm = MyBrain.WorkspaceMappers[workspace.Id];
-	        var unit = trait.FocalStore.Values.First();
+	        var unitFocal = trait.FocalStore.Values.First();
 	        var padding = 1.4;
-	        long maxPos = (long)Math.Max((focalPositions.Max() * padding), unit.AbsLengthInTicks * padding);
-	        long minPos = (long)Math.Min((focalPositions.Min() * padding), -unit.AbsLengthInTicks * padding);
+	        long maxPos = (long)Math.Max((focalPositions.Max() * padding), unitFocal.AbsLengthInTicks * padding);
+	        long minPos = (long)Math.Min((focalPositions.Min() * padding), -unitFocal.AbsLengthInTicks * padding);
 	        var range = FocalRef.CreateByValues(trait, minPos, maxPos);
 	        var rangeLen = (double)range.LengthInTicks;
 	        var yt = 0.1f;
 	        var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
 	        for (int i = 1; i < focalPositions.Length; i += 2)
 	        {
-		        var domain = trait.AddDomain(unit.Id, range.Id);
+		        var domain = trait.AddDomain(unitFocal.Id, range.Id);
 		        result.Add(domain);
 		        var focal = FocalRef.CreateByValues(trait, focalPositions[i - 1], focalPositions[i]);
 		        var num = new Number(domain, focal.Id);
@@ -141,7 +145,7 @@ namespace Numbers.UI
 		        var displaySeg = wm.GetHorizontalSegment(yt, 100);
 		        var y = displaySeg.StartPoint.Y;
 		        var unitStart = (-minPos / rangeLen) * displaySeg.Length + displaySeg.StartPoint.X;
-		        var unitEnd = ((-minPos + unit.LengthInTicks) / rangeLen) * displaySeg.Length + displaySeg.StartPoint.X;
+		        var unitEnd = ((-minPos + unitFocal.LengthInTicks) / rangeLen) * displaySeg.Length + displaySeg.StartPoint.X;
 		        var unitSeg = new SKSegment((float)unitStart, y, (float)unitEnd, y);
 		        var dm = wm.GetOrCreateDomainMapper(domain, displaySeg, unitSeg);
 		        dm.ShowGradientNumberLine = true;

@@ -11,7 +11,7 @@ namespace Numbers.Views
         public SKSegment NumberSegment { get; set; }
         public SKSegment RenderSegment { get; private set; }
 
-        private SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain.Id);
+        public SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain.Id);
         public SKSegment UnitSegment => DomainMapper.UnitSegment;
         public bool IsUnitOrUnot => Number.IsBasis;
 	    public bool IsUnit => Number.IsUnit;
@@ -114,7 +114,7 @@ namespace Numbers.Views
         }
         public void SetStartValueByPoint(SKPoint newPoint)
         {
-	        Number.StartValue = -TFromPoint(newPoint);
+	        Number.StartValue = TFromPoint(newPoint);
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {

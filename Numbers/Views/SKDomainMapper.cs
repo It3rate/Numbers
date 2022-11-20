@@ -14,15 +14,19 @@ namespace Numbers.Views
 	    public Number UnitNumber => Domain.BasisNumber;
 	    public SKSegment UnitSegment => UnitMapper.NumberSegment;
 	    public int UnitSign => UnitNumber.Direction;
-	    public Range UnitRangeOnDomainLine => DisplayLine.RatiosAsBasis(UnitSegment);
-	    public int UnitDirectionOnDomainLine => DisplayLine.CosineSimilarity(UnitSegment) >= 0 ? 1 : -1;
 
         public List<SKPoint> TickPoints = new List<SKPoint>();
 	    public List<int> ValidNumberIds = new List<int>();
 	    public SKSegment DisplayLine { get; private set; }
 	    public Range DisplayLineRange => UnitSegment.RatiosAsBasis(DisplayLine);
+	    public Range UnitRangeOnDomainLine
+	    {
+		    get => DisplayLine.RatiosAsBasis(UnitSegment);
+		    set { UnitMapper.NumberSegment = DisplayLine.SegmentAlongLine(value); }
+	    }
+	    public int UnitDirectionOnDomainLine => DisplayLine.CosineSimilarity(UnitSegment) >= 0 ? 1 : -1;
 
-	    public bool ShowGradientNumberLine;
+        public bool ShowGradientNumberLine;
 	    public bool ShowTicks;
 	    public bool ShowNumberOffsets;
 	    public bool ShowKeyValues;
@@ -47,6 +51,7 @@ namespace Numbers.Views
 	    }
 	    public SKPoint[] EndPoints => new SKPoint[] {StartPoint, EndPoint};
 
+
         public SKDomainMapper(Workspace workspace, Domain domain, SKSegment displayLine, SKSegment unitSegment) : base(workspace, domain)
 	    {
 		    base.MathElement = domain;
@@ -67,21 +72,13 @@ namespace Numbers.Views
 	    private void AddValidNumbers()
 	    {
 		    ValidNumberIds.Clear();
-            if (ShowBasisMarkers)
+		    foreach (var id in Domain.NumberIds)
 		    {
-			    ValidNumberIds.Add(Domain.BasisNumberId);
-            }
-
-		    if (ShowValueMarkers)
-		    {
-			    foreach (var id in Domain.NumberIds)
+			    if (Workspace.IsElementActive(id) && id != Domain.BasisNumberId && id != Domain.MinMaxNumberId)
 			    {
-				    if (Workspace.IsElementActive(id) && id != Domain.BasisNumberId && id != Domain.MinMaxNumberId)
-				    {
-					    ValidNumberIds.Add(id);
-				    }
+				    ValidNumberIds.Add(id);
 			    }
-            }
+		    }
 	    }
         public void SetValueByKind(SKPoint newPoint, UIKind kind)
         {
@@ -100,8 +97,10 @@ namespace Numbers.Views
         public void Draw()
 	    {
             if (Domain != null)
-		    {
-			    DrawNumberLine();
+            {
+	            AddValidNumbers();
+
+                DrawNumberLine();
 			    DrawUnit();
 			    DrawTicks();
 			    DrawMarkers();
@@ -115,22 +114,29 @@ namespace Numbers.Views
 			    WorkspaceMapper.NumberMapper(Domain.BasisNumberId).DrawUnit();
             }
 	    }
-	    private void DrawMarkers()
-	    {
-            foreach (var id in ValidNumberIds)
-		    {
-			    var num = MyBrain.NumberStore[id];
-			    DrawMarker(num, true);
-			    DrawMarker(num, false);
-		    }
-	    }
-	    private void DrawMarker(Number num, bool isStart)
-	    {
-		    if ((!ShowValueMarkers && !num.IsBasis) || (!ShowBasisMarkers && num.IsBasis))
-		    {
-			    return;
-		    }
 
+        private void DrawMarkers()
+        {
+	        if (ShowBasisMarkers)
+	        {
+		        var num = Domain.BasisNumber;
+		        DrawMarker(num, true);
+		        DrawMarker(num, false);
+	        }
+
+	        if (ShowValueMarkers)
+	        {
+		        foreach (var id in ValidNumberIds)
+		        {
+			        var num = MyBrain.NumberStore[id];
+			        DrawMarker(num, true);
+			        DrawMarker(num, false);
+		        }
+            }
+        }
+
+        private void DrawMarker(Number num, bool isStart)
+	    {
 		    var value = isStart ? num.StartValue : num.EndValue;
 		    var t = (float)(isStart ? -value : value);
 		    var suffix = isStart ? "i" : "";
@@ -232,7 +238,6 @@ namespace Numbers.Views
 	        Renderer.DrawLine(pts.Item1, pts.Item2, paint);
 	        return pts.Item1;
         }
-
         private void DrawNumbers()
         {
 	        var offset = ShowNumberOffsets ? 1f : 0f;
@@ -257,6 +262,7 @@ namespace Numbers.Views
 	        }
 
         }
+
         public override SKPath GetHighlightAt(float t, SKPoint targetPoint)
 	    {
 		    return Renderer.GetCirclePath(targetPoint);

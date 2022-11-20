@@ -181,6 +181,7 @@ namespace Numbers.UI
 		            {
 						RestoreNumberValues(SavedNumbers);
 		            }
+		            SyncMatchingFocals(nm);
 	            }
                 else if (activeHighlight.Mapper is SKDomainMapper dm)
 	            {
@@ -296,6 +297,17 @@ namespace Numbers.UI
             }
         }
 
+        private void SyncMatchingFocals(SKNumberMapper numberMapper)
+        {
+	        var nbRange = numberMapper.DomainMapper.UnitRangeOnDomainLine;
+	        foreach (var sibDomain in Workspace.ActiveSiblingDomains(numberMapper.Number.Domain))
+	        {
+		        if (sibDomain.BasisFocalId == numberMapper.Number.FocalId)
+		        {
+			        WorkspaceMapper.DomainMapper(sibDomain.Id).UnitRangeOnDomainLine = nbRange;
+		        }
+	        }
+        }
         private bool _isControlDown;
         private bool _isShiftDown;
         private bool _isAltDown;

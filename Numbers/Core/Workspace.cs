@@ -28,7 +28,6 @@ namespace Numbers.Core
         {
 	        foreach (var element in elements)
 	        {
-
 		        ActiveIds.Add(element.Id);
 	        }
         }
@@ -90,6 +89,19 @@ namespace Numbers.Core
 		        if (includeChildren)
 		        {
 			        RemoveElementsById(domain.NumberIds.ToArray());
+		        }
+	        }
+        }
+
+        public IEnumerable<Domain> ActiveSiblingDomains(Domain domain)
+        {
+	        var ds = domain.MyTrait.DomainStore;
+	        var domainIds = ds.Keys.Where(key => ActiveIds.Contains(key));
+	        foreach (var id in domainIds)
+	        {
+		        if (id != domain.Id)
+		        {
+			        yield return ds[id];
 		        }
 	        }
         }
