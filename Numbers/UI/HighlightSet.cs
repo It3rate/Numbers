@@ -1,4 +1,6 @@
-﻿using OpenTK.Graphics.ES20;
+﻿using Numbers.Core;
+using Numbers.Views;
+using OpenTK.Graphics.ES20;
 using SkiaSharp;
 
 namespace Numbers.UI
@@ -17,7 +19,11 @@ namespace Numbers.UI
 	    //public List<Highlight> Highlights { get; set; } // todo: make selections multiple sub-highlights
 	    public bool HasHighlight => ActiveHighlight?.Mapper != null;
 
-	    public void Reset()
+        // copied values from start of change transaction, probably need a separate class as abilities expand
+	    public SKSegment OriginalSegment { get; set; }
+	    public FocalPositions OriginalFocalPositions { get; set; }
+
+        public void Reset()
 	    {
 		    ActiveHighlight = null;
 	    }

@@ -45,9 +45,10 @@ namespace Numbers.UI
         public Stack<Formula> FormulaStack { get; } = new Stack<Formula>();
         public Stack<Number> ResultStack { get; } = new Stack<Number>(); // can have multiple results?
 
-        public bool LockValuesOnDrag { get; set; }
+        public bool LockBasisOnDrag { get; set; }
         public bool LockTicksOnDrag { get; set; }
         public bool LockUnitRatio { get; set; }
+        public bool DoSyncMatchingBasis { get; set; } = true;
 
         private ColorTheme _colorTheme = ColorTheme.Normal;
         public ColorTheme ColorTheme
@@ -131,6 +132,7 @@ namespace Numbers.UI
             IsDown = true;
             return true;
         }
+
         public bool MouseMove(MouseEventArgs e)
         {
 	        if (IsPaused) {return false;}
@@ -158,10 +160,12 @@ namespace Numbers.UI
                 {
                     IsDragging = true;
 					SelCurrent.Set(_highlight.Clone());
-					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm && nm.IsUnitOrUnot)
+					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm && nm.IsBasis)
 					{
 						SaveNumberValues(SavedNumbers);
-						LockUnitRatio = false;
+						SelBegin.OriginalSegment = nm.NumberSegment.Clone();
+						SelBegin.OriginalFocalPositions = nm.Number.Focal.FocalPositions;
+                        LockUnitRatio = false;
 					}
 					else
 					{
@@ -176,18 +180,26 @@ namespace Numbers.UI
 	            var activeKind = activeHighlight.Kind;
 	            if (activeHighlight.Mapper is SKNumberMapper nm)
 	            {
-		            nm.SetValueByKind(_highlight.SnapPoint, activeHighlight.Kind);
-		            if (LockValuesOnDrag)
+		            if (activeKind.IsBasis())
 		            {
-						RestoreNumberValues(SavedNumbers);
+			            nm.SetValueByKind(_highlight.SnapPoint, activeKind);
+			            if (LockBasisOnDrag)
+			            {
+				            nm.AdjustBySegmentChange(SelBegin);
+			            }
+
+			            SyncMatchingBasis(nm);
 		            }
-		            SyncMatchingFocals(nm);
+		            else
+		            {
+			            nm.SetValueByKind(_highlight.SnapPoint, activeKind);
+                    }
 	            }
                 else if (activeHighlight.Mapper is SKDomainMapper dm)
 	            {
 		            if (activeKind.IsDomainPoint())
 		            {
-			            dm.SetValueByKind(_highlight.SnapPoint, activeHighlight.Kind);
+			            dm.SetValueByKind(_highlight.SnapPoint, activeKind);
 		            }
 		            else if (activeKind.IsBoldTick())
 		            {
@@ -297,14 +309,17 @@ namespace Numbers.UI
             }
         }
 
-        private void SyncMatchingFocals(SKNumberMapper numberMapper)
+        private void SyncMatchingBasis(SKNumberMapper numberMapper)
         {
-	        var nbRange = numberMapper.DomainMapper.UnitRangeOnDomainLine;
-	        foreach (var sibDomain in Workspace.ActiveSiblingDomains(numberMapper.Number.Domain))
+	        if (DoSyncMatchingBasis && numberMapper.IsBasis)
 	        {
-		        if (sibDomain.BasisFocalId == numberMapper.Number.FocalId)
+		        var nbRange = numberMapper.DomainMapper.UnitRangeOnDomainLine;
+		        foreach (var sibDomain in Workspace.ActiveSiblingDomains(numberMapper.Number.Domain))
 		        {
-			        WorkspaceMapper.DomainMapper(sibDomain.Id).UnitRangeOnDomainLine = nbRange;
+			        if (sibDomain.BasisFocalId == numberMapper.Number.FocalId)
+			        {
+				        WorkspaceMapper.DomainMapper(sibDomain.Id).UnitRangeOnDomainLine = nbRange;
+			        }
 		        }
 	        }
         }
@@ -334,7 +349,7 @@ namespace Numbers.UI
                     UIMode = UIMode.Any;
                     break;
                 case Keys.E:
-	                LockValuesOnDrag = true;
+	                LockBasisOnDrag = true;
 	                break;
                 case Keys.W:
 	                LockTicksOnDrag = true;
@@ -411,7 +426,7 @@ namespace Numbers.UI
                 CurrentKey = Keys.None;
                 _isControlDown = e.Control;
                 _isShiftDown = e.Shift;
-                LockValuesOnDrag = false;
+                LockBasisOnDrag = false;
                 LockTicksOnDrag = false;
                 //_isAltDown = e.Alt;
                 //_startMatrix = Data.Matrix;

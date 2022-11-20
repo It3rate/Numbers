@@ -13,7 +13,7 @@ namespace Numbers.Views
 
         public SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain.Id);
         public SKSegment UnitSegment => DomainMapper.UnitSegment;
-        public bool IsUnitOrUnot => Number.IsBasis;
+        public bool IsBasis => Number.IsBasis;
 	    public bool IsUnit => Number.IsUnit;
         public bool IsUnot => Number.IsUnot;
         public int UnitSign => DomainMapper.UnitSign;
@@ -88,20 +88,37 @@ namespace Numbers.Views
 	        //Console.WriteLine(t);
 	        return t;
         }
+
+        public void SetValueOfUnit(SKPoint newPoint, UIKind kind)
+        {
+	        var ds = DomainMapper.DisplayLine;
+	        var pt = ds.ProjectPointOnto(newPoint);
+	        var nsc = NumberSegment.Clone();
+	        if (kind.IsMajor())
+	        {
+		        NumberSegment.EndPoint = pt;
+	        }
+	        else
+	        {
+		        NumberSegment.StartPoint = pt;
+	        }
+        }
+
+        public void AdjustBySegmentChange(HighlightSet beginState) => AdjustBySegmentChange(beginState.OriginalSegment, beginState.OriginalFocalPositions);
+        public void AdjustBySegmentChange(SKSegment originalSegment, FocalPositions originalFocalPositions)
+        {
+	        var change = originalSegment.RatiosAsBasis(NumberSegment);
+	        var ofp = originalFocalPositions;
+	        Number.Focal.Reset(
+		        (long)(ofp.StartTickPosition + change.Start * ofp.Length),
+		        (long)(ofp.EndTickPosition + (change.End - 1.0) * ofp.Length));
+        }
+
         public void SetValueByKind(SKPoint newPoint, UIKind kind)
         {
-	        if (kind.IsUnit())
+	        if (kind.IsBasis())
 	        {
-	            var ds = DomainMapper.DisplayLine;
-	            var pt = ds.ProjectPointOnto(newPoint);
-	            if (kind.IsMajor())
-	            {
-		            NumberSegment.EndPoint = pt;
-	            }
-	            else
-	            {
-		            NumberSegment.StartPoint = pt;
-	            }
+		        SetValueOfUnit(newPoint, kind);
 	        }
 	        else if (kind.IsMajor())
             {

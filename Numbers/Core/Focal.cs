@@ -15,6 +15,7 @@ namespace Numbers.Core
         long AbsLengthInTicks { get; }
         long NonZeroLength { get; }
         int Direction { get; }
+        FocalPositions FocalPositions { get; set; }
         void Reset(long start, long end);
         void Reset(IFocal focal);
         Range RangeWithBasis(IFocal basis);
@@ -87,7 +88,17 @@ namespace Numbers.Core
             Reset(focal.StartTickPosition, focal.EndTickPosition);
 	    }
 
-        public Range RangeWithBasis(IFocal basis)
+	    public FocalPositions FocalPositions
+	    {
+		    get => new FocalPositions(this);
+		    set
+		    {
+			    StartTickPosition = value.StartTickPosition;
+			    EndTickPosition = value.EndTickPosition;
+		    }
+	    }
+    
+	    public Range RangeWithBasis(IFocal basis)
 	    {
 		    var len = (double) (basis.NonZeroLength);
             var start = (basis.StartTickPosition - StartTickPosition) / len;
@@ -134,5 +145,21 @@ namespace Numbers.Core
 			    return hashCode;
 		    }
 	    }
+
+	    public override string ToString() =>  $"[{StartTickPosition}->{EndTickPosition}]";
+    }
+
+    public class FocalPositions
+    {
+	    public long StartTickPosition { get; set; }
+	    public long EndTickPosition { get; set; }
+
+	    public FocalPositions(IFocal focal)
+	    {
+		    StartTickPosition = focal.StartTickPosition;
+		    EndTickPosition = focal.EndTickPosition;
+        }
+
+	    public long Length => EndTickPosition - StartTickPosition;
     }
 }

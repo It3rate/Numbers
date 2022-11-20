@@ -19,7 +19,7 @@ namespace Numbers.UI
 	    Stack<Formula> FormulaStack { get; }
 	    Stack<Number> ResultStack { get; }
 
-        bool LockValuesOnDrag { get; set; }
+        bool LockBasisOnDrag { get; set; }
 	    bool LockTicksOnDrag { get; set; }
 
         bool MouseDown(MouseEventArgs e);

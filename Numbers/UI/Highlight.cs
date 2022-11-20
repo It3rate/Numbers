@@ -78,7 +78,7 @@ namespace Numbers.UI
         Label = 0x10,
         Marker = 0x20,
         Tick = 0x40,
-        Unit = 0x80,
+        Basis = 0x80,
 
         Number = 0x100,
         Domain = 0x200,
@@ -96,9 +96,9 @@ namespace Numbers.UI
 	    {
 		    return (kind & UIKind.Major) != UIKind.None;
 	    }
-	    public static bool IsUnit(this UIKind kind)
+	    public static bool IsBasis(this UIKind kind)
 	    {
-		    return (kind & UIKind.Unit) != UIKind.None;
+		    return (kind & UIKind.Basis) != UIKind.None;
 	    }
         public static bool IsNumber(this UIKind kind)
 	    {
