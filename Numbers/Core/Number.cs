@@ -88,7 +88,7 @@ namespace Numbers.Core
 		}
 		public Range Value
 		{
-			get => Focal.RangeInBasis(BasisFocal);
+			get => Focal.RangeWithBasis(BasisFocal);
 			set => Focal.Reset(Domain.FocalFromRange(value));
 		}
 		public Range ValueInUnitPerspective => new Range(-StartValue, EndValue);

@@ -25,6 +25,7 @@ namespace Numbers.Core
         private static int domainCounter = 1 + (int)MathElementKind.Domain;
 
         public int Id { get; }
+        public int CreationIndex => Id - (int) MathElementKind.Domain - 1;
 
         public int TraitId { get; }
         public Trait MyTrait => MyBrain.TraitStore[TraitId];
@@ -46,7 +47,7 @@ namespace Numbers.Core
         public Number MinMaxNumber => MyBrain.NumberStore[MinMaxNumberId];
         public IFocal MinMaxFocal => MyTrait.FocalStore[MinMaxFocalId];
         public int MinMaxFocalId => MinMaxNumber.FocalId;
-        public Range MinMaxRange => MinMaxFocal.RangeInBasis(BasisFocal);
+        public Range MinMaxRange => MinMaxFocal.RangeWithBasis(BasisFocal);
 
         public bool IsUnitPerspective => BasisFocal.Direction == 1;
         public bool IsUnotPerspective => BasisFocal.Direction == -1;
@@ -57,6 +58,7 @@ namespace Numbers.Core
             TraitId = traitId;
             BasisNumberId = new Number(this, unitFocalId).Id;
             MinMaxNumberId = new Number(this, minMaxFocalId).Id;
+            MyTrait.DomainStore.Add(Id, this);
         }
         public Domain(Trait trait, FocalRef unit, FocalRef range) : this(trait.Id, unit.Id, range.Id) { }
 

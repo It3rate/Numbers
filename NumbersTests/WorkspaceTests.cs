@@ -39,15 +39,19 @@ namespace NumbersTests
             var f5 = FocalRef.CreateByValues(_trait, 20, 90);
             var n5 = new Number(_domain, f5.Id);
             _workspace.AddElements(n5);
-            Assert.AreEqual(_workspace.ActiveElementCount, 4);
+            Assert.AreEqual(4, _workspace.ActiveElementCount);
             _workspace.ClearAll();
-            Assert.AreEqual(_workspace.ActiveElementCount, 0);
+            Assert.AreEqual( 0, _workspace.ActiveElementCount);
             _workspace.AddDomains(true, _domain);
-            Assert.AreEqual(_workspace.ActiveElementCount, 4);
-            _workspace.ClearAll();
-            Assert.AreEqual(_workspace.ActiveElementCount, 0);
+            Assert.AreEqual(4, _workspace.ActiveElementCount);
+            _workspace.RemoveDomains(true, _domain);
+            Assert.AreEqual( 0, _workspace.ActiveElementCount);
             _workspace.AddDomains(false, _domain);
-            Assert.AreEqual(_workspace.ActiveElementCount, 1);
+            Assert.AreEqual( 1, _workspace.ActiveElementCount);
+            _workspace.AddDomains(true, _domain);
+            Assert.AreEqual( 4, _workspace.ActiveElementCount);
+            _workspace.RemoveTraits(true, _trait);
+            Assert.AreEqual(0, _workspace.ActiveElementCount);
         }
     }
 }

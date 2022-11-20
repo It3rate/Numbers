@@ -10,7 +10,7 @@ namespace Numbers.Core
 	    public int Id { get; }
 
         public Brain MyBrain => Brain.ActiveBrain;
-        private List<int> ActiveIds { get; } = new List<int>();
+        private HashSet<int> ActiveIds { get; } = new HashSet<int>();
         public int ActiveElementCount => ActiveIds.Count;
 
         public bool IsActive { get; set; } = true;
@@ -21,18 +21,30 @@ namespace Numbers.Core
             MyBrain.Workspaces.Add(this);
         }
 
+        public bool IsElementActive(int id) => ActiveIds.Contains(id);
+        public bool IsElementActive(IMathElement element) => ActiveIds.Contains(element.Id);
+
         public void AddElements(params IMathElement[] elements)
         {
 	        foreach (var element in elements)
 	        {
+
 		        ActiveIds.Add(element.Id);
 	        }
         }
-        public void RemoveElements(params IMathElement[] elements)
+        public void AddElementsById(params int[] elementIds)
         {
-	        foreach (var element in elements)
+	        foreach (var id in elementIds)
 	        {
-		        ActiveIds.Remove(element.Id);
+
+		        ActiveIds.Add(id);
+	        }
+        }
+        public void RemoveElementsById(params int[] elementIds)
+        {
+	        foreach (var id in elementIds)
+	        {
+		        ActiveIds.Remove(id);
 	        }
         }
 
@@ -40,7 +52,7 @@ namespace Numbers.Core
         {
 	        foreach (var trait in traits)
 	        {
-		        ActiveIds.Add(trait.Id);
+		        AddElementsById(trait.Id);
 		        if (includeChildren)
 		        {
 			        AddDomains(includeChildren,trait.DomainStore.Values.ToArray());
@@ -51,7 +63,7 @@ namespace Numbers.Core
         {
 	        foreach (var trait in traits)
 	        {
-		        ActiveIds.Remove(trait.Id);
+		        RemoveElementsById(trait.Id);
 		        if (includeChildren)
 		        {
 			        RemoveDomains(includeChildren, trait.DomainStore.Values.ToArray());
@@ -63,10 +75,10 @@ namespace Numbers.Core
         {
 	        foreach (var domain in domains)
 	        {
-		        ActiveIds.Add(domain.Id);
+		        AddElementsById(domain.Id);
 		        if (includeChildren)
 		        {
-			        ActiveIds.AddRange(domain.NumberIds);
+			        AddElementsById(domain.NumberIds.ToArray());
 		        }
 	        }
         }
@@ -74,13 +86,10 @@ namespace Numbers.Core
         {
 	        foreach (var domain in domains)
 	        {
-		        ActiveIds.Remove(domain.Id);
+		        RemoveElementsById(domain.Id);
 		        if (includeChildren)
 		        {
-			        foreach (var numberId in domain.NumberIds)
-			        {
-				        ActiveIds.Remove(numberId);
-			        }
+			        RemoveElementsById(domain.NumberIds.ToArray());
 		        }
 	        }
         }

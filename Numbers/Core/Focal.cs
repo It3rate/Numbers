@@ -17,7 +17,7 @@ namespace Numbers.Core
         int Direction { get; }
         void Reset(long start, long end);
         void Reset(IFocal focal);
-        Range RangeInBasis(IFocal basis);
+        Range RangeWithBasis(IFocal basis);
         Range RangeAsBasis(IFocal nonBasis);
         Range UnitTRangeIn(IFocal basis);
         IFocal Clone();
@@ -87,20 +87,23 @@ namespace Numbers.Core
             Reset(focal.StartTickPosition, focal.EndTickPosition);
 	    }
 
-        public Range RangeInBasis(IFocal basis)
+        public Range RangeWithBasis(IFocal basis)
 	    {
 		    var len = (double) (basis.NonZeroLength);
             var start = (basis.StartTickPosition - StartTickPosition) / len;
 		    var end = (EndTickPosition - basis.StartTickPosition) / len;
 		    return new Range(start, end);
         }
-	    public Range RangeAsBasis(IFocal nonBasis)
-	    {
-		    var len = (double)(NonZeroLength);
-            var start = (nonBasis.StartTickPosition - StartTickPosition) / len;
-		    var end = (nonBasis.EndTickPosition - StartTickPosition) / len;
-		    return new Range(-start, end);
+
+        public Range RangeAsBasis(IFocal nonBasis) => RangeAsBasis(nonBasis.StartTickPosition, nonBasis.EndTickPosition);
+        public Range RangeAsBasis(long startTickPosition, long endTickPosition)
+        {
+	        var len = (double)(NonZeroLength);
+	        var start = (startTickPosition - StartTickPosition) / len;
+	        var end = (endTickPosition - StartTickPosition) / len;
+	        return new Range(-start, end);
         }
+
 	    public Range UnitTRangeIn(IFocal basis)
 	    {
 		    var len = (double)Math.Abs(basis.NonZeroLength);

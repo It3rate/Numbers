@@ -85,7 +85,7 @@ namespace Numbers.Views
 			//DrawXFormedUnitBox(GetUnitBoxPoints(), unitXformRect_Pen);
 		}
 
-		public override SKPath HighlightAt(float t, SKPoint targetPoint)
+		public override SKPath GetHighlightAt(float t, SKPoint targetPoint)
 		{
 			return new SKPath(); // todo: add line in focused triangle
 		}

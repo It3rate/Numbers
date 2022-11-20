@@ -11,7 +11,8 @@ namespace Numbers.Views
 	    public int Id => Workspace.Id;
 
 	    public Workspace Workspace { get; set; }
-	    public readonly CoreRenderer Renderer;
+	    public Brain MyBrain => Workspace.MyBrain;
+        public readonly CoreRenderer Renderer;
         public SKPoint TopLeft { get; set; }
 	    public SKPoint BottomRight { get; set; }
 
@@ -30,6 +31,7 @@ namespace Numbers.Views
 	    public SKSegment LeftSegment => new SKSegment(TopLeft.X, BottomRight.Y, TopLeft.X, TopLeft.Y);
 
 	    private static float defaultLineT = 0.1f;
+        public const float SnapDistance = 5.0f;
 
         public SKWorkspaceMapper(Workspace workspace, CoreRenderer renderer, float left, float top, float width, float height)
         {
@@ -39,17 +41,9 @@ namespace Numbers.Views
 
             TopLeft = new SKPoint(left, top);
 		    BottomRight = new SKPoint(left + width, top + height);
-            Workspace.MyBrain.WorkspaceMappers.Add(Id, this);
+            MyBrain.WorkspaceMappers.Add(Id, this);
 	    }
 
-        public void ClearAll()
-        {
-	        Mappers.Clear(); 
-	        Workspace.MyBrain.WorkspaceMappers.Remove(Id);
-            defaultLineT = 0.1f;
-        }
-
-        public const float SnapDistance = 5.0f;
         public Highlight GetSnapPoint(Highlight highlight, HighlightSet ignoreSet, SKPoint input, float maxDist = SnapDistance * 2f)
         {
             highlight.Reset();
@@ -109,13 +103,16 @@ namespace Numbers.Views
         public void Draw()
         {
 	        EnsureRenderers();
-            foreach (var transformMapper in TransformMappers())
+	        if (Workspace.IsActive)
 	        {
-		        transformMapper.Draw();
-	        }
-	        foreach (var domainMapper in DomainMappers())
-	        {
-		        domainMapper.Draw();
+	            foreach (var transformMapper in TransformMappers())
+		        {
+			        transformMapper.Draw();
+		        }
+		        foreach (var domainMapper in DomainMappers())
+		        {
+			        domainMapper.Draw();
+		        }
 	        }
         }
 
@@ -141,7 +138,6 @@ namespace Numbers.Views
 		        }
 	        }
         }
-
         public IEnumerable<SKNumberMapper> AllNumberMappers()
         {
 	        foreach (var mapper in Mappers.Values)
@@ -152,7 +148,6 @@ namespace Numbers.Views
                 }
 	        }
         }
-
         public IEnumerable<SKNumberMapper> NumberMappersByDomain(bool reverse = false)
         {
 	        foreach (var mapper in Mappers.Values)
@@ -177,6 +172,22 @@ namespace Numbers.Views
 		        }
 	        }
         }
+        public IEnumerable<SKMapper> MappersOfKind(MathElementKind kind)
+        {
+	        var values = Mappers.Where(kvp => kvp.Value.MathElement.Kind == kind);
+	        foreach (var kvp in values)
+	        {
+		        yield return kvp.Value;
+	        }
+        }
+        public IEnumerable<SKMapper> MappersOfKindReversed(MathElementKind kind)
+        {
+	        var values = Mappers.Where(kvp => kvp.Value.MathElement.Kind == kind).Reverse();
+	        foreach (var kvp in values)
+	        {
+		        yield return kvp.Value;
+	        }
+        }
 
         public SKSegment GetHorizontalSegment(float t, int margins)
         {
@@ -190,13 +201,13 @@ namespace Numbers.Views
 	        var result = LeftSegment + new SKPoint(offset, 0);
 	        return result.InsetSegment(margins);
         }
-
         private SKSegment NextDefaultLine()
         {
 	        var result = GetHorizontalSegment(defaultLineT, (int)(Width * .9f));
 	        defaultLineT += 0.1f;
 	        return result;
         }
+
         public void EnsureRenderers()
         {
             //var cx = Renderer.Width / 2f - 100;
@@ -205,7 +216,7 @@ namespace Numbers.Views
             //// all this etc will be a workspace element eventually
             //var lines = new[] { new SKSegment(cx - armLen, cy, cx + armLen, cy), new SKSegment(cx, cy + armLen, cx, cy - armLen) };
 
-            foreach (var trait in Workspace.MyBrain.TraitStore.Values)
+            foreach (var trait in MyBrain.TraitStore.Values)
 	        {
 		        int index = 0;
 		        foreach (var domain in trait.DomainStore.Values)
@@ -237,7 +248,7 @@ namespace Numbers.Views
         }
         public SKNumberMapper GetOrCreateNumberMapper(int id)
         {
-	        return GetOrCreateNumberMapper(Workspace.MyBrain.NumberStore[id]);
+	        return GetOrCreateNumberMapper(MyBrain.NumberStore[id]);
         }
         public SKNumberMapper GetOrCreateNumberMapper(Number number)
         {
@@ -251,7 +262,7 @@ namespace Numbers.Views
         }
         public SKTransformMapper GetOrCreateTransformMapper(int id)
         {
-	        return GetOrCreateTransformMapper(Workspace.MyBrain.TransformStore[id]);
+	        return GetOrCreateTransformMapper(MyBrain.TransformStore[id]);
         }
         public SKTransformMapper GetOrCreateTransformMapper(Transform transform)
         {
@@ -263,22 +274,11 @@ namespace Numbers.Views
 	        return (SKTransformMapper)result;
         }
 
-
-        public IEnumerable<SKMapper> MappersOfKind(MathElementKind kind)
+        public void ClearAll()
         {
-	        var values = Mappers.Where(kvp => kvp.Value.MathElement.Kind == kind);
-	        foreach (var kvp in values)
-	        {
-		        yield return kvp.Value;
-	        }
-        }
-        public IEnumerable<SKMapper> MappersOfKindReversed(MathElementKind kind)
-        {
-	        var values = Mappers.Where(kvp => kvp.Value.MathElement.Kind == kind).Reverse();
-	        foreach (var kvp in values)
-	        {
-		        yield return kvp.Value;
-	        }
+	        Mappers.Clear();
+	        MyBrain.WorkspaceMappers.Remove(Id);
+	        defaultLineT = 0.1f;
         }
     }
 }

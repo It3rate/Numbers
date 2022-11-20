@@ -12,7 +12,8 @@ namespace Numbers.Views
         public SKSegment RenderSegment { get; private set; }
 
         private SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain.Id);
-	    public bool IsUnitOrUnot => Number.IsBasis;
+        public SKSegment UnitSegment => DomainMapper.UnitSegment;
+        public bool IsUnitOrUnot => Number.IsBasis;
 	    public bool IsUnit => Number.IsUnit;
         public bool IsUnot => Number.IsUnot;
         public int UnitSign => DomainMapper.UnitSign;
@@ -37,7 +38,6 @@ namespace Numbers.Views
 		    }
 	    }
 
-	    public SKSegment UnitSegment => DomainMapper.UnitSegment;
 
 	    public SKNumberMapper(Workspace workspace, Number number) : base(workspace, number)
 	    {
@@ -61,15 +61,16 @@ namespace Numbers.Views
 		        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
             }
         }
+
         public void DrawUnit()
         {
             // BasisNumber is a special case where we don't want it's direction set by the unit direction of the line (itself).
             // So don't call EnsureSegment here.
-	        if (SegmentDirection != UnitSign)
-	        {
-                // Invert unit if dragging past zero point.
-		        Number.Focal.EndTickPosition = Number.AbsBasisTicks * SegmentDirection + Number.Focal.StartTickPosition;
-            }
+	        //if (SegmentDirection != UnitSign)
+	        //{
+         //       // Invert unit if dragging past zero point.
+		       // Number.Focal.EndTickPosition = Number.AbsBasisTicks * SegmentDirection + Number.Focal.StartTickPosition;
+         //   }
             var dir = Number.Direction;
             var pen = dir > 0 ? Pens.UnitPen : Pens.UnotPen;
 	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - NumberSegment.StartPoint;
@@ -123,7 +124,7 @@ namespace Numbers.Views
 	        Number.EndValue = TFromPoint(newPoint);
         }
 
-        public override SKPath HighlightAt(float t, SKPoint targetPoint)
+        public override SKPath GetHighlightAt(float t, SKPoint targetPoint)
         {
 	        return Renderer.GetCirclePath(targetPoint);
         }

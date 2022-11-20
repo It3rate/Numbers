@@ -17,8 +17,8 @@ namespace Numbers.Core
         public static readonly Range Unit = new Range(0.0, 1.0);
         public static readonly Range Unot = new Range(1.0, 0.0);
         public static readonly Range Umid = new Range(-0.5, 0.5);
-        public static readonly Range Max = new Range(double.MaxValue, double.MaxValue);
-        public static readonly Range Min = new Range(double.MinValue, double.MinValue);
+        public static readonly Range MaxRange = new Range(double.MaxValue, double.MaxValue);
+        public static readonly Range MinRange = new Range(double.MinValue, double.MinValue);
 
         public double Start { get; set; }
         public double End { get; set; }
@@ -57,6 +57,10 @@ namespace Numbers.Core
 
         public Range Clone() => new Range(Start, End);
 
+        public double Min => Start < End ? Start : End;
+        public double Max => Start > End ? Start : End;
+        public float MinF => (float)Min;
+        public float MaxF => (float)Max;
         public double Length => Range.AbsLength(this);
         public double DirectedLength() => Range.DirectedLength(this);
         public double AbsLength() => Range.AbsLength(this);
@@ -123,20 +127,21 @@ namespace Numbers.Core
 
         public static double Abs(Range value)
         {
-            if (double.IsInfinity(value.End) || double.IsInfinity(value.Start))
-                return double.PositiveInfinity;
-            double num1 = Math.Abs(value.End);
-            double num2 = Math.Abs(value.Start);
-            if (num1 > num2)
-            {
-                double num3 = num2 / num1;
-                return num1 * Math.Sqrt(1.0 + num3 * num3);
-            }
-            if (num2 == 0.0)
-                return num1;
-            double num4 = num1 / num2;
-            return num2 * Math.Sqrt(1.0 + num4 * num4);
+	        if (double.IsInfinity(value.End) || double.IsInfinity(value.Start))
+		        return double.PositiveInfinity;
+	        double num1 = Math.Abs(value.End);
+	        double num2 = Math.Abs(value.Start);
+	        if (num1 > num2)
+	        {
+		        double num3 = num2 / num1;
+		        return num1 * Math.Sqrt(1.0 + num3 * num3);
+	        }
+	        if (num2 == 0.0)
+		        return num1;
+	        double num4 = num1 / num2;
+	        return num2 * Math.Sqrt(1.0 + num4 * num4);
         }
+        
         public static Range Pow(Range value, Range power)
         {
             if (power == Range.Zero)
@@ -177,11 +182,6 @@ namespace Numbers.Core
             }
         }
 
-
-        public override string ToString() => string.Format((IFormatProvider)CultureInfo.CurrentCulture, "({0}, {1})", new object[2]
-        {
-            (object) this.Start,
-            (object) this.End
-        });
+        public override string ToString() => $"[{Start:0.00}->{End:0.00}]";
     }
 }

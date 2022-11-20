@@ -24,28 +24,40 @@ namespace Numbers.Core
         public Dictionary<int, FocalRef> FocalStore { get; } = new Dictionary<int, FocalRef>();
         public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
 
-	    public Trait()
+        public Trait()
 	    {
 		    Id = MyBrain.NextTraitId();
             TraitStore.Add(Id, this);
 	    }
 
-	    public Transform AddTransform(Selection selection, Number repeats, TransformKind kind)
+        public Transform AddTransform(Selection selection, Number repeats, TransformKind kind)
 	    {
             var result = new Transform(selection, repeats, kind);
             TransformStore.Add(result.Id, result);
             return result;
 	    }
-
-	    public Domain AddDomain(int basisIndex, int rangeIndex)
+        public Domain AddDomain(int basisIndex, int rangeIndex)
 	    {
 		    var result = new Domain(Id, basisIndex, rangeIndex);
-		    DomainStore.Add(result.Id, result);
 		    return result;
 	    }
 	    public Domain AddDomain(FocalRef basis, FocalRef range)
 	    {
 		    return AddDomain(basis.Id, range.Id);
+	    }
+	    public IEnumerable<Domain> Domains()
+	    {
+		    foreach (var domain in DomainStore.Values)
+		    {
+			    yield return domain;
+		    }
+	    }
+	    public IEnumerable<Transform> Transforms()
+	    {
+		    foreach (var transform in TransformStore.Values)
+		    {
+			    yield return transform;
+		    }
 	    }
     }
 }

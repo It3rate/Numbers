@@ -47,6 +47,8 @@ namespace Numbers.UI
 
         public bool LockValuesOnDrag { get; set; }
         public bool LockTicksOnDrag { get; set; }
+        public bool LockUnitRatio { get; set; }
+
         private ColorTheme _colorTheme = ColorTheme.Normal;
         public ColorTheme ColorTheme
         {
@@ -93,17 +95,7 @@ namespace Numbers.UI
             Program.NextTest(this);
         }
 
-        public void ClearAll()
-        {
-            ClearHighlights();
-            Workspace.ClearAll();
-	        WorkspaceMapper?.ClearAll();
-        }
-
-        #region Position and Keyboard
-
-        public SKPoint GetTransformedPoint(SKPoint point) => point;// Data.Matrix.Invert().MapPoint(point);
-
+	    public SKPoint GetTransformedPoint(SKPoint point) => point;// Data.Matrix.Invert().MapPoint(point);
         public bool MouseDown(MouseEventArgs e)
         {
             if(IsPaused){return false;}
@@ -155,7 +147,6 @@ namespace Numbers.UI
             }
             return true;
         }
-
         public bool MouseDrag(SKPoint mousePoint)
         {
 	        if (IsPaused) {return false;}
@@ -170,7 +161,12 @@ namespace Numbers.UI
 					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm && nm.IsUnitOrUnot)
 					{
 						SaveNumberValues(SavedNumbers);
-                    }
+						LockUnitRatio = false;
+					}
+					else
+					{
+						LockUnitRatio = true;
+					}
                 }
             }
 
@@ -201,7 +197,6 @@ namespace Numbers.UI
 
             return true;
         }
-
         public bool MouseUp(MouseEventArgs e)
         {
 	        if (IsPaused) {return false;}
@@ -261,7 +256,6 @@ namespace Numbers.UI
             }
             return true;
         }
-
         public bool MouseWheel(MouseEventArgs e)
         {
 	        if (IsPaused) {return false;}
@@ -272,8 +266,6 @@ namespace Numbers.UI
             //Data.SetPanAndZoom(Data.Matrix, mousePoint, new SKPoint(0, 0), scale);
             return true;
         }
-
-
         private void SetSelectable(UIMode uiMode)
         {
             switch (uiMode)
@@ -437,19 +429,6 @@ namespace Numbers.UI
             }
             UIMode = UIMode.Pan;
         }
-
-        #endregion
-
-        //public DisplayMode DisplayMode
-        //{
-        //    get => Data.DisplayMode;
-        //    set
-        //    {
-        //        Data.DisplayMode = value;
-        //        OnDisplayModeChange?.Invoke(this, new EventArgs());
-        //    }
-        //}
-
         public void ToggleShowNumbers()
         {
             //if (DisplayMode.HasFlag(DisplayMode.ShowLengths))
@@ -461,6 +440,7 @@ namespace Numbers.UI
             //    DisplayMode |= DisplayMode.ShowAllValues;
             //}
         }
+
         public void ClearMouse()
         {
             IsDown = false;
@@ -479,6 +459,12 @@ namespace Numbers.UI
 	        SelCurrent.Clear();
 	        SelHighlight.Clear();
 	        SelSelection.Clear();
+        }
+        public void ClearAll()
+        {
+	        ClearHighlights();
+	        Workspace.ClearAll();
+	        WorkspaceMapper?.ClearAll();
         }
 
         public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)

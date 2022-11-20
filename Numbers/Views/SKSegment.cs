@@ -1,4 +1,5 @@
 ﻿using System;
+using Numbers.Core;
 using Numbers.UI;
 using SkiaSharp;
 
@@ -76,6 +77,7 @@ namespace Numbers.Views
 
         public float Length => (float)Math.Sqrt((EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y));
         public float LengthSquared => (EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y);
+        public float NonZeroLength => Length == 0 ? 0.001f : Length;
         public SKPoint PointAlongLine(float t, float offsetT = 0)
         {
             return new SKPoint(
@@ -88,6 +90,8 @@ namespace Numbers.Views
         public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Math.Max(MathF.tolerance, Length));
         public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(MathF.tolerance, Length));
         public SKPoint Vector => EndPoint - StartPoint;
+
+        public SKSegment SegmentAlongLine(Range ratios, float offsetT = 0) => SegmentAlongLine(ratios.StartF, ratios.EndF, offsetT);
         public SKSegment SegmentAlongLine(float startT, float endT, float offsetT = 0)
         {
 	        var startPoint = PointAlongLine(startT, offsetT);
@@ -225,6 +229,21 @@ namespace Numbers.Views
             var t = ptLen / totalLen;
             t = (float)(Math.Sqrt(t) * sign);
             return (t, pp);
+        }
+
+        // Note: Skia segments work in skia space, so they are not complex number segments (thus start is not negated).
+        public Range RatiosWithBasis(SKSegment basis)
+        {
+	        var sp = basis.TFromPoint(StartPoint, false).Item1;
+	        var ep = basis.TFromPoint(EndPoint, false).Item1;
+	        return new Range(sp, ep);
+        }
+        public Range RatiosAsBasis(SKSegment nonBasis) => RatiosAsBasis(nonBasis.StartPoint, nonBasis.EndPoint);
+        public Range RatiosAsBasis(SKPoint startPoint, SKPoint endPoint)
+        {
+            var sp = TFromPoint(startPoint, false).Item1;
+	        var ep = TFromPoint(endPoint, false).Item1;
+	        return new Range(sp, ep);
         }
 
         public SKPoint[] EndArrow(float dist = 8f)

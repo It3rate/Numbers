@@ -9,36 +9,18 @@ namespace Numbers.Views
 	public class SKDomainMapper : SKMapper
 	{
 	    public Domain Domain { get; private set; }
+
 	    private SKNumberMapper UnitMapper => WorkspaceMapper.NumberMapper(Domain.BasisNumberId);
-        public SKSegment UnitSegment => UnitMapper.NumberSegment;
-	    public List<SKPoint> TickPoints = new List<SKPoint>();
-	    public List<int> Markers = new List<int>();
+	    public Number UnitNumber => Domain.BasisNumber;
+	    public SKSegment UnitSegment => UnitMapper.NumberSegment;
+	    public int UnitSign => UnitNumber.Direction;
+	    public Range UnitRangeOnDomainLine => DisplayLine.RatiosAsBasis(UnitSegment);
+	    public int UnitDirectionOnDomainLine => DisplayLine.CosineSimilarity(UnitSegment) >= 0 ? 1 : -1;
+
+        public List<SKPoint> TickPoints = new List<SKPoint>();
+	    public List<int> ValidNumberIds = new List<int>();
 	    public SKSegment DisplayLine { get; private set; }
-
-	    public int UnitSign => Domain.BasisNumber.Direction;
-
-        public Range DisplayRange()
-        {
-	        return Domain.MinMaxRange;
-      //      var us = UnitSegment;
-		    //var usLen = UnitSegment.Length;
-		    //var dlLen = DisplayLine.Length;
-      //      var (zeroT, zeroPt) = DisplayLine.TFromPoint(us.StartPoint, false);
-      //      var start = zeroT * dlLen;
-      //      var end = (1.0f - zeroT) * dlLen;
-
-      //      return new Range(start / usLen, end / usLen);
-	    }
-	    public Range DisplayRatio()
-	    {
-		    return Domain.MinMaxRange;
-		    //var dv = Domain.MinMaxRange;
-		    //var dr = DisplayRange();
-		    //var len = Domain.MinMaxRange.Length;
-		    //var sv = (dv.Start - dr.Start) / len;
-		    //var ev = (len - (dv.End - dr.End)) / len;
-      //      return new Range(sv, ev); 
-	    }
+	    public Range DisplayLineRange => UnitSegment.RatiosAsBasis(DisplayLine);
 
 	    public bool ShowGradientNumberLine;
 	    public bool ShowTicks;
@@ -46,7 +28,7 @@ namespace Numbers.Views
 	    public bool ShowKeyValues;
 	    public bool ShowValueMarkers = true;
 	    public bool ShowUnits;
-	    public bool ShowUnitMarkers;
+	    public bool ShowBasisMarkers;
 	    public bool ShowUnotArrow;
 	    public bool ShowMaxMinValues;
 	    public bool ShowDashedValuesOutOfRange;
@@ -55,20 +37,17 @@ namespace Numbers.Views
         public override SKPoint StartPoint
 	    {
 		    get => DisplayLine.StartPoint;
-		    set => Reset(Domain, value, EndPoint);
+		    set => Reset(value, EndPoint);
 	    }
 	    public override SKPoint MidPoint => DisplayLine.Midpoint;
 	    public override SKPoint EndPoint
 	    {
 		    get => DisplayLine.EndPoint;
-		    set => Reset(Domain, StartPoint, value);
+		    set => Reset(StartPoint, value);
 	    }
 	    public SKPoint[] EndPoints => new SKPoint[] {StartPoint, EndPoint};
 
-	    private static int domainIndexCounter = 0;
-	    private int domainIndex = -1;
-
-	    public SKDomainMapper(Workspace workspace, Domain domain, SKSegment displayLine, SKSegment unitSegment) : base(workspace, domain)
+        public SKDomainMapper(Workspace workspace, Domain domain, SKSegment displayLine, SKSegment unitSegment) : base(workspace, domain)
 	    {
 		    base.MathElement = domain;
 		    Domain = domain;
@@ -77,49 +56,38 @@ namespace Numbers.Views
 		    var unitMapper = WorkspaceMapper.NumberMapper(unit.Id);
 		    unitMapper.NumberSegment = new SKSegment(displayLine.ProjectPointOnto(unitSegment.StartPoint), displayLine.ProjectPointOnto(unitSegment.EndPoint));
 		    //unitMapper.NumberSegment = DisplayLine.SegmentAlongLine(unitStartT, unitStartT + unitWidthT);
-
-            Reset(domain, displayLine.StartPoint, displayLine.EndPoint);
+		    Reset(displayLine.StartPoint, displayLine.EndPoint);
 	    }
 
-	    public void Reset(Domain domain, SKPoint startPoint, SKPoint endPoint)
+	    public void Reset(SKPoint startPoint, SKPoint endPoint)
 	    {
-		    base.MathElement = domain;
-		    Domain = domain;
 		    DisplayLine = new SKSegment(startPoint, endPoint);
-		    //UnitMapper = WorkspaceMapper.NumberMapper(Domain.BasisNumberId);
-            //UnitRange = Domain.UnitFocalRange;
-            //UnitSegment = DisplayLine.SegmentAlongLine(UnitRange.StartF, UnitRange.EndF); // todo: base on visible section of domain line
-		    Markers.Clear();
-		    AddUnitMarkers();
-		    AddNumberMarkers();
+            AddValidNumbers();
 	    }
 
-	    private Range RatioInDisplay(Number num)
+	    private void AddValidNumbers()
 	    {
-		    var displayRatio = DisplayRatio();
-		    var displayLen = displayRatio.StartF + displayRatio.EndF;
-		    var numRatio = num.RangeInMinMax;
-		    return new Range((numRatio.StartF - displayRatio.StartF) / displayLen, (numRatio.EndF - displayRatio.StartF) / displayLen);
-	    }
+		    ValidNumberIds.Clear();
+            if (ShowBasisMarkers)
+		    {
+			    ValidNumberIds.Add(Domain.BasisNumberId);
+            }
 
-        private void AddUnitMarkers()
-	    {
-		    Markers.Add(Domain.BasisNumberId);
+		    if (ShowValueMarkers)
+		    {
+			    foreach (var id in Domain.NumberIds)
+			    {
+				    if (Workspace.IsElementActive(id))
+				    {
+					    ValidNumberIds.Add(id);
+				    }
+			    }
+            }
 	    }
-
-	    private void AddNumberMarkers()
-	    {
-		    Markers.AddRange(Domain.NumberIds);
-	    }
-
-	    public override SKPath HighlightAt(float t, SKPoint targetPoint)
-	    {
-		    return Renderer.GetCirclePath(targetPoint);
-	    }
-
-	    public void SetValueByKind(SKPoint newPoint, UIKind kind)
-	    {
-		    if (kind.IsMajor())
+        public void SetValueByKind(SKPoint newPoint, UIKind kind)
+        {
+	        var unitRatio = UnitRangeOnDomainLine;
+            if (kind.IsMajor())
 		    {
 			    EndPoint = newPoint;
 		    }
@@ -127,15 +95,13 @@ namespace Numbers.Views
 		    {
 			    StartPoint = newPoint;
 		    }
-	    }
+            UnitMapper.NumberSegment = DisplayLine.SegmentAlongLine(unitRatio);
+        }
 
         public void Draw()
 	    {
-		    //UnitMapper = WorkspaceMapper.NumberMapper(Domain.BasisNumberId);
-
             if (Domain != null)
 		    {
-			    if (domainIndex == -1) domainIndex = domainIndexCounter++;
 			    DrawNumberLineGradient();
 			    DrawNumberLine();
 			    DrawUnit();
@@ -149,7 +115,7 @@ namespace Numbers.Views
 			    {
 				    offset += step;
 				    var num = WorkspaceMapper.NumberMapper(numberId);
-				    var pen = Pens.SegPens[domainIndex % Pens.SegPens.Count];
+				    var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
 				    num.DrawNumber(offset, pen);
 				    if (Domain.IsUnitPerspective)
 				    {
@@ -172,7 +138,6 @@ namespace Numbers.Views
 			    WorkspaceMapper.NumberMapper(Domain.BasisNumberId).DrawUnit();
             }
 	    }
-
 	    private void DrawNumberLineGradient()
 	    {
 		    if (ShowGradientNumberLine)
@@ -189,10 +154,9 @@ namespace Numbers.Views
 
             }
 	    }
-
 	    private void DrawMarkers()
 	    {
-		    foreach (var id in Markers)
+		    foreach (var id in ValidNumberIds)
 		    {
 			    var num = MyBrain.NumberStore[id];
 			    //var ratio = RatioInDisplay(num);//num.RangeInMinMax;//
@@ -202,10 +166,9 @@ namespace Numbers.Views
 			    DrawMarker(num, false);
 		    }
 	    }
-
 	    private void DrawMarker(Number num, bool isStart)
 	    {
-		    if ((!ShowValueMarkers && !num.IsBasis) || (!ShowUnitMarkers && num.IsBasis))
+		    if ((!ShowValueMarkers && !num.IsBasis) || (!ShowBasisMarkers && num.IsBasis))
 		    {
 			    return;
 		    }
@@ -252,7 +215,6 @@ namespace Numbers.Views
                 Renderer.DrawText(textPoint, txt, txtPaint, Pens.TextBackgroundPen);
             }
 	    }
-
 	    private SKPoint DrawMarkerPointer(float t)
 	    {
 		    var w = 5.0f * UnitSign;
@@ -270,60 +232,42 @@ namespace Numbers.Views
 		    
 		    return textPoint;
 	    }
-
 	    private void DrawNumberLine()
 	    {
 		    Renderer.DrawSegment(DisplayLine, Renderer.Pens.NumberLinePen);
 	    }
-
-	    public long[] WholeNumberTicks()
-	    {
-		    var result = new List<long>();
-		    var dr = DisplayRange();
-		    var start = (int)Math.Ceiling(-dr.Start);
-		    var end = (int)Math.Floor(dr.End);
-		    for (var i = start; i <= end; i++)
-		    {
-			    result.Add(i);
-		    }
-		    return result.ToArray();
-	    }
         private void DrawTicks()
 	    {
-            var dr = DisplayRange();
-            var wholeTicks = WholeNumberTicks();
+            var dr = DisplayLineRange;
+            var sign = UnitDirectionOnDomainLine;
+            TickPoints.Clear();
+            for(int i = (int)dr.Start; i != (int)dr.End + sign; i += sign)
+            {
+	            TickPoints.Add(DrawTick(i, -8 * sign, Renderer.Pens.TickBoldPen));
+            }
 
 		    var tickCount = (float)Domain.BasisNumber.AbsBasisTicks;
 		    var tickLen = UnitSegment.Length / tickCount;
-		    var showMinorTicks = tickLen >= 3;
-		    var sign = UnitSign;
-            TickPoints.Clear();
-            foreach (var wholeTick in wholeTicks)
+		    var showMinorTicks = Math.Abs(tickLen) >= 3;
+            if (showMinorTicks)
             {
-                TickPoints.Add(DrawTick(wholeTick * sign, -8 * sign, Renderer.Pens.TickBoldPen));
-		    }
-
-            if (showMinorTicks && wholeTicks.Length > 0) // todo: minor ticks shouldn't be dependent on major ones (may be zoomed in past major ticks).
-            {
-	            for (var i = wholeTicks[0] - 1; i < wholeTicks[wholeTicks.Length - 1] + 1; i++)
+				var minorDr = dr * tickCount;
+	            for (int i = (int)minorDr.Min; i <= (int)minorDr.Max; i++)
 	            {
-		            for (int j = 0; j < tickCount; j++)
-		            {
-			            var t = i + j / tickCount;
-			            if (t > -dr.Start && t < dr.End)
-			            {
-				            DrawTick(t * sign, -8 * sign, Renderer.Pens.TickPen);
-			            }
-		            }
+		            DrawTick((i / tickCount), -8 * sign, Renderer.Pens.TickPen);
 	            }
             }
         }
+        private SKPoint DrawTick(float t, int offset, SKPaint paint)
+        {
+	        var pts = UnitSegment.PerpendicularLine(t, offset);
+	        Renderer.DrawLine(pts.Item1, pts.Item2, paint);
+	        return pts.Item1;
+        }
 
-	    private SKPoint DrawTick(float t, int offset, SKPaint paint)
+        public override SKPath GetHighlightAt(float t, SKPoint targetPoint)
 	    {
-		    var pts = UnitSegment.PerpendicularLine(t, offset);
-		    Renderer.DrawLine(pts.Item1, pts.Item2, paint);
-		    return pts.Item1;
+		    return Renderer.GetCirclePath(targetPoint);
 	    }
-    }
+	}
 }
