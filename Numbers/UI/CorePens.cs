@@ -51,6 +51,7 @@ namespace Numbers.UI
 
         public SKPaint LineTextPen { get; set; }
         public SKPaint TextBackgroundPen { get; set; }
+        public SKPaint TextFractionPen { get; set; }
         public SKPaint SlugTextPen { get; set; }
 
         public SKColor BkgColor { get; set; }
@@ -130,6 +131,11 @@ namespace Numbers.UI
 
             TextBackgroundPen = GetPen(new SKColor(244, 244, 244, 220), 0);
             TextBackgroundPen.Style = SKPaintStyle.Fill;
+
+            TextFractionPen = new SKPaint(new SKFont(SKTypeface.Default, 10f));
+            TextFractionPen.IsAntialias = true;
+            TextFractionPen.Color = new SKColor(0x40, 0x40, 0x60);
+            TextFractionPen.TextAlign = SKTextAlign.Left;
 
             SlugTextPen = new SKPaint(new SKFont(SKTypeface.Default, 8f));
             SlugTextPen.IsAntialias = true;

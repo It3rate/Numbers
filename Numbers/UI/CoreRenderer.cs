@@ -100,11 +100,19 @@ namespace Numbers.UI
             var triPts = seg.EndArrow(8);
             Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
         }
-	    public void DrawText(SKPoint center, string text, SKPaint paint, SKPaint background)
+	    public void DrawText(SKPoint center, string text, SKPaint paint, SKPaint background = null)
 	    {
-		    var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
-		    Canvas.DrawRoundRect(rect, 5, 5, background ?? Pens.TextBackgroundPen);
+		    if (background != null)
+		    {
+			    var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
+			    DrawTextBackground(rect, background);
+		    }
 		    Canvas.DrawText(text, center.X, center.Y, paint);
+	    }
+
+	    public void DrawTextBackground(SKRect rect, SKPaint background)
+	    {
+		    Canvas.DrawRoundRect(rect, 5, 5, background);
 	    }
 	    public void DrawBitmap(SKBitmap bitmap)
 	    {
@@ -121,7 +129,7 @@ namespace Numbers.UI
 	    {
 		    Pens = new CorePens(1, colorTheme);
 	    }
-	    protected SKRect GetTextBackgroundSize(float x, float y, String text, SKPaint paint)
+	    public SKRect GetTextBackgroundSize(float x, float y, String text, SKPaint paint)
 	    {
 		    var fm = paint.FontMetrics;
 		    float halfTextLength = paint.MeasureText(text) / 2 + 4;

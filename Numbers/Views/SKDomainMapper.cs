@@ -142,43 +142,80 @@ namespace Numbers.Views
             var suffix = isStart ? "i" : "";
 		    var unitLabel = num.IsBasis && isStart ? "0" : num.IsUnit ? "1" : num.IsUnot ? "i" : "";
 
-		    var textPoint = DrawMarkerPointer(t);
+		    var txtPoint = DrawMarkerPointer(t);
 
-		    var txt = "";
 		    var txtPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;
-		    if (ShowFractions)
+		    var txtBkgPen = Pens.TextBackgroundPen;
+            if (ShowFractions)
 		    {
-			    txt = GetFractionText(num, isStart) + suffix;
-		    }
+			    var parts = GetFractionText(num, isStart, suffix);
+                DrawFraction(parts, txtPoint, txtPaint, txtBkgPen);
+            }
 		    else
 		    {
-				txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
-		    }
-
-		    if (isStart)
-            {
-				Renderer.DrawText(textPoint, txt, txtPaint, Pens.TextBackgroundPen);
-		    }
-		    else
-		    {
-                Renderer.DrawText(textPoint, txt, txtPaint, Pens.TextBackgroundPen);
+				var txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
+				Renderer.DrawText(txtPoint, txt, txtPaint, txtBkgPen);
             }
         }
 
-        private string GetFractionText(Number num, bool isStart)
+        private void DrawFraction((string, string)parts, SKPoint txtPoint, SKPaint txtPaint, SKPaint txtBkgPen)
         {
+	        var whole = parts.Item1;
+	        var fraction = parts.Item2;
+	        var fracPen = Pens.TextFractionPen;
+	        if (fraction != "")
+	        {
+		        fracPen.Color = txtPaint.Color;
+		        if (whole == "")
+		        {
+					fracPen.TextAlign = SKTextAlign.Center;
+			        Renderer.DrawText(txtPoint, fraction, fracPen, txtBkgPen);
+			        fracPen.TextAlign = SKTextAlign.Left;
+                }
+		        else
+		        {
+			        var txtAlign = txtPaint.TextAlign;
+			        txtPaint.TextAlign = SKTextAlign.Right;
+			        var wRect = Renderer.GetTextBackgroundSize(0, 0, whole, txtPaint);
+			        var fRect = Renderer.GetTextBackgroundSize(0, 0, fraction, Pens.TextFractionPen);
+			        Renderer.DrawText(txtPoint, whole, txtPaint, null);
+			        var fPoint = new SKPoint(txtPoint.X - 2, txtPoint.Y);
+			        Renderer.DrawText(fPoint, fraction, fracPen, null);
+			        wRect.Union(fRect);
+			        Renderer.DrawTextBackground(wRect, txtBkgPen);
+			        txtPaint.TextAlign = txtAlign;
+		        }
+	        }
+	        else
+	        {
+		        Renderer.DrawText(txtPoint, whole, txtPaint, txtBkgPen);
+	        }
+        }
+
+        private (string, string) GetFractionText(Number num, bool isStart, string suffix)
+        {
+	        var sign = isStart ? (num.StartValue >= 0 ? "" : "-") : (num.EndValue >= 0 ? "" : "-");
 	        var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
 	        var whole = wholeNum == 0 ? "" : wholeNum.ToString();
 	        string fraction = "";
-	        if (num.AbsBasisTicks != 0)
+		    var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
+	        if (num.AbsBasisTicks != 0 && numerator != 0)
 	        {
-		        var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
-		        if (numerator != 0)
-		        {
-			        fraction = " " + numerator.ToString() + "/" + num.AbsBasisTicks.ToString();
-		        }
+		        fraction = " " + numerator.ToString() + "|" + num.AbsBasisTicks.ToString() + suffix;
 	        }
-	        return whole + fraction;
+	        else
+	        {
+		        whole += suffix;
+	        }
+
+	        if (whole == "")
+	        {
+		        fraction = sign + fraction;
+	        }
+	        //var wlen = whole.Length;
+	        //whole = whole.PadRight(fraction.Length + 1);
+	        //fraction = fraction.PadLeft(wlen + 1);
+            return (whole, fraction);
         }
 
         private SKPoint DrawMarkerPointer(float t)
