@@ -27,7 +27,7 @@ namespace Numbers.Views
 	        get { return SKPoint.Empty; }
 	        set {}
         }
-        private SKPoint SKOrigin => SelectionMapper.UnitSegment.StartPoint;
+        private SKPoint SKOrigin => SelectionMapper.BasisSegment.StartPoint;
 
         public SKTransformMapper(Workspace workspace, Transform transform) : base(workspace, transform)
         {
@@ -155,8 +155,8 @@ namespace Numbers.Views
 		private SKPoint[] GetUnitBoxPoints() // cw from org
 		{
 			var result = new SKPoint[4];
-			var rs = RepeatMapper.UnitSegment;
-			var ss = SelectionMapper.UnitSegment;
+			var rs = RepeatMapper.BasisSegment;
+			var ss = SelectionMapper.BasisSegment;
 			result[0] = ss.StartPoint; // Org
             result[1] = rs.EndPoint; // TL
             result[2] = new SKPoint(ss.EndPoint.X, rs.EndPoint.Y); // TR
@@ -189,7 +189,7 @@ namespace Numbers.Views
 		private void TransformPoints(SKPoint[] pts)
 		{
 			var org = SKOrigin;
-			var unitLen = RepeatMapper.UnitSegment.Length;
+			var unitLen = RepeatMapper.BasisSegment.Length;
 
 			var rNum = Transform.Repeat.Value;
             var sNum = Transform.Selection[0].Value;
@@ -241,7 +241,6 @@ namespace Numbers.Views
             //	pt -= org;
             //	var x = pt.X * ru + pt.X * ri;
             //	var y = pt.Y * su + pt.Y * si;
-            //	Console.WriteLine(x + " :: " + y);
             //             pts[i] = new SKPoint(x + org.X, y+ org.Y);
             //}
         }

@@ -91,10 +91,10 @@ namespace Numbers.Core
 		public Range Value
 		{
 			get => Focal.RangeWithBasis(BasisFocal);
-			set => Focal.Reset(Domain.FocalFromRange(value));
+			set => Focal.SetWithRange(value, BasisFocal);// Focal.Reset(Domain.FocalFromRange(value));
 		}
-		public Range ValueInUnitPerspective => new Range(-StartValue, EndValue);
-		public Range ValueInUnotPerspective => new Range(EndValue, -StartValue);
+		public Range ValueInFullUnitPerspective => Domain.IsUnitPerspective ? new Range(-StartValue, EndValue) : new Range(StartValue, -EndValue);
+		//public Range ValueInUnotPerspective => new Range(EndValue, -StartValue);
 
 		public long WholeStartValue => (long) StartValue;
 		public long WholeEndValue => (long)EndValue;

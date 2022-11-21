@@ -20,6 +20,8 @@ namespace Numbers.Core
         void Reset(IFocal focal);
         Range RangeWithBasis(IFocal basis);
         Range RangeAsBasis(IFocal nonBasis);
+        void SetWithRange(Range range);
+        void SetWithRange(Range range, IFocal basis);
         Range UnitTRangeIn(IFocal basis);
         IFocal Clone();
     }
@@ -101,21 +103,33 @@ namespace Numbers.Core
 	    public Range RangeWithBasis(IFocal basis)
 	    {
 		    var len = (double) (basis.NonZeroLength);
-            var start = (basis.StartTickPosition - StartTickPosition) / len;
-		    var end = (EndTickPosition - basis.StartTickPosition) / len;
-		    return new Range(start, end);
+            var start = (StartTickPosition - basis.StartTickPosition) / len;
+            var end = (EndTickPosition - basis.StartTickPosition) / len;
+            var basisDir = Math.Sign(len);
+            return new Range(-start * basisDir, end * basisDir);
         }
-
-        public Range RangeAsBasis(IFocal nonBasis) => RangeAsBasis(nonBasis.StartTickPosition, nonBasis.EndTickPosition);
+	    public Range RangeAsBasis(IFocal nonBasis) => RangeAsBasis(nonBasis.StartTickPosition, nonBasis.EndTickPosition);
         public Range RangeAsBasis(long startTickPosition, long endTickPosition)
         {
 	        var len = (double)(NonZeroLength);
 	        var start = (startTickPosition - StartTickPosition) / len;
 	        var end = (endTickPosition - StartTickPosition) / len;
-	        return new Range(-start, end);
+	        var basisDir = Math.Sign(len);
+	        return new Range(-start * basisDir, end * basisDir);
         }
 
-	    public Range UnitTRangeIn(IFocal basis)
+        public void SetWithRange(Range range) => SetWithRange(range, this);
+        public void SetWithRange(Range range, IFocal basis)
+        {
+	        var len = (double)(basis.AbsLengthInTicks);
+	        var sp = (long) (-range.Start * len);
+	        var ep = (long) (range.End * len);
+            StartTickPosition = sp;
+	        EndTickPosition = ep;
+        }
+
+
+        public Range UnitTRangeIn(IFocal basis)
 	    {
 		    var len = (double)Math.Abs(basis.NonZeroLength);
 		    var start = (StartTickPosition - basis.StartTickPosition) / len;

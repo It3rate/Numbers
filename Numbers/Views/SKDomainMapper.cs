@@ -10,21 +10,21 @@ namespace Numbers.Views
 	{
 	    public Domain Domain { get; private set; }
 
-	    private SKNumberMapper UnitMapper => WorkspaceMapper.NumberMapper(Domain.BasisNumberId);
-	    public Number UnitNumber => Domain.BasisNumber;
-	    public SKSegment UnitSegment => UnitMapper.NumberSegment;
-	    public int UnitSign => UnitNumber.Direction;
+	    private SKNumberMapper BasisMapper => WorkspaceMapper.NumberMapper(Domain.BasisNumberId);
+	    public Number BasisNumber => Domain.BasisNumber;
+	    public SKSegment BasisSegment => BasisMapper.NumberSegment;
+	    public int BasisNumberSign => BasisNumber.Direction;
 
         public List<SKPoint> TickPoints = new List<SKPoint>();
 	    public List<int> ValidNumberIds = new List<int>();
 	    public SKSegment DisplayLine { get; private set; }
-	    public Range DisplayLineRange => UnitSegment.RatiosAsBasis(DisplayLine);
+	    public Range DisplayLineRange => BasisSegment.RatiosAsBasis(DisplayLine);
 	    public Range UnitRangeOnDomainLine
 	    {
-		    get => DisplayLine.RatiosAsBasis(UnitSegment);
-		    set { UnitMapper.NumberSegment = DisplayLine.SegmentAlongLine(value); }
+		    get => DisplayLine.RatiosAsBasis(BasisSegment);
+		    set { BasisMapper.NumberSegment = DisplayLine.SegmentAlongLine(value); }
 	    }
-	    public int UnitDirectionOnDomainLine => DisplayLine.CosineSimilarity(UnitSegment) >= 0 ? 1 : -1;
+	    public int UnitDirectionOnDomainLine => DisplayLine.CosineSimilarity(BasisSegment) >= 0 ? 1 : -1;
 
         public bool ShowGradientNumberLine;
 	    public bool ShowTicks;
@@ -91,7 +91,7 @@ namespace Numbers.Views
 		    {
 			    StartPoint = newPoint;
 		    }
-            UnitMapper.NumberSegment = DisplayLine.SegmentAlongLine(unitRatio);
+            BasisMapper.NumberSegment = DisplayLine.SegmentAlongLine(unitRatio);
         }
 
         public void Draw()
@@ -136,10 +136,10 @@ namespace Numbers.Views
         }
 
         private void DrawMarker(Number num, bool isStart)
-	    {
-		    var value = isStart ? num.StartValue : num.EndValue;
-		    var t = (float)(isStart ? -value : value);
-		    var suffix = isStart ? "i" : "";
+        {
+            var value = isStart ? num.Value.StartF : num.Value.EndF;
+            var t = isStart ? num.ValueInFullUnitPerspective.StartF : num.ValueInFullUnitPerspective.EndF;
+            var suffix = isStart ? "i" : "";
 		    var unitLabel = num.IsBasis && isStart ? "0" : num.IsUnit ? "1" : num.IsUnot ? "i" : "";
 
 		    var textPoint = DrawMarkerPointer(t);
@@ -185,8 +185,8 @@ namespace Numbers.Views
 	    {
 		    var sign = UnitDirectionOnDomainLine;
             var w = 5.0f * sign;
-		    var unitSeg = UnitSegment;
-		    var markerHW = (float) (1.0 / UnitSegment.Length) * w;
+		    var unitSeg = BasisSegment;
+		    var markerHW = (float) (1.0 / BasisSegment.Length) * w;
 		    var pt = unitSeg.PointAlongLine(t);
 		    var ptPlus = unitSeg.PointAlongLine(t + markerHW);
 		    var ptMinus = unitSeg.PointAlongLine(t - markerHW);
@@ -228,7 +228,7 @@ namespace Numbers.Views
             }
 
 		    var tickCount = (float)Domain.BasisNumber.AbsBasisTicks;
-		    var tickLen = UnitSegment.Length / tickCount;
+		    var tickLen = BasisSegment.Length / tickCount;
 		    var showMinorTicks = Math.Abs(tickLen) >= 3;
             if (showMinorTicks)
             {
@@ -241,7 +241,7 @@ namespace Numbers.Views
         }
         private SKPoint DrawTick(float t, int offset, SKPaint paint)
         {
-	        var pts = UnitSegment.PerpendicularLine(t, offset);
+	        var pts = BasisSegment.PerpendicularLine(t, offset);
 	        Renderer.DrawLine(pts.Item1, pts.Item2, paint);
 	        return pts.Item1;
         }

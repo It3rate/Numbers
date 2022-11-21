@@ -71,11 +71,9 @@ namespace Numbers.Core
         public long EndTickPositionFrom(double value) => (long)Math.Round(value * BasisFocal.LengthInTicks) + BasisFocal.StartTickPosition;
         public FocalRef FocalFromRange(Range range)
         {
-	        var bf = BasisFocal;
-	        var len = bf.LengthInTicks;
-	        var start = (long)-Math.Round(range.Start * len) + bf.StartTickPosition;
-	        var end = (long)Math.Round(range.End * len) + bf.StartTickPosition;
-            return FocalRef.CreateByValues(MyTrait, start, end);
+	        var result = FocalRef.CreateByValues(MyTrait, 0,1);
+	        result.SetWithRange(range, BasisFocal);
+	        return result;
         }
 
         public void SaveNumberValues(Dictionary<int, Range> dict, params int[] ignoreIds)

@@ -12,11 +12,11 @@ namespace Numbers.Views
         public SKSegment RenderSegment { get; private set; }
 
         public SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain.Id);
-        public SKSegment UnitSegment => DomainMapper.UnitSegment;
+        public SKSegment UnitSegment => DomainMapper.BasisSegment;
         public bool IsBasis => Number.IsBasis;
 	    public bool IsUnit => Number.IsUnit;
         public bool IsUnot => Number.IsUnot;
-        public int UnitSign => DomainMapper.UnitSign;
+        public int BasisSign => Number.BasisFocal.Direction;
 
         public override SKPoint StartPoint
 	    {
@@ -46,15 +46,14 @@ namespace Numbers.Views
 	    }
         public void EnsureSegment()
         {
-	        var val = DomainMapper.UnitSign == 1 ? Number.ValueInUnitPerspective : Number.ValueInUnotPerspective;
-	        NumberSegment = UnitSegment.SegmentAlongLine((float)val.Start, (float)val.End);
+	        var val = Number.ValueInFullUnitPerspective;
+	        NumberSegment = UnitSegment.SegmentAlongLine(val.StartF, val.EndF);
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
         {
 			EnsureSegment();
-			var sign = DomainMapper.UnitDirectionOnDomainLine;
 			var dir = Number.Direction;
-	        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir * sign);
+	        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
 	        RenderSegment = NumberSegment + offset;
 	        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
         }
@@ -63,7 +62,7 @@ namespace Numbers.Views
         {
             // BasisNumber is a special case where we don't want it's direction set by the unit direction of the line (itself).
             // So don't call EnsureSegment here.
-	        //if (SegmentDirection != UnitSign)
+	        //if (SegmentDirection != BasisNumberSign)
 	        //{
          //       // Invert unit if dragging past zero point.
 		       // Number.Focal.EndTickPosition = Number.AbsBasisTicks * SegmentDirection + Number.Focal.StartTickPosition;
@@ -81,11 +80,10 @@ namespace Numbers.Views
 
         public float TFromPoint(SKPoint point)
         {
-	        var us = DomainMapper.UnitSegment;
+	        var us = DomainMapper.BasisSegment;
 	        var pt = us.ProjectPointOnto(point, false);
             var (t, _) = us.TFromPoint(pt, false);
 	        t = (float)(Math.Round(t * us.Length) / us.Length);
-	        //Console.WriteLine(t);
 	        return t;
         }
 
@@ -131,11 +129,11 @@ namespace Numbers.Views
         }
         public void SetStartValueByPoint(SKPoint newPoint)
         {
-	        Number.StartValue = -TFromPoint(newPoint);
+	        Number.StartValue = -TFromPoint(newPoint) * BasisSign;
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {
-	        Number.EndValue = TFromPoint(newPoint);
+	        Number.EndValue = TFromPoint(newPoint) * BasisSign;
         }
 
         public override SKPath GetHighlightAt(float t, SKPoint targetPoint)
