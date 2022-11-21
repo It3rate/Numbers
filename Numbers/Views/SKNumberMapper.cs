@@ -62,11 +62,6 @@ namespace Numbers.Views
         {
             // BasisNumber is a special case where we don't want it's direction set by the unit direction of the line (itself).
             // So don't call EnsureSegment here.
-	        //if (SegmentDirection != BasisNumberSign)
-	        //{
-         //       // Invert unit if dragging past zero point.
-		       // Number.Focal.EndTickPosition = Number.AbsBasisTicks * SegmentDirection + Number.Focal.StartTickPosition;
-         //   }
             var dir = Number.Direction;
             var pen = dir > 0 ? Pens.UnitPen : Pens.UnotPen;
 	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - NumberSegment.StartPoint;
@@ -87,21 +82,6 @@ namespace Numbers.Views
 	        return t;
         }
 
-        public void SetValueOfUnit(SKPoint newPoint, UIKind kind)
-        {
-	        var ds = DomainMapper.DisplayLine;
-	        var pt = ds.ProjectPointOnto(newPoint);
-	        var nsc = NumberSegment.Clone();
-	        if (kind.IsMajor())
-	        {
-		        NumberSegment.EndPoint = pt;
-	        }
-	        else
-	        {
-		        NumberSegment.StartPoint = pt;
-	        }
-        }
-
         public void AdjustBySegmentChange(HighlightSet beginState) => AdjustBySegmentChange(beginState.OriginalSegment, beginState.OriginalFocalPositions);
         public void AdjustBySegmentChange(SKSegment originalSegment, FocalPositions originalFocalPositions)
         {
@@ -116,7 +96,7 @@ namespace Numbers.Views
         {
 	        if (kind.IsBasis())
 	        {
-		        SetValueOfUnit(newPoint, kind);
+		        SetValueOfBasis(newPoint, kind);
 	        }
 	        else if (kind.IsMajor())
             {
@@ -134,6 +114,20 @@ namespace Numbers.Views
         public void SetEndValueByPoint(SKPoint newPoint)
         {
 	        Number.EndValue = TFromPoint(newPoint) * BasisSign;
+        }
+        public void SetValueOfBasis(SKPoint newPoint, UIKind kind)
+        {
+	        var ds = DomainMapper.DisplayLine;
+	        var pt = ds.ProjectPointOnto(newPoint);
+	        var nsc = NumberSegment.Clone();
+	        if (kind.IsMajor())
+	        {
+		        NumberSegment.EndPoint = pt;
+	        }
+	        else
+	        {
+		        NumberSegment.StartPoint = pt;
+	        }
         }
 
         public override SKPath GetHighlightAt(float t, SKPoint targetPoint)

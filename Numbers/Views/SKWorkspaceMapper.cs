@@ -56,7 +56,7 @@ namespace Numbers.Views
                 {
                     var seg = nm.RenderSegment;
                     var isSameMapper = ignoreSet.ActiveHighlight != null && ignoreSet.ActiveHighlight.Mapper == nm;
-                    var kind = UIKind.Number | (nm.IsUnit ? UIKind.Basis : UIKind.None);
+                    var kind = UIKind.Number | (nm.IsBasis ? UIKind.Basis : UIKind.None);
                     if (!isSameMapper && input.DistanceTo(seg.StartPoint) < maxDist)
                     {
                         highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point);
