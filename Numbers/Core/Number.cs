@@ -79,26 +79,27 @@ namespace Numbers.Core
 
 		public double StartValue
 		{
-			get => Domain.ValueFromStartTickPosition(StartTickPosition); // Value.Start is a little less efficient
-			set => StartTicks = Domain.StartTickPositionFrom(value);
+			get => Value.Start;//Domain.ValueFromStartTickPosition(StartTickPosition); // Value.Start is a little less efficient
+			set => Value = new Range(value, Value.End); //StartTicks = Domain.StartTickPositionFrom(value);
+
 		}
 		public double EndValue
 		{
-			get => Domain.ValueFromEndTickPosition(EndTickPosition); // Value.End is a little less efficient
-			set => EndTicks = Domain.EndTickPositionFrom(value);
-		}
+			get => Value.End;//Domain.ValueFromEndTickPosition(EndTickPosition); // Value.End is a little less efficient
+            set => Value = new Range(Value.Start, value); //EndTicks = Domain.EndTickPositionFrom(value);
+        }
 		public Range Value
 		{
 			get => Focal.RangeWithBasis(BasisFocal);
 			set => Focal.Reset(Domain.FocalFromRange(value));
 		}
 		public Range ValueInUnitPerspective => new Range(-StartValue, EndValue);
-		public Range ValueInUnotPerspective => new Range(-EndValue, -StartValue);
+		public Range ValueInUnotPerspective => new Range(EndValue, -StartValue);
 
-		public long RoundedStartValue => (long) Math.Round(StartValue);
-		public long RoundedEndValue => (long) Math.Round(EndValue);
-		public long RemainderStartValue => StartTicks % AbsBasisTicks;
-		public long RemainderEndValue => EndTicks % AbsBasisTicks;
+		public long WholeStartValue => (long) StartValue;
+		public long WholeEndValue => (long)EndValue;
+		public long RemainderStartValue => Math.Abs(StartTicks % BasisTicks);
+		public long RemainderEndValue => Math.Abs(EndTicks % BasisTicks);
 
 		public Range FloorRange => new Range(Math.Ceiling(StartValue), Math.Floor(EndValue));
 		public Range CeilingRange => new Range(Math.Floor(StartValue), Math.Ceiling(EndValue));

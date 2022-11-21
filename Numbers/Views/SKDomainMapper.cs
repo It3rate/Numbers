@@ -148,17 +148,7 @@ namespace Numbers.Views
 		    var txtPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;
 		    if (ShowFractions)
 		    {
-			    var whole = isStart ? num.RoundedStartValue.ToString() : num.RoundedEndValue.ToString();
-			    string fraction = "";
-			    if (num.AbsBasisTicks != 0)
-			    {
-				    var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
-				    if (numerator != 0)
-				    {
-					    fraction = " " + numerator.ToString() + "/" + num.AbsBasisTicks.ToString();
-                    }
-			    }
-			    txt = whole + fraction + suffix;
+			    txt = GetFractionText(num, isStart) + suffix;
 		    }
 		    else
 		    {
@@ -173,8 +163,25 @@ namespace Numbers.Views
 		    {
                 Renderer.DrawText(textPoint, txt, txtPaint, Pens.TextBackgroundPen);
             }
-	    }
-	    private SKPoint DrawMarkerPointer(float t)
+        }
+
+        private string GetFractionText(Number num, bool isStart)
+        {
+	        var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
+	        var whole = wholeNum == 0 ? "" : wholeNum.ToString();
+	        string fraction = "";
+	        if (num.AbsBasisTicks != 0)
+	        {
+		        var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
+		        if (numerator != 0)
+		        {
+			        fraction = " " + numerator.ToString() + "/" + num.AbsBasisTicks.ToString();
+		        }
+	        }
+	        return whole + fraction;
+        }
+
+        private SKPoint DrawMarkerPointer(float t)
 	    {
 		    var sign = UnitDirectionOnDomainLine;
             var w = 5.0f * sign;

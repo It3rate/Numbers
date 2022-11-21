@@ -278,7 +278,6 @@ namespace Numbers.Views
         public void ClearAll()
         {
 	        Mappers.Clear();
-	        MyBrain.WorkspaceMappers.Remove(Id);
 	        defaultLineT = 0.1f;
         }
     }

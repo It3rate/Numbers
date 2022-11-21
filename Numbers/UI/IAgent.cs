@@ -7,7 +7,7 @@ namespace Numbers.UI
 	public interface IAgent
     {
 	    Brain MyBrain { get; }
-	    Workspace Workspace { get; }
+	    Workspace Workspace { get; set; }
 	    bool IsPaused { get; set; }
 
         HighlightSet SelBegin { get; }

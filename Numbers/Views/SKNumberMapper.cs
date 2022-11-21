@@ -46,8 +46,8 @@ namespace Numbers.Views
 	    }
         public void EnsureSegment()
         {
-            var val = DomainMapper.UnitSign == 1 ? Number.ValueInUnitPerspective : Number.ValueInUnotPerspective;
-            NumberSegment = UnitSegment.SegmentAlongLine((float)val.Start, (float)val.End);
+	        var val = DomainMapper.UnitSign == 1 ? Number.ValueInUnitPerspective : Number.ValueInUnotPerspective;
+	        NumberSegment = UnitSegment.SegmentAlongLine((float)val.Start, (float)val.End);
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
         {
@@ -131,7 +131,7 @@ namespace Numbers.Views
         }
         public void SetStartValueByPoint(SKPoint newPoint)
         {
-	        Number.StartValue = TFromPoint(newPoint);
+	        Number.StartValue = -TFromPoint(newPoint);
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {

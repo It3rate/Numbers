@@ -103,6 +103,8 @@ namespace Numbers.UI
         {
 	        agent.IsPaused = true;
 	        agent.ClearAll();
+
+	        agent.Workspace = new Workspace();
             SKWorkspaceMapper wm;
             switch (_tests[_testIndex])
             {

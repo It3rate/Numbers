@@ -108,7 +108,6 @@ namespace Numbers.Core
 
         public void ClearAll()
         {
-	        MyBrain.ClearAll();
             ActiveIds.Clear();
         }
 

@@ -14,7 +14,7 @@ namespace Numbers.UI
         public static Agent Current { get; private set; }
         public Brain MyBrain => Brain.ActiveBrain;
 
-        public Workspace Workspace { get; }
+        public Workspace Workspace { get; set;  }
         protected SKWorkspaceMapper WorkspaceMapper
         {
 	        get
@@ -89,7 +89,6 @@ namespace Numbers.UI
         {
             Renderer = renderer;
             Current = this;
-            Workspace = new Workspace();
             Program = new Program(MyBrain, Renderer);
 
             ClearMouse();
@@ -165,11 +164,6 @@ namespace Numbers.UI
 						SaveNumberValues(SavedNumbers);
 						SelBegin.OriginalSegment = nm.NumberSegment.Clone();
 						SelBegin.OriginalFocalPositions = nm.Number.Focal.FocalPositions;
-                        LockUnitRatio = false;
-					}
-					else
-					{
-						LockUnitRatio = true;
 					}
                 }
             }
@@ -214,14 +208,8 @@ namespace Numbers.UI
         {
 	        if (IsPaused) {return false;}
 
-            // If dragging or creating, check for last point merge
-            // If rect select, add contents to selection (also done in move).
-            // If not dragging or creating and dist < selMax, click select
             _rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
-
-            //Data.Current.UpdatePositions(mousePoint);
-            //Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
 
             if (UIMode == UIMode.Pan)
             {
@@ -235,24 +223,6 @@ namespace Numbers.UI
                     UIMode = PreviousMode;
                 }
             }
-            //else if (Data.HasHighlightPoint && _activeCommand is IDraggableCommand cmd && cmd.HasDraggablePoint)
-            //{
-            //    if (cmd.DraggablePoint.CanMergeWith(Data.HighlightPoint))
-            //    {
-            //        var fromKey = cmd.DraggablePoint.Key;
-            //        var toKey = Data.Highlight.Point.Key;
-            //        if (fromKey != ElementBase.EmptyKeyValue && toKey != ElementBase.EmptyKeyValue && fromKey != toKey)
-            //        {
-            //            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, fromKey, toKey));
-            //        }
-            //    }
-            //    cmd.AddTaskAndRun(new SetSelectionTask(Data.Selected, ElementBase.EmptyKeyValue));
-            //}
-            //else if (!IsDragging && _activeCommand == null)  // clicked
-            //{
-            //    var selCmd = new SetSelectionCommand(Data.Selected, Data.Highlight.PointKey, Data.Highlight.ElementKeysCopy);
-            //    selCmd.Execute();
-            //}
 
             OnSelectionChange?.Invoke(this, new EventArgs());
             ClearMouse();
@@ -328,8 +298,8 @@ namespace Numbers.UI
         private bool _isAltDown;
         private UIMode PreviousMode = UIMode.Any;
         private SKMatrix _startMatrix;
-        // When SingleBond is selected, focals can be highlighted (but not moved), bonds can be created or edited and have precedence in conflict.
-        // ctrl defaults to 'create' causing select to be exclusive to focals or singleBond points.
+        private KeyEventArgs _lastKeyUp;
+
         public bool KeyDown(KeyEventArgs e)
         {
 	        if (CurrentKey == Keys.Escape)
@@ -413,8 +383,6 @@ namespace Numbers.UI
 
             return true;
         }
-
-        private KeyEventArgs _lastKeyUp;
         public bool KeyUp(KeyEventArgs e)
         {
             bool result = true;
@@ -492,9 +460,9 @@ namespace Numbers.UI
         }
         public void ClearAll()
         {
+	        ClearMouse();
 	        ClearHighlights();
-	        Workspace.ClearAll();
-	        WorkspaceMapper?.ClearAll();
+            MyBrain.ClearAll();
         }
 
         public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
