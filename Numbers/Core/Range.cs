@@ -86,10 +86,10 @@ namespace Numbers.Core
         public bool IsNotTouching(Range value) => !IsTouching(value);
 
 
-        public static Range operator +(Range a, double value) => new Range(a.End + value, a.Start + value);
-        public static Range operator -(Range a, double value) => new Range(a.End - value, a.Start - value);
-        public static Range operator *(Range a, double value) => new Range(a.End * value, a.Start * value);
-        public static Range operator /(Range a, double value) => new Range(value == 0 ? double.MaxValue : a.End / value, value == 0 ? double.MaxValue : a.Start / value);
+        public static Range operator +(Range a, double value) => new Range(a.Start + value, a.End + value);
+        public static Range operator -(Range a, double value) => new Range(a.Start - value, a.End - value);
+        public static Range operator *(Range a, double value) => new Range(a.Start * value, a.End * value);
+        public static Range operator /(Range a, double value) => new Range(value == 0 ? double.MaxValue : a.Start / value, value == 0 ? double.MaxValue : a.End / value);
 
         public static Range Negate(Range value) => -value;
         public static Range Add(Range left, Range right) => left + right;

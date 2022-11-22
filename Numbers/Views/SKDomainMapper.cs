@@ -222,25 +222,26 @@ namespace Numbers.Views
 	    }
         private void DrawTicks()
 	    {
-            var dr = DisplayLineRange;
+            // todo: only show major ticks if on minor tick (tick size can be larger than unit when rounding)
+            var lineRange = DisplayLineRange;
             var sign = UnitDirectionOnDomainLine;
             TickPoints.Clear();
-            for(int i = (int)dr.Start; i != (int)dr.End + sign; i += sign)
+            for(int i = (int)lineRange.Start; i != (int)lineRange.End + sign; i += sign)
             {
-	            TickPoints.Add(DrawTick(i, -8 * sign, Renderer.Pens.TickBoldPen));
-            }
+	            TickPoints.Add(DrawTick(i, -8 * sign, Renderer.Pens.TickBoldPen));  
+            }   
 
-		    var tickCount = (float)Domain.BasisNumber.AbsBasisTicks;
-		    var tickLen = BasisSegment.Length / tickCount;
-		    var showMinorTicks = Math.Abs(tickLen) >= 3;
-		    var offset = tickCount > 1 ? -8 : -16;
+            var tickCount = Domain.BasisNumber.AbsBasisTicks;
+		    var displayTickLength = BasisSegment.Length / (float)tickCount;
+		    var showMinorTicks = Math.Abs(displayTickLength) >= 3;
             if (showMinorTicks)
             {
-				var minorDr = dr * tickCount;
-                // todo: account for ticks larger than basis unit.
-	            for (int i = (int)minorDr.Min; i <= (int)minorDr.Max; i++)
+			    var tickLength = Domain.TickLength;
+			    var offset = tickLength > 1 ? -16 : -8;
+	            var rangeInTicks = Domain.ClampToNearestTick(lineRange * tickCount);
+	            for (var i = rangeInTicks.Min; i <= rangeInTicks.Max; i += tickLength)
 	            {
-		            DrawTick((i / tickCount), offset * sign, Renderer.Pens.TickPen);
+		            DrawTick(((int)i / (float)tickCount), offset * sign, Renderer.Pens.TickPen);
 	            }
             }
         }

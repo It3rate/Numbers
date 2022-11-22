@@ -92,7 +92,7 @@ namespace NumbersTests
 		    Assert.AreEqual(0, n1.EndValue);
 		    Assert.AreEqual(-30, n2.StartValue);
 		    Assert.AreEqual(20, n2.EndValue);
-		    Assert.AreEqual(-20, n3.StartValue);
+		    Assert.AreEqual(-20, n3.StartValue); 
 		    Assert.AreEqual(-30, n3.EndValue);
 		    _unitFocal.StartTickPosition = 100; // unot perspective
 		    _unitFocal.EndTickPosition = 0; // forces things to about the middle

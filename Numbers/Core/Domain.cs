@@ -43,7 +43,7 @@ namespace Numbers.Core
         public IFocal BasisFocal => MyTrait.FocalStore[BasisNumber.FocalId];
         public int BasisFocalId => BasisNumber.FocalId;
         public bool BasisIsReciprocal { get; set; }// True when ticks are larger than the unit basis
-        public long ReciprocalTickLength => BasisIsReciprocal ? Math.Min(BasisFocal.LengthInTicks, 1) : 1;
+        public long TickLength => BasisIsReciprocal ? Math.Max(BasisFocal.LengthInTicks, 1) : 1;
 
         public int MinMaxNumberId { get; set; }
         public Number MinMaxNumber => MyBrain.NumberStore[MinMaxNumberId];
@@ -63,9 +63,9 @@ namespace Numbers.Core
             MyTrait.DomainStore.Add(Id, this);
         }
         public Domain(Trait trait, FocalRef unit, FocalRef range) : this(trait.Id, unit.Id, range.Id) { }
-
         public Number CreateNumberByPositions(long start, long end) => new Number(this, start, end);
         public Number CreateNumberByValues(double start, double end) => new Number(this, new Range(start, end));
+
 
         public Range GetValueOf(IFocal focal)
         {
@@ -83,8 +83,8 @@ namespace Numbers.Core
         public void SetValueOf(IFocal focal, Range range)
         {
 	        focal.SetWithRange(range, BasisFocal);
+	        RoundToNearestTick(focal);
         }
-
         public Range GetValueOf(Number num) => GetValueOf(num.Focal);
         public void SetValueOf(Number num, Range range) => SetValueOf(num.Focal,range);
 
@@ -96,7 +96,19 @@ namespace Numbers.Core
         {
 	        var result = FocalRef.CreateByValues(MyTrait, 0,1);
 	        result.SetWithRange(range, BasisFocal);
+	        RoundToNearestTick(result);
 	        return result;
+        }
+
+        public Range ClampToNearestTick(Range range) => new Range( ClampToNearestTick((long)range.Start), ClampToNearestTick((long)range.End));
+
+        public long ClampToNearestTick(long value) => (long)(value / (double)TickLength) * TickLength;
+        public long RoundToNearestTick(long value) => (long)Math.Round(value / (double)TickLength) * TickLength;
+
+        public void RoundToNearestTick(IFocal focal)
+        {
+	        focal.StartTickPosition = RoundToNearestTick(focal.StartTickPosition);
+	        focal.EndTickPosition = RoundToNearestTick(focal.EndTickPosition);
         }
 
         public void SaveNumberValues(Dictionary<int, Range> dict, params int[] ignoreIds)

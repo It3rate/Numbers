@@ -22,7 +22,7 @@ namespace Numbers.UI
         private SKWorkspaceMapper test2(IAgent agent)
         {
             Trait trait = new Trait();
-            var unitSize = 8;
+            var unitSize = 10;
             var unit = FocalRef.CreateByValues(trait, 0, unitSize);// t0.AddFocalByUnitPositions(0, unitSize);
             var wm = new SKWorkspaceMapper(agent.Workspace, Renderer, 20, 20, 1000, 800);
             var domains = CreateDomainLines(agent.Workspace, trait, 20, 10, 30, 40, 35, 24, -4, -20);
@@ -140,6 +140,7 @@ namespace Numbers.UI
 	        for (int i = 1; i < focalPositions.Length; i += 2)
 	        {
 		        var domain = trait.AddDomain(unitFocal.Id, range.Id);
+		        domain.BasisIsReciprocal = true;
 		        result.Add(domain);
 		        var focal = FocalRef.CreateByValues(trait, focalPositions[i - 1], focalPositions[i]);
 		        var num = new Number(domain, focal.Id);

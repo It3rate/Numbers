@@ -91,7 +91,7 @@ namespace Numbers.Core
 		public Range Value //*
 		{
 			get => Focal.RangeWithBasis(BasisFocal);
-			set => Focal.SetWithRange(value, BasisFocal);// Focal.Reset(Domain.FocalFromRange(value));
+			set => Domain.SetValueOf(Focal, value);
 		}
 		public Range ValueInFullUnitPerspective => Domain.IsUnitPerspective ? new Range(-StartValue, EndValue) : new Range(StartValue, -EndValue);
 		public Range ValueInFullUnotPerspective => Domain.IsUnitPerspective ? new Range(StartValue, -EndValue) : new Range(-StartValue, EndValue);
