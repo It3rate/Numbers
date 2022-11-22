@@ -52,32 +52,32 @@ namespace NumbersTests
 		    Assert.AreEqual(-1.5, n3.EndValue);
 		    _unitFocal.EndTickPosition = -20;
 		    Assert.AreEqual(0, n0.StartValue);
-		    Assert.AreEqual(-1, n0.EndValue);
-		    Assert.AreEqual(1, n1.StartValue);
+		    Assert.AreEqual(1, n0.EndValue);
+		    Assert.AreEqual(-1, n1.StartValue);
 		    Assert.AreEqual(0, n1.EndValue);
-		    Assert.AreEqual(-1.5, n2.StartValue);
-		    Assert.AreEqual(-1, n2.EndValue);
-		    Assert.AreEqual(-1, n3.StartValue);
-		    Assert.AreEqual(1.5, n3.EndValue);
+		    Assert.AreEqual(1.5, n2.StartValue);
+		    Assert.AreEqual(1, n2.EndValue);
+		    Assert.AreEqual(1, n3.StartValue);
+		    Assert.AreEqual(-1.5, n3.EndValue);
 		    _unitFocal.StartTickPosition = -10; // unot perspective
-		    Assert.AreEqual(1, n0.StartValue);
-		    Assert.AreEqual(-3, n0.EndValue);
-		    Assert.AreEqual(3, n1.StartValue);
-		    Assert.AreEqual(-1, n1.EndValue);
-		    Assert.AreEqual(-2, n2.StartValue);
-		    Assert.AreEqual(-3, n2.EndValue);
-		    Assert.AreEqual(-1, n3.StartValue);
-		    Assert.AreEqual(2, n3.EndValue);
+		    Assert.AreEqual(-1, n0.StartValue);
+		    Assert.AreEqual(3, n0.EndValue);
+		    Assert.AreEqual(-3, n1.StartValue);
+		    Assert.AreEqual(1, n1.EndValue);
+		    Assert.AreEqual(2, n2.StartValue);
+		    Assert.AreEqual(3, n2.EndValue);
+		    Assert.AreEqual(1, n3.StartValue);
+		    Assert.AreEqual(-2, n3.EndValue);
 		    _unitFocal.StartTickPosition = 2000; // unot perspective
             _unitFocal.EndTickPosition = -2000; // forces things to about the middle
-            Assert.AreEqual(-.5, n0.StartValue);
-            Assert.AreEqual(0.495, n0.EndValue);
-            Assert.AreEqual(-0.495, n1.StartValue);
-            Assert.AreEqual(0.5, n1.EndValue);
-            Assert.AreEqual(-0.5075, n2.StartValue);
-            Assert.AreEqual(0.495, n2.EndValue);
-            Assert.AreEqual(-0.505, n3.StartValue);
-            Assert.AreEqual(0.5075, n3.EndValue);
+            Assert.AreEqual(.5, n0.StartValue);
+            Assert.AreEqual(-0.495, n0.EndValue);
+            Assert.AreEqual(0.495, n1.StartValue);
+            Assert.AreEqual(-0.5, n1.EndValue);
+            Assert.AreEqual(0.5075, n2.StartValue);
+            Assert.AreEqual(-0.495, n2.EndValue);
+            Assert.AreEqual(0.505, n3.StartValue);
+            Assert.AreEqual(-0.5075, n3.EndValue);
         }
 	    [TestMethod]
 	    public void UnitChangeValueTests()
@@ -96,14 +96,14 @@ namespace NumbersTests
 		    Assert.AreEqual(-30, n3.EndValue);
 		    _unitFocal.StartTickPosition = 100; // unot perspective
 		    _unitFocal.EndTickPosition = 0; // forces things to about the middle
-		    Assert.AreEqual(-1, n0.StartValue);
-		    Assert.AreEqual(-1, n0.EndValue);
-		    Assert.AreEqual(-3, n1.StartValue);
-		    Assert.AreEqual(1, n1.EndValue);
-		    Assert.AreEqual(2, n2.StartValue);
-		    Assert.AreEqual(-1, n2.EndValue);
-		    Assert.AreEqual(1, n3.StartValue);
-		    Assert.AreEqual(4, n3.EndValue);
+		    Assert.AreEqual(1, n0.StartValue);
+		    Assert.AreEqual(1, n0.EndValue);
+		    Assert.AreEqual(3, n1.StartValue);
+		    Assert.AreEqual(-1, n1.EndValue);
+		    Assert.AreEqual(-2, n2.StartValue);
+		    Assert.AreEqual(1, n2.EndValue);
+		    Assert.AreEqual(-1, n3.StartValue);
+		    Assert.AreEqual(-4, n3.EndValue);
         }
 
         [TestMethod]
@@ -122,9 +122,9 @@ namespace NumbersTests
 		    var f5 = FocalRef.CreateByValues(_trait, 53, 69);
 		    var n5 = new Number(_domain, f5.Id);
 
-		    Assert.AreEqual(n0.Kind, MathElementKind.Number);
+		    Assert.AreEqual(MathElementKind.Number, n0.Kind);
 		    var n0b = n0.Clone();
-		    Assert.AreEqual(n0, n0b);
+		    Assert.AreEqual(n0b, n0);
 		    n0b.Add(n3);
 		    Assert.AreNotEqual(n0, n0b);
 
@@ -134,35 +134,35 @@ namespace NumbersTests
 		    Assert.AreEqual(n1.DomainId, n0.Domain.Id);
 		    Assert.AreEqual(n0.StartValue, n1.StartValue, MathF.tolerance);
 		    Assert.AreEqual(n1.EndValue, n1.Focal.LengthInTicks / (double) n1.BasisTicks);
-		    Assert.AreEqual(n3.RemainderStartValue, 0, MathF.tolerance);
-		    Assert.AreEqual(n3.RemainderEndValue, 5, MathF.tolerance);
-		    Assert.AreEqual(n2.RemainderStartValue, 2, MathF.tolerance);
-		    Assert.AreEqual(n2.RemainderEndValue, 0, MathF.tolerance);
+		    Assert.AreEqual(0, n3.RemainderStartValue, MathF.tolerance);
+		    Assert.AreEqual(5, n3.RemainderEndValue, MathF.tolerance);
+		    Assert.AreEqual(2, n2.RemainderStartValue, MathF.tolerance);
+		    Assert.AreEqual(0, n2.RemainderEndValue, MathF.tolerance);
 
-		    Assert.AreEqual(n2.CeilingRange.Start, 3, MathF.tolerance);
-		    Assert.AreEqual(n2.CeilingRange.End, 0, MathF.tolerance);
-		    Assert.AreEqual(n3.FloorRange.Start, 5, MathF.tolerance);
-		    Assert.AreEqual(n3.FloorRange.End, 4, MathF.tolerance);
-		    Assert.AreEqual(n5.RoundedRange.Start, -5, MathF.tolerance);
-		    Assert.AreEqual(n5.RoundedRange.End, 7, MathF.tolerance);
-		    Assert.AreEqual(n5.RemainderRange.Start, -0.3, MathF.tolerance);
-		    Assert.AreEqual(n5.RemainderRange.End, 0.9, MathF.tolerance);
+		    Assert.AreEqual(3, n2.CeilingRange.Start, MathF.tolerance);
+		    Assert.AreEqual(0, n2.CeilingRange.End, MathF.tolerance);
+		    Assert.AreEqual(5, n3.FloorRange.Start, MathF.tolerance);
+		    Assert.AreEqual(4, n3.FloorRange.End, MathF.tolerance);
+		    Assert.AreEqual(-5, n5.RoundedRange.Start, MathF.tolerance);
+		    Assert.AreEqual(7, n5.RoundedRange.End, MathF.tolerance);
+		    Assert.AreEqual(-0.3, n5.RemainderRange.Start, MathF.tolerance);
+		    Assert.AreEqual(0.9, n5.RemainderRange.End, MathF.tolerance);
 
 		    Assert.IsFalse(n3.IsUnit);
 		    Assert.IsTrue(_domain.BasisNumber.IsUnit);
 		    Assert.IsTrue(n4.IsUnitPerspective);
 		    Assert.IsFalse(n4.IsUnotPerspective);
-		    Assert.AreEqual(n3.RangeInMinMax.Start, 0.472636, MathF.tolerance);
-		    Assert.AreEqual(n3.RangeInMinMax.End, 0.519900, MathF.tolerance);
+		    Assert.AreEqual(0.472636, n3.RangeInMinMax.Start, MathF.tolerance);
+		    Assert.AreEqual(0.519900, n3.RangeInMinMax.End, MathF.tolerance);
 
 		    n1.Subtract(n2);
-		    Assert.AreEqual(n1.Value, new Range(-3.2, 3));
+		    Assert.AreEqual(new Range(-3.2, 3), n1.Value);
 		    n2.Add(n3);
-		    Assert.AreEqual(n3.Value, new Range(5, 4.5));
+		    Assert.AreEqual(new Range(5, 4.5), n3.Value);
 		    n3.Multiply(n4);
-		    Assert.AreEqual(n3.Value, new Range(-45, 4.8));
+		    Assert.AreEqual(new Range(-45, 4.7), n3.Value);
 		    n4.Divide(n5);
-		    Assert.AreEqual(n4.Value, new Range(-0.8, -0.1));
+		    Assert.AreEqual(new Range(-0.7, 0.0), n4.Value);
 	    }
     }
 

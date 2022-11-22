@@ -42,6 +42,8 @@ namespace Numbers.Core
         public Number BasisNumber => MyBrain.NumberStore[BasisNumberId];
         public IFocal BasisFocal => MyTrait.FocalStore[BasisNumber.FocalId];
         public int BasisFocalId => BasisNumber.FocalId;
+        public bool BasisIsReciprocal { get; set; }// True when ticks are larger than the unit basis
+        public long ReciprocalTickLength => BasisIsReciprocal ? Math.Min(BasisFocal.LengthInTicks, 1) : 1;
 
         public int MinMaxNumberId { get; set; }
         public Number MinMaxNumber => MyBrain.NumberStore[MinMaxNumberId];
@@ -65,10 +67,31 @@ namespace Numbers.Core
         public Number CreateNumberByPositions(long start, long end) => new Number(this, start, end);
         public Number CreateNumberByValues(double start, double end) => new Number(this, new Range(start, end));
 
+        public Range GetValueOf(IFocal focal)
+        {
+            Range result;
+            if (BasisIsReciprocal)
+            {
+	            result = focal.ReciprocalBasisRange(BasisFocal);
+            }
+            else
+            {
+	            result = focal.RangeWithBasis(BasisFocal);
+            }
+            return result;
+        }
+        public void SetValueOf(IFocal focal, Range range)
+        {
+	        focal.SetWithRange(range, BasisFocal);
+        }
+
+        public Range GetValueOf(Number num) => GetValueOf(num.Focal);
+        public void SetValueOf(Number num, Range range) => SetValueOf(num.Focal,range);
+
         public double ValueFromStartTickPosition(long startPos) => (BasisFocal.StartTickPosition - startPos) / (double)BasisFocal.LengthInTicks;
         public double ValueFromEndTickPosition(long endPos) => (endPos - BasisFocal.StartTickPosition) / (double)BasisFocal.LengthInTicks;
-        public long StartTickPositionFrom(double value) => (long)-Math.Round(value * BasisFocal.LengthInTicks) + BasisFocal.StartTickPosition;
-        public long EndTickPositionFrom(double value) => (long)Math.Round(value * BasisFocal.LengthInTicks) + BasisFocal.StartTickPosition;
+        public long StartTickPositionFrom(double value) => (long)Math.Round(-value * BasisFocal.AbsLengthInTicks) + BasisFocal.StartTickPosition;
+        public long EndTickPositionFrom(double value) => (long)Math.Round(value * BasisFocal.AbsLengthInTicks) + BasisFocal.StartTickPosition;
         public FocalRef FocalFromRange(Range range)
         {
 	        var result = FocalRef.CreateByValues(MyTrait, 0,1);

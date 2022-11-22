@@ -201,7 +201,40 @@ namespace Numbers.UI
 			    }
 		    }
 	    }
-	    public SKBitmap GenerateBitmap(int width, int height)
+	    public void DrawFraction((string, string) parts, SKPoint txtPoint, SKPaint txtPaint, SKPaint txtBkgPen)
+	    {
+		    var whole = parts.Item1;
+		    var fraction = parts.Item2;
+		    var fractionPen = Pens.TextFractionPen;
+		    if (fraction != "")
+		    {
+			    fractionPen.Color = txtPaint.Color;
+			    if (whole == "")
+			    {
+				    fractionPen.TextAlign = SKTextAlign.Center;
+				    DrawText(txtPoint, fraction, fractionPen, txtBkgPen);
+				    fractionPen.TextAlign = SKTextAlign.Left;
+			    }
+			    else
+			    {
+				    var txtAlign = txtPaint.TextAlign;
+				    txtPaint.TextAlign = SKTextAlign.Right;
+				    var wRect = GetTextBackgroundSize(0, 0, whole, txtPaint);
+				    var fRect = GetTextBackgroundSize(0, 0, fraction, Pens.TextFractionPen);
+				    DrawText(txtPoint, whole, txtPaint, null);
+				    var fPoint = new SKPoint(txtPoint.X - 2, txtPoint.Y);
+				    DrawText(fPoint, fraction, fractionPen, null);
+				    wRect.Union(fRect);
+				    DrawTextBackground(wRect, txtBkgPen);
+				    txtPaint.TextAlign = txtAlign;
+			    }
+		    }
+		    else
+		    {
+			    DrawText(txtPoint, whole, txtPaint, txtBkgPen);
+		    }
+	    }
+        public SKBitmap GenerateBitmap(int width, int height)
 	    {
 		    Bitmap = new SKBitmap(width, height);
 		    return Bitmap;

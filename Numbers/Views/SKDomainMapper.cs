@@ -149,47 +149,13 @@ namespace Numbers.Views
             if (ShowFractions)
 		    {
 			    var parts = GetFractionText(num, isStart, suffix);
-                DrawFraction(parts, txtPoint, txtPaint, txtBkgPen);
+                Renderer.DrawFraction(parts, txtPoint, txtPaint, txtBkgPen);
             }
 		    else
 		    {
 				var txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
 				Renderer.DrawText(txtPoint, txt, txtPaint, txtBkgPen);
             }
-        }
-
-        private void DrawFraction((string, string)parts, SKPoint txtPoint, SKPaint txtPaint, SKPaint txtBkgPen)
-        {
-	        var whole = parts.Item1;
-	        var fraction = parts.Item2;
-	        var fracPen = Pens.TextFractionPen;
-	        if (fraction != "")
-	        {
-		        fracPen.Color = txtPaint.Color;
-		        if (whole == "")
-		        {
-					fracPen.TextAlign = SKTextAlign.Center;
-			        Renderer.DrawText(txtPoint, fraction, fracPen, txtBkgPen);
-			        fracPen.TextAlign = SKTextAlign.Left;
-                }
-		        else
-		        {
-			        var txtAlign = txtPaint.TextAlign;
-			        txtPaint.TextAlign = SKTextAlign.Right;
-			        var wRect = Renderer.GetTextBackgroundSize(0, 0, whole, txtPaint);
-			        var fRect = Renderer.GetTextBackgroundSize(0, 0, fraction, Pens.TextFractionPen);
-			        Renderer.DrawText(txtPoint, whole, txtPaint, null);
-			        var fPoint = new SKPoint(txtPoint.X - 2, txtPoint.Y);
-			        Renderer.DrawText(fPoint, fraction, fracPen, null);
-			        wRect.Union(fRect);
-			        Renderer.DrawTextBackground(wRect, txtBkgPen);
-			        txtPaint.TextAlign = txtAlign;
-		        }
-	        }
-	        else
-	        {
-		        Renderer.DrawText(txtPoint, whole, txtPaint, txtBkgPen);
-	        }
         }
 
         private (string, string) GetFractionText(Number num, bool isStart, string suffix)
@@ -267,12 +233,14 @@ namespace Numbers.Views
 		    var tickCount = (float)Domain.BasisNumber.AbsBasisTicks;
 		    var tickLen = BasisSegment.Length / tickCount;
 		    var showMinorTicks = Math.Abs(tickLen) >= 3;
+		    var offset = tickCount > 1 ? -8 : -16;
             if (showMinorTicks)
             {
 				var minorDr = dr * tickCount;
+                // todo: account for ticks larger than basis unit.
 	            for (int i = (int)minorDr.Min; i <= (int)minorDr.Max; i++)
 	            {
-		            DrawTick((i / tickCount), -8 * sign, Renderer.Pens.TickPen);
+		            DrawTick((i / tickCount), offset * sign, Renderer.Pens.TickPen);
 	            }
             }
         }

@@ -177,6 +177,7 @@ namespace Numbers.UI
 		            if (activeKind.IsBasis())
 		            {
 			            nm.SetValueByKind(_highlight.SnapPoint, activeKind);
+			            LockBasisOnDrag = _isControlDown;
 			            if (LockBasisOnDrag)
 			            {
 				            nm.AdjustBySegmentChange(SelBegin);

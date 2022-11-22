@@ -22,6 +22,7 @@ namespace Numbers.Core
         Range RangeAsBasis(IFocal nonBasis);
         void SetWithRange(Range range);
         void SetWithRange(Range range, IFocal basis);
+        Range ReciprocalBasisRange(IFocal basis);
         Range UnitTRangeIn(IFocal basis);
         IFocal Clone();
     }
@@ -122,12 +123,19 @@ namespace Numbers.Core
         public void SetWithRange(Range range, IFocal basis)
         {
 	        var len = (double)(basis.AbsLengthInTicks);
-	        var sp = (long) (-range.Start * len);
-	        var ep = (long) (range.End * len);
+	        var sp = (long) (-range.Start * len + basis.StartTickPosition);
+	        var ep = (long) (range.End * len + basis.StartTickPosition);
             StartTickPosition = sp;
 	        EndTickPosition = ep;
         }
 
+        public Range ReciprocalBasisRange(IFocal basis)
+        {
+	        var len = (double)basis.NonZeroLength;
+	        var st = Math.Round((StartTickPosition - basis.StartTickPosition) / len) * len;
+	        var et = Math.Round((EndTickPosition - basis.StartTickPosition) / len) * len;
+            return new Range(st, et);
+        }
 
         public Range UnitTRangeIn(IFocal basis)
 	    {

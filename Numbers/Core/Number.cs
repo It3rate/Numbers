@@ -88,25 +88,25 @@ namespace Numbers.Core
 			get => Value.End;//Domain.ValueFromEndTickPosition(EndTickPosition); // Value.End is a little less efficient
             set => Value = new Range(Value.Start, value); //EndTicks = Domain.EndTickPositionFrom(value);
         }
-		public Range Value
+		public Range Value //*
 		{
 			get => Focal.RangeWithBasis(BasisFocal);
 			set => Focal.SetWithRange(value, BasisFocal);// Focal.Reset(Domain.FocalFromRange(value));
 		}
 		public Range ValueInFullUnitPerspective => Domain.IsUnitPerspective ? new Range(-StartValue, EndValue) : new Range(StartValue, -EndValue);
-		//public Range ValueInUnotPerspective => new Range(EndValue, -StartValue);
+		public Range ValueInFullUnotPerspective => Domain.IsUnitPerspective ? new Range(StartValue, -EndValue) : new Range(-StartValue, EndValue);
 
-		public long WholeStartValue => (long) StartValue;
+        public long WholeStartValue => (long)StartValue;
 		public long WholeEndValue => (long)EndValue;
-		public long RemainderStartValue => Math.Abs(StartTicks % BasisTicks);
-		public long RemainderEndValue => Math.Abs(EndTicks % BasisTicks);
+		public long RemainderStartValue => Math.Abs(StartTicks % BasisFocal.NonZeroLength); //*
+		public long RemainderEndValue => Math.Abs(EndTicks % BasisFocal.NonZeroLength); //*
 
 		public Range FloorRange => new Range(Math.Ceiling(StartValue), Math.Floor(EndValue));
 		public Range CeilingRange => new Range(Math.Floor(StartValue), Math.Ceiling(EndValue));
 		public Range RoundedRange => new Range(Math.Round(StartValue), Math.Round(EndValue));
 		public Range RemainderRange => Value - FloorRange;
 
-		public Range RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal);
+		public Range RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal); //*
 
 	// Operations with segments and units allow moving the unit around freely, so for example,
         // you can shift a segment by aligning the unit with start or end,

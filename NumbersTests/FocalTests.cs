@@ -7,52 +7,73 @@ namespace NumbersTests
     [TestClass]
     public class FocalTests
     {
+	    private Trait _trait;
+
+	    [TestInitialize]
+	    public void Init()
+	    {
+		    _trait = new Trait();
+	    }
+
         [TestMethod]
+	    public void ReciprocalFocalTests()
+	    {
+		    IFocal f0 = FocalRef.CreateByValues(_trait, 0, 10);
+		    IFocal f1 = FocalRef.CreateByValues(_trait, 132, 287);
+		    Assert.AreEqual(-13.2, f1.RangeWithBasis(f0).Start);
+		    Assert.AreEqual(28.7, f1.RangeWithBasis(f0).End);
+		    Assert.AreEqual(130, f1.ReciprocalBasisRange(f0).Start);
+		    Assert.AreEqual(290, f1.ReciprocalBasisRange(f0).End);
+        }
+
+	    [TestMethod]
         public void CoreFocalTests()
         {
-            var trait = new Trait();
-            IFocal f = FocalRef.CreateByValues(trait, 150, 250);
-            Assert.AreEqual(f.Kind, MathElementKind.Focal);
-            Assert.AreEqual(f.StartTickPosition, 150);
-            Assert.AreEqual(f.EndTickPosition, 250);
-            Assert.AreEqual(f.LengthInTicks, 100);
-            Assert.AreEqual(f.Direction, 1);
-            Assert.AreEqual(f.NonZeroLength, 100);
-            Assert.AreEqual(f.AbsLengthInTicks, 100);
+            IFocal f = FocalRef.CreateByValues(_trait, 150, 250);
+            Assert.AreEqual(MathElementKind.Focal, f.Kind);
+            Assert.AreEqual(150, f.StartTickPosition);
+            Assert.AreEqual(250, f.EndTickPosition);
+            Assert.AreEqual(100, f.LengthInTicks);
+            Assert.AreEqual(1, f.Direction);
+            Assert.AreEqual(100, f.NonZeroLength);
+            Assert.AreEqual(100, f.AbsLengthInTicks);
             var f2 = f.Clone();
             Assert.AreNotEqual(f.Id, f2.Id);
-            Assert.AreEqual(f.StartTickPosition, f2.StartTickPosition);
+            Assert.AreEqual(f2.StartTickPosition, f.StartTickPosition);
             Assert.AreEqual(f.EndTickPosition, f2.EndTickPosition);
 
-            Assert.AreEqual(f2.RangeWithBasis(f), new Range(0, 1));
+            Assert.AreEqual(new Range(0, 1), f2.RangeWithBasis(f));
 
             f2.StartTickPosition = 450;
-            Assert.AreEqual(f2.StartTickPosition, 450);
-            Assert.AreEqual(f2.EndTickPosition, 250);
-            Assert.AreEqual(f2.LengthInTicks, -200);
-            Assert.AreEqual(f2.Direction, -1);
-            Assert.AreEqual(f2.NonZeroLength, -200);
-            Assert.AreEqual(f2.AbsLengthInTicks, 200);
+            Assert.AreEqual(450, f2.StartTickPosition);
+            Assert.AreEqual(250, f2.EndTickPosition);
+            Assert.AreEqual(-200, f2.LengthInTicks);
+            Assert.AreEqual(-1, f2.Direction);
+            Assert.AreEqual(-200, f2.NonZeroLength);
+            Assert.AreEqual(200, f2.AbsLengthInTicks);
 
             // f:[150,250] f2[450,250]
-            Assert.AreEqual(f2.RangeWithBasis(f), new Range(-3, 1));
-            Assert.AreEqual(f.RangeAsBasis(f2), new Range(-3, 1));
-            Assert.AreEqual(f2.RangeAsBasis(f), new Range(-1.5, 1));
-            Assert.AreEqual(f.RangeWithBasis(f2), new Range(-1.5, 1));
+            Assert.AreEqual(new Range(-3, 1), f2.RangeWithBasis(f));
+            Assert.AreEqual(new Range(-3, 1), f.RangeAsBasis(f2));
+            Assert.AreEqual(new Range(1.5, -1), f2.RangeAsBasis(f));
+            Assert.AreEqual(new Range(1.5, -1), f.RangeWithBasis(f2));
+            // f:[150,250] f2[500,250]
             f2.StartTickPosition = 500;
-            Assert.AreEqual(f2.RangeWithBasis(f), new Range(-3.5, 1));
-            Assert.AreEqual(f.RangeAsBasis(f2), new Range(-3.5, 1));
-            Assert.AreEqual(f2.RangeAsBasis(f), new Range(-1.4, 1));
-            Assert.AreEqual(f.RangeWithBasis(f2), new Range(-1.4, 1));
+            Assert.AreEqual(new Range(-3.5, 1), f2.RangeWithBasis(f));
+            Assert.AreEqual(new Range(-3.5, 1), f.RangeAsBasis(f2));
+            Assert.AreEqual(new Range(1.4, -1), f2.RangeAsBasis(f));
+            Assert.AreEqual(new Range(1.4, -1), f.RangeWithBasis(f2));
 
+            // f:[150,250] f2[-150,250]
             f2.StartTickPosition = -150;
-            Assert.AreEqual(f2.RangeWithBasis(f), new Range(3, 1));
-            Assert.AreEqual(f.RangeWithBasis(f2), new Range(-0.75, 1));
+            Assert.AreEqual(new Range(3, 1), f2.RangeWithBasis(f));
+            Assert.AreEqual(new Range(-0.75, 1), f.RangeWithBasis(f2));
 
+            // f:[150,250] f2[-150,-150]
             f2.EndTickPosition = -150;
-            Assert.AreEqual(f2.LengthInTicks, 0);
-            Assert.AreEqual(f2.NonZeroLength, 1);
-            Assert.AreEqual(f2.AbsLengthInTicks, 0);
+            Assert.AreEqual(0, f2.LengthInTicks);
+            Assert.AreEqual(1, f2.NonZeroLength);
+            Assert.AreEqual(0, f2.AbsLengthInTicks);
 
         }
     }
