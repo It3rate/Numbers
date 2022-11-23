@@ -22,8 +22,8 @@ namespace NumbersTests
 		    IFocal f1 = FocalRef.CreateByValues(_trait, 132, 287);
 		    Assert.AreEqual(-13.2, f1.RangeWithBasis(f0).Start);
 		    Assert.AreEqual(28.7, f1.RangeWithBasis(f0).End);
-		    Assert.AreEqual(130, f1.ReciprocalBasisRange(f0).Start);
-		    Assert.AreEqual(290, f1.ReciprocalBasisRange(f0).End);
+		    Assert.AreEqual(130, f1.RangeWithReciprocalBasis(f0).Start);
+		    Assert.AreEqual(290, f1.RangeWithReciprocalBasis(f0).End);
         }
 
 	    [TestMethod]

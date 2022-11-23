@@ -76,6 +76,7 @@ namespace Numbers.Views
         }
 
         public float Length => (float)Math.Sqrt((EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y));
+        public float AbsLength => (float)Math.Abs(Length);
         public float LengthSquared => (EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y);
         public float NonZeroLength => Length == 0 ? 0.001f : Length;
         public SKPoint PointAlongLine(float t, float offsetT = 0)

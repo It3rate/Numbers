@@ -22,14 +22,14 @@ namespace Numbers.UI
         private SKWorkspaceMapper test2(IAgent agent)
         {
             Trait trait = new Trait();
-            var unitSize = 10;
+            var unitSize = 4;
             var unit = FocalRef.CreateByValues(trait, 0, unitSize);// t0.AddFocalByUnitPositions(0, unitSize);
             var wm = new SKWorkspaceMapper(agent.Workspace, Renderer, 20, 20, 1000, 800);
-            var domains = CreateDomainLines(agent.Workspace, trait, 20, 10, 30, 40, 35, 24, -4, -20);
-            var d2 = domains[2];
-            var d1n2 = MyBrain.NumberStore[domains[1].NumberIds[2]];
-            var nn = new Number(d2, d1n2.FocalId);
-            agent.Workspace.AddElements(nn);
+            var domains = CreateDomainLines(agent.Workspace, trait, -15, 10);//, 30, 40, 35, 24, -4, -20);
+            //var d2 = domains[2];
+            //var d1n2 = MyBrain.NumberStore[domains[1].NumberIds[2]];
+            //var nn = new Number(d2, d1n2.FocalId);
+            //agent.Workspace.AddElements(nn);
             return wm;
         }
         private SKWorkspaceMapper test0(IAgent agent)
@@ -140,17 +140,17 @@ namespace Numbers.UI
 	        for (int i = 1; i < focalPositions.Length; i += 2)
 	        {
 		        var domain = trait.AddDomain(unitFocal.Id, range.Id);
-		        domain.BasisIsReciprocal = true;
+		        //domain.BasisIsReciprocal = true;
 		        result.Add(domain);
 		        var focal = FocalRef.CreateByValues(trait, focalPositions[i - 1], focalPositions[i]);
 		        var num = new Number(domain, focal.Id);
 		        workspace.AddDomains(true, domain);
 		        var displaySeg = wm.GetHorizontalSegment(yt, 100);
 		        var y = displaySeg.StartPoint.Y;
-		        var unitStart = (-minPos / rangeLen) * displaySeg.Length + displaySeg.StartPoint.X;
-		        var unitEnd = ((-minPos + unitFocal.LengthInTicks) / rangeLen) * displaySeg.Length + displaySeg.StartPoint.X;
-		        var unitSeg = new SKSegment((float)unitStart, y, (float)unitEnd, y);
-		        var dm = wm.GetOrCreateDomainMapper(domain, displaySeg, unitSeg);
+
+		        var unitSeg = displaySeg.SegmentAlongLine(0.45f, 0.55f);
+		        //var unitSeg = new SKSegment((float)unitStart, y, (float)unitStart + 20f, y);
+                var dm = wm.GetOrCreateDomainMapper(domain, displaySeg, unitSeg);
 		        dm.ShowGradientNumberLine = true;
 		        dm.ShowNumberOffsets = true;
 		        dm.ShowBasisMarkers = true;

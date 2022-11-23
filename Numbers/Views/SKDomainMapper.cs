@@ -222,30 +222,40 @@ namespace Numbers.Views
 	    }
         private void DrawTicks()
 	    {
-            // todo: only show major ticks if on minor tick (tick size can be larger than unit when rounding)
-            var lineRange = DisplayLineRange;
-            var sign = UnitDirectionOnDomainLine;
-            TickPoints.Clear();
-            for(int i = (int)lineRange.Start; i != (int)lineRange.End + sign; i += sign)
-            {
-	            TickPoints.Add(DrawTick(i, -8 * sign, Renderer.Pens.TickBoldPen));  
-            }   
-
+		    if (BasisSegment.AbsLength < 4)
+		    {
+			    return;
+		    }
+            var offsetRange = -8f;
             var tickCount = Domain.BasisNumber.AbsBasisTicks;
-		    var displayTickLength = BasisSegment.Length / (float)tickCount;
-		    var showMinorTicks = Math.Abs(displayTickLength) >= 3;
+            var tickToBasisRatio = Domain.TickToBasisRatio;
+            var upDir = UnitDirectionOnDomainLine;
+            // basis ticks
+            var rangeInBasis = DisplayLineRange.ClampInner(); 
+            TickPoints.Clear();
+            for (long i = (long)rangeInBasis.Min; i <= (long)rangeInBasis.Max; i++)
+            {
+	            var isOnTick = tickToBasisRatio <= 1.0 || (long)(i / tickToBasisRatio) * (long)tickToBasisRatio == i;
+	            var offset = isOnTick ? offsetRange : offsetRange / 8f;
+                TickPoints.Add(DrawTick((float)i, offset * upDir, Renderer.Pens.TickBoldPen));  
+            }
+
+            // minor ticks
+            var rangeInTicks = Domain.ClampToInnerTick(DisplayLineRange);
+		    var showMinorTicks = Math.Abs(BasisSegment.Length / tickToBasisRatio) >= 3; // don't show tiny ticks
             if (showMinorTicks)
             {
-			    var tickLength = Domain.TickLength;
-			    var offset = tickLength > 1 ? -16 : -8;
-	            var rangeInTicks = Domain.ClampToNearestTick(lineRange * tickCount);
-	            for (var i = rangeInTicks.Min; i <= rangeInTicks.Max; i += tickLength)
+			    var offset = Domain.BasisIsReciprocal ? offsetRange * 2.5f : offsetRange;
+	            for (var i = rangeInTicks.Min; i <= rangeInTicks.Max; i += Math.Abs(tickToBasisRatio))
 	            {
-		            DrawTick(((int)i / (float)tickCount), offset * sign, Renderer.Pens.TickPen);
+		            if (i != 0) // don't draw tick on origin
+		            {
+			            DrawTick((float)i, offset * upDir, Renderer.Pens.TickPen);
+                    }
 	            }
             }
         }
-        private SKPoint DrawTick(float t, int offset, SKPaint paint)
+        private SKPoint DrawTick(float t, float offset, SKPaint paint)
         {
 	        var pts = BasisSegment.PerpendicularLine(t, offset);
 	        Renderer.DrawLine(pts.Item1, pts.Item2, paint);

@@ -52,7 +52,7 @@ namespace Numbers.Core
 			MyBrain.NumberStore.Add(Id, this);
 		}
 
-		public Number(Domain domain, Range value) : this(domain, domain.FocalFromRange(value).Id) { }
+		public Number(Domain domain, Range value) : this(domain, domain.CreateFocalFromRange(value).Id) { }
 		public Number(Domain domain, long start, long end) : this(domain, FocalRef.CreateByValues(domain.MyTrait, start, end).Id) { }
 
         private long StartTickPosition
@@ -90,23 +90,23 @@ namespace Numbers.Core
         }
 		public Range Value //*
 		{
-			get => Focal.RangeWithBasis(BasisFocal);
+			get => Domain.GetValueOf(Focal); //Focal.RangeWithBasis(BasisFocal);
 			set => Domain.SetValueOf(Focal, value);
 		}
-		public Range ValueInFullUnitPerspective => Domain.IsUnitPerspective ? new Range(-StartValue, EndValue) : new Range(StartValue, -EndValue);
-		public Range ValueInFullUnotPerspective => Domain.IsUnitPerspective ? new Range(StartValue, -EndValue) : new Range(-StartValue, EndValue);
+		public Range ValueInFullUnitPerspective => Domain.IsUnitPerspective ? new Range(-StartValue, EndValue) : new Range(StartValue, -EndValue); //*
+		public Range ValueInFullUnotPerspective => Domain.IsUnitPerspective ? new Range(StartValue, -EndValue) : new Range(-StartValue, EndValue); //*
 
         public long WholeStartValue => (long)StartValue;
 		public long WholeEndValue => (long)EndValue;
-		public long RemainderStartValue => Math.Abs(StartTicks % BasisFocal.NonZeroLength); //*
-		public long RemainderEndValue => Math.Abs(EndTicks % BasisFocal.NonZeroLength); //*
+		public long RemainderStartValue => Math.Abs(StartTicks % BasisFocal.NonZeroLength); // these should probably should account for BasisIsReciprocal,
+        public long RemainderEndValue => Math.Abs(EndTicks % BasisFocal.NonZeroLength); // but there are no fractions when ticks are larger than the basis
+		public Range RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal); //*
 
 		public Range FloorRange => new Range(Math.Ceiling(StartValue), Math.Floor(EndValue));
 		public Range CeilingRange => new Range(Math.Floor(StartValue), Math.Ceiling(EndValue));
 		public Range RoundedRange => new Range(Math.Round(StartValue), Math.Round(EndValue));
 		public Range RemainderRange => Value - FloorRange;
 
-		public Range RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal); //*
 
 	// Operations with segments and units allow moving the unit around freely, so for example,
         // you can shift a segment by aligning the unit with start or end,

@@ -69,6 +69,9 @@ namespace Numbers.Core
         public Range Square() => Range.Square(this);
         public Range Normalize() => Range.Normalize(this);
         public Range NormalizeTo(Range value) => Range.NormalizeTo(this, value);
+        public Range ClampInner() => Range.ClampInner(this);
+        public Range ClampOuter() => Range.ClampOuter(this);
+        public Range Round() => Range.Round(this);
 
         public bool IsZero => End == 0 && Start == 0;
         public bool IsZeroLength => (End == Start);
@@ -124,6 +127,10 @@ namespace Numbers.Core
         public static Range Square(Range a) => new Range(a.Start * a.Start + (a.End * a.End) * -1, 0); // value * value;
         public static Range Normalize(Range value) => value.IsZeroLength ? new Range(0.5, 0.5) : value / value;
         public static Range NormalizeTo(Range from, Range to) => from.Normalize() * to;
+
+        public static Range ClampInner(Range value) => new Range(Math.Floor(Math.Abs(value.Start)) * Math.Sign(value.Start), Math.Floor(Math.Abs(value.End)) * Math.Sign(value.End));
+        public static Range ClampOuter(Range value) => new Range(Math.Ceiling(Math.Abs(value.Start)) * Math.Sign(value.Start), Math.Ceiling(Math.Abs(value.End)) * Math.Sign(value.End));
+        public static Range Round(Range value) => new Range(Math.Round(value.Start), Math.Round(value.End));
 
         public static double Abs(Range value)
         {

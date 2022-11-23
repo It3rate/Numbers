@@ -18,11 +18,11 @@ namespace Numbers.Core
         FocalPositions FocalPositions { get; set; }
         void Reset(long start, long end);
         void Reset(IFocal focal);
-        Range RangeWithBasis(IFocal basis);
         Range RangeAsBasis(IFocal nonBasis);
-        void SetWithRange(Range range);
-        void SetWithRange(Range range, IFocal basis);
-        Range ReciprocalBasisRange(IFocal basis);
+
+        Range GetRangeWithBasis(IFocal basis, bool isReciprocal);
+        void SetWithRangeAndBasis(Range range, IFocal basis, bool isReciprocal);
+
         Range UnitTRangeIn(IFocal basis);
         IFocal Clone();
     }
@@ -54,7 +54,7 @@ namespace Numbers.Core
 	    public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
 	    public long LengthInTicks => EndTickPosition - StartTickPosition;
 	    public long AbsLengthInTicks => Math.Abs(LengthInTicks);
-	    public long NonZeroLength => EndTickPosition - StartTickPosition == 0 ? 1 : EndTickPosition - StartTickPosition;
+	    public long NonZeroLength => LengthInTicks == 0 ? 1 : LengthInTicks;
 
         // Focal values are always added as unit perspective positions, because
         // there is no unit defined that allows the start point to be interpreted as a unot perspective.
@@ -101,41 +101,49 @@ namespace Numbers.Core
 		    }
 	    }
     
-	    public Range RangeWithBasis(IFocal basis)
-	    {
-		    var len = (double) (basis.NonZeroLength);
-            var start = (StartTickPosition - basis.StartTickPosition) / len;
-            var end = (EndTickPosition - basis.StartTickPosition) / len;
-            var basisDir = Math.Sign(len);
-            return new Range(-start * basisDir, end * basisDir);
+	    //public Range GetRangeWithBasis(IFocal basis) => GetRange(basis, false);
+	    //public Range GetRangeWithReciprocalBasis(IFocal basis) => GetRange(basis, true);
+        //public void SetWithRangeAndBasis(Range range, IFocal basis) => SetWithRange(range, basis, false);
+        //public void SetWithRangeAndReciprocalBasis(Range range, IFocal basis) => SetWithRange(range, basis, true);
+        public Range GetRangeWithBasis(IFocal basis, bool isReciprocal)
+        {
+            var len = Math.Abs(basis.NonZeroLength);
+            var basisDir = isReciprocal ? basis.Direction * len : basis.Direction;
+            var start = (StartTickPosition - basis.StartTickPosition) / len * basisDir;
+            var end = (EndTickPosition - basis.StartTickPosition) / len * basisDir;
+            return new Range(start, end);
         }
-	    public Range RangeAsBasis(IFocal nonBasis) => RangeAsBasis(nonBasis.StartTickPosition, nonBasis.EndTickPosition);
+        public void SetWithRangeAndBasis(Range range, IFocal basis, bool isReciprocal)
+        {
+            var len = isReciprocal ? 1.0 : Math.Abs(basis.NonZeroLength);
+            var start = basis.StartTickPosition + range.Start * len;
+            var end = basis.StartTickPosition + range.End * len;
+            var basisDir = basis.Direction;
+            StartTickPosition = (long)(start * basisDir);
+            EndTickPosition = (long)(end * basisDir);
+        }
+
+
+        public Range RangeAsBasis(IFocal nonBasis) => RangeAsBasis(nonBasis.StartTickPosition, nonBasis.EndTickPosition);
         public Range RangeAsBasis(long startTickPosition, long endTickPosition)
         {
-	        var len = (double)(NonZeroLength);
+	        var len = Math.Abs(NonZeroLength);
 	        var start = (startTickPosition - StartTickPosition) / len;
 	        var end = (endTickPosition - StartTickPosition) / len;
 	        var basisDir = Math.Sign(len);
-	        return new Range(-start * basisDir, end * basisDir);
+	        return new Range(start * basisDir, end * basisDir);
         }
 
-        public void SetWithRange(Range range) => SetWithRange(range, this);
-        public void SetWithRange(Range range, IFocal basis)
-        {
-	        var len = (double)(basis.AbsLengthInTicks);
-	        var sp = (long) (-range.Start * len + basis.StartTickPosition);
-	        var ep = (long) (range.End * len + basis.StartTickPosition);
-            StartTickPosition = sp;
-	        EndTickPosition = ep;
-        }
+        //public void SetWithRange(Range range) => SetWithRange(range, this);
+        //public void SetWithRange(Range range, IFocal basis)
+        //{
+	       // var len = (double)(basis.AbsLengthInTicks);
+	       // var sp = (long) (-range.Start * len + basis.StartTickPosition);
+	       // var ep = (long) (range.End * len + basis.StartTickPosition);
+        //    StartTickPosition = sp;
+	       // EndTickPosition = ep;
+        //}
 
-        public Range ReciprocalBasisRange(IFocal basis)
-        {
-	        var len = (double)basis.NonZeroLength;
-	        var st = Math.Round((StartTickPosition - basis.StartTickPosition) / len) * len;
-	        var et = Math.Round((EndTickPosition - basis.StartTickPosition) / len) * len;
-            return new Range(st, et);
-        }
 
         public Range UnitTRangeIn(IFocal basis)
 	    {

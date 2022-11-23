@@ -42,7 +42,6 @@ namespace Numbers.Views
 	    public SKNumberMapper(Workspace workspace, Number number) : base(workspace, number)
 	    {
 		    Number = number;
-		    //EnsureSegment();
 	    }
         public void EnsureSegment()
         {

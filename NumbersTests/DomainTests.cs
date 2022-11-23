@@ -68,12 +68,12 @@ namespace NumbersTests
 
 	        var num = new Number(_domain, FocalRef.CreateByValues(_trait, 30, 40).Id);
 	        var r = num.Value;
-	        var ffr = _domain.FocalFromRange(r);
+	        var ffr = _domain.CreateFocalFromRange(r);
 	        Assert.AreEqual(ffr, num.Focal);
 
 	        num = new Number(_domain, FocalRef.CreateByValues(_trait, -30, 1).Id);
 	        r = num.Value;
-	        ffr = _domain.FocalFromRange(r);
+	        ffr = _domain.CreateFocalFromRange(r);
 	        Assert.AreEqual(ffr, num.Focal);
 
 	        _unitFocal.Reset(10, -10);
@@ -81,7 +81,7 @@ namespace NumbersTests
 	        r = num.Value;
 	        Assert.AreEqual(_domain.StartTickPositionFrom(r.Start), num.Focal.StartTickPosition);
 	        Assert.AreEqual(_domain.EndTickPositionFrom(r.End), num.Focal.EndTickPosition);
-            ffr = _domain.FocalFromRange(r);
+            ffr = _domain.CreateFocalFromRange(r);
 	        Assert.AreEqual(ffr, num.Focal);
         }
     }

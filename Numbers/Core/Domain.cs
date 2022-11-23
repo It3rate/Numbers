@@ -43,13 +43,14 @@ namespace Numbers.Core
         public IFocal BasisFocal => MyTrait.FocalStore[BasisNumber.FocalId];
         public int BasisFocalId => BasisNumber.FocalId;
         public bool BasisIsReciprocal { get; set; }// True when ticks are larger than the unit basis
-        public long TickLength => BasisIsReciprocal ? Math.Max(BasisFocal.LengthInTicks, 1) : 1;
+
+        public double TickToBasisRatio => BasisIsReciprocal ? BasisFocal.NonZeroLength : 1.0 / BasisFocal.NonZeroLength;
 
         public int MinMaxNumberId { get; set; }
         public Number MinMaxNumber => MyBrain.NumberStore[MinMaxNumberId];
         public IFocal MinMaxFocal => MyTrait.FocalStore[MinMaxFocalId];
         public int MinMaxFocalId => MinMaxNumber.FocalId;
-        public Range MinMaxRange => MinMaxFocal.RangeWithBasis(BasisFocal);
+        public Range MinMaxRange => MinMaxFocal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal);
 
         public bool IsUnitPerspective => BasisFocal.Direction == 1;
         public bool IsUnotPerspective => BasisFocal.Direction == -1;
@@ -66,25 +67,28 @@ namespace Numbers.Core
         public Number CreateNumberByPositions(long start, long end) => new Number(this, start, end);
         public Number CreateNumberByValues(double start, double end) => new Number(this, new Range(start, end));
 
+        public Range GetValueOf(IFocal focal) => focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal);
+        //{
+	       // var bf = BasisFocal;
+        //    var len = Math.Abs(bf.NonZeroLength);
+	       // var basisDir = BasisIsReciprocal ? bf.Direction * len : bf.Direction;
+	       // var start = (focal.StartTickPosition - bf.StartTickPosition) / len * basisDir;
+	       // var end = (focal.EndTickPosition - bf.StartTickPosition) / len * basisDir;
+	       // return new Range(start, end);
+        //}
+        public void SetValueOf(IFocal focal, Range range) => focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
+        //{
+        //    var bf = BasisFocal;
+        //    var len = BasisIsReciprocal ? 1.0 : Math.Abs(bf.NonZeroLength);
+        //    var start = bf.StartTickPosition + range.Start * len;
+        //    var end = bf.StartTickPosition + range.End * len;
+        //    var basisDir = bf.Direction;
+        //    focal.StartTickPosition = (long)(start * basisDir);
+        //    focal.EndTickPosition = (long)(end * basisDir);
 
-        public Range GetValueOf(IFocal focal)
-        {
-            Range result;
-            if (BasisIsReciprocal)
-            {
-	            result = focal.ReciprocalBasisRange(BasisFocal);
-            }
-            else
-            {
-	            result = focal.RangeWithBasis(BasisFocal);
-            }
-            return result;
-        }
-        public void SetValueOf(IFocal focal, Range range)
-        {
-	        focal.SetWithRange(range, BasisFocal);
-	        RoundToNearestTick(focal);
-        }
+        //}
+
+
         public Range GetValueOf(Number num) => GetValueOf(num.Focal);
         public void SetValueOf(Number num, Range range) => SetValueOf(num.Focal,range);
 
@@ -92,25 +96,25 @@ namespace Numbers.Core
         public double ValueFromEndTickPosition(long endPos) => (endPos - BasisFocal.StartTickPosition) / (double)BasisFocal.LengthInTicks;
         public long StartTickPositionFrom(double value) => (long)Math.Round(-value * BasisFocal.AbsLengthInTicks) + BasisFocal.StartTickPosition;
         public long EndTickPositionFrom(double value) => (long)Math.Round(value * BasisFocal.AbsLengthInTicks) + BasisFocal.StartTickPosition;
-        public FocalRef FocalFromRange(Range range)
-        {
-	        var result = FocalRef.CreateByValues(MyTrait, 0,1);
-	        result.SetWithRange(range, BasisFocal);
-	        RoundToNearestTick(result);
-	        return result;
-        }
 
-        public Range ClampToNearestTick(Range range) => new Range( ClampToNearestTick((long)range.Start), ClampToNearestTick((long)range.End));
+        public Range ClampToInnerBasis(Range range) => range.ClampInner();
+        public Range ClampToInnerTick(Range range) => (range / TickToBasisRatio).ClampInner() * TickToBasisRatio;
+        public Range RoundToNearestBasis(Range range) => range.Round();
+        public Range RoundToNearestTick(Range range) => (range / TickToBasisRatio).Round() * TickToBasisRatio;
 
-        public long ClampToNearestTick(long value) => (long)(value / (double)TickLength) * TickLength;
-        public long RoundToNearestTick(long value) => (long)Math.Round(value / (double)TickLength) * TickLength;
-
+        public long RoundToNearestTick(long value) => (long)(Math.Round(value / TickToBasisRatio) * TickToBasisRatio);
         public void RoundToNearestTick(IFocal focal)
         {
 	        focal.StartTickPosition = RoundToNearestTick(focal.StartTickPosition);
 	        focal.EndTickPosition = RoundToNearestTick(focal.EndTickPosition);
         }
 
+        public FocalRef CreateFocalFromRange(Range range)
+        {
+	        var result = FocalRef.CreateByValues(MyTrait, 0, 1);
+	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
+	        return result;
+        }
         public void SaveNumberValues(Dictionary<int, Range> dict, params int[] ignoreIds)
         {
             dict.Clear();
