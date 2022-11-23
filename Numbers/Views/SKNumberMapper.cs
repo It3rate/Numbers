@@ -18,6 +18,8 @@ namespace Numbers.Views
         public bool IsUnot => Number.IsUnot;
         public int BasisSign => Number.BasisFocal.Direction;
 
+        public int UnitDirectionOnDomainLine => NumberSegment.DirectionOnLine(DomainMapper.DisplayLine);
+
         public override SKPoint StartPoint
 	    {
 		    get => NumberSegment.StartPoint;
@@ -51,7 +53,8 @@ namespace Numbers.Views
         public void DrawNumber(float offsetScale, SKPaint paint)
         {
 			EnsureSegment();
-			var dir = Number.Direction;
+			var dir = UnitDirectionOnDomainLine;
+			Console.WriteLine(dir);
 	        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
 	        RenderSegment = NumberSegment + offset;
 	        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
@@ -74,10 +77,10 @@ namespace Numbers.Views
 
         public float TFromPoint(SKPoint point)
         {
-	        var us = DomainMapper.BasisSegment;
-	        var pt = us.ProjectPointOnto(point, false);
-            var (t, _) = us.TFromPoint(pt, false);
-	        t = (float)(Math.Round(t * us.Length) / us.Length);
+	        var basisSegment = DomainMapper.BasisSegment;
+	        var pt = basisSegment.ProjectPointOnto(point, false);
+            var (t, _) = basisSegment.TFromPoint(pt, false);
+	        t = (float)(Math.Round(t * basisSegment.Length) / basisSegment.Length);
 	        return t;
         }
 

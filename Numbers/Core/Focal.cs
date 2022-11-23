@@ -107,10 +107,15 @@ namespace Numbers.Core
         //public void SetWithRangeAndReciprocalBasis(Range range, IFocal basis) => SetWithRange(range, basis, true);
         public Range GetRangeWithBasis(IFocal basis, bool isReciprocal)
         {
-            var len = Math.Abs(basis.NonZeroLength);
-            var basisDir = isReciprocal ? basis.Direction * len : basis.Direction;
+            var len = (double)Math.Abs(basis.NonZeroLength);    
+            var basisDir = isReciprocal ? basis.Direction : basis.Direction;
             var start = (StartTickPosition - basis.StartTickPosition) / len * basisDir;
             var end = (EndTickPosition - basis.StartTickPosition) / len * basisDir;
+            if (isReciprocal)
+            {
+	            start = Math.Round(start) * len;
+	            end = Math.Round(end) * len;
+            }
             return new Range(start, end);
         }
         public void SetWithRangeAndBasis(Range range, IFocal basis, bool isReciprocal)
@@ -119,8 +124,8 @@ namespace Numbers.Core
             var start = basis.StartTickPosition + range.Start * len;
             var end = basis.StartTickPosition + range.End * len;
             var basisDir = basis.Direction;
-            StartTickPosition = (long)(start * basisDir);
-            EndTickPosition = (long)(end * basisDir);
+            StartTickPosition = (long)Math.Round(start * basisDir);
+            EndTickPosition = (long)Math.Round(end * basisDir);
         }
 
 

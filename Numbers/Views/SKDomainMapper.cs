@@ -24,7 +24,7 @@ namespace Numbers.Views
 		    get => DisplayLine.RatiosAsBasis(BasisSegment);
 		    set { BasisMapper.NumberSegment = DisplayLine.SegmentAlongLine(value); }
 	    }
-	    public int UnitDirectionOnDomainLine => DisplayLine.CosineSimilarity(BasisSegment) >= 0 ? 1 : -1;
+	    public int UnitDirectionOnDomainLine => BasisSegment.DirectionOnLine(DisplayLine);
 
         public bool ShowGradientNumberLine;
 	    public bool ShowTicks;

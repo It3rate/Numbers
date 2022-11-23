@@ -98,8 +98,8 @@ namespace Numbers.Core
 
         public long WholeStartValue => (long)StartValue;
 		public long WholeEndValue => (long)EndValue;
-		public long RemainderStartValue => Math.Abs(StartTicks % BasisFocal.NonZeroLength); // these should probably should account for BasisIsReciprocal,
-        public long RemainderEndValue => Math.Abs(EndTicks % BasisFocal.NonZeroLength); // but there are no fractions when ticks are larger than the basis
+		public long RemainderStartValue => Domain.BasisIsReciprocal ? 0 : Math.Abs(StartTicks % BasisFocal.NonZeroLength); 
+        public long RemainderEndValue => Domain.BasisIsReciprocal ? 0 : Math.Abs(EndTicks % BasisFocal.NonZeroLength);
 		public Range RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal); //*
 
 		public Range FloorRange => new Range(Math.Ceiling(StartValue), Math.Floor(EndValue));

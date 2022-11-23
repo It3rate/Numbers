@@ -217,7 +217,7 @@ namespace Numbers.Views
 
         public int DirectionOnLine(SKSegment seg)
         {
-	        return CosineSimilarity(seg) >= 0 ? 1 : -1;
+	        return LengthSquared == 0 || CosineSimilarity(seg) >= 0 ? 1 : -1;
         }
         public (float, SKPoint) TFromPoint(SKPoint point, bool clamp)
         {

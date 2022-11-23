@@ -22,14 +22,14 @@ namespace Numbers.UI
         private SKWorkspaceMapper test2(IAgent agent)
         {
             Trait trait = new Trait();
-            var unitSize = 4;
-            var unit = FocalRef.CreateByValues(trait, 0, unitSize);// t0.AddFocalByUnitPositions(0, unitSize);
+            var unitSize = 10;
+            var unit = FocalRef.CreateByValues(trait, 0, unitSize);
             var wm = new SKWorkspaceMapper(agent.Workspace, Renderer, 20, 20, 1000, 800);
-            var domains = CreateDomainLines(agent.Workspace, trait, -15, 10);//, 30, 40, 35, 24, -4, -20);
-            //var d2 = domains[2];
-            //var d1n2 = MyBrain.NumberStore[domains[1].NumberIds[2]];
-            //var nn = new Number(d2, d1n2.FocalId);
-            //agent.Workspace.AddElements(nn);
+            var domains = CreateDomainLines(agent.Workspace, trait, -15, 10, 30, -40, -35, 24, -4, -13);
+            var d2 = domains[2];
+            var d1n2 = MyBrain.NumberStore[domains[1].NumberIds[2]];
+            var nn = new Number(d2, d1n2.FocalId);
+            agent.Workspace.AddElements(nn);
             return wm;
         }
         private SKWorkspaceMapper test0(IAgent agent)
@@ -148,7 +148,8 @@ namespace Numbers.UI
 		        var displaySeg = wm.GetHorizontalSegment(yt, 100);
 		        var y = displaySeg.StartPoint.Y;
 
-		        var unitSeg = displaySeg.SegmentAlongLine(0.45f, 0.55f);
+		        var sz = domain.BasisIsReciprocal ? 0.01f : 0.05f;
+		        var unitSeg = displaySeg.SegmentAlongLine(0.5f - sz, 0.5f + sz);
 		        //var unitSeg = new SKSegment((float)unitStart, y, (float)unitStart + 20f, y);
                 var dm = wm.GetOrCreateDomainMapper(domain, displaySeg, unitSeg);
 		        dm.ShowGradientNumberLine = true;
