@@ -146,7 +146,13 @@ namespace Numbers.Views
 
 		    var txtPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;
 		    var txtBkgPen = Pens.TextBackgroundPen;
-            if (ShowFractions)
+		    if (num.IsBasis)
+		    {
+			    var txt = isStart ? "0" : num.IsUnit ? "1" : "i";
+			    txtPaint = num.IsUnit ? Pens.UnitMarkerText : Pens.UnotMarkerText;
+                Renderer.DrawText(txtPoint, txt, txtPaint, txtBkgPen);
+            }
+            else if (ShowFractions)
 		    {
 			    var parts = GetFractionText(num, isStart, suffix);
                 Renderer.DrawFraction(parts, txtPoint, txtPaint, txtBkgPen);
@@ -160,25 +166,31 @@ namespace Numbers.Views
 
         private (string, string) GetFractionText(Number num, bool isStart, string suffix)
         {
-	        var sign = isStart ? (num.StartValue >= 0 ? "" : "-") : (num.EndValue >= 0 ? "" : "-");
-	        var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
-	        var whole = wholeNum == 0 ? "" : wholeNum.ToString();
-	        string fraction = "";
-		    var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
-	        if (num.AbsBasisTicks != 0 && numerator != 0)
-	        {
-		        fraction = " " + numerator.ToString() + "|" + num.AbsBasisTicks.ToString() + suffix;
-	        }
-	        else
-	        {
-		        whole += suffix;
-	        }
+	        var whole = "0";
+	        var fraction = "";
+            var val = isStart ? num.StartValue : num.EndValue;
+            if (val != 0)
+            {
+	            var sign = isStart ? (num.StartValue >= 0 ? "" : "-") : (num.EndValue >= 0 ? "" : "-");
+	            var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
+	            whole = wholeNum == 0 ? "" : wholeNum.ToString();
+	            var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
+	            if (num.AbsBasisTicks != 0 && numerator != 0)
+	            {
+		            fraction = " " + numerator.ToString() + "|" + num.AbsBasisTicks.ToString() + suffix;
+	            }
+	            else
+	            {
+		            whole += suffix;
+	            }
 
-	        if (whole == "")
-	        {
-		        fraction = sign + fraction;
-	        }
-	        //var wlen = whole.Length;
+	            if (whole == "")
+	            {
+		            fraction = sign + fraction;
+	            }
+            }
+
+            //var wlen = whole.Length;
 	        //whole = whole.PadRight(fraction.Length + 1);
 	        //fraction = fraction.PadLeft(wlen + 1);
             return (whole, fraction);
@@ -204,9 +216,10 @@ namespace Numbers.Views
 	    }
 	    private void DrawNumberLine()
 	    {
-		    var sign = UnitDirectionOnDomainLine;
-		    var gsp = sign == 1 ? DisplayLine.StartPoint : DisplayLine.EndPoint;
-		    var gep = sign == 1 ? DisplayLine.EndPoint : DisplayLine.StartPoint;
+		    var renderDir = UnitDirectionOnDomainLine;
+		    var basisDir = BasisNumber.BasisFocal.Direction;
+		    var gsp = renderDir * basisDir == 1 ? DisplayLine.StartPoint : DisplayLine.EndPoint;
+		    var gep = renderDir * basisDir == 1 ? DisplayLine.EndPoint : DisplayLine.StartPoint;
             if (ShowGradientNumberLine)
 		    {
 			    var pnt = CorePens.GetGradientPen(gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 10);
