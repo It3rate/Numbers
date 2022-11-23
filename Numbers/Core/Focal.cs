@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using Numbers.Views;
 
 namespace Numbers.Core
 {
@@ -108,7 +109,7 @@ namespace Numbers.Core
         public Range GetRangeWithBasis(IFocal basis, bool isReciprocal)
         {
             var len = (double)Math.Abs(basis.NonZeroLength);    
-            var basisDir = isReciprocal ? basis.Direction : basis.Direction;
+            var basisDir = basis.Direction;
             var start = (StartTickPosition - basis.StartTickPosition) / len * basisDir;
             var end = (EndTickPosition - basis.StartTickPosition) / len * basisDir;
             if (isReciprocal)
@@ -116,7 +117,7 @@ namespace Numbers.Core
 	            start = Math.Round(start) * len;
 	            end = Math.Round(end) * len;
             }
-            return new Range(start, end);
+            return new Range(-start, end);
         }
         public void SetWithRangeAndBasis(Range range, IFocal basis, bool isReciprocal)
         {
@@ -124,20 +125,19 @@ namespace Numbers.Core
             var start = basis.StartTickPosition + range.Start * len;
             var end = basis.StartTickPosition + range.End * len;
             var basisDir = basis.Direction;
-            StartTickPosition = (long)Math.Round(start * basisDir);
+            StartTickPosition = (long)Math.Round(-start * basisDir);
             EndTickPosition = (long)Math.Round(end * basisDir);
         }
 
-
-        public Range RangeAsBasis(IFocal nonBasis) => RangeAsBasis(nonBasis.StartTickPosition, nonBasis.EndTickPosition);
-        public Range RangeAsBasis(long startTickPosition, long endTickPosition)
-        {
-	        var len = Math.Abs(NonZeroLength);
-	        var start = (startTickPosition - StartTickPosition) / len;
-	        var end = (endTickPosition - StartTickPosition) / len;
-	        var basisDir = Math.Sign(len);
-	        return new Range(start * basisDir, end * basisDir);
-        }
+        public Range RangeAsBasis(IFocal nonBasis) => nonBasis.GetRangeWithBasis(this, false);// RangeAsBasis(nonBasis.StartTickPosition, nonBasis.EndTickPosition);
+        //public Range RangeAsBasis(long startTickPosition, long endTickPosition)
+        //{
+	       // var len = Math.Abs(NonZeroLength);
+	       // var start = (startTickPosition - StartTickPosition) / len;
+	       // var end = (endTickPosition - StartTickPosition) / len;
+	       // var basisDir = Math.Sign(len);
+	       // return new Range(-start * basisDir, end * basisDir);
+        //}
 
         //public void SetWithRange(Range range) => SetWithRange(range, this);
         //public void SetWithRange(Range range, IFocal basis)

@@ -50,7 +50,7 @@ namespace Numbers.Core
         public Number MinMaxNumber => MyBrain.NumberStore[MinMaxNumberId];
         public IFocal MinMaxFocal => MyTrait.FocalStore[MinMaxFocalId];
         public int MinMaxFocalId => MinMaxNumber.FocalId;
-        public Range MinMaxRange => MinMaxFocal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal);
+        public Range MinMaxRange => BasisFocal.RangeAsBasis(MinMaxFocal);
 
         public bool IsUnitPerspective => BasisFocal.Direction == 1;
         public bool IsUnotPerspective => BasisFocal.Direction == -1;
@@ -68,34 +68,9 @@ namespace Numbers.Core
         public Number CreateNumberByValues(double start, double end) => new Number(this, new Range(start, end));
 
         public Range GetValueOf(IFocal focal) => focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal);
-        //{
-	       // var bf = BasisFocal;
-        //    var len = Math.Abs(bf.NonZeroLength);
-	       // var basisDir = BasisIsReciprocal ? bf.Direction * len : bf.Direction;
-	       // var start = (focal.StartTickPosition - bf.StartTickPosition) / len * basisDir;
-	       // var end = (focal.EndTickPosition - bf.StartTickPosition) / len * basisDir;
-	       // return new Range(start, end);
-        //}
         public void SetValueOf(IFocal focal, Range range) => focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
-        //{
-        //    var bf = BasisFocal;
-        //    var len = BasisIsReciprocal ? 1.0 : Math.Abs(bf.NonZeroLength);
-        //    var start = bf.StartTickPosition + range.Start * len;
-        //    var end = bf.StartTickPosition + range.End * len;
-        //    var basisDir = bf.Direction;
-        //    focal.StartTickPosition = (long)(start * basisDir);
-        //    focal.EndTickPosition = (long)(end * basisDir);
-
-        //}
-
-
         public Range GetValueOf(Number num) => GetValueOf(num.Focal);
         public void SetValueOf(Number num, Range range) => SetValueOf(num.Focal,range);
-
-        public double ValueFromStartTickPosition(long startPos) => (BasisFocal.StartTickPosition - startPos) / (double)BasisFocal.LengthInTicks;
-        public double ValueFromEndTickPosition(long endPos) => (endPos - BasisFocal.StartTickPosition) / (double)BasisFocal.LengthInTicks;
-        public long StartTickPositionFrom(double value) => (long)Math.Round(-value * BasisFocal.AbsLengthInTicks) + BasisFocal.StartTickPosition;
-        public long EndTickPositionFrom(double value) => (long)Math.Round(value * BasisFocal.AbsLengthInTicks) + BasisFocal.StartTickPosition;
 
         public Range ClampToInnerBasis(Range range) => range.ClampInner();
         public Range ClampToInnerTick(Range range) => (range / TickToBasisRatio).ClampInner() * TickToBasisRatio;
