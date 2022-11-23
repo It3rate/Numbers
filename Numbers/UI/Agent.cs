@@ -183,7 +183,7 @@ namespace Numbers.UI
 				            nm.AdjustBySegmentChange(SelBegin);
 			            }
 
-			            SyncMatchingBasis(nm);
+			            SyncMatchingBasis(nm.DomainMapper, nm.Number.BasisFocal);
 		            }
 		            else
 		            {
@@ -280,14 +280,23 @@ namespace Numbers.UI
             }
         }
 
-        private void SyncMatchingBasis(SKNumberMapper numberMapper)
+        private void FlipBasis()
         {
-	        if (DoSyncMatchingBasis && numberMapper.IsBasis)
+	        var dm = WorkspaceMapper.DomainMapperByIndex(0);
+            var domain = dm.Domain;
+	        domain.BasisFocal.FlipAroundStartPoint();
+            dm.BasisSegment.FlipAroundStartPoint();
+            SyncMatchingBasis(dm, domain.BasisFocal);
+        }
+
+        private void SyncMatchingBasis(SKDomainMapper domainMapper, IFocal focal)
+        {
+	        if (DoSyncMatchingBasis)
 	        {
-		        var nbRange = numberMapper.DomainMapper.UnitRangeOnDomainLine;
-		        foreach (var sibDomain in Workspace.ActiveSiblingDomains(numberMapper.Number.Domain))
+		        var nbRange = domainMapper.UnitRangeOnDomainLine;
+		        foreach (var sibDomain in Workspace.ActiveSiblingDomains(domainMapper.Domain))
 		        {
-			        if (sibDomain.BasisFocalId == numberMapper.Number.FocalId)
+			        if (sibDomain.BasisFocalId == focal.Id)
 			        {
 				        WorkspaceMapper.DomainMapper(sibDomain.Id).UnitRangeOnDomainLine = nbRange;
 			        }
@@ -329,8 +338,11 @@ namespace Numbers.UI
 	                LockTicksOnDrag = true;
 	                break;
                 case Keys.T:
-                    Program.NextTest(this);
-                    break;
+	                Program.NextTest(this);
+	                break;
+                case Keys.N:
+	                FlipBasis();
+	                break;
                 //case Keys.F:
                 //    UIMode = UIMode.CreateFocal;
                 //    break;

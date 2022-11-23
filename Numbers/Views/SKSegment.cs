@@ -99,6 +99,10 @@ namespace Numbers.Views
 	        var endPoint = PointAlongLine(endT, offsetT);
             return new SKSegment(startPoint, endPoint);
         }
+        public void FlipAroundStartPoint()
+        {
+	        EndPoint = StartPoint + (StartPoint - EndPoint);
+        }
 
         public SKSegment GetMeasuredSegmentByMidpoint(float length)
         {

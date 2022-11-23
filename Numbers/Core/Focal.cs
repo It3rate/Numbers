@@ -19,8 +19,10 @@ namespace Numbers.Core
         FocalPositions FocalPositions { get; set; }
         void Reset(long start, long end);
         void Reset(IFocal focal);
-        Range RangeAsBasis(IFocal nonBasis);
 
+        void FlipAroundStartPoint();
+
+        Range RangeAsBasis(IFocal nonBasis);
         Range GetRangeWithBasis(IFocal basis, bool isReciprocal);
         void SetWithRangeAndBasis(Range range, IFocal basis, bool isReciprocal);
 
@@ -101,14 +103,19 @@ namespace Numbers.Core
 			    EndTickPosition = value.EndTickPosition;
 		    }
 	    }
-    
-	    //public Range GetRangeWithBasis(IFocal basis) => GetRange(basis, false);
-	    //public Range GetRangeWithReciprocalBasis(IFocal basis) => GetRange(basis, true);
+
+	    public void FlipAroundStartPoint()
+	    {
+		    EndTickPosition = StartTickPosition - LengthInTicks;
+	    }
+
+        //public Range GetRangeWithBasis(IFocal basis) => GetRange(basis, false);
+        //public Range GetRangeWithReciprocalBasis(IFocal basis) => GetRange(basis, true);
         //public void SetWithRangeAndBasis(Range range, IFocal basis) => SetWithRange(range, basis, false);
         //public void SetWithRangeAndReciprocalBasis(Range range, IFocal basis) => SetWithRange(range, basis, true);
         public Range GetRangeWithBasis(IFocal basis, bool isReciprocal)
         {
-            var len = (double)Math.Abs(basis.NonZeroLength);    
+            var len = (double)basis.NonZeroLength; // todo: GetRangeWithBasis should use the signed length
             var basisDir = basis.Direction;
             var start = (StartTickPosition - basis.StartTickPosition) / len * basisDir;
             var end = (EndTickPosition - basis.StartTickPosition) / len * basisDir;
@@ -121,7 +128,8 @@ namespace Numbers.Core
         }
         public void SetWithRangeAndBasis(Range range, IFocal basis, bool isReciprocal)
         {
-            var len = isReciprocal ? 1.0 : Math.Abs(basis.NonZeroLength);
+	        //var len = isReciprocal ? 1.0 : Math.Abs(basis.NonZeroLength);
+	        var len = isReciprocal ? basis.Direction : basis.NonZeroLength;
             var start = basis.StartTickPosition + range.Start * len;
             var end = basis.StartTickPosition + range.End * len;
             var basisDir = basis.Direction;

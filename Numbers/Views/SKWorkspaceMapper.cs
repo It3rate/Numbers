@@ -190,6 +190,24 @@ namespace Numbers.Views
 	        }
         }
 
+        public SKDomainMapper DomainMapperByIndex(int index)
+        {
+	        SKDomainMapper result = null;
+	        foreach (var mapper in Mappers.Values)
+	        {
+		        if (mapper is SKDomainMapper dm)
+		        {
+			        index--;
+			        if (index < 0)
+			        {
+				        result = dm;
+				        break;
+			        }
+		        }
+	        }
+	        return result;
+        }
+
         public SKSegment GetHorizontalSegment(float t, int margins)
         {
 	        var offset = Height * t;

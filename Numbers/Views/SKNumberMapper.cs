@@ -54,7 +54,6 @@ namespace Numbers.Views
         {
 			EnsureSegment();
 			var dir = UnitDirectionOnDomainLine;
-			Console.WriteLine(dir);
 	        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
 	        RenderSegment = NumberSegment + offset;
 	        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
