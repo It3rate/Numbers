@@ -95,7 +95,7 @@ namespace Numbers.Views
         public SKSegment SegmentAlongLine(Range ratios, float offsetT = 0) => SegmentAlongLine(ratios.StartF, ratios.EndF, offsetT);
         public SKSegment SegmentAlongLine(float startT, float endT, float offsetT = 0)
         {
-	        var startPoint = PointAlongLine(startT, offsetT);
+            var startPoint = PointAlongLine(startT, offsetT);
 	        var endPoint = PointAlongLine(endT, offsetT);
             return new SKSegment(startPoint, endPoint);
         }

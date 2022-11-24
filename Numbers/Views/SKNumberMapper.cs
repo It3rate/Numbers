@@ -14,8 +14,6 @@ namespace Numbers.Views
         public SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain.Id);
         public SKSegment UnitSegment => DomainMapper.BasisSegment;
         public bool IsBasis => Number.IsBasis;
-	    public bool IsUnit => Number.IsUnit;
-        public bool IsUnot => Number.IsUnot;
         public int BasisSign => Number.BasisFocal.Direction;
 
         public int UnitDirectionOnDomainLine => NumberSegment.DirectionOnLine(DomainMapper.DisplayLine);
@@ -47,8 +45,9 @@ namespace Numbers.Views
 	    }
         public void EnsureSegment()
         {
-	        var val = Number.ValueInFullUnitPerspective;
-	        NumberSegment = UnitSegment.SegmentAlongLine(val.StartF, val.EndF);
+	        var val = Number.ValueInRenderPerspective;
+	        //var invertDirection = Number.BasisFocal.IsUnotPerspective;
+	        NumberSegment = UnitSegment.SegmentAlongLine(val.StartF, val.EndF);//, invertDirection);
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
         {

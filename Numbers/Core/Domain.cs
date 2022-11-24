@@ -52,8 +52,8 @@ namespace Numbers.Core
         public int MinMaxFocalId => MinMaxNumber.FocalId;
         public Range MinMaxRange => BasisFocal.RangeAsBasis(MinMaxFocal);
 
-        public bool IsUnitPerspective => BasisFocal.Direction == 1;
-        public bool IsUnotPerspective => BasisFocal.Direction == -1;
+        public bool IsUnitPerspective => BasisFocal.IsUnitPerspective;
+        public bool IsUnotPerspective => BasisFocal.IsUnotPerspective;
 
         public Domain(int traitId, int unitFocalId, int minMaxFocalId)
         {

@@ -16,8 +16,8 @@ namespace Numbers.Core
         long AbsLengthInTicks { get; }
         long NonZeroLength { get; }
         int Direction { get; }
-        bool IsUnit { get; }
-        bool IsUnot { get; }
+        bool IsUnitPerspective { get; }
+        bool IsUnotPerspective { get; }
 
         FocalPositions FocalPositions { get; set; }
         void Reset(long start, long end);
@@ -58,8 +58,8 @@ namespace Numbers.Core
 		    set => MyTrait.PositionStore[EndId] = value;
 	    }
 	    public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
-	    public bool IsUnit => StartTickPosition <= EndTickPosition;
-	    public bool IsUnot => StartTickPosition > EndTickPosition;
+	    public bool IsUnitPerspective => StartTickPosition <= EndTickPosition;
+	    public bool IsUnotPerspective => StartTickPosition > EndTickPosition;
 
         public long LengthInTicks => EndTickPosition - StartTickPosition;
 	    public long AbsLengthInTicks => Math.Abs(LengthInTicks);
@@ -130,7 +130,7 @@ namespace Numbers.Core
 	            start = Math.Round(start) * len;
 	            end = Math.Round(end) * len;
             }
-            return basis.IsUnit ? new Range(-start, end) : new Range(end, -start);
+            return basis.IsUnitPerspective ? new Range(-start, end) : new Range(end, -start);
         }
         public void SetWithRangeAndBasis(Range range, IFocal basis, bool isReciprocal)
         {
@@ -138,7 +138,7 @@ namespace Numbers.Core
 	        double end;
 	        var len = (double)basis.NonZeroLength;
 	        var zeroTick = basis.StartTickPosition;
-	        if (basis.IsUnit)
+	        if (basis.IsUnitPerspective)
 	        {
 		        start = zeroTick - range.Start * len;
 		        end = zeroTick + range.End * len;

@@ -115,6 +115,31 @@ namespace Numbers.Views
             }
 	    }
 
+        private void DrawNumbers()
+        {
+	        var offset = ShowNumberOffsets ? 1f : 0f;
+	        var step = ShowNumberOffsets ? 1f : 0f;
+	        foreach (var numberId in ValidNumberIds)
+	        {
+		        offset += step;
+		        var num = WorkspaceMapper.NumberMapper(numberId);
+		        var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
+		        num.DrawNumber(offset, pen);
+
+		        if (Domain.IsUnitPerspective)
+		        {
+			        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
+			        num.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
+		        }
+		        else
+		        {
+			        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
+			        num.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
+		        }
+	        }
+
+        }
+
         private void DrawMarkers()
         {
 	        if (ShowBasisMarkers)
@@ -138,29 +163,30 @@ namespace Numbers.Views
         private void DrawMarker(Number num, bool isStart)
         {
             var value = isStart ? num.Value.StartF : num.Value.EndF;
-            var t = isStart ? num.ValueInFullUnitPerspective.StartF : num.ValueInFullUnitPerspective.EndF;
+            var t = isStart ? num.ValueInRenderPerspective.StartF : num.ValueInRenderPerspective.EndF;
             var suffix = isStart ? "i" : "";
-		    var unitLabel = num.IsBasis && isStart ? "0" : num.IsUnit ? "1" : num.IsUnot ? "i" : "";
+            var isUnitPersp = num.IsUnitPerspective;
+		    var unitLabel = num.IsBasis && isStart ? "0" : isUnitPersp ? "1" : !isUnitPersp ? "i" : "";
 
 		    var txtPoint = DrawMarkerPointer(t);
 
-		    var txtPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;
+		    var numPaint = (isUnitPersp && isStart) || (!isUnitPersp && !isStart) ? Pens.UnotMarkerText : Pens.UnitMarkerText;
 		    var txtBkgPen = Pens.TextBackgroundPen;
 		    if (num.IsBasis)
 		    {
-			    var txt = isStart ? "0" : num.IsUnit ? "1" : "i";
-			    txtPaint = num.IsUnit ? Pens.UnitMarkerText : Pens.UnotMarkerText;
-                Renderer.DrawText(txtPoint, txt, txtPaint, txtBkgPen);
+			    var txt = isStart ? "0" : isUnitPersp ? "1" : "i";
+			    var unitPaint = isUnitPersp ? Pens.UnitMarkerText : Pens.UnotMarkerText;
+                Renderer.DrawText(txtPoint, txt, unitPaint, txtBkgPen);
             }
             else if (ShowFractions)
 		    {
 			    var parts = GetFractionText(num, isStart, suffix);
-                Renderer.DrawFraction(parts, txtPoint, txtPaint, txtBkgPen);
+                Renderer.DrawFraction(parts, txtPoint, numPaint, txtBkgPen);
             }
 		    else
 		    {
 				var txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
-				Renderer.DrawText(txtPoint, txt, txtPaint, txtBkgPen);
+				Renderer.DrawText(txtPoint, txt, numPaint, txtBkgPen);
             }
         }
 
@@ -190,9 +216,6 @@ namespace Numbers.Views
 	            }
             }
 
-            //var wlen = whole.Length;
-	        //whole = whole.PadRight(fraction.Length + 1);
-	        //fraction = fraction.PadLeft(wlen + 1);
             return (whole, fraction);
         }
 
@@ -273,30 +296,6 @@ namespace Numbers.Views
 	        var pts = BasisSegment.PerpendicularLine(t, offset);
 	        Renderer.DrawLine(pts.Item1, pts.Item2, paint);
 	        return pts.Item1;
-        }
-        private void DrawNumbers()
-        {
-	        var offset = ShowNumberOffsets ? 1f : 0f;
-	        var step = ShowNumberOffsets ? 1f : 0f;
-	        foreach (var numberId in ValidNumberIds)
-	        {
-		        offset += step;
-		        var num = WorkspaceMapper.NumberMapper(numberId);
-		        var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
-		        num.DrawNumber(offset, pen);
-
-		        if (Domain.IsUnitPerspective)
-		        {
-			        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
-			        num.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
-		        }
-		        else
-		        {
-			        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
-			        num.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
-		        }
-	        }
-
         }
 
         public override SKPath GetHighlightAt(float t, SKPoint targetPoint)

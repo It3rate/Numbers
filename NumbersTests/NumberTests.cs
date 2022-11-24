@@ -148,8 +148,8 @@ namespace NumbersTests
 		    Assert.AreEqual(-0.3, n5.RemainderRange.Start, MathF.tolerance);
 		    Assert.AreEqual(0.9, n5.RemainderRange.End, MathF.tolerance);
 
-		    Assert.IsFalse(n3.IsUnit);
-		    Assert.IsTrue(_domain.BasisNumber.IsUnit);
+		    Assert.IsTrue(n3.IsUnitPerspective);
+		    Assert.IsTrue(_domain.BasisNumber.IsUnitPerspective);
 		    Assert.IsTrue(n4.IsUnitPerspective);
 		    Assert.IsFalse(n4.IsUnotPerspective);
 		    Assert.AreEqual(0.472636, n3.RangeInMinMax.Start, MathF.tolerance);

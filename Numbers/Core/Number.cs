@@ -37,10 +37,8 @@ namespace Numbers.Core
 		public long AbsBasisTicks => BasisFocal.AbsLengthInTicks;
 
 		public bool IsBasis => Domain.BasisNumberId == Id;
-		public bool IsUnit => IsBasis && Direction == 1;
-		public bool IsUnot => IsBasis && Direction == -1;
 		public bool IsUnitPerspective => Domain.IsUnitPerspective;
-		public bool IsUnotPerspective => !Domain.IsUnitPerspective;
+		public bool IsUnotPerspective => Domain.IsUnotPerspective;
 		public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
 
 		public Number(Domain domain, int focalId)
@@ -93,8 +91,7 @@ namespace Numbers.Core
 			get => Domain.GetValueOf(Focal); //Focal.RangeWithBasis(BasisFocal);
 			set => Domain.SetValueOf(Focal, value);
 		}
-		public Range ValueInFullUnitPerspective => Domain.IsUnitPerspective ? new Range(-StartValue, EndValue) : new Range(StartValue, -EndValue); //*
-		public Range ValueInFullUnotPerspective => Domain.IsUnitPerspective ? new Range(StartValue, -EndValue) : new Range(-StartValue, EndValue); //*
+		public Range ValueInRenderPerspective => new Range(-StartValue, EndValue);
 
         public long WholeStartValue => (long)StartValue;
 		public long WholeEndValue => (long)EndValue;
