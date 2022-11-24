@@ -69,25 +69,24 @@ namespace NumbersTests
 	        var num = new Number(_domain, FocalRef.CreateByValues(_trait, 30, 40).Id);
 	        var r = num.Value;
 	        var ffr = _domain.CreateFocalFromRange(r);
-	        Assert.AreEqual(ffr, num.Focal);
+            Assert.AreEqual(ffr, num.Focal);
 
-	        num = new Number(_domain, FocalRef.CreateByValues(_trait, -30, 1).Id);
-	        r = num.Value;
-	        ffr = _domain.CreateFocalFromRange(r);
-	        Assert.AreEqual(ffr, num.Focal);
+            num = new Number(_domain, FocalRef.CreateByValues(_trait, -30, 1).Id);
+            r = num.Value;
+            ffr = _domain.CreateFocalFromRange(r);
+            Assert.AreEqual(ffr, num.Focal);
 
-	        _unitFocal.Reset(10, -10);
+            _unitFocal.Reset(10, -10);
 	        var testFocal = FocalRef.CreateByValues(_trait, 0, 6);
 
             num = new Number(_domain, FocalRef.CreateByValues(_trait, 30, 40).Id);
 	        r = num.Value;
 	        _domain.SetValueOf(testFocal, r);
 
-            // todo: Focals need to be able to cycle back and forth to ranges.
             Assert.AreEqual(num.Focal.StartTickPosition, testFocal.StartTickPosition);
-            //Assert.AreEqual(num.Focal.EndTickPosition, testFocal.EndTickPosition);
+            Assert.AreEqual(num.Focal.EndTickPosition, testFocal.EndTickPosition);
             ffr = _domain.CreateFocalFromRange(r);
-            //Assert.AreEqual(ffr, num.Focal);
+            Assert.AreEqual(ffr, num.Focal);
         }
     }
 }

@@ -16,6 +16,9 @@ namespace Numbers.Core
         long AbsLengthInTicks { get; }
         long NonZeroLength { get; }
         int Direction { get; }
+        bool IsUnit { get; }
+        bool IsUnot { get; }
+
         FocalPositions FocalPositions { get; set; }
         void Reset(long start, long end);
         void Reset(IFocal focal);
@@ -55,7 +58,10 @@ namespace Numbers.Core
 		    set => MyTrait.PositionStore[EndId] = value;
 	    }
 	    public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
-	    public long LengthInTicks => EndTickPosition - StartTickPosition;
+	    public bool IsUnit => StartTickPosition <= EndTickPosition;
+	    public bool IsUnot => StartTickPosition > EndTickPosition;
+
+        public long LengthInTicks => EndTickPosition - StartTickPosition;
 	    public long AbsLengthInTicks => Math.Abs(LengthInTicks);
 	    public long NonZeroLength => LengthInTicks == 0 ? 1 : LengthInTicks;
 
@@ -115,48 +121,45 @@ namespace Numbers.Core
         //public void SetWithRangeAndReciprocalBasis(Range range, IFocal basis) => SetWithRange(range, basis, true);
         public Range GetRangeWithBasis(IFocal basis, bool isReciprocal)
         {
-            var len = (double)basis.NonZeroLength; // todo: GetRangeWithBasis should use the signed length
-            var basisDir = basis.Direction;
-            var start = (StartTickPosition - basis.StartTickPosition) / len * basisDir;
-            var end = (EndTickPosition - basis.StartTickPosition) / len * basisDir;
+            var len = (double)Math.Abs(basis.NonZeroLength);
+            //var basisDir = basis.Direction;
+            var start = (StartTickPosition - basis.StartTickPosition) / len;
+            var end = (EndTickPosition - basis.StartTickPosition) / len;
             if (isReciprocal)
             {
 	            start = Math.Round(start) * len;
 	            end = Math.Round(end) * len;
             }
-            return new Range(-start, end);
+            return basis.IsUnit ? new Range(-start, end) : new Range(end, -start);
         }
         public void SetWithRangeAndBasis(Range range, IFocal basis, bool isReciprocal)
         {
-	        //var len = isReciprocal ? 1.0 : Math.Abs(basis.NonZeroLength);
-	        var len = isReciprocal ? basis.Direction : basis.NonZeroLength;
-            var start = basis.StartTickPosition + range.Start * len;
-            var end = basis.StartTickPosition + range.End * len;
-            var basisDir = basis.Direction;
-            StartTickPosition = (long)Math.Round(-start * basisDir);
-            EndTickPosition = (long)Math.Round(end * basisDir);
+	        double start;
+	        double end;
+	        var len = (double)basis.NonZeroLength;
+	        var zeroTick = basis.StartTickPosition;
+	        if (basis.IsUnit)
+	        {
+		        start = zeroTick - range.Start * len;
+		        end = zeroTick + range.End * len;
+            }
+	        else
+	        {
+		        start = zeroTick + range.End * len;
+		        end = zeroTick - range.Start * len;
+            }
+
+            if (isReciprocal)
+            {
+	            start = Math.Round(start) / Math.Abs(len);
+	            end = Math.Round(end) / Math.Abs(len);
+            }
+
+            StartTickPosition = (long)Math.Round(start);
+            EndTickPosition = (long)Math.Round(end);
         }
 
-        public Range RangeAsBasis(IFocal nonBasis) => nonBasis.GetRangeWithBasis(this, false);// RangeAsBasis(nonBasis.StartTickPosition, nonBasis.EndTickPosition);
-        //public Range RangeAsBasis(long startTickPosition, long endTickPosition)
-        //{
-	       // var len = Math.Abs(NonZeroLength);
-	       // var start = (startTickPosition - StartTickPosition) / len;
-	       // var end = (endTickPosition - StartTickPosition) / len;
-	       // var basisDir = Math.Sign(len);
-	       // return new Range(-start * basisDir, end * basisDir);
-        //}
-
-        //public void SetWithRange(Range range) => SetWithRange(range, this);
-        //public void SetWithRange(Range range, IFocal basis)
-        //{
-	       // var len = (double)(basis.AbsLengthInTicks);
-	       // var sp = (long) (-range.Start * len + basis.StartTickPosition);
-	       // var ep = (long) (range.End * len + basis.StartTickPosition);
-        //    StartTickPosition = sp;
-	       // EndTickPosition = ep;
-        //}
-
+        public Range RangeAsBasis(IFocal nonBasis) => nonBasis.GetRangeWithBasis(this, false);
 
         public Range UnitTRangeIn(IFocal basis)
 	    {
