@@ -109,11 +109,11 @@ namespace Numbers.Views
         }
         public void SetStartValueByPoint(SKPoint newPoint)
         {
-	        Number.StartValue = -TFromPoint(newPoint) * BasisSign;
+	        Number.StartValue = -TFromPoint(newPoint);
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {
-	        Number.EndValue = TFromPoint(newPoint) * BasisSign;
+	        Number.EndValue = TFromPoint(newPoint);
         }
         public void SetValueOfBasis(SKPoint newPoint, UIKind kind)
         {

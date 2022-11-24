@@ -271,7 +271,7 @@ namespace Numbers.Views
             TickPoints.Clear();
             for (long i = (long)rangeInBasis.Min; i <= (long)rangeInBasis.Max; i++)
             {
-	            var isOnTick = tickToBasisRatio <= 1.0 || (long)(i / tickToBasisRatio) * (long)tickToBasisRatio == i;
+	            var isOnTick = Math.Abs(tickToBasisRatio) <= 1.0 ? true : (long)(i / tickToBasisRatio) * (long)tickToBasisRatio == i;
 	            var offset = isOnTick ? offsetRange : offsetRange / 8f;
                 TickPoints.Add(DrawTick((float)i, offset * upDir, Renderer.Pens.TickBoldPen));  
             }
