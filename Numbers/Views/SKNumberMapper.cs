@@ -107,6 +107,23 @@ namespace Numbers.Views
 	            SetStartValueByPoint(newPoint);
             }
         }
+
+        public void MoveSegmentByT(SKSegment orgSeg, float diffT)
+        {
+	        var orgStartT = -DomainMapper.BasisSegment.TFromPoint(orgSeg.StartPoint, false).Item1;
+	        var orgEndT = DomainMapper.BasisSegment.TFromPoint(orgSeg.EndPoint, false).Item1;
+	        Number.StartValue = orgStartT - diffT;
+	        Number.EndValue = orgEndT + diffT;
+        }
+        public void MoveBasisSegmentByT(SKSegment orgSeg, float diffT)
+        {
+	        var dl = DomainMapper.DisplayLine;
+	        var orgStartT = dl.TFromPoint(orgSeg.StartPoint, false).Item1;
+	        var orgEndT = dl.TFromPoint(orgSeg.EndPoint, false).Item1;
+	        NumberSegment.StartPoint = dl.PointAlongLine(orgStartT + diffT);
+	        NumberSegment.EndPoint = dl.PointAlongLine(orgEndT + diffT);
+        }
+
         public void SetStartValueByPoint(SKPoint newPoint)
         {
 	        Number.StartValue = -TFromPoint(newPoint);
@@ -117,9 +134,7 @@ namespace Numbers.Views
         }
         public void SetValueOfBasis(SKPoint newPoint, UIKind kind)
         {
-	        var ds = DomainMapper.DisplayLine;
-	        var pt = ds.ProjectPointOnto(newPoint);
-	        var nsc = NumberSegment.Clone();
+	        var pt = DomainMapper.DisplayLine.ProjectPointOnto(newPoint);
 	        if (kind.IsMajor())
 	        {
 		        NumberSegment.EndPoint = pt;

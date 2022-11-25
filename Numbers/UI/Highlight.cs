@@ -103,8 +103,12 @@ namespace Numbers.UI
         public static bool IsNumber(this UIKind kind)
 	    {
 		    return (kind & UIKind.Number) != UIKind.None;
-	    }
-	    public static bool IsDomain(this UIKind kind)
+        }
+        public static bool IsLine(this UIKind kind)
+        {
+	        return (kind & UIKind.Line) != UIKind.None;
+        }
+        public static bool IsDomain(this UIKind kind)
 	    {
 		    return (kind & UIKind.Domain) != UIKind.None;
 	    }

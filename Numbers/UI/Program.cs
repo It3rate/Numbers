@@ -140,7 +140,7 @@ namespace Numbers.UI
 	        for (int i = 1; i < focalPositions.Length; i += 2)
 	        {
 		        var domain = trait.AddDomain(unitFocal.Id, range.Id);
-		        domain.BasisIsReciprocal = true;
+		        //domain.BasisIsReciprocal = true;
 		        result.Add(domain);
 		        var focal = FocalRef.CreateByValues(trait, focalPositions[i - 1], focalPositions[i]);
 		        var num = new Number(domain, focal.Id);

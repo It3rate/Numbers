@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Numbers.Core;
 using Numbers.UI;
@@ -49,26 +50,35 @@ namespace Numbers.Views
         {
             highlight.Reset();
             highlight.OrginalPoint = input;
+            SKSegment hoverSeg;
             // number segments and units
             foreach (var nm in NumberMappersByDomain(true))
             {
-                if (nm.RenderSegment != null)
-                {
-                    var seg = nm.RenderSegment;
-                    var isSameMapper = ignoreSet.ActiveHighlight != null && ignoreSet.ActiveHighlight.Mapper == nm;
-                    var kind = UIKind.Number | (nm.IsBasis ? UIKind.Basis : UIKind.None);
-                    if (!isSameMapper && input.DistanceTo(seg.StartPoint) < maxDist)
-                    {
-                        highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point);
-                        goto Found;
-                    }
+	            if (nm.RenderSegment != null)
+	            {
+		            var seg = nm.RenderSegment;
+		            var isSameMapper = ignoreSet.ActiveHighlight != null && ignoreSet.ActiveHighlight.Mapper == nm;
+		            var kind = UIKind.Number | (nm.IsBasis ? UIKind.Basis : UIKind.None);
 
-                    if (!isSameMapper && input.DistanceTo(seg.EndPoint) < maxDist)
-                    {
-                        highlight.Set(input, seg.EndPoint, nm, 1, kind | UIKind.Major | UIKind.Point);
+		            if (!isSameMapper && input.DistanceTo(seg.StartPoint) < maxDist)
+		            {
+			            highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point);
+			            goto Found;
+		            }
+
+		            if (!isSameMapper && input.DistanceTo(seg.EndPoint) < maxDist)
+		            {
+			            highlight.Set(input, seg.EndPoint, nm, 1, kind | UIKind.Major | UIKind.Point);
+			            goto Found;
+		            }
+
+		            if (!isSameMapper && seg.DistanceTo(input, true) < maxDist)
+		            {
+			            var t = nm.DomainMapper.BasisSegment.TFromPoint(input, false).Item1;
+			            highlight.Set(input, input, nm, t, kind | UIKind.Line);
                         goto Found;
                     }
-                }
+	            }
             }
 
             foreach (var dm in DomainMappers())

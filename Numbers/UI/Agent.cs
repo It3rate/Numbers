@@ -159,11 +159,14 @@ namespace Numbers.UI
                 {
                     IsDragging = true;
 					SelCurrent.Set(_highlight.Clone());
-					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm && nm.IsBasis)
+					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm)
 					{
-						SaveNumberValues(SavedNumbers);
 						SelBegin.OriginalSegment = nm.NumberSegment.Clone();
 						SelBegin.OriginalFocalPositions = nm.Number.Focal.FocalPositions;
+						if (nm.IsBasis)
+						{
+							SaveNumberValues(SavedNumbers);
+                        }
 					}
                 }
             }
@@ -173,8 +176,22 @@ namespace Numbers.UI
                 var activeHighlight = SelCurrent.ActiveHighlight;
 	            var activeKind = activeHighlight.Kind;
 	            if (activeHighlight.Mapper is SKNumberMapper nm)
-	            {
-		            if (activeKind.IsBasis())
+	            { 
+		            if (activeKind.IsLine())
+		            {
+			            if (nm.IsBasis)
+			            {
+				            var curT = nm.DomainMapper.DisplayLine.TFromPoint(_highlight.OrginalPoint, false).Item1;
+                            var orgT = nm.DomainMapper.DisplayLine.TFromPoint(activeHighlight.OrginalPoint, false).Item1;
+				            nm.MoveBasisSegmentByT(SelBegin.OriginalSegment, curT - orgT);
+			            }
+			            else
+			            {
+				            var curT = nm.DomainMapper.BasisSegment.TFromPoint(_highlight.OrginalPoint, false).Item1;
+                            nm.MoveSegmentByT(SelBegin.OriginalSegment, curT - activeHighlight.T);
+                        }
+		            }
+		            else if (activeKind.IsBasis())
 		            {
 			            nm.SetValueByKind(_highlight.SnapPoint, activeKind);
 			            LockBasisOnDrag = _isControlDown;
