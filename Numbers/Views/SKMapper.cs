@@ -35,7 +35,7 @@ namespace Numbers.Views
 	        MathElement = element;
         }
 
-        public abstract SKPath GetHighlightAt(float t, SKPoint targetPoint);
+        public abstract SKPath GetHighlightAt(Highlight highlight);
 
     }
 }

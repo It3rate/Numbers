@@ -298,9 +298,9 @@ namespace Numbers.Views
 	        return pts.Item1;
         }
 
-        public override SKPath GetHighlightAt(float t, SKPoint targetPoint)
+        public override SKPath GetHighlightAt(Highlight highlight)
 	    {
-		    return Renderer.GetCirclePath(targetPoint);
+		    return Renderer.GetCirclePath(highlight.SnapPoint);
 	    }
 	}
 }

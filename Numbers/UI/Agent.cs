@@ -184,7 +184,8 @@ namespace Numbers.UI
 				            var curT = nm.DomainMapper.DisplayLine.TFromPoint(_highlight.OrginalPoint, false).Item1;
                             var orgT = nm.DomainMapper.DisplayLine.TFromPoint(activeHighlight.OrginalPoint, false).Item1;
 				            nm.MoveBasisSegmentByT(SelBegin.OriginalSegment, curT - orgT);
-			            }
+				            BasisChanged(nm);
+                        }
 			            else
 			            {
 				            var curT = nm.DomainMapper.BasisSegment.TFromPoint(_highlight.OrginalPoint, false).Item1;
@@ -194,13 +195,7 @@ namespace Numbers.UI
 		            else if (activeKind.IsBasis())
 		            {
 			            nm.SetValueByKind(_highlight.SnapPoint, activeKind);
-			            LockBasisOnDrag = _isControlDown;
-			            if (LockBasisOnDrag)
-			            {
-				            nm.AdjustBySegmentChange(SelBegin);
-			            }
-
-			            SyncMatchingBasis(nm.DomainMapper, nm.Number.BasisFocal);
+                        BasisChanged(nm);
 		            }
 		            else
 		            {
@@ -222,6 +217,7 @@ namespace Numbers.UI
 
             return true;
         }
+
         public bool MouseUp(MouseEventArgs e)
         {
 	        if (IsPaused) {return false;}
@@ -297,6 +293,17 @@ namespace Numbers.UI
             }
         }
 
+
+        private void BasisChanged(SKNumberMapper nm)
+        {
+	        LockBasisOnDrag = _isControlDown;
+	        if (LockBasisOnDrag)
+	        {
+		        nm.AdjustBySegmentChange(SelBegin);
+	        }
+
+	        SyncMatchingBasis(nm.DomainMapper, nm.Number.BasisFocal);
+        }
         private void FlipBasis()
         {
 	        var dm = WorkspaceMapper.DomainMapperByIndex(0);

@@ -22,9 +22,11 @@ namespace Numbers.Views
 
 	    public void Draw()
 	    {
-		    if (Agent.SelHighlight.HasHighlight)
+		    var sel = Agent.SelHighlight;
+		    if (sel.HasHighlight)
 		    {
-			    Renderer.Canvas.DrawPath(Agent.SelHighlight.ActiveHighlight.HighlightPath(), Renderer.Pens.HoverPen);
+			    var pen = sel.ActiveHighlight.Kind.IsLine() ? Renderer.Pens.HighlightPen : Renderer.Pens.HoverPen;
+			    Renderer.Canvas.DrawPath(sel.ActiveHighlight.HighlightPath(), pen);
 		    }
         }
     }

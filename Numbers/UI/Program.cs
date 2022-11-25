@@ -24,8 +24,8 @@ namespace Numbers.UI
             Trait trait = new Trait();
             var unitSize = 10;
             var unit = FocalRef.CreateByValues(trait, 0, unitSize);
-            var wm = new SKWorkspaceMapper(agent.Workspace, Renderer, 20, 20, 1000, 800);
-            var domains = CreateDomainLines(agent.Workspace, trait, -15, 10, 30, -40, -35, 24, -4, -13);
+            var wm = new SKWorkspaceMapper(agent.Workspace, Renderer, 20, 20, 1000, 400);
+            var domains = CreateDomainLines(agent.Workspace, trait, 15, 10, -40, -30, 35, 24, 4, -13);
             var d2 = domains[2];
             var d1n2 = MyBrain.NumberStore[domains[1].NumberIds[2]];
             var nn = new Number(d2, d1n2.FocalId);

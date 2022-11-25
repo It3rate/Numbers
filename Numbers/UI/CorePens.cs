@@ -104,7 +104,7 @@ namespace Numbers.UI
             BackHatch = GetHatch(SKColors.Black, false);
             ForeHatch = GetHatch(SKColors.Black, true);
             HoverPen = GetPen(SKColor.Parse("#80D02020"), DefaultWidth * 2);
-            HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
+            HighlightPen = GetPen(SKColors.LightYellow, DefaultWidth * 1f);
 
             UnitInlinePen = GetPen(UnitColor, DefaultWidth * 2f);
             UnotInlinePen = GetPen(UnotColor, DefaultWidth * 2f);
@@ -155,11 +155,11 @@ namespace Numbers.UI
             UnitMarkerText = GetText(UnitTextColor, 12, "Arial", false, true);
             UnotMarkerText = GetText(UnotTextColor, 12, "Arial", false, true);
 
-            TickColor = SKColors.LightGray;
+            TickColor = SKColors.Gray;
             UnitPen = GetPen(UnitColor, DefaultWidth * 4f, SKStrokeCap.Butt);
             UnotPen = GetPen(UnotColor, DefaultWidth * 4f, SKStrokeCap.Butt);
             UnitStrokePen = null;
-            MarkerColor = SKColors.LightGray;
+            MarkerColor = SKColors.Gray;
 
             BkgBrush = GetBrush(BkgColor);
             BackHatch = GetHatch(SKColors.Black, false);
@@ -172,7 +172,7 @@ namespace Numbers.UI
             MarkerBrush = GetBrush(MarkerColor);
 
             HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
-            HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 8f);
+            HighlightPen = GetPen(SKColors.LightYellow, DefaultWidth * 1f);
 
             UnitInlinePen = GetPen(UnitColor, DefaultWidth * 2.5f);
             UnotInlinePen = GetPen(UnotColor, DefaultWidth * 2.5f);
@@ -198,6 +198,11 @@ namespace Numbers.UI
             LineTextPen.TextAlign = SKTextAlign.Center;
             TextBackgroundPen = GetPen(SKColor.Parse("#80303040"), 0);
             TextBackgroundPen.Style = SKPaintStyle.Fill;
+
+            TextFractionPen = new SKPaint(new SKFont(SKTypeface.Default, 10f));
+            TextFractionPen.IsAntialias = true;
+            TextFractionPen.Color = new SKColor(0xB0, 0xB0, 0xB0);
+            TextFractionPen.TextAlign = SKTextAlign.Left;
 
             SlugTextPen = new SKPaint(new SKFont(SKTypeface.Default, 8f));
             SlugTextPen.IsAntialias = true;

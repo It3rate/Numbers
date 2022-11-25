@@ -63,10 +63,8 @@ namespace Numbers.UI
             return new Highlight(new SKPoint(OrginalPoint.X, OrginalPoint.Y), Mapper, T, Kind);
 	    }
 
-	    public SKPath HighlightPath()
-	    {
-		    return Mapper.GetHighlightAt(T, SnapPoint);
-	    }
+	    public SKPath HighlightPath() => Mapper.GetHighlightAt(this);
+
     }
 
     [Flags]

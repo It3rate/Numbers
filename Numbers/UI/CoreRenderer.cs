@@ -125,7 +125,16 @@ namespace Numbers.UI
 		    path.AddCircle(center.X, center.Y, radius);
 		    return path;
 	    }
-	    public void GeneratePens(ColorTheme colorTheme = ColorTheme.Normal)
+	    public SKPath GetSegmentPath(SKSegment segment, float radius = 10)
+	    {
+		    var path = new SKPath();
+		    var (pt0, pt1) = segment.PerpendicularLine(0, radius);
+		    var ptDiff = pt1 - pt0;
+            path.AddPoly(new SKPoint[]
+	            {segment.StartPoint + ptDiff, segment.EndPoint + ptDiff, segment.EndPoint - ptDiff, segment.StartPoint - ptDiff}, true);
+		    return path;
+	    }
+        public void GeneratePens(ColorTheme colorTheme = ColorTheme.Normal)
 	    {
 		    Pens = new CorePens(1, colorTheme);
 	    }

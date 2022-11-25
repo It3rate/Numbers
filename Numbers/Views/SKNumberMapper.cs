@@ -145,9 +145,18 @@ namespace Numbers.Views
 	        }
         }
 
-        public override SKPath GetHighlightAt(float t, SKPoint targetPoint)
+        public override SKPath GetHighlightAt(Highlight highlight)
         {
-	        return Renderer.GetCirclePath(targetPoint);
+	        SKPath result;
+	        if (highlight.Kind.IsLine())
+	        {
+		        result = Renderer.GetSegmentPath(RenderSegment, 0f);
+	        }
+	        else
+	        {
+		        result = Renderer.GetCirclePath(highlight.SnapPoint);
+            }
+	        return result;
         }
     }
 }
