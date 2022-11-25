@@ -7,9 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Numbers.Core;
-using Numbers.UI;
-using Numbers.Views;
+using Numbers.Mappers;
+using Numbers.Renderer;
 
 namespace Numbers
 {
@@ -17,7 +16,7 @@ namespace Numbers
     {
 	    private readonly CoreRenderer _renderer;
 	    private readonly Control _control;
-	    private readonly IAgent _agent;
+	    private readonly Agent.Agent _agent;
 
         public CoreForm()
         {
@@ -36,7 +35,7 @@ namespace Numbers
             KeyUp += OnKeyUp;
             KeyPreview = true;
 
-            _agent = new Agent(_renderer);
+            _agent = new Agent.Agent(_renderer);
             _renderer.CurrentAgentMapper = new SKAgentMapper(_agent, _renderer);
         }
         private void OnMouseDown(object sender, MouseEventArgs e)

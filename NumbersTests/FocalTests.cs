@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using Numbers.Core;
+using NumbersCore.Primitives;
 
 namespace NumbersTests
 {

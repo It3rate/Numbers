@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="DomainTests.cs" />
     <Compile Include="FocalTests.cs" />
+    <Compile Include="MathF.cs" />
     <Compile Include="NumberTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WorkspaceTests.cs" />
@@ -59,9 +60,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Numbers\Numbers.csproj">
-      <Project>{3229F532-8F6A-4EC6-9DBA-C1B5BFAE6FAE}</Project>
-      <Name>Numbers</Name>
+    <ProjectReference Include="..\NumbersCore\NumbersCore.csproj">
+      <Project>{2726e18f-5916-4916-bc0e-68cb18426b65}</Project>
+      <Name>NumbersCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

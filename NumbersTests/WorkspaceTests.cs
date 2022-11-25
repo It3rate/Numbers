@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Numbers.Core;
+using NumbersCore.Primitives;
 
 namespace NumbersTests
 {

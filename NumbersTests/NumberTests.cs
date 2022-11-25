@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Numbers.Core;
-using Numbers.UI;
+using NumbersCore.Primitives;
 
 namespace NumbersTests
 {
@@ -132,28 +131,28 @@ namespace NumbersTests
 		    Assert.AreEqual(1, n0.Direction);
 		    Assert.AreEqual(-1, n4.Direction);
 		    Assert.AreEqual(n1.DomainId, n0.Domain.Id);
-		    Assert.AreEqual(n0.StartValue, n1.StartValue, MathF.tolerance);
+		    Assert.AreEqual(n0.StartValue, n1.StartValue, Utils.Tolerance);
 		    Assert.AreEqual(n1.EndValue, n1.Focal.LengthInTicks / (double) n1.BasisTicks);
-		    Assert.AreEqual(0, n3.RemainderStartValue, MathF.tolerance);
-		    Assert.AreEqual(5, n3.RemainderEndValue, MathF.tolerance);
-		    Assert.AreEqual(2, n2.RemainderStartValue, MathF.tolerance);
-		    Assert.AreEqual(0, n2.RemainderEndValue, MathF.tolerance);
+		    Assert.AreEqual(0, n3.RemainderStartValue, Utils.Tolerance);
+		    Assert.AreEqual(5, n3.RemainderEndValue, Utils.Tolerance);
+		    Assert.AreEqual(2, n2.RemainderStartValue, Utils.Tolerance);
+		    Assert.AreEqual(0, n2.RemainderEndValue, Utils.Tolerance);
 
-		    Assert.AreEqual(3, n2.CeilingRange.Start, MathF.tolerance);
-		    Assert.AreEqual(0, n2.CeilingRange.End, MathF.tolerance);
-		    Assert.AreEqual(5, n3.FloorRange.Start, MathF.tolerance);
-		    Assert.AreEqual(4, n3.FloorRange.End, MathF.tolerance);
-		    Assert.AreEqual(-5, n5.RoundedRange.Start, MathF.tolerance);
-		    Assert.AreEqual(7, n5.RoundedRange.End, MathF.tolerance);
-		    Assert.AreEqual(-0.3, n5.RemainderRange.Start, MathF.tolerance);
-		    Assert.AreEqual(0.9, n5.RemainderRange.End, MathF.tolerance);
+		    Assert.AreEqual(3, n2.CeilingRange.Start, Utils.Tolerance);
+		    Assert.AreEqual(0, n2.CeilingRange.End, Utils.Tolerance);
+		    Assert.AreEqual(5, n3.FloorRange.Start, Utils.Tolerance);
+		    Assert.AreEqual(4, n3.FloorRange.End, Utils.Tolerance);
+		    Assert.AreEqual(-5, n5.RoundedRange.Start, Utils.Tolerance);
+		    Assert.AreEqual(7, n5.RoundedRange.End, Utils.Tolerance);
+		    Assert.AreEqual(-0.3, n5.RemainderRange.Start, Utils.Tolerance);
+		    Assert.AreEqual(0.9, n5.RemainderRange.End, Utils.Tolerance);
 
 		    Assert.IsTrue(n3.IsUnitPerspective);
 		    Assert.IsTrue(_domain.BasisNumber.IsUnitPerspective);
 		    Assert.IsTrue(n4.IsUnitPerspective);
 		    Assert.IsFalse(n4.IsUnotPerspective);
-		    Assert.AreEqual(0.472636, n3.RangeInMinMax.Start, MathF.tolerance);
-		    Assert.AreEqual(0.519900, n3.RangeInMinMax.End, MathF.tolerance);
+		    Assert.AreEqual(0.472636, n3.RangeInMinMax.Start, Utils.Tolerance);
+		    Assert.AreEqual(0.519900, n3.RangeInMinMax.End, Utils.Tolerance);
 
 		    n1.Subtract(n2);
 		    Assert.AreEqual(new Range(-3.2, 3), n1.Value);

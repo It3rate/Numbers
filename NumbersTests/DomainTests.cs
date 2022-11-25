@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Numbers.Core;
-using Numbers.UI;
+using NumbersCore.Primitives;
 
 namespace NumbersTests
 {
@@ -36,7 +35,7 @@ namespace NumbersTests
             Assert.AreEqual(10, _domain.BasisFocal.LengthInTicks);
             Assert.AreEqual(_domain.BasisFocal.Id, _unitFocal.Id);
             Assert.AreEqual(_domain.MinMaxFocal.Id, _maxMin.Id);
-            Assert.AreEqual(_domain.MinMaxRange.Length, 10.0, MathF.tolerance);
+            Assert.AreEqual(_domain.MinMaxRange.Length, 10.0, Utils.Tolerance);
 
             var f0 = FocalRef.CreateByValues(_trait, 10, 20);
             var n0 = new Number(_domain, f0.Id);
