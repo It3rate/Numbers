@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using NumbersCore.Primitives;
+using NumbersCore.Utils;
 
 namespace NumbersTests
 {
@@ -12,7 +13,7 @@ namespace NumbersTests
 	    [TestInitialize]
 	    public void Init()
 	    {
-		    _trait = new Trait();
+		    _trait = new Trait(Brain.ActiveBrain);
 	    }
 
 	    [TestMethod]

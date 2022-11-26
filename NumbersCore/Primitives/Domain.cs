@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
@@ -21,7 +22,7 @@ namespace NumbersCore.Primitives
         private static int domainCounter = 1 + (int)MathElementKind.Domain;
 
         public int Id { get; }
-        public int CreationIndex => Id - (int) MathElementKind.Domain - 1;
+        public int CreationIndex => Id - (int)Kind - 1;
 
         public int TraitId { get; }
         public Trait Trait => Brain.TraitStore[TraitId];

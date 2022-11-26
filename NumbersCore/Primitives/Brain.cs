@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
@@ -14,18 +15,21 @@ namespace NumbersCore.Primitives
 
 	    public Dictionary<int, Network> NetworkStore { get; } = new Dictionary<int, Network>();
         public Dictionary<int, Formula> FormulaStore { get; } = new Dictionary<int, Formula>();
-	    public Dictionary<int, Trait> TraitStore { get; } = new Dictionary<int, Trait>();
+        public Dictionary<int, Definition> DefinitionStore { get; } = new Dictionary<int, Definition>();
+        public Dictionary<int, Trait> TraitStore { get; } = new Dictionary<int, Trait>();
 	    public Dictionary<int, Transform> TransformStore { get; } = new Dictionary<int, Transform>();
 	    public Dictionary<int, Number> NumberStore { get; } = new Dictionary<int, Number>();
 
 	    private int _networkCounter = 1 + (int)MathElementKind.Network;
 	    private int _formulaCounter = 1 + (int)MathElementKind.Formula;
-	    private int _traitCounter = 1 + (int)MathElementKind.Trait;
+	    private int _definitionCounter = 1 + (int)MathElementKind.Definition;
+        private int _traitCounter = 1 + (int)MathElementKind.Trait;
 	    private int _transformCounter = 1 + (int)MathElementKind.Transform;
 	    private int _numberCounter = 1 + (int)MathElementKind.Number;
         public int NextNetworkId() => _networkCounter++;
-	    public int NextFormulaId() => _formulaCounter++;
-	    public int NextTraitId() => _traitCounter++;
+        public int NextFormulaId() => _formulaCounter++;
+        public int NextDefinitionId() => _definitionCounter++;
+        public int NextTraitId() => _traitCounter++;
 	    public int NextTransformId() => _transformCounter++;
 	    public int NextNumberId() => _numberCounter++;
 

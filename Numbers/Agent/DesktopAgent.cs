@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Numbers.Mappers;
 using Numbers.Renderer;
 using NumbersCore.Primitives;
+using NumbersCore.Utils;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 

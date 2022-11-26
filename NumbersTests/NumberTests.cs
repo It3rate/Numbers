@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NumbersCore.Primitives;
+using NumbersCore.Utils;
 
 namespace NumbersTests
 {
@@ -12,18 +13,20 @@ namespace NumbersTests
     [TestClass]
     public class NumberTests
     {
+	    private Brain _brain;
 	    private Trait _trait;
-	    private FocalRef _unitFocal;
+        private FocalRef _unitFocal;
 	    private FocalRef _maxMin;
 	    private Domain _domain;
 
 	    [TestInitialize]
 	    public void Init()
 	    {
-		    _trait = new Trait();
+		    _brain = Brain.ActiveBrain;
+            _trait = new Trait(_brain);
 		    _unitFocal = FocalRef.CreateByValues(_trait, 0, 10);
 		    _maxMin = FocalRef.CreateByValues(_trait, -1000, 1010);
-		    _domain = new Domain(_trait.Id, _unitFocal.Id, _maxMin.Id);
+		    _domain = new Domain(_trait, _unitFocal.Id, _maxMin.Id);
 	    }
 	    [TestMethod]
 	    public void UnitChangePositionTests()

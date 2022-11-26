@@ -1,4 +1,6 @@
-﻿namespace NumbersCore.Primitives
+﻿using NumbersCore.Utils;
+
+namespace NumbersCore.Primitives
 {
 	public class Network
     {

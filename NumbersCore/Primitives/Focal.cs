@@ -1,5 +1,6 @@
 ﻿
 using System;
+using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
@@ -34,13 +35,14 @@ namespace NumbersCore.Primitives
         public MathElementKind Kind => MathElementKind.Focal;
 	    public int Id { get; }
 	    private static int focalCounter = 1 + (int)MathElementKind.Focal;
-	    // can be dealt with by expanding resolution (mult all) or range (add)
-	    //bool startPrecisionUnderflow; 
-	    //bool endPrecisionUnderflow;
-	    //bool startRangeOverflow;
-	    //bool endRangeOverflow;
+	    public int CreationIndex => Id - (int)Kind - 1;
+        // can be dealt with by expanding resolution (mult all) or range (add)
+        //bool startPrecisionUnderflow; 
+        //bool endPrecisionUnderflow;
+        //bool startRangeOverflow;
+        //bool endRangeOverflow;
 
-	    public Trait MyTrait {get;}
+        public Trait MyTrait {get;}
         public int StartId { get; set; } // ref to start point position
 	    public int EndId { get; set; } // ref to end point position
         public long StartTickPosition

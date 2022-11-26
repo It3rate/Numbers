@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
@@ -6,6 +7,7 @@ namespace NumbersCore.Primitives
     {
         public MathElementKind Kind => MathElementKind.Formula;
         public int Id { get; set; }
+        public int CreationIndex => Id - (int)Kind - 1;
         public Brain Brain { get; }
 
         //private static int formulaCounter = 1 + (int)MathElementKind.Formula;

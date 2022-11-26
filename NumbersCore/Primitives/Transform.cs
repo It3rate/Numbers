@@ -1,4 +1,6 @@
-﻿namespace NumbersCore.Primitives
+﻿using NumbersCore.Utils;
+
+namespace NumbersCore.Primitives
 {
 	// **** All ops, history, sequences, equations should fit on traits as focals.
 
@@ -60,7 +62,8 @@
 	    public abstract MathElementKind Kind { get; }
 
 	    public int Id { get; set; }
-	    public Brain Brain { get; }
+	    public int CreationIndex => Id - (int)Kind - 1;
+        public Brain Brain { get; }
         public TransformKind TransformKind { get; set; }
 	    public Selection Selection { get; set; }
 	    public Number Repeat { get; set; }

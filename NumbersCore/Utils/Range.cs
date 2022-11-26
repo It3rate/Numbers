@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NumbersCore.Primitives
+namespace NumbersCore.Utils
 {
 	public struct Range
     {

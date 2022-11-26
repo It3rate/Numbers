@@ -1,12 +1,9 @@
-﻿namespace NumbersCore.Primitives
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using NumbersCore.Primitives;
 
-    public interface IAgent
+namespace NumbersCore.Utils
+{
+	public interface IAgent
     {
 	    Brain Brain { get; }
 	    Workspace Workspace { get; set; }

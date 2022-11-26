@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
@@ -10,18 +11,21 @@ namespace NumbersCore.Primitives
 		public Brain Brain { get; }
         public MathElementKind Kind => MathElementKind.Trait;
         public int Id { get; }
+        public int CreationIndex => Id - (int)Kind - 1;
         public string Name { get; private set; }
 
-        public Dictionary<int, Transform> TransformStore => Brain.TransformStore;
-        public Dictionary<int, Trait> TraitStore => Brain.TraitStore;
         public Dictionary<int, long> PositionStore { get; } = new Dictionary<int, long>(4096);
         public Dictionary<int, FocalRef> FocalStore { get; } = new Dictionary<int, FocalRef>();
         public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
 
-        public Trait(Brain brain)
+        public Dictionary<int, Transform> TransformStore => Brain.TransformStore;
+        public Dictionary<int, Trait> TraitStore => Brain.TraitStore;
+
+        public Trait(Brain brain, string name = "")
         {
 	        Brain = brain;
 		    Id = Brain.NextTraitId();
+		    Name = name == "" ? "Trait_" + CreationIndex : name;
             TraitStore.Add(Id, this);
 	    }
 

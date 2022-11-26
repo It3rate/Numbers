@@ -42,20 +42,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Primitives\Brain.cs" />
-    <Compile Include="Primitives\Definitions.cs" />
+    <Compile Include="Primitives\Definition.cs" />
     <Compile Include="Primitives\Domain.cs" />
     <Compile Include="Primitives\Focal.cs" />
     <Compile Include="Primitives\Formula.cs" />
-    <Compile Include="Primitives\IAgent.cs" />
-    <Compile Include="Primitives\IMathElement.cs" />
+    <Compile Include="Utils\IAgent.cs" />
+    <Compile Include="Utils\IMathElement.cs" />
     <Compile Include="Primitives\Network.cs" />
     <Compile Include="Primitives\Number.cs" />
-    <Compile Include="Primitives\Range.cs" />
+    <Compile Include="Utils\Range.cs" />
     <Compile Include="Primitives\Selection.cs" />
     <Compile Include="Primitives\Trait.cs" />
     <Compile Include="Primitives\Transform.cs" />
     <Compile Include="Primitives\Workspace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

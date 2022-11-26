@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NumbersCore.Primitives;
+using NumbersCore.Utils;
 
 namespace NumbersTests
 {
@@ -13,7 +14,8 @@ namespace NumbersTests
     [TestClass]
     public class DomainTests
     {
-        private Trait _trait;
+	    private Brain _brain;
+	    private Trait _trait;
         private FocalRef _unitFocal;
         private FocalRef _maxMin;
         private Domain _domain;
@@ -21,10 +23,11 @@ namespace NumbersTests
         [TestInitialize]
         public void Init()
         {
-	        _trait = new Trait();
+	        _brain = Brain.ActiveBrain;
+            _trait = new Trait(_brain);
 	        _unitFocal = FocalRef.CreateByValues(_trait, -4, 6);
 	        _maxMin = FocalRef.CreateByValues(_trait, -54, 46);
-	        _domain = new Domain(_trait.Id, _unitFocal.Id, _maxMin.Id);
+	        _domain = new Domain(_trait, _unitFocal.Id, _maxMin.Id);
         }
 
         [TestMethod]

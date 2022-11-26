@@ -1,5 +1,6 @@
 ﻿
 using System;
+using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
@@ -11,7 +12,8 @@ namespace NumbersCore.Primitives
         public Number this[int i] => Brain.NumberStore[i];
 
 		public int Id { get; set; }
-		public int DomainId
+		public int CreationIndex => Id - (int)Kind - 1;
+        public int DomainId
 		{
 			get => Domain.Id;
 			set => Domain = Domain.Trait.DomainStore[value];

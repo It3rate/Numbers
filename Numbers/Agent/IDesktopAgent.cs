@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
 using NumbersCore.Primitives;
+using NumbersCore.Utils;
 
 namespace Numbers.Agent
 {
