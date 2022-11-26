@@ -6,23 +6,22 @@ namespace NumbersCore.Primitives
 	public class Number : IMathElement
 	{
 		public MathElementKind Kind => MathElementKind.Number;
-		private static int numberCounter = 1 + (int) MathElementKind.Number;
 
-		public Brain MyBrain => Brain.ActiveBrain;
-        public Number this[int i] => MyBrain.NumberStore[i];
+		public Brain Brain => Domain.Brain;
+        public Number this[int i] => Brain.NumberStore[i];
 
 		public int Id { get; set; }
 		public int DomainId
 		{
 			get => Domain.Id;
-			set => Domain = Domain.MyTrait.DomainStore[value];
+			set => Domain = Domain.Trait.DomainStore[value];
 		}
 
 		// number to the power of x, where x is also a focal. Eventually this is equations, lazy solve them.
 		public int FocalId { get; set; }
 
 		public Domain Domain { get; set; }
-		public Trait Trait => Domain.MyTrait;
+		public Trait Trait => Domain.Trait;
 		public IFocal Focal => Trait.FocalStore[FocalId];
 		public IFocal BasisFocal => Domain.BasisFocal;
 
@@ -37,15 +36,15 @@ namespace NumbersCore.Primitives
 
 		public Number(Domain domain, int focalId)
 		{
-			Id = numberCounter++;
 			Domain = domain;
 			FocalId = focalId;
+			Id = Brain.NextNumberId();
 			domain.NumberIds.Add(Id);
-			MyBrain.NumberStore.Add(Id, this);
+			Brain.NumberStore.Add(Id, this);
 		}
 
 		public Number(Domain domain, Range value) : this(domain, domain.CreateFocalFromRange(value).Id) { }
-		public Number(Domain domain, long start, long end) : this(domain, FocalRef.CreateByValues(domain.MyTrait, start, end).Id) { }
+		public Number(Domain domain, long start, long end) : this(domain, FocalRef.CreateByValues(domain.Trait, start, end).Id) { }
 
         private long StartTickPosition
 		{

@@ -6,16 +6,17 @@ namespace NumbersCore.Primitives
 	public class Workspace
     {
 	    private static int _idCounter = 1;
-	    public int Id { get; }
+        public int Id { get; }
+        public Brain Brain { get; }
 
-        public Brain Brain => Brain.ActiveBrain;
         private HashSet<int> ActiveIds { get; } = new HashSet<int>();
         public int ActiveElementCount => ActiveIds.Count;
 
         public bool IsActive { get; set; } = true;
 
-        public Workspace()
+        public Workspace(Brain brain)
         {
+	        Brain = brain;
 	        Id = _idCounter++;
             Brain.Workspaces.Add(this);
         }
@@ -94,7 +95,7 @@ namespace NumbersCore.Primitives
 
         public IEnumerable<Domain> ActiveSiblingDomains(Domain domain)
         {
-	        var ds = domain.MyTrait.DomainStore;
+	        var ds = domain.Trait.DomainStore;
 	        var domainIds = ds.Keys.Where(key => ActiveIds.Contains(key));
 	        foreach (var id in domainIds)
 	        {

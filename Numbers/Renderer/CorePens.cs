@@ -364,7 +364,7 @@ namespace Numbers.Renderer
 
 	        var result = new SKPaint
 	        {
-		        PathEffect = SKPathEffect.Create2DPath(SKMatrix.MakeScale(8, 8), hatch),
+		        PathEffect = SKPathEffect.Create2DPath(SKMatrix.CreateScale(8, 8), hatch),
 		        Color = color,// SKColor.FromHsl(200f, 14f, 18f),
 		        Style = SKPaintStyle.Stroke,
 		        IsAntialias = true,

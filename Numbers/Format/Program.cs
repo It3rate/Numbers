@@ -20,7 +20,7 @@ namespace Numbers.Format
         private SKWorkspaceMapper test2(Agent.DesktopAgent desktopAgent)
         {
 
-            Trait trait = new Trait();
+            Trait trait = new Trait(Brain);
             var unitSize = 10;
             var unit = FocalRef.CreateByValues(trait, 0, unitSize);
             var wm = new SKWorkspaceMapper(desktopAgent, desktopAgent.Workspace, Renderer, 20, 20, 1000, 400);
@@ -33,7 +33,7 @@ namespace Numbers.Format
         }
         private SKWorkspaceMapper test0(Agent.DesktopAgent desktopAgent)
         {
-            Trait trait = new Trait();
+            Trait trait = new Trait(Brain);
             var unitSize = 8;
             var unit = FocalRef.CreateByValues(trait, 0, unitSize);
             var range = FocalRef.CreateByValues(trait, -16 * unitSize, 16 * unitSize);
@@ -68,7 +68,7 @@ namespace Numbers.Format
         }
         private SKWorkspaceMapper test1(Agent.DesktopAgent desktopAgent)
         {
-            Trait trait = new Trait();
+            Trait trait = new Trait(Brain);
             var unitSize = 4;
             var unit = FocalRef.CreateByValues(trait, 3, 3 + unitSize);
             var range = FocalRef.CreateByValues(trait, -40, 40);
@@ -103,7 +103,7 @@ namespace Numbers.Format
 	        desktopAgent.IsPaused = true;
 	        desktopAgent.ClearAll();
 
-	        desktopAgent.Workspace = new Workspace();
+	        desktopAgent.Workspace = new Workspace(Brain);
             SKWorkspaceMapper wm;
             switch (_tests[_testIndex])
             {

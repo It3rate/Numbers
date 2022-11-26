@@ -3,6 +3,13 @@
 	public class Network
     {
 	    public MathElementKind Kind => MathElementKind.Network;
-	    private static int networkCounter = 1 + (int)MathElementKind.Network;
+        public int Id { get; }
+        public Brain Brain { get; }
+
+        public Network(Brain brain)
+        {
+	        Brain = brain;
+	        Id = Brain.NextNetworkId();
+        }
     }
 }

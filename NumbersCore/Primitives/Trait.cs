@@ -6,21 +6,22 @@ namespace NumbersCore.Primitives
     /// Traits are measurable properties on objects. They can be composed of multiple domains (like mph or dollars/day or lwh) but do not need to be.
     /// </summary>
     public class Trait : IMathElement
-    {
-	    public Brain MyBrain => Brain.ActiveBrain;
+	{
+		public Brain Brain { get; }
         public MathElementKind Kind => MathElementKind.Trait;
         public int Id { get; }
         public string Name { get; private set; }
 
-        public Dictionary<int, Transform> TransformStore => MyBrain.TransformStore;
-        public Dictionary<int, Trait> TraitStore => MyBrain.TraitStore;
+        public Dictionary<int, Transform> TransformStore => Brain.TransformStore;
+        public Dictionary<int, Trait> TraitStore => Brain.TraitStore;
         public Dictionary<int, long> PositionStore { get; } = new Dictionary<int, long>(4096);
         public Dictionary<int, FocalRef> FocalStore { get; } = new Dictionary<int, FocalRef>();
         public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
 
-        public Trait()
-	    {
-		    Id = MyBrain.NextTraitId();
+        public Trait(Brain brain)
+        {
+	        Brain = brain;
+		    Id = Brain.NextTraitId();
             TraitStore.Add(Id, this);
 	    }
 
@@ -32,7 +33,7 @@ namespace NumbersCore.Primitives
 	    }
         public Domain AddDomain(int basisIndex, int rangeIndex)
 	    {
-		    var result = new Domain(Id, basisIndex, rangeIndex);
+		    var result = new Domain(this, basisIndex, rangeIndex);
 		    return result;
 	    }
 	    public Domain AddDomain(FocalRef basis, FocalRef range)

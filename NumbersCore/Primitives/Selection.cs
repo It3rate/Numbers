@@ -5,7 +5,7 @@
     /// </summary>
     public class Selection : IMathElement
     {
-	    public Brain MyBrain => Brain.ActiveBrain;
+	    public Brain Brain { get; }
 
         public MathElementKind Kind => MathElementKind.Selection;
 	    public int Id { get; }
@@ -15,20 +15,24 @@
         public int Count => NumberIds.Length;
 
         //public Number NumberAt(int index) => Number.NumberStore[NumberIds[index]];
-        public Number this[int i] => MyBrain.NumberStore[NumberIds[i]];
+        public Number this[int i] => Brain.NumberStore[NumberIds[i]];
 
-        public Selection(params int[] numberIds)
+        public Selection(Brain brain, params int[] numberIds)
         {
 	        Id = SelectionCounter++;
 	        NumberIds = numberIds;
         }
         public Selection(params Number[] numbers)
         {
-	        NumberIds = new int[numbers.Length];
-	        for (int i = 0; i < numbers.Length; i++)
+	        if (numbers.Length > 0)
 	        {
-		        NumberIds[i] = numbers[i].Id;
-	        }
+		        Brain = numbers[0].Brain;
+		        NumberIds = new int[numbers.Length];
+		        for (int i = 0; i < numbers.Length; i++)
+		        {
+			        NumberIds[i] = numbers[i].Id;
+		        }
+            }
         }
     }
 }

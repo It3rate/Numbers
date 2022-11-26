@@ -15,7 +15,7 @@ namespace NumbersCore.Primitives
     // Min size is tick size. BasisFocal is start/end point (only one focal allowed for a unit). MinMaxFocal is bounds in ticks. todo: add conversion methods etc.
     public class Domain : IMathElement
     {
-	    public Brain MyBrain => Brain.ActiveBrain;
+	    public Brain Brain { get; }
 
 	    public  MathElementKind Kind => MathElementKind.Domain;
         private static int domainCounter = 1 + (int)MathElementKind.Domain;
@@ -24,42 +24,43 @@ namespace NumbersCore.Primitives
         public int CreationIndex => Id - (int) MathElementKind.Domain - 1;
 
         public int TraitId { get; }
-        public Trait MyTrait => MyBrain.TraitStore[TraitId];
+        public Trait Trait => Brain.TraitStore[TraitId];
         public List<int> NumberIds { get; } = new List<int>();
         public IEnumerable<Number> Numbers()
         {
 	        foreach (var id in NumberIds)
 	        {
-		        yield return MyBrain.NumberStore[id];
+		        yield return Brain.NumberStore[id];
 	        }
         }
 
         public int BasisNumberId { get; set; }
-        public Number BasisNumber => MyBrain.NumberStore[BasisNumberId];
-        public IFocal BasisFocal => MyTrait.FocalStore[BasisNumber.FocalId];
+        public Number BasisNumber => Brain.NumberStore[BasisNumberId];
+        public IFocal BasisFocal => Trait.FocalStore[BasisNumber.FocalId];
         public int BasisFocalId => BasisNumber.FocalId;
         public bool BasisIsReciprocal { get; set; }// True when ticks are larger than the unit basis
 
         public double TickToBasisRatio => BasisIsReciprocal ? BasisFocal.NonZeroLength : 1.0 / BasisFocal.NonZeroLength;
 
         public int MinMaxNumberId { get; set; }
-        public Number MinMaxNumber => MyBrain.NumberStore[MinMaxNumberId];
-        public IFocal MinMaxFocal => MyTrait.FocalStore[MinMaxFocalId];
+        public Number MinMaxNumber => Brain.NumberStore[MinMaxNumberId];
+        public IFocal MinMaxFocal => Trait.FocalStore[MinMaxFocalId];
         public int MinMaxFocalId => MinMaxNumber.FocalId;
         public Range MinMaxRange => BasisFocal.RangeAsBasis(MinMaxFocal);
 
         public bool IsUnitPerspective => BasisFocal.IsUnitPerspective;
         public bool IsUnotPerspective => BasisFocal.IsUnotPerspective;
 
-        public Domain(int traitId, int unitFocalId, int minMaxFocalId)
+        public Domain(Trait trait, int unitFocalId, int minMaxFocalId)
         {
 	        Id = domainCounter++;
-            TraitId = traitId;
+	        Brain = trait.Brain;
+	        TraitId = trait.Id;
             BasisNumberId = new Number(this, unitFocalId).Id;
             MinMaxNumberId = new Number(this, minMaxFocalId).Id;
-            MyTrait.DomainStore.Add(Id, this);
+            Trait.DomainStore.Add(Id, this);
         }
-        public Domain(Trait trait, FocalRef unit, FocalRef range) : this(trait.Id, unit.Id, range.Id) { }
+        public Domain(Trait trait, FocalRef unit, FocalRef range) : this(trait, unit.Id, range.Id) { }
         public Number CreateNumberByPositions(long start, long end) => new Number(this, start, end);
         public Number CreateNumberByValues(double start, double end) => new Number(this, new Range(start, end));
 
@@ -82,7 +83,7 @@ namespace NumbersCore.Primitives
 
         public FocalRef CreateFocalFromRange(Range range)
         {
-	        var result = FocalRef.CreateByValues(MyTrait, 0, 1);
+	        var result = FocalRef.CreateByValues(Trait, 0, 1);
 	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
 	        return result;
         }
@@ -103,7 +104,7 @@ namespace NumbersCore.Primitives
 	        {
 		        if (!ignoreIds.Contains(kvp.Key))
 		        {
-			        MyBrain.NumberStore[kvp.Key].Value = kvp.Value;
+			        Brain.NumberStore[kvp.Key].Value = kvp.Value;
                 }
 	        }
         }

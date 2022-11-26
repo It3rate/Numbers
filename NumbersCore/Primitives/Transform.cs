@@ -58,17 +58,18 @@
     public abstract class TransformBase : ITransform
     {
 	    public abstract MathElementKind Kind { get; }
-	    private static int transformCounter = 1 + (int)MathElementKind.Transform;
 
 	    public int Id { get; set; }
-	    public TransformKind TransformKind { get; set; }
+	    public Brain Brain { get; }
+        public TransformKind TransformKind { get; set; }
 	    public Selection Selection { get; set; }
 	    public Number Repeat { get; set; }
 	    public Number Relatedness { get; set; } // angle of relation between selection and Repeat, like the dot product. Determines 'perpendicularness' of axis. Can be non linear.
 
-        protected TransformBase( Number repeat, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
+        protected TransformBase(Number repeat, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
         {
-	        Id = transformCounter++;
+	        Brain = repeat.Brain;
+	        Id = Brain.NextTransformId();
 	        TransformKind = kind;
 	        Repeat = repeat;
         }

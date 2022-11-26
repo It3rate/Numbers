@@ -50,7 +50,6 @@ namespace Numbers.Mappers
         {
             highlight.Reset();
             highlight.OrginalPoint = input;
-            SKSegment hoverSeg;
             // number segments and units
             foreach (var nm in NumberMappersByDomain(true))
             {
