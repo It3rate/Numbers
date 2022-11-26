@@ -10,10 +10,10 @@ using SkiaSharp.Views.Desktop;
 
 namespace Numbers.Agent
 {
-	public class Agent : IAgent
+	public class DesktopAgent : IDesktopAgent
     {
-        public static Agent Current { get; private set; }
-        public Brain MyBrain => Brain.ActiveBrain;
+        public static DesktopAgent Current { get; private set; }
+        public Brain Brain => Brain.ActiveBrain;
 
         public Workspace Workspace { get; set; }
         // todo: need clean separation of mappers, clean access to agents.
@@ -90,11 +90,11 @@ namespace Numbers.Agent
 
         private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
 
-        public Agent(CoreRenderer renderer)
+        public DesktopAgent(CoreRenderer renderer)
         {
             Renderer = renderer;
             Current = this;
-            Program = new Format.Program(MyBrain, Renderer);
+            Program = new Format.Program(Brain, Renderer);
 
             ClearMouse();
             Program.NextTest(this);
@@ -509,13 +509,13 @@ namespace Numbers.Agent
 		        workspaceMapper.ClearAll();
 	        }
 	        WorkspaceMappers.Clear();
-            MyBrain.ClearAll();
+            Brain.ClearAll();
         }
 
         public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
         {
 	        numValues.Clear();
-	        foreach (var kvp in MyBrain.NumberStore)
+	        foreach (var kvp in Brain.NumberStore)
 	        {
 		        if (!ignoreIds.Contains(kvp.Key))
 		        {
@@ -531,7 +531,7 @@ namespace Numbers.Agent
 		        var storedValue = kvp.Value;
 		        if (!ignoreIds.Contains(id))
 		        {
-			        MyBrain.NumberStore[id].Value = storedValue;
+			        Brain.NumberStore[id].Value = storedValue;
 		        }
 	        }
         }

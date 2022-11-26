@@ -10,9 +10,9 @@ namespace Numbers.Renderer
 {
 	public class CoreRenderer
     {
-	    public Brain MyBrain => Brain.ActiveBrain;
+	    public Brain Brain => Brain.ActiveBrain;
 	    public Workspace CurrentWorkspace { get; private set; }
-	    public SKWorkspaceMapper CurrentWorkspaceMapper => CurrentAgentMapper.Agent.WorkspaceMappers[CurrentWorkspace.Id];
+	    public SKWorkspaceMapper CurrentWorkspaceMapper => CurrentAgentMapper.DesktopAgent.WorkspaceMappers[CurrentWorkspace.Id];
 	    public SKAgentMapper CurrentAgentMapper { get; set; }
 
 	    public int Width { get; protected set; }
@@ -197,7 +197,7 @@ namespace Numbers.Renderer
 	    public void DrawOnCanvas(SKCanvas canvas)
 	    {
 		    Canvas = canvas;
-		    foreach (var workspace in MyBrain.Workspaces)
+		    foreach (var workspace in Brain.Workspaces)
 		    {
 			    if (workspace.IsActive)
 			    {

@@ -8,7 +8,7 @@ namespace NumbersCore.Primitives
 	    private static int _idCounter = 1;
 	    public int Id { get; }
 
-        public Brain MyBrain => Brain.ActiveBrain;
+        public Brain Brain => Brain.ActiveBrain;
         private HashSet<int> ActiveIds { get; } = new HashSet<int>();
         public int ActiveElementCount => ActiveIds.Count;
 
@@ -17,7 +17,7 @@ namespace NumbersCore.Primitives
         public Workspace()
         {
 	        Id = _idCounter++;
-            MyBrain.Workspaces.Add(this);
+            Brain.Workspaces.Add(this);
         }
 
         public bool IsElementActive(int id) => ActiveIds.Contains(id);

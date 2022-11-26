@@ -10,7 +10,7 @@ namespace Numbers.Mappers
         private static int _mapperCounter = 1;
         public int Id { get; private set; }
 
-        public Brain MyBrain => Brain.ActiveBrain;
+        public Brain Brain => Brain.ActiveBrain;
         public IMathElement MathElement { get; protected set; }
 	    public abstract SKPoint StartPoint { get; set; }
 	    public abstract SKPoint MidPoint { get; }
@@ -21,7 +21,7 @@ namespace Numbers.Mappers
         {
 	        get
 	        {
-		        Agent.Agent.Current.WorkspaceMappers.TryGetValue(Workspace.Id, out var mapper);
+		        Agent.DesktopAgent.Current.WorkspaceMappers.TryGetValue(Workspace.Id, out var mapper);
 		        return mapper;
 	        }
         }

@@ -9,29 +9,29 @@ namespace Numbers.Format
 {
 	public class Program
     {
-	    private Brain MyBrain { get; }
+	    private Brain Brain { get; }
         private CoreRenderer Renderer { get; }
         public Program(Brain brain, CoreRenderer renderer)
         {
-	        MyBrain = brain;
+	        Brain = brain;
 	        Renderer = renderer;
         }
 
-        private SKWorkspaceMapper test2(Agent.Agent agent)
+        private SKWorkspaceMapper test2(Agent.DesktopAgent desktopAgent)
         {
 
             Trait trait = new Trait();
             var unitSize = 10;
             var unit = FocalRef.CreateByValues(trait, 0, unitSize);
-            var wm = new SKWorkspaceMapper(agent, agent.Workspace, Renderer, 20, 20, 1000, 400);
-            var domains = CreateDomainLines((Agent.Agent)agent, trait, 15, 10, -40, -30, 35, 24, 4, -13);
+            var wm = new SKWorkspaceMapper(desktopAgent, desktopAgent.Workspace, Renderer, 20, 20, 1000, 400);
+            var domains = CreateDomainLines((Agent.DesktopAgent)desktopAgent, trait, 15, 10, -40, -30, 35, 24, 4, -13);
             var d2 = domains[2];
-            var d1n2 = MyBrain.NumberStore[domains[1].NumberIds[2]];
+            var d1n2 = Brain.NumberStore[domains[1].NumberIds[2]];
             var nn = new Number(d2, d1n2.FocalId);
-            agent.Workspace.AddElements(nn);
+            desktopAgent.Workspace.AddElements(nn);
             return wm;
         }
-        private SKWorkspaceMapper test0(Agent.Agent agent)
+        private SKWorkspaceMapper test0(Agent.DesktopAgent desktopAgent)
         {
             Trait trait = new Trait();
             var unitSize = 8;
@@ -49,9 +49,9 @@ namespace Numbers.Format
             var hSel = new Selection(hNum);
             var transform = trait.AddTransform(hSel, vNum, TransformKind.Blend);
 
-            agent.Workspace.AddDomains(true, hDomain, vDomain);
+            desktopAgent.Workspace.AddDomains(true, hDomain, vDomain);
 
-            var wm = new SKWorkspaceMapper(agent, agent.Workspace, Renderer, 150, 10, 800, 800);
+            var wm = new SKWorkspaceMapper(desktopAgent, desktopAgent.Workspace, Renderer, 150, 10, 800, 800);
 
             var dm = wm.GetOrCreateDomainMapper(hDomain, wm.GetHorizontalSegment(.5f, 50));
             dm.ShowGradientNumberLine = false;
@@ -66,7 +66,7 @@ namespace Numbers.Format
             dm2.ShowUnits = false;
             return wm;
         }
-        private SKWorkspaceMapper test1(Agent.Agent agent)
+        private SKWorkspaceMapper test1(Agent.DesktopAgent desktopAgent)
         {
             Trait trait = new Trait();
             var unitSize = 4;
@@ -84,8 +84,8 @@ namespace Numbers.Format
             //var sel = new Selection(num2);
             //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
-            agent.Workspace.AddDomains(true, domain);//, domain2);
-            var wm = new SKWorkspaceMapper(agent, agent.Workspace, Renderer, 20, 20, 800, 800);
+            desktopAgent.Workspace.AddDomains(true, domain);//, domain2);
+            var wm = new SKWorkspaceMapper(desktopAgent, desktopAgent.Workspace, Renderer, 20, 20, 800, 800);
             var dm = wm.GetOrCreateDomainMapper(domain, wm.GetHorizontalSegment(.3f, 100));
             dm.ShowGradientNumberLine = true;
             dm.ShowNumberOffsets = true;
@@ -98,36 +98,36 @@ namespace Numbers.Format
         }
         private int _testIndex = 2;
         private readonly int[] _tests = new int[] { 0, 1, 2 };
-        public SKWorkspaceMapper NextTest(Agent.Agent agent)
+        public SKWorkspaceMapper NextTest(Agent.DesktopAgent desktopAgent)
         {
-	        agent.IsPaused = true;
-	        agent.ClearAll();
+	        desktopAgent.IsPaused = true;
+	        desktopAgent.ClearAll();
 
-	        agent.Workspace = new Workspace();
+	        desktopAgent.Workspace = new Workspace();
             SKWorkspaceMapper wm;
             switch (_tests[_testIndex])
             {
                 case 0:
-                    wm = test0(agent);
+                    wm = test0(desktopAgent);
                     break;
                 case 1:
-                    wm = test1(agent);
+                    wm = test1(desktopAgent);
                     break;
                 case 2:
                 default:
-                    wm = test2(agent);
+                    wm = test2(desktopAgent);
                     break;
             }
             _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
             wm.EnsureRenderers();
-            agent.IsPaused = false;
+            desktopAgent.IsPaused = false;
             return wm;
         }
 
-        private List<Domain> CreateDomainLines(Agent.Agent agent, Trait trait, params long[] focalPositions)
+        private List<Domain> CreateDomainLines(Agent.DesktopAgent desktopAgent, Trait trait, params long[] focalPositions)
         {
 	        var result = new List<Domain>();
-	        var wm = agent.WorkspaceMapper;
+	        var wm = desktopAgent.WorkspaceMapper;
 	        var unitFocal = trait.FocalStore.Values.First();
 	        var padding = 1.4;
 	        long maxPos = (long)Math.Max((focalPositions.Max() * padding), unitFocal.AbsLengthInTicks * padding);
@@ -143,7 +143,7 @@ namespace Numbers.Format
 		        result.Add(domain);
 		        var focal = FocalRef.CreateByValues(trait, focalPositions[i - 1], focalPositions[i]);
 		        var num = new Number(domain, focal.Id);
-		        agent.Workspace.AddDomains(true, domain);
+		        desktopAgent.Workspace.AddDomains(true, domain);
 		        var displaySeg = wm.GetHorizontalSegment(yt, 100);
 		        var y = displaySeg.StartPoint.Y;
 

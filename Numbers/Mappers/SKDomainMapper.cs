@@ -155,7 +155,7 @@ namespace Numbers.Mappers
 	        {
 		        foreach (var id in ValidNumberIds)
 		        {
-			        var num = MyBrain.NumberStore[id];
+			        var num = Brain.NumberStore[id];
 			        DrawMarker(num, true);
 			        DrawMarker(num, false);
 		        }

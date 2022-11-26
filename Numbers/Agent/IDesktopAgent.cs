@@ -4,21 +4,14 @@ using NumbersCore.Primitives;
 
 namespace Numbers.Agent
 {
-	public interface IAgent
+	public interface IDesktopAgent : IAgent
     {
-	    Brain MyBrain { get; }
-	    Workspace Workspace { get; set; }
-
 	    bool IsPaused { get; set; }
 
         HighlightSet SelBegin { get; }
         HighlightSet SelCurrent { get; }
         HighlightSet SelHighlight { get; }
         HighlightSet SelSelection { get; }
-
-        Stack<Selection> SelectionStack { get; }
-	    Stack<Formula> FormulaStack { get; }
-	    Stack<Number> ResultStack { get; }
 
         bool LockBasisOnDrag { get; set; }
 	    bool LockTicksOnDrag { get; set; }
@@ -30,7 +23,5 @@ namespace Numbers.Agent
 	    bool KeyUp(KeyEventArgs e);
 	    bool MouseDoubleClick(MouseEventArgs e);
 	    bool MouseWheel(MouseEventArgs e);
-
-	    void ClearAll();
     }
 }

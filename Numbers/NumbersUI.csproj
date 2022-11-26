@@ -88,6 +88,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Agent\IDesktopAgent.cs" />
     <Compile Include="CoreForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,13 +102,12 @@
     <Compile Include="Renderer\CoreRenderer.cs" />
     <Compile Include="Agent\Highlight.cs" />
     <Compile Include="Agent\HighlightSet.cs" />
-    <Compile Include="Agent\IAgent.cs" />
     <Compile Include="Utils\MathF.cs" />
     <Compile Include="Format\Program.cs" />
     <Compile Include="Mappers\SKAgentMapper.cs" />
     <Compile Include="Mappers\SKPointExtension.cs" />
     <Compile Include="Utils\SKSegment.cs" />
-    <Compile Include="Agent\Agent.cs" />
+    <Compile Include="Agent\DesktopAgent.cs" />
     <Compile Include="Mappers\SKDomainMapper.cs" />
     <Compile Include="Mappers\SKMapper.cs" />
     <Compile Include="Mappers\SKNumberMapper.cs" />

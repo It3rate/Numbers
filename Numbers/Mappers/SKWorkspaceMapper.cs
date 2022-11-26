@@ -13,7 +13,7 @@ namespace Numbers.Mappers
 	    public int Id => Workspace.Id;
 
 	    public Workspace Workspace { get; set; }
-	    public Brain MyBrain => Workspace.MyBrain;
+	    public Brain Brain => Workspace.Brain;
         public readonly CoreRenderer Renderer;
         public SKPoint TopLeft { get; set; }
 	    public SKPoint BottomRight { get; set; }
@@ -36,14 +36,14 @@ namespace Numbers.Mappers
         public const float SnapDistance = 5.0f;
         public bool ShowFractions { get; set; } = true;
 
-        public SKWorkspaceMapper(Agent.Agent agent, Workspace workspace, CoreRenderer renderer, float left, float top, float width, float height)
+        public SKWorkspaceMapper(Agent.DesktopAgent desktopAgent, Workspace workspace, CoreRenderer renderer, float left, float top, float width, float height)
         {
             Workspace = workspace;
             Renderer = renderer;
 
             TopLeft = new SKPoint(left, top);
 		    BottomRight = new SKPoint(left + width, top + height);
-		    agent.WorkspaceMappers.Add(Id, this);
+		    desktopAgent.WorkspaceMappers.Add(Id, this);
 	    }
 
         public Highlight GetSnapPoint(Highlight highlight, HighlightSet ignoreSet, SKPoint input, float maxDist = SnapDistance * 2f)
@@ -245,7 +245,7 @@ namespace Numbers.Mappers
             //// all this etc will be a workspace element eventually
             //var lines = new[] { new SKSegment(cx - armLen, cy, cx + armLen, cy), new SKSegment(cx, cy + armLen, cx, cy - armLen) };
 
-            foreach (var trait in MyBrain.TraitStore.Values)
+            foreach (var trait in Brain.TraitStore.Values)
 	        {
 		        int index = 0;
 		        foreach (var domain in trait.DomainStore.Values)
@@ -277,7 +277,7 @@ namespace Numbers.Mappers
         }
         public SKNumberMapper GetOrCreateNumberMapper(int id)
         {
-	        return GetOrCreateNumberMapper(MyBrain.NumberStore[id]);
+	        return GetOrCreateNumberMapper(Brain.NumberStore[id]);
         }
         public SKNumberMapper GetOrCreateNumberMapper(Number number)
         {
@@ -291,7 +291,7 @@ namespace Numbers.Mappers
         }
         public SKTransformMapper GetOrCreateTransformMapper(int id)
         {
-	        return GetOrCreateTransformMapper(MyBrain.TransformStore[id]);
+	        return GetOrCreateTransformMapper(Brain.TransformStore[id]);
         }
         public SKTransformMapper GetOrCreateTransformMapper(Transform transform)
         {
