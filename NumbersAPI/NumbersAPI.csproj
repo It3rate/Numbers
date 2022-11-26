@@ -48,6 +48,10 @@
     <Compile Include="CommandEngine\ITask.cs" />
     <Compile Include="CommandEngine\TaskBase.cs" />
     <Compile Include="CoreCommands\CreateMathElementCommand.cs" />
+    <Compile Include="CoreTasks\CreateBrainTask.cs" />
+    <Compile Include="CoreTasks\CreateDomainTask.cs" />
+    <Compile Include="CoreTasks\CreateFocalTask.cs" />
+    <Compile Include="CoreTasks\CreateNumberTask.cs" />
     <Compile Include="CoreTasks\CreateTraitTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

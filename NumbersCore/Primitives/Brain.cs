@@ -7,13 +7,18 @@ namespace NumbersCore.Primitives
 
     public class Brain
     {
+	    public static List<Brain> Brains { get; } = new List<Brain>();
 	    public static Brain ActiveBrain => BrainA;
 	    public static Brain BrainA = new Brain();
 	    public static Brain BrainB = new Brain();
+	    public Brain()
+	    {
+		    Brains.Add(this);
+	    }
 
-        public List<Workspace> Workspaces { get; } = new List<Workspace>();
+	    public List<Workspace> Workspaces { get; } = new List<Workspace>();
 
-	    public Dictionary<int, Network> NetworkStore { get; } = new Dictionary<int, Network>();
+        public Dictionary<int, Network> NetworkStore { get; } = new Dictionary<int, Network>();
         public Dictionary<int, Formula> FormulaStore { get; } = new Dictionary<int, Formula>();
         public Dictionary<int, Definition> DefinitionStore { get; } = new Dictionary<int, Definition>();
         public Dictionary<int, Trait> TraitStore { get; } = new Dictionary<int, Trait>();

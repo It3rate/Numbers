@@ -49,12 +49,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DomainTests.cs" />
-    <Compile Include="FocalTests.cs" />
+    <Compile Include="CoreTests\DomainTests.cs" />
+    <Compile Include="CoreTests\FocalTests.cs" />
     <Compile Include="MathF.cs" />
-    <Compile Include="NumberTests.cs" />
+    <Compile Include="CoreTests\NumberTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WorkspaceTests.cs" />
+    <Compile Include="CoreTests\WorkspaceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -64,6 +64,9 @@
       <Project>{2726e18f-5916-4916-bc0e-68cb18426b65}</Project>
       <Name>NumbersCore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CommandTests\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

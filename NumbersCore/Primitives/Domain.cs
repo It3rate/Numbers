@@ -52,16 +52,16 @@ namespace NumbersCore.Primitives
         public bool IsUnitPerspective => BasisFocal.IsUnitPerspective;
         public bool IsUnotPerspective => BasisFocal.IsUnotPerspective;
 
-        public Domain(Trait trait, int unitFocalId, int minMaxFocalId)
+        public Domain(Trait trait, int basisFocalId, int minMaxFocalId)
         {
 	        Id = domainCounter++;
 	        Brain = trait.Brain;
 	        TraitId = trait.Id;
-            BasisNumberId = new Number(this, unitFocalId).Id;
+            BasisNumberId = new Number(this, basisFocalId).Id;
             MinMaxNumberId = new Number(this, minMaxFocalId).Id;
             Trait.DomainStore.Add(Id, this);
         }
-        public Domain(Trait trait, FocalRef unit, FocalRef range) : this(trait, unit.Id, range.Id) { }
+        public Domain(Trait trait, FocalRef basis, FocalRef minMax) : this(trait, basis.Id, minMax.Id) { }
         public Number CreateNumberByPositions(long start, long end) => new Number(this, start, end);
         public Number CreateNumberByValues(double start, double end) => new Number(this, new Range(start, end));
 
