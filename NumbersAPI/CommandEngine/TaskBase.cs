@@ -15,16 +15,13 @@ namespace NumbersAPI.CommandEngine
         public int Id { get; }
 
         public ICommand Command { get; }
-        public CommandAgent Agent { get; }
+        public CommandAgent Agent { get; set; }
 
-        public Brain Brain => Agent.Brain;
-        public Workspace Workspace => Agent.Workspace;
         public abstract bool IsValid { get; }
         public virtual void Initialize() { }
 
-        protected TaskBase(CommandAgent agent)
+        protected TaskBase()
         {
-	        Agent = agent;
 	        Id = _idCounter++;
         }
         public virtual void RunTask() { }

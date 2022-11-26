@@ -9,7 +9,27 @@ namespace NumbersAPI.CommandEngine
     using System.Text;
     using System.Threading.Tasks;
 
-    public interface CommandAgent : IAgent
+    public class CommandAgent : IAgent
     {
+
+	    public Brain Brain { get; }
+	    public Workspace Workspace { get; set; }
+
+	    public Stack<Selection> SelectionStack { get; }
+	    public Stack<Formula> FormulaStack { get; }
+	    public Stack<Number> ResultStack { get; }
+
+	    public CommandAgent(Brain brain, Workspace workspace)
+	    {
+		    Brain = brain;
+		    Workspace = workspace;
+	    }
+
+
+
+	    public void ClearAll()
+	    {
+		    throw new NotImplementedException();
+	    }
     }
 }

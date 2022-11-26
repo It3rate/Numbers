@@ -14,7 +14,7 @@ namespace NumbersAPI.CoreTasks
 	    public Trait Trait;
 	    public string Name;
         public override bool IsValid => true;
-	    public CreateTraitTask(CommandAgent agent, string name = "") : base(agent)
+	    public CreateTraitTask(string name = "")
 	    {
 		    Name = name;
 	    }
@@ -26,15 +26,15 @@ namespace NumbersAPI.CoreTasks
 		    }
 		    else
 		    {
-			    Brain.TraitStore.Add(Trait.Id, Trait);
+			    Agent.Brain.TraitStore.Add(Trait.Id, Trait);
             }
-		    Workspace.AddTraits(false, Trait);
+		    Agent.Workspace.AddTraits(false, Trait);
 	    }
 
 	    public override void UnRunTask()
 	    {
-		    Workspace.RemoveTraits(false, Trait);
-		    Brain.TraitStore.Remove(Trait.Id);
+		    Agent.Workspace.RemoveTraits(false, Trait);
+		    Agent.Brain.TraitStore.Remove(Trait.Id);
 	    }
     }
 }

@@ -47,12 +47,13 @@
     <Compile Include="CommandEngine\CommandAgent.cs" />
     <Compile Include="CommandEngine\ITask.cs" />
     <Compile Include="CommandEngine\TaskBase.cs" />
-    <Compile Include="CoreCommands\CreateMathElementCommand.cs" />
+    <Compile Include="CoreCommands\CreateDomainCommand.cs" />
     <Compile Include="CoreTasks\CreateBrainTask.cs" />
     <Compile Include="CoreTasks\CreateDomainTask.cs" />
     <Compile Include="CoreTasks\CreateFocalTask.cs" />
     <Compile Include="CoreTasks\CreateNumberTask.cs" />
     <Compile Include="CoreTasks\CreateTraitTask.cs" />
+    <Compile Include="CoreTasks\CreateWorkspaceTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

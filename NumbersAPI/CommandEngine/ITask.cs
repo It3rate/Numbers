@@ -13,10 +13,8 @@ namespace NumbersAPI.CommandEngine
     {
 	    int Id { get; }
 	    ICommand Command { get; }
-	    Brain Brain { get; }
-	    Workspace Workspace { get; }
-	    //WorkspaceKind WorkspaceKind { get; }
-	    bool IsValid { get; }
+	    CommandAgent Agent { get; set; }
+        bool IsValid { get; }
 	    void RunTask();
 	    void UnRunTask();
         //void OnAddedToCommand(ICommand command);

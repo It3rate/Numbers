@@ -9,30 +9,30 @@ namespace NumbersAPI.CoreTasks
     using System.Text;
     using System.Threading.Tasks;
 
-    public class CreateBrainTask : TaskBase, ICreateTask
+    public class CreateWorkspaceTask : TaskBase, ICreateTask
     {
-	    public Brain CreatedBrain;
+	    public Workspace CreatedWorkspace;
 
 	    public override bool IsValid => true;
 
-	    public CreateBrainTask()
+	    public CreateWorkspaceTask()
 	    {
 	    }
 	    public override void RunTask()
 	    {
-		    if (CreatedBrain == null)
+		    if (CreatedWorkspace == null)
 		    {
-			    CreatedBrain = new Brain();
+			    CreatedWorkspace = new Workspace(Agent.Brain);
 		    }
 		    else
 		    {
-			    Brain.Brains.Add(CreatedBrain);
+			    Agent.Brain.Workspaces.Add(CreatedWorkspace);
 		    }
 	    }
 
 	    public override void UnRunTask()
 	    {
-		    Brain.Brains.Remove(CreatedBrain);
+		    Agent.Brain.Workspaces.Remove(CreatedWorkspace);
 	    }
     }
 }

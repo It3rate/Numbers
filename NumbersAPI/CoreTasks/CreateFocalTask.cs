@@ -19,7 +19,7 @@ namespace NumbersAPI.CoreTasks
 
 	    public override bool IsValid => true;
 
-	    public CreateFocalTask(CommandAgent agent, Trait trait, long startPosition, long endPosition) : base(agent)
+	    public CreateFocalTask(Trait trait, long startPosition, long endPosition)
 	    {
 		    Trait = trait;
 		    StartPosition = startPosition;

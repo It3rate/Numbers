@@ -8,7 +8,8 @@ namespace NumbersAPI.CommandEngine
     {
 		Workspace Workspace { get; }
 		bool CanUndo { get; }
-		bool CanRedo { get; }
+		int UndoSize { get; }
+        bool CanRedo { get; }
 		int RedoSize { get; }
 		bool CanRepeat { get; }
 
@@ -25,20 +26,23 @@ namespace NumbersAPI.CommandEngine
 
 	public class CommandStack<TCommand> : ICommandStack<TCommand> where TCommand : ICommand
     {
-		public Workspace Workspace { get; }
+	    public CommandAgent Agent { get; }
+	    public Brain Brain => Agent.Brain;
+	    public Workspace Workspace => Agent.Workspace;
 
-		private int _stackIndex = 0;
+        private int _stackIndex = 0;
 		private readonly List<TCommand> _stack = new List<TCommand>(4096);
 		private readonly List<TCommand> _toAdd = new List<TCommand>();
 		private readonly List<TCommand> _toRemove = new List<TCommand>();
 
-		public bool CanUndo => _stackIndex > -0;
-		public bool CanRedo => RedoSize > 0;
+		public bool CanUndo => _stackIndex > 0;
+		public int UndoSize => _stack.Count;
+        public bool CanRedo => RedoSize > 0;
 		public int RedoSize => _stack.Count - _stackIndex;
 
-		public CommandStack(Workspace workspace)
+		public CommandStack(CommandAgent agent)
 		{
-			Workspace = workspace;
+			Agent = agent;
 		}
 
 		public TCommand Do(params TCommand[] commands)
@@ -48,6 +52,7 @@ namespace NumbersAPI.CommandEngine
 			foreach (var command in commands)
 			{
 				command.Stack = (ICommandStack<ICommand>) this;
+				command.Agent = Agent;
 				if (command.IsRetainedCommand)
 				{
 					// try merging with previous command
@@ -141,6 +146,7 @@ namespace NumbersAPI.CommandEngine
 
 		private void AddAndExecuteCommand(TCommand command)
 		{
+			command.Agent = Agent;
 			RemoveRedoCommands();
 			_stackIndex++;
 			_stack.Add(command);

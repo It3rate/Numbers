@@ -19,7 +19,7 @@ namespace NumbersAPI.CoreTasks
 
         public override bool IsValid => true;
 
-	    public CreateDomainTask(CommandAgent agent, Trait trait, int basisFocalId, int minMaxId) : base(agent)
+	    public CreateDomainTask(Trait trait, int basisFocalId, int minMaxId) 
 	    {
 		    Trait = trait;
 		    BasisFocalId = basisFocalId;
@@ -35,12 +35,12 @@ namespace NumbersAPI.CoreTasks
 		    {
                 Trait.DomainStore.Add(Domain.Id, Domain);
 		    }
-		    Workspace.AddDomains(false, Domain);
+		    Agent.Workspace.AddDomains(false, Domain);
 	    }
 
 	    public override void UnRunTask()
 	    {
-		    Workspace.RemoveDomains(false, Domain);
+		    Agent.Workspace.RemoveDomains(false, Domain);
 		    Trait.DomainStore.Remove(Domain.Id);
         }
     }

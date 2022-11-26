@@ -18,7 +18,7 @@ namespace NumbersAPI.CoreTasks
 
 	    public override bool IsValid => true;
 
-        public CreateNumberTask(CommandAgent agent, Domain domain, int focalId) : base(agent)
+        public CreateNumberTask(Domain domain, int focalId) : base()
 	    {
             Domain = domain;
             FocalId = focalId;
@@ -32,14 +32,14 @@ namespace NumbersAPI.CoreTasks
 		    else
 		    {
 			    Domain.NumberIds.Add(Number.Id);
-			    Brain.NumberStore.Add(Number.Id, Number);
+			    Agent.Brain.NumberStore.Add(Number.Id, Number);
 		    }
 	    }
 
 	    public override void UnRunTask()
 	    {
 		    Domain.NumberIds.Remove(Number.Id);
-		    Brain.NumberStore.Remove(Number.Id);
+		    Agent.Brain.NumberStore.Remove(Number.Id);
 	    }
     }
 }

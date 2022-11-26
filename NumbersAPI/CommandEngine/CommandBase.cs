@@ -12,89 +12,107 @@ namespace NumbersAPI.CommandEngine
     public abstract class CommandBase : ICommand
     {
 	    public int Id { get; }
-	    public CommandAgent Agent { get; }
+	    public CommandAgent Agent { get; set; }
 
-	    public Brain MyBrain => Agent.Brain;
-	    public Workspace MyWorkspace => Agent.Workspace;
+	    public Brain Brain => Agent.Brain;
+	    public Workspace Workspace => Agent.Workspace;
 
-        public ICommandStack<ICommand> Stack { get; set; }
-	    public bool AppendElements()
-	    {
-		    throw new NotImplementedException();
-	    }
-	    public bool RemoveElements()
-	    {
-		    throw new NotImplementedException();
-	    }
-	    public bool IsMergableWith(ICommand command)
-	    {
-		    throw new NotImplementedException();
-	    }
-	    public bool TryMergeWith(ICommand command)
-	    {
-		    throw new NotImplementedException();
-	    }
+	    public List<ITask> Tasks { get; } = new List<ITask>();
+        protected int _taskIndex = 0;
 
-	    public DateTime StartTime { get; }
-	    public DateTime EndTime { get; }
-	    public TimeSpan Duration { get; }
-	    public int RepeatCount { get; }
-	    public int RepeatIndex { get; }
-	    public bool IsRepeatable()
+        public virtual ICommandStack<ICommand> Stack { get; set; }
+	    public virtual bool AppendElements()
 	    {
 		    throw new NotImplementedException();
 	    }
+	    public virtual bool RemoveElements()
+	    {
+		    throw new NotImplementedException();
+	    }
+	    public virtual bool IsMergableWith(ICommand command)
+	    {
+		    throw new NotImplementedException();
+	    }
+	    public virtual bool TryMergeWith(ICommand command) => false;
 
-	    public bool IsActive { get; }
-	    public bool IsContinuous { get; }
-	    public bool IsRetainedCommand { get; }
-	    public bool IsComplete()
+        public virtual DateTime StartTime { get; }
+	    public virtual DateTime EndTime { get; }
+	    public virtual TimeSpan Duration { get; }
+	    public virtual int RepeatCount { get; }
+	    public virtual int RepeatIndex { get; }
+	    public virtual bool IsRepeatable()
 	    {
 		    throw new NotImplementedException();
 	    }
 
-	    public bool Evaluate()
-	    {
-		    throw new NotImplementedException();
-	    }
-        public void Execute()
-	    {
-		    throw new NotImplementedException();
-	    }
-        public void Update()
-	    {
-		    throw new NotImplementedException();
-	    }
-        public void Unexecute()
-	    {
-		    throw new NotImplementedException();
-	    }
-        public void Completed()
-	    {
-		    throw new NotImplementedException();
-	    }
+	    public virtual bool IsActive { get; }
+	    public virtual bool IsContinuous { get; }
+	    public virtual bool IsRetainedCommand { get; } = true;
+	    public virtual bool IsComplete() => true;
+	    public virtual bool Evaluate() => true;
 
-	    public List<ITask> Tasks { get; }
-	    public void AddTask(ITask task)
-	    {
-		    throw new NotImplementedException();
-	    }
+        public virtual void Execute()
+        {
+	        // remember selection state
+	        // stamp times
+	        // run tasks
+	        // select new element
+	        //foreach (var task in Tasks)
+	        //{
+	        // task.RunTask();
+	        //}
+        }
+        public virtual void Update()
+        {
+        }
+        public virtual void Unexecute()
+        {
+	        while (_taskIndex > 0)
+	        {
+		        _taskIndex--;
+		        Tasks[_taskIndex].UnRunTask();
+	        }
+        }
+
+        public virtual void Completed() { }
+
+        public void AddTask(ITask task)
+        {
+	        task.Agent = Agent;
+	        Tasks.Add(task);
+        }
         public void AddTasks(params ITask[] tasks)
-	    {
-		    throw new NotImplementedException();
-	    }
+        {
+	        foreach (var task in tasks)
+	        {
+		        AddTask(task);
+	        }
+        }
         public void AddTaskAndRun(ITask task)
-	    {
-		    throw new NotImplementedException();
-	    }
+        {
+	        AddTask(task);
+	        RunToEnd();
+        }
         public void AddTasksAndRun(params ITask[] tasks)
-	    {
-		    throw new NotImplementedException();
-	    }
+        {
+	        foreach (var task in tasks)
+	        {
+		        AddTask(task);
+	        }
+	        RunToEnd();
+        }
+        protected void RunToEnd()
+        {
+	        while (_taskIndex < Tasks.Count)
+	        {
+		        Tasks[_taskIndex].RunTask();
+		        _taskIndex++;
+	        }
+        }
 
-	    public ICommand Duplicate()
-	    {
-		    throw new NotImplementedException();
-	    }
+        public virtual ICommand Duplicate()
+        {
+	        return null;
+        }
     }
 }

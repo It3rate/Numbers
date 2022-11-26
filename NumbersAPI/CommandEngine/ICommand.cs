@@ -20,8 +20,10 @@ namespace NumbersAPI.Commands
         // repeat range
         // duration range
         // termination range & bool
-        CommandAgent Agent { get; }
-	    Workspace MyWorkspace { get; }
+        CommandAgent Agent { get; set; }
+        Brain Brain { get; }
+        Workspace Workspace { get; }
+
 	    //WorkspaceKind WorkspaceKind { get; }
 	    ICommandStack<ICommand> Stack { get; set; }
 

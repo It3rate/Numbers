@@ -49,6 +49,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandTests\CreateCommandTests.cs" />
     <Compile Include="CoreTests\DomainTests.cs" />
     <Compile Include="CoreTests\FocalTests.cs" />
     <Compile Include="MathF.cs" />
@@ -60,14 +61,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NumbersAPI\NumbersAPI.csproj">
+      <Project>{DB7D67AA-69FF-4429-B623-32B694EF7251}</Project>
+      <Name>NumbersAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NumbersCore\NumbersCore.csproj">
       <Project>{2726e18f-5916-4916-bc0e-68cb18426b65}</Project>
       <Name>NumbersCore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CommandTests\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
