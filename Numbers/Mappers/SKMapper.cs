@@ -7,9 +7,8 @@ using SkiaSharp;
 namespace Numbers.Mappers
 {
 	public abstract class SKMapper
-    {
-        private static int _mapperCounter = 1;
-        public int Id { get; private set; }
+	{
+		public int Id => MathElement.Id;
 
         public Brain Brain => Brain.ActiveBrain;
         public IMathElement MathElement { get; protected set; }
@@ -32,7 +31,6 @@ namespace Numbers.Mappers
 
         public SKMapper(Workspace workspace, IMathElement element)
         {
-	        Id = element.Id;// _mapperCounter++;
 	        Workspace = workspace;
 	        MathElement = element;
         }

@@ -81,9 +81,24 @@ namespace NumbersCore.Primitives
 	    public event TransformEventHandler TickTransformEvent;
 	    public event TransformEventHandler EndTransformEvent;
 
-	    public virtual void ApplyStart() { }
-	    public virtual void ApplyEnd() { }
-	    public virtual void ApplyPartial(long tickOffset) { }
+	    public virtual void ApplyStart() { OnStartTransformEvent(this); }
+	    public virtual void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
+	    public virtual void ApplyEnd() { OnEndTransformEvent(this); }
+
+	    protected virtual void OnStartTransformEvent(ITransform e)
+	    {
+		    StartTransformEvent?.Invoke(this, e);
+	    }
+
+	    protected virtual void OnTickTransformEvent(ITransform e)
+	    {
+		    TickTransformEvent?.Invoke(this, e);
+	    }
+
+	    protected virtual void OnEndTransformEvent(ITransform e)
+	    {
+		    EndTransformEvent?.Invoke(this, e);
+	    }
     }
 
     public enum TransformKind

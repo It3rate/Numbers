@@ -337,7 +337,7 @@ namespace Numbers.Agent
         private bool _isShiftDown;
         private bool _isAltDown;
         private UIMode PreviousMode = UIMode.Any;
-        private SKMatrix _startMatrix;
+        //private SKMatrix _startMatrix;
         private KeyEventArgs _lastKeyUp;
 
         public bool KeyDown(KeyEventArgs e)

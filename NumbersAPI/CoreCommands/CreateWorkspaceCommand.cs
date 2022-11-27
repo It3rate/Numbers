@@ -13,7 +13,7 @@ namespace NumbersAPI.CoreCommands
     public class CreateWorkspaceCommand : CommandBase
     {
 	    private CreateWorkspaceTask WorkspaceTask;
-	    public Workspace Workspace => WorkspaceTask?.CreatedWorkspace;
+	    public new Workspace Workspace => WorkspaceTask?.CreatedWorkspace;
 
 	    public CreateWorkspaceCommand()
 	    {
