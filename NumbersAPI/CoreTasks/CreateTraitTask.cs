@@ -22,7 +22,7 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    if (Trait == null)
 		    {
-			    Trait = new Trait(Agent.Brain);
+			    Trait = new Trait(Agent.Brain, Name);
 		    }
 		    else
 		    {

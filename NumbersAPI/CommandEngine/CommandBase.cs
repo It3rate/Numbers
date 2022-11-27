@@ -72,6 +72,7 @@ namespace NumbersAPI.CommandEngine
 		        _taskIndex--;
 		        Tasks[_taskIndex].UnRunTask();
 	        }
+            Tasks.Clear();
         }
 
         public virtual void Completed() { }

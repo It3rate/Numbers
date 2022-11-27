@@ -36,7 +36,7 @@ namespace NumbersAPI.CommandEngine
 		private readonly List<TCommand> _toRemove = new List<TCommand>();
 
 		public bool CanUndo => _stackIndex > 0;
-		public int UndoSize => _stack.Count;
+		public int UndoSize => _stackIndex;
         public bool CanRedo => RedoSize > 0;
 		public int RedoSize => _stack.Count - _stackIndex;
 

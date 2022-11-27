@@ -13,11 +13,13 @@ namespace NumbersAPI.CoreCommands
 
     public class CreateDomainCommand : CommandBase
     {
+	    public Domain Domain => DomainTask?.Domain;
+
 	    private CreateFocalTask BasisTask;
 	    private CreateFocalTask MinMaxTask;
 	    private CreateDomainTask DomainTask;
 
-	    public Trait Trait { get; }
+        public Trait Trait { get; }
 
 	    public int BasisFocalId { get; private set; } = -1;
         public int MinMaxFocalId { get; private set; } = -1;
@@ -53,7 +55,7 @@ namespace NumbersAPI.CoreCommands
 			    MinMaxTask = new CreateFocalTask(Trait, MinMaxStart, MinMaxEnd);
 			    AddTaskAndRun(BasisTask);
 			    AddTaskAndRun(MinMaxTask);
-                BasisFocalId = BasisTask.Focal.Id;
+	            BasisFocalId = BasisTask.Focal.Id;
 			    MinMaxFocalId = MinMaxTask.Focal.Id;
 		    }
 
@@ -64,6 +66,14 @@ namespace NumbersAPI.CoreCommands
 	    public override void Unexecute()
 	    {
 		    base.Unexecute();
+		    if (BasisTask != null) // revert to original state in case of redo.
+		    {
+			    BasisTask = null;
+			    MinMaxTask = null;
+			    BasisFocalId = -1;
+                MinMaxFocalId = -1;
+                // todo: undo should probably roll back all index counters as well.
+            }
 	    }
 
 	    public override void Update()

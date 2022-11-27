@@ -7,14 +7,7 @@ using NumbersCore.Primitives;
 
 namespace NumbersTests.CommandTests
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-
-
-	[TestClass]
+    [TestClass]
 	public class CreateCommandTests
 	{
 		private CommandStack<ICommand> _stack;
@@ -34,12 +27,56 @@ namespace NumbersTests.CommandTests
 		}
 
 		[TestMethod]
-		public void CoreDomainTests()
+		public void TraitCommandTests()
 		{
-            var cdc = new CreateDomainCommand(_trait, 0, 10, -1000, 1000);
-            _stack.Do(cdc);
-            Assert.AreEqual(1, _stack.UndoSize);
-            Assert.AreEqual(3, cdc.Tasks.Count);
+			var command = new CreateTraitCommand("TraitTest");
+			_stack.Do(command);
+			Assert.AreEqual(1, _stack.UndoSize);
+			Assert.AreEqual(1, command.Tasks.Count);
+			Assert.AreEqual("TraitTest", _brain.TraitStore[command.Trait.Id].Name);
+            _stack.Undo();
+			Assert.AreEqual(0, _stack.UndoSize);
+			Assert.AreEqual(0, command.Tasks.Count);
+			_stack.Redo();
+			Assert.AreEqual(1, _stack.UndoSize);
+			Assert.AreEqual(1, command.Tasks.Count);
+        }
+		[TestMethod]
+		public void DomainCommandTests()
+		{
+			var command = new CreateDomainCommand(_trait, 0, 10, -1000, 1000);
+			_stack.Do(command);
+			Assert.AreEqual(1, _stack.UndoSize);
+			Assert.AreEqual(0, _stack.RedoSize);
+            Assert.AreEqual(3, command.Tasks.Count);
+			_stack.Undo();
+			Assert.AreEqual(0, _stack.UndoSize);
+			Assert.AreEqual(1, _stack.RedoSize);
+            Assert.AreEqual(0, command.Tasks.Count);
+			_stack.Redo();
+			Assert.AreEqual(1, _stack.UndoSize);
+			Assert.AreEqual(3, command.Tasks.Count);
+        }
+
+		[TestMethod]
+		public void NumberCommandTests()
+		{
+			var domainCommand = new CreateDomainCommand(_trait, 0, 10, -1000, 1000);
+			_stack.Do(domainCommand);
+
+            var command = new CreateNumberCommand(domainCommand.Domain, 100, 200);
+            _stack.Do(command);
+            Assert.AreEqual(2, _stack.UndoSize);
+			Assert.AreEqual(0, _stack.RedoSize);
+			Assert.AreEqual(100, command.Number.Focal.StartTickPosition);
+			Assert.AreEqual(200, command.Number.Focal.EndTickPosition);
+            _stack.Undo();
+			Assert.AreEqual(1, _stack.UndoSize);
+			Assert.AreEqual(1, _stack.RedoSize);
+			Assert.AreEqual(0, command.Tasks.Count);
+			_stack.Redo();
+			Assert.AreEqual(2, _stack.UndoSize);
+			Assert.AreEqual(1, command.Tasks.Count);
 		}
-	}
+    }
 }
