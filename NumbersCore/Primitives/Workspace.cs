@@ -6,7 +6,7 @@ namespace NumbersCore.Primitives
 {
 	public class Workspace
     {
-	    private static int _idCounter = 1;
+	    private static int _idCounter = 0;
         public int Id { get; }
         public Brain Brain { get; }
 

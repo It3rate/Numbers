@@ -27,6 +27,22 @@ namespace NumbersTests.CommandTests
 		}
 
 		[TestMethod]
+		public void WorkspaceCommandTests()
+		{
+			var command = new CreateWorkspaceCommand();
+			_stack.Do(command);
+			Assert.AreEqual(1, _stack.UndoSize);
+			Assert.AreEqual(1, command.Tasks.Count);
+			Assert.AreEqual(command.Workspace.Id, _brain.Workspaces[command.Workspace.Id].Id);
+			_stack.Undo();
+			Assert.AreEqual(0, _stack.UndoSize);
+			Assert.AreEqual(0, command.Tasks.Count);
+			_stack.Redo();
+			Assert.AreEqual(1, _stack.UndoSize);
+			Assert.AreEqual(1, command.Tasks.Count);
+		}
+
+		[TestMethod]
 		public void TraitCommandTests()
 		{
 			var command = new CreateTraitCommand("TraitTest");
@@ -34,14 +50,14 @@ namespace NumbersTests.CommandTests
 			Assert.AreEqual(1, _stack.UndoSize);
 			Assert.AreEqual(1, command.Tasks.Count);
 			Assert.AreEqual("TraitTest", _brain.TraitStore[command.Trait.Id].Name);
-            _stack.Undo();
+			_stack.Undo();
 			Assert.AreEqual(0, _stack.UndoSize);
 			Assert.AreEqual(0, command.Tasks.Count);
 			_stack.Redo();
 			Assert.AreEqual(1, _stack.UndoSize);
 			Assert.AreEqual(1, command.Tasks.Count);
-        }
-		[TestMethod]
+		}
+        [TestMethod]
 		public void DomainCommandTests()
 		{
 			var command = new CreateDomainCommand(_trait, 0, 10, -1000, 1000);
