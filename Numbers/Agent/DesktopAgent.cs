@@ -17,7 +17,6 @@ namespace Numbers.Agent
 
         public Brain Brain => Brain.ActiveBrain;
         public Workspace Workspace { get; set; } // todo: Potentially need multiple workspaces in an agent.
-        public SKAgentMapper AgentMapper { get; set; }
         public SKWorkspaceMapper WorkspaceMapper { get; set; }
         public CoreRenderer Renderer { get; }
 
@@ -85,13 +84,24 @@ namespace Numbers.Agent
         public DesktopAgent(CoreRenderer renderer)
         {
             Renderer = renderer;
+            Renderer.CurrentAgent = this;
             Program = new Format.Program(Brain, Renderer);
 
             ClearMouse();
             Program.NextTest(this);
         }
 
-	    public SKPoint GetTransformedPoint(SKPoint point) => point;// Data.Matrix.Invert().MapPoint(point);
+        public void Draw()
+        {
+	        var sel = SelHighlight;
+	        if (sel.HasHighlight)
+	        {
+		        var pen = sel.ActiveHighlight.Kind.IsLine() ? Renderer.Pens.HighlightPen : Renderer.Pens.HoverPen;
+		        Renderer.Canvas.DrawPath(sel.ActiveHighlight.HighlightPath(), pen);
+	        }
+        }
+
+        public SKPoint GetTransformedPoint(SKPoint point) => point;// Data.Matrix.Invert().MapPoint(point);
         public bool MouseDown(MouseEventArgs e)
         {
             if(IsPaused){return false;}

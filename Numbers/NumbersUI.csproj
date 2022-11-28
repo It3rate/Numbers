@@ -107,7 +107,6 @@
     <Compile Include="Agent\HighlightSet.cs" />
     <Compile Include="Utils\MathF.cs" />
     <Compile Include="Format\Program.cs" />
-    <Compile Include="Mappers\SKAgentMapper.cs" />
     <Compile Include="Utils\SKPointExtension.cs" />
     <Compile Include="Utils\SKSegment.cs" />
     <Compile Include="Agent\DesktopAgent.cs" />

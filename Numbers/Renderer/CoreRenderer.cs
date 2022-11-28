@@ -11,11 +11,10 @@ namespace Numbers.Renderer
 {
 	public class CoreRenderer
     {
-	    public SKAgentMapper CurrentAgentMapper { get; set; }
-	    public DesktopAgent CurrentAgent => CurrentAgentMapper.Agent;
+	    public DesktopAgent CurrentAgent { get; set; }
         public Brain Brain => CurrentAgent.Brain;
-	    public Workspace Workspace => CurrentAgentMapper.Workspace;
-	    public SKWorkspaceMapper CurrentWorkspaceMapper => CurrentAgentMapper.WorkspaceMapper;
+	    public Workspace Workspace => CurrentAgent.Workspace;
+	    public SKWorkspaceMapper CurrentWorkspaceMapper => CurrentAgent.WorkspaceMapper;
 
 	    public int Width { get; protected set; }
 	    public int Height { get; protected set; }
@@ -48,7 +47,7 @@ namespace Numbers.Renderer
         public virtual void Draw()
         {
 	        CurrentWorkspaceMapper.Draw();
-	        CurrentAgentMapper?.Draw();
+	        CurrentAgent?.Draw();
         }
         public virtual void EndDraw()
         {

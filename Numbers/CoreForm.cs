@@ -40,7 +40,6 @@ namespace Numbers
             KeyPreview = true;
 
             _desktopAgent = new Agent.DesktopAgent(_renderer);
-            _renderer.CurrentAgentMapper = new SKAgentMapper(_desktopAgent, _renderer);
         }
         private void OnMouseDown(object sender, MouseEventArgs e)
         {
