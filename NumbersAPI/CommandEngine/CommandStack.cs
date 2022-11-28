@@ -4,17 +4,19 @@ using NumbersCore.Primitives;
 
 namespace NumbersAPI.CommandEngine
 {
-	public interface ICommandStack<TCommand> where TCommand : ICommand
+	public interface ICommandStack
     {
-		Workspace Workspace { get; }
+	    //CommandAgent Agent { get; }
+	    Brain Brain { get; }
+        //Workspace Workspace { get; }
 		bool CanUndo { get; }
 		int UndoSize { get; }
         bool CanRedo { get; }
 		int RedoSize { get; }
 		bool CanRepeat { get; }
 
-		TCommand Do(params TCommand[] commands);
-		TCommand PreviousCommand();
+		ICommand Do(params ICommand[] commands);
+		ICommand PreviousCommand();
 		bool Undo();
 		void UndoAll();
 		void UndoToIndex(int index);
@@ -24,16 +26,16 @@ namespace NumbersAPI.CommandEngine
 		void Clear();
 	}
 
-	public class CommandStack<TCommand> : ICommandStack<TCommand> where TCommand : ICommand
+	public class CommandStack : ICommandStack
     {
 	    public CommandAgent Agent { get; }
 	    public Brain Brain => Agent.Brain;
 	    public Workspace Workspace => Agent.Workspace;
 
         private int _stackIndex = 0;
-		private readonly List<TCommand> _stack = new List<TCommand>(4096);
-		private readonly List<TCommand> _toAdd = new List<TCommand>();
-		private readonly List<TCommand> _toRemove = new List<TCommand>();
+		private readonly List<ICommand> _stack = new List<ICommand>(4096);
+		private readonly List<ICommand> _toAdd = new List<ICommand>();
+		private readonly List<ICommand> _toRemove = new List<ICommand>();
 
 		public bool CanUndo => _stackIndex > 0;
 		public int UndoSize => _stackIndex;
@@ -45,13 +47,13 @@ namespace NumbersAPI.CommandEngine
 			Agent = agent;
 		}
 
-		public TCommand Do(params TCommand[] commands)
+		public ICommand Do(params ICommand[] commands)
 		{
 			RemoveRedoCommands();
-			TCommand result = default(TCommand);
+			ICommand result = default(ICommand);
 			foreach (var command in commands)
 			{
-				command.Stack = (ICommandStack<ICommand>) this;
+				command.Stack = this;
 				command.Agent = Agent;
 				if (command.IsRetainedCommand)
 				{
@@ -64,7 +66,7 @@ namespace NumbersAPI.CommandEngine
 			return result;
 		}
 
-		public TCommand PreviousCommand() => CanUndo ? (TCommand) _stack[_stackIndex - 1] : default;
+		public ICommand PreviousCommand() => CanUndo ? _stack[_stackIndex - 1] : default;
 
 		public bool Undo()
 		{
@@ -139,12 +141,12 @@ namespace NumbersAPI.CommandEngine
 
 		public bool CanRepeat => true;
 
-		public List<TCommand> GetRepeatable()
+		public List<ICommand> GetRepeatable()
 		{
 			return null;
 		}
 
-		private void AddAndExecuteCommand(TCommand command)
+		private void AddAndExecuteCommand(ICommand command)
 		{
 			command.Agent = Agent;
 			RemoveRedoCommands();

@@ -20,7 +20,7 @@ namespace NumbersAPI.CommandEngine
 	    public List<ITask> Tasks { get; } = new List<ITask>();
         protected int _taskIndex = 0;
 
-        public virtual ICommandStack<ICommand> Stack { get; set; }
+        public virtual ICommandStack Stack { get; set; }
 	    public virtual bool AppendElements()
 	    {
 		    throw new NotImplementedException();

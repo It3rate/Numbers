@@ -19,11 +19,10 @@ namespace Numbers.Format
 
         private SKWorkspaceMapper test2(Agent.DesktopAgent desktopAgent)
         {
-
-            Trait trait = new Trait(Brain);
+	        Trait trait = new Trait(Brain);
             var unitSize = 10;
             var unit = FocalRef.CreateByValues(trait, 0, unitSize);
-            var wm = new SKWorkspaceMapper(desktopAgent, desktopAgent.Workspace, Renderer, 20, 20, 1000, 400);
+            var wm = new SKWorkspaceMapper(desktopAgent, 20, 20, 1000, 400);
             var domains = CreateDomainLines((Agent.DesktopAgent)desktopAgent, trait, 15, 10, -40, -30, 35, 24, 4, -13);
             var d2 = domains[2];
             var d1n2 = Brain.NumberStore[domains[1].NumberIds[2]];
@@ -51,7 +50,7 @@ namespace Numbers.Format
 
             desktopAgent.Workspace.AddDomains(true, hDomain, vDomain);
 
-            var wm = new SKWorkspaceMapper(desktopAgent, desktopAgent.Workspace, Renderer, 150, 10, 800, 800);
+            var wm = new SKWorkspaceMapper(desktopAgent, 150, 10, 800, 800);
 
             var dm = wm.GetOrCreateDomainMapper(hDomain, wm.GetHorizontalSegment(.5f, 50));
             dm.ShowGradientNumberLine = false;
@@ -85,7 +84,7 @@ namespace Numbers.Format
             //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
             desktopAgent.Workspace.AddDomains(true, domain);//, domain2);
-            var wm = new SKWorkspaceMapper(desktopAgent, desktopAgent.Workspace, Renderer, 20, 20, 800, 800);
+            var wm = new SKWorkspaceMapper(desktopAgent, 20, 20, 800, 800);
             var dm = wm.GetOrCreateDomainMapper(domain, wm.GetHorizontalSegment(.3f, 100));
             dm.ShowGradientNumberLine = true;
             dm.ShowNumberOffsets = true;

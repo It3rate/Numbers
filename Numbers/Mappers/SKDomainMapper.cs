@@ -11,23 +11,22 @@ namespace Numbers.Mappers
 {
 	public class SKDomainMapper : SKMapper
 	{
-	    public Domain Domain { get; private set; }
+	    public Domain Domain => (Domain)MathElement;
 
-	    private SKNumberMapper BasisMapper => WorkspaceMapper.NumberMapper(Domain.BasisNumberId);
+        private SKNumberMapper BasisMapper => WorkspaceMapper.NumberMapper(Domain.BasisNumberId);
 	    public Number BasisNumber => Domain.BasisNumber;
-	    public SKSegment BasisSegment => BasisMapper.NumberSegment;
+	    public SKSegment BasisSegment => BasisMapper.Guideline;
 	    public int BasisNumberSign => BasisNumber.Direction;
 
         public List<SKPoint> TickPoints = new List<SKPoint>();
 	    public List<int> ValidNumberIds = new List<int>();
-	    public SKSegment DisplayLine { get; private set; }
-	    public Range DisplayLineRange => BasisSegment.RatiosAsBasis(DisplayLine);
+	    public Range DisplayLineRange => BasisSegment.RatiosAsBasis(Guideline);
 	    public Range UnitRangeOnDomainLine
 	    {
-		    get => DisplayLine.RatiosAsBasis(BasisSegment);
-		    set { BasisMapper.NumberSegment = DisplayLine.SegmentAlongLine(value); }
+		    get => Guideline.RatiosAsBasis(BasisSegment);
+		    set => BasisMapper.Reset(Guideline.SegmentAlongLine(value));
 	    }
-	    public int UnitDirectionOnDomainLine => BasisSegment.DirectionOnLine(DisplayLine);
+	    public int UnitDirectionOnDomainLine => BasisSegment.DirectionOnLine(Guideline);
 
         public bool ShowGradientNumberLine;
 	    public bool ShowTicks;
@@ -41,35 +40,16 @@ namespace Numbers.Mappers
 	    public bool ShowDashedValuesOutOfRange;
 	    public bool ShowFractions => WorkspaceMapper.ShowFractions;
 
-        public override SKPoint StartPoint
+        public SKDomainMapper(DesktopAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
 	    {
-		    get => DisplayLine.StartPoint;
-		    set => Reset(value, EndPoint);
-	    }
-	    public override SKPoint MidPoint => DisplayLine.Midpoint;
-	    public override SKPoint EndPoint
-	    {
-		    get => DisplayLine.EndPoint;
-		    set => Reset(StartPoint, value);
-	    }
-	    public SKPoint[] EndPoints => new SKPoint[] {StartPoint, EndPoint};
-
-
-        public SKDomainMapper(Workspace workspace, Domain domain, SKSegment displayLine, SKSegment unitSegment) : base(workspace, domain)
-	    {
-		    base.MathElement = domain;
-		    Domain = domain;
-		    DisplayLine = displayLine;
 		    var unit = Domain.BasisNumber;
 		    var unitMapper = WorkspaceMapper.NumberMapper(unit.Id);
-		    unitMapper.NumberSegment = new SKSegment(displayLine.ProjectPointOnto(unitSegment.StartPoint), displayLine.ProjectPointOnto(unitSegment.EndPoint));
-		    //unitMapper.NumberSegment = DisplayLine.SegmentAlongLine(unitStartT, unitStartT + unitWidthT);
-		    Reset(displayLine.StartPoint, displayLine.EndPoint);
+		    unitMapper.Guideline.Reset(guideline.ProjectPointOnto(unitSegment.StartPoint), guideline.ProjectPointOnto(unitSegment.EndPoint));
 	    }
 
-	    public void Reset(SKPoint startPoint, SKPoint endPoint)
+	    public override void Reset(SKPoint startPoint, SKPoint endPoint)
 	    {
-		    DisplayLine = new SKSegment(startPoint, endPoint);
+            base.Reset(startPoint, endPoint);
             AddValidNumbers();
 	    }
 	    private void AddValidNumbers()
@@ -94,7 +74,7 @@ namespace Numbers.Mappers
 		    {
 			    StartPoint = newPoint;
 		    }
-            BasisMapper.NumberSegment = DisplayLine.SegmentAlongLine(unitRatio);
+            BasisMapper.Reset(Guideline.SegmentAlongLine(unitRatio));
         }
 
         public void Draw()
@@ -117,7 +97,6 @@ namespace Numbers.Mappers
 			    WorkspaceMapper.NumberMapper(Domain.BasisNumberId).DrawUnit();
             }
 	    }
-
         private void DrawNumbers()
         {
 	        var offset = ShowNumberOffsets ? 1f : 0f;
@@ -142,7 +121,6 @@ namespace Numbers.Mappers
 	        }
 
         }
-
         private void DrawMarkers()
         {
 	        if (ShowBasisMarkers)
@@ -162,7 +140,6 @@ namespace Numbers.Mappers
 		        }
             }
         }
-
         private void DrawMarker(Number num, bool isStart)
         {
             var value = isStart ? num.Value.StartF : num.Value.EndF;
@@ -192,36 +169,6 @@ namespace Numbers.Mappers
 				Renderer.DrawText(txtPoint, txt, numPaint, txtBkgPen);
             }
         }
-
-        private (string, string) GetFractionText(Number num, bool isStart, string suffix)
-        {
-	        var whole = "0";
-	        var fraction = "";
-            var val = isStart ? num.StartValue : num.EndValue;
-            if (val != 0)
-            {
-	            var sign = isStart ? (num.StartValue >= 0 ? "" : "-") : (num.EndValue >= 0 ? "" : "-");
-	            var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
-	            whole = wholeNum == 0 ? "" : wholeNum.ToString();
-	            var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
-	            if (num.AbsBasisTicks != 0 && numerator != 0)
-	            {
-		            fraction = " " + numerator.ToString() + "|" + num.AbsBasisTicks.ToString() + suffix;
-	            }
-	            else
-	            {
-		            whole += suffix;
-	            }
-
-	            if (whole == "")
-	            {
-		            fraction = sign + fraction;
-	            }
-            }
-
-            return (whole, fraction);
-        }
-
         private SKPoint DrawMarkerPointer(float t)
 	    {
 		    var sign = UnitDirectionOnDomainLine;
@@ -244,20 +191,20 @@ namespace Numbers.Mappers
 	    {
 		    var renderDir = UnitDirectionOnDomainLine;
 		    var basisDir = BasisNumber.BasisFocal.Direction;
-		    var gsp = renderDir * basisDir == 1 ? DisplayLine.StartPoint : DisplayLine.EndPoint;
-		    var gep = renderDir * basisDir == 1 ? DisplayLine.EndPoint : DisplayLine.StartPoint;
+		    var gsp = renderDir * basisDir == 1 ? Guideline.StartPoint : Guideline.EndPoint;
+		    var gep = renderDir * basisDir == 1 ? Guideline.EndPoint : Guideline.StartPoint;
             if (ShowGradientNumberLine)
 		    {
 			    var pnt = CorePens.GetGradientPen(gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 10);
-			    Renderer.DrawSegment(DisplayLine, pnt);
+			    Renderer.DrawSegment(Guideline, pnt);
 		    }
 		    else if (!ShowUnits) // if not showing units at least color the line
 		    {
 			    var pnt = CorePens.GetGradientPen( gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 3);
-			    Renderer.DrawSegment(DisplayLine, pnt);
+			    Renderer.DrawSegment(Guideline, pnt);
 		    }
 
-            Renderer.DrawSegment(DisplayLine, Renderer.Pens.NumberLinePen);
+            Renderer.DrawSegment(Guideline, Renderer.Pens.NumberLinePen);
 	    }
         private void DrawTicks()
 	    {
@@ -299,6 +246,35 @@ namespace Numbers.Mappers
 	        var pts = BasisSegment.PerpendicularLine(t, offset);
 	        Renderer.DrawLine(pts.Item1, pts.Item2, paint);
 	        return pts.Item1;
+        }
+
+        private (string, string) GetFractionText(Number num, bool isStart, string suffix)
+        {
+	        var whole = "0";
+	        var fraction = "";
+            var val = isStart ? num.StartValue : num.EndValue;
+            if (val != 0)
+            {
+	            var sign = isStart ? (num.StartValue >= 0 ? "" : "-") : (num.EndValue >= 0 ? "" : "-");
+	            var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
+	            whole = wholeNum == 0 ? "" : wholeNum.ToString();
+	            var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
+	            if (num.AbsBasisTicks != 0 && numerator != 0)
+	            {
+		            fraction = " " + numerator.ToString() + "|" + num.AbsBasisTicks.ToString() + suffix;
+	            }
+	            else
+	            {
+		            whole += suffix;
+	            }
+
+	            if (whole == "")
+	            {
+		            fraction = sign + fraction;
+	            }
+            }
+
+            return (whole, fraction);
         }
 
         public override SKPath GetHighlightAt(Highlight highlight)

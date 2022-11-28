@@ -4,10 +4,13 @@ using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
-	public class Workspace
+	public class Workspace : IMathElement
     {
 	    private static int _idCounter = 0;
-        public int Id { get; }
+	    public MathElementKind Kind => MathElementKind.Transform;
+	    public int Id { get; }
+	    public int CreationIndex => Id - (int)Kind;
+
         public Brain Brain { get; }
 
         private HashSet<int> ActiveIds { get; } = new HashSet<int>();

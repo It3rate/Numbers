@@ -1,8 +1,7 @@
 ﻿using System;
-using Numbers.Utils;
 using SkiaSharp;
 
-namespace Numbers.Mappers
+namespace Numbers.Utils
 {
     public static class SkPointExtension
     {

@@ -15,6 +15,7 @@ namespace NumbersAPI.CoreCommands
     {
 	    public Domain Domain => DomainTask?.Domain;
 
+        // combine tasks that are in core for common commands that require multiple tasks
 	    private CreateFocalTask BasisTask;
 	    private CreateFocalTask MinMaxTask;
 	    private CreateDomainTask DomainTask;

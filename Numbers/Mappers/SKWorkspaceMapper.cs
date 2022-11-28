@@ -9,22 +9,30 @@ using SkiaSharp;
 
 namespace Numbers.Mappers
 {
-	public class SKWorkspaceMapper
+	public class SKWorkspaceMapper : SKMapper
     {
-	    public int Id => Workspace.Id;
-
-	    public Workspace Workspace { get; set; }
-	    public Brain Brain => Workspace.Brain;
-        public readonly CoreRenderer Renderer;
-        public SKPoint TopLeft { get; set; }
-	    public SKPoint BottomRight { get; set; }
-
 	    public Dictionary<int, SKMapper> Mappers = new Dictionary<int, SKMapper>();
+
 	    public SKDomainMapper DomainMapper(int id) => (SKDomainMapper)Mappers[id]; // todo: slow to get domain from domain id (nested in traits).
 	    public SKTransformMapper TransformMapper(int id) => GetOrCreateTransformMapper(id);
 	    public SKNumberMapper NumberMapper(int id) => GetOrCreateNumberMapper(id);
 
-	    public SKPoint Center => TopLeft.MidpointTo(BottomRight);
+	    public SKPoint TopLeft
+	    {
+		    get => Guideline.StartPoint;
+		    set => Guideline.StartPoint = value;
+	    }
+	    public SKPoint BottomRight
+	    {
+		    get => Guideline.EndPoint;
+		    set => Guideline.EndPoint = value;
+	    }
+	    public override SKPath GetHighlightAt(Highlight highlight)
+	    {
+		    return Renderer.GetRectPath(TopLeft, BottomRight);
+	    }
+
+        public SKPoint Center => TopLeft.MidpointTo(BottomRight);
 	    public float Width => BottomRight.X - TopLeft.X;
 	    public float Height => BottomRight.Y - TopLeft.Y;
         // these are pointing clockwise 
@@ -37,14 +45,11 @@ namespace Numbers.Mappers
         public const float SnapDistance = 5.0f;
         public bool ShowFractions { get; set; } = true;
 
-        public SKWorkspaceMapper(Agent.DesktopAgent desktopAgent, Workspace workspace, CoreRenderer renderer, float left, float top, float width, float height)
+        public SKWorkspaceMapper(DesktopAgent agent, float left, float top, float width, float height) : base(agent, agent.Workspace)
         {
-            Workspace = workspace;
-            Renderer = renderer;
-
-            TopLeft = new SKPoint(left, top);
-		    BottomRight = new SKPoint(left + width, top + height);
-		    desktopAgent.WorkspaceMappers.Add(Id, this);
+	        DesktopAgent.WorkspaceMappers.Add(Id, this);
+	        agent.WorkspaceMapper = this;
+            Reset(new SKPoint(left, top), new SKPoint(left + width, top + height));
 	    }
 
         public Highlight GetSnapPoint(Highlight highlight, HighlightSet ignoreSet, SKPoint input, float maxDist = SnapDistance * 2f)
@@ -100,7 +105,7 @@ namespace Numbers.Mappers
                     if (input.DistanceTo(dmTickPoint) < maxDist / 2f)
                     {
                         var kind = UIKind.Tick | UIKind.Major;
-                        var (t, _) = dm.DisplayLine.TFromPoint(dmTickPoint, false);
+                        var (t, _) = dm.Guideline.TFromPoint(dmTickPoint, false);
                         highlight.Set(input, dmTickPoint, dm, t, kind);
                         goto Found;
                     }
@@ -270,7 +275,7 @@ namespace Numbers.Mappers
 	        {
 		        var seg = line ?? NextDefaultLine();
 		        var uSeg = unitLine ?? line.SegmentAlongLine(.45f, .55f);
-		        result = new SKDomainMapper(Workspace, domain, seg, uSeg);
+		        result = new SKDomainMapper(Agent, domain, seg, uSeg);
 		        Mappers[domain.Id] = result;
 	        }
 	        return (SKDomainMapper)result;
@@ -283,7 +288,7 @@ namespace Numbers.Mappers
         {
             if (!Mappers.TryGetValue(number.Id, out var result))
 	        {
-		        result = new SKNumberMapper(Workspace, number);
+		        result = new SKNumberMapper(Agent, number);
 		        Mappers[number.Id] = result;
 	        }
 
@@ -297,7 +302,7 @@ namespace Numbers.Mappers
         {
 	        if (!Mappers.TryGetValue(transform.Id, out var result))
 	        {
-		        result = new SKTransformMapper(Workspace, transform);
+		        result = new SKTransformMapper(Agent, transform);
 		        Mappers[transform.Id] = result;
 	        }
 	        return (SKTransformMapper)result;

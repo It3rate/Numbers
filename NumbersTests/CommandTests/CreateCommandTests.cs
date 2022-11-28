@@ -10,7 +10,7 @@ namespace NumbersTests.CommandTests
     [TestClass]
 	public class CreateCommandTests
 	{
-		private CommandStack<ICommand> _stack;
+		private CommandStack _stack;
 		private Brain _brain;
 		private Workspace _workspace;
 		private CommandAgent _agent;
@@ -22,7 +22,7 @@ namespace NumbersTests.CommandTests
 			_brain = Brain.ActiveBrain;
 			_workspace = new Workspace(_brain);
 			_agent = new CommandAgent(_brain, _workspace);
-            _stack = new CommandStack<ICommand>(_agent);
+            _stack = new CommandStack(_agent);
 			_trait = new Trait(_brain);
 		}
 

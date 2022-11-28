@@ -8,8 +8,7 @@ namespace Numbers.Mappers
 {
 	public class SKNumberMapper : SKMapper
     {
-        public Number Number { get; }
-        public SKSegment NumberSegment { get; set; }
+	    public Number Number => (Number) MathElement;
         public SKSegment RenderSegment { get; private set; }
 
         public SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain.Id);
@@ -17,45 +16,23 @@ namespace Numbers.Mappers
         public bool IsBasis => Number.IsBasis;
         public int BasisSign => Number.BasisFocal.Direction;
 
-        public int UnitDirectionOnDomainLine => NumberSegment.DirectionOnLine(DomainMapper.DisplayLine);
+        public int UnitDirectionOnDomainLine => Guideline.DirectionOnLine(DomainMapper.Guideline);
 
-        public override SKPoint StartPoint
+        public SKNumberMapper(DesktopAgent agent, Number number) : base(agent, number)
 	    {
-		    get => NumberSegment.StartPoint;
-		    set
-		    {
-			    Number.StartValue = -UnitSegment.TFromPoint(value, false).Item1;
-			    EnsureSegment();
-            }
-	    }
-	    public override SKPoint MidPoint => NumberSegment.Midpoint;
-	    public override SKPoint EndPoint
-	    {
-		    get => NumberSegment.EndPoint;
-		    set
-		    {
-			    Number.EndValue = UnitSegment.TFromPoint(value, false).Item1;
-			    EnsureSegment();
-		    }
 	    }
 
-
-	    public SKNumberMapper(Workspace workspace, Number number) : base(workspace, number)
-	    {
-		    Number = number;
-	    }
         public void EnsureSegment()
         {
 	        var val = Number.ValueInRenderPerspective;
-	        //var invertDirection = Number.BasisFocal.IsUnotPerspective;
-	        NumberSegment = UnitSegment.SegmentAlongLine(val.StartF, val.EndF);//, invertDirection);
+	        Reset(UnitSegment.SegmentAlongLine(val.StartF, val.EndF));
 	    }
         public void DrawNumber(float offsetScale, SKPaint paint)
         {
 			EnsureSegment();
 			var dir = UnitDirectionOnDomainLine;
-	        var offset = NumberSegment.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
-	        RenderSegment = NumberSegment + offset;
+	        var offset = Guideline.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
+	        RenderSegment = Guideline + offset;
 	        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
         }
 
@@ -65,8 +42,8 @@ namespace Numbers.Mappers
             // So don't call EnsureSegment here.
             var dir = Number.Direction;
             var pen = dir > 0 ? Pens.UnitPen : Pens.UnotPen;
-	        var offset = NumberSegment.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - NumberSegment.StartPoint;
-	        RenderSegment = NumberSegment - offset;
+	        var offset = Guideline.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - Guideline.StartPoint;
+	        RenderSegment = Guideline - offset;
 	        if (Pens.UnitStrokePen != null)
 	        {
 		        Renderer.DrawSegment(RenderSegment, Pens.UnitStrokePen);
@@ -86,7 +63,7 @@ namespace Numbers.Mappers
         public void AdjustBySegmentChange(HighlightSet beginState) => AdjustBySegmentChange(beginState.OriginalSegment, beginState.OriginalFocalPositions);
         public void AdjustBySegmentChange(SKSegment originalSegment, FocalPositions originalFocalPositions)
         {
-	        var change = originalSegment.RatiosAsBasis(NumberSegment);
+	        var change = originalSegment.RatiosAsBasis(Guideline);
 	        var ofp = originalFocalPositions;
 	        Number.Focal.Reset(
 		        (long)(ofp.StartTickPosition + change.Start * ofp.Length),
@@ -118,11 +95,11 @@ namespace Numbers.Mappers
         }
         public void MoveBasisSegmentByT(SKSegment orgSeg, float diffT)
         {
-	        var dl = DomainMapper.DisplayLine;
+	        var dl = DomainMapper.Guideline;
 	        var orgStartT = dl.TFromPoint(orgSeg.StartPoint, false).Item1;
 	        var orgEndT = dl.TFromPoint(orgSeg.EndPoint, false).Item1;
-	        NumberSegment.StartPoint = dl.PointAlongLine(orgStartT + diffT);
-	        NumberSegment.EndPoint = dl.PointAlongLine(orgEndT + diffT);
+	        Guideline.StartPoint = dl.PointAlongLine(orgStartT + diffT);
+	        Guideline.EndPoint = dl.PointAlongLine(orgEndT + diffT);
         }
 
         public void SetStartValueByPoint(SKPoint newPoint)
@@ -135,14 +112,14 @@ namespace Numbers.Mappers
         }
         public void SetValueOfBasis(SKPoint newPoint, UIKind kind)
         {
-	        var pt = DomainMapper.DisplayLine.ProjectPointOnto(newPoint);
+	        var pt = DomainMapper.Guideline.ProjectPointOnto(newPoint);
 	        if (kind.IsMajor())
 	        {
-		        NumberSegment.EndPoint = pt;
+		        Guideline.EndPoint = pt;
 	        }
 	        else
 	        {
-		        NumberSegment.StartPoint = pt;
+		        Guideline.StartPoint = pt;
 	        }
         }
 

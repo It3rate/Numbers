@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Numbers.Mappers;
 using Numbers.Renderer;
+using NumbersAPI.Motion;
 
 namespace Numbers
 {
     public partial class CoreForm : Form
     {
 	    private readonly CoreRenderer _renderer;
-	    private readonly Control _control;
+	    private Runner _runner;
+        private readonly Control _control;
 	    private readonly Agent.DesktopAgent _desktopAgent;
 
         public CoreForm()
@@ -24,6 +26,8 @@ namespace Numbers
             InitializeComponent();
 
             _renderer = new CoreRenderer();
+            _runner = new Runner(this);
+
             _control = _renderer.AddAsControl(corePanel, false);
             _control.MouseDown += OnMouseDown;
             _control.MouseMove += OnMouseMove;

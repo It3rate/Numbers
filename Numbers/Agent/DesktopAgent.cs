@@ -13,32 +13,23 @@ namespace Numbers.Agent
 {
 	public class DesktopAgent : IDesktopAgent
     {
-        public static DesktopAgent Current { get; private set; }
-        public Brain Brain => Brain.ActiveBrain;
+        public static Dictionary<int, SKWorkspaceMapper> WorkspaceMappers = new Dictionary<int, SKWorkspaceMapper>();
 
-        public Workspace Workspace { get; set; }
-        // todo: need clean separation of mappers, clean access to agents.
+        public Brain Brain => Brain.ActiveBrain;
+        public Workspace Workspace { get; set; } // todo: Potentially need multiple workspaces in an agent.
         public SKAgentMapper AgentMapper { get; set; }
-        public Dictionary<int, SKWorkspaceMapper> WorkspaceMappers = new Dictionary<int, SKWorkspaceMapper>();
-        public SKWorkspaceMapper WorkspaceMapper
-        {
-	        get
-	        {
-		        WorkspaceMappers.TryGetValue(Workspace.Id, out var mapper);
-		        return mapper;
-	        }
-        }
+        public SKWorkspaceMapper WorkspaceMapper { get; set; }
+        public CoreRenderer Renderer { get; }
 
         private Format.Program Program { get; }
         public bool IsPaused { get; set; } = true;
 
-        private CoreRenderer Renderer { get; }
 
         public bool IsDown { get; private set; }
         public bool IsDragging { get; private set; }
 
         public event EventHandler OnModeChange;
-        public event EventHandler OnDisplayModeChange;
+        //public event EventHandler OnDisplayModeChange;
         public event EventHandler OnSelectionChange;
 
         private Highlight _highlight = new Highlight();
@@ -94,7 +85,6 @@ namespace Numbers.Agent
         public DesktopAgent(CoreRenderer renderer)
         {
             Renderer = renderer;
-            Current = this;
             Program = new Format.Program(Brain, Renderer);
 
             ClearMouse();
@@ -167,7 +157,7 @@ namespace Numbers.Agent
 					SelCurrent.Set(_highlight.Clone());
 					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm)
 					{
-						SelBegin.OriginalSegment = nm.NumberSegment.Clone();
+						SelBegin.OriginalSegment = nm.Guideline.Clone();
 						SelBegin.OriginalFocalPositions = nm.Number.Focal.FocalPositions;
 						if (nm.IsBasis)
 						{
@@ -187,8 +177,8 @@ namespace Numbers.Agent
 		            {
 			            if (nm.IsBasis)
 			            {
-				            var curT = nm.DomainMapper.DisplayLine.TFromPoint(_highlight.OrginalPoint, false).Item1;
-                            var orgT = nm.DomainMapper.DisplayLine.TFromPoint(activeHighlight.OrginalPoint, false).Item1;
+				            var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OrginalPoint, false).Item1;
+                            var orgT = nm.DomainMapper.Guideline.TFromPoint(activeHighlight.OrginalPoint, false).Item1;
 				            nm.MoveBasisSegmentByT(SelBegin.OriginalSegment, curT - orgT);
 				            BasisChanged(nm);
                         }

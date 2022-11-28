@@ -10,29 +10,16 @@ namespace Numbers.Mappers
 {
 	public class SKTransformMapper : SKMapper
 	{
-		public Transform Transform { get; set; }
-		private List<SKPoint[]> Triangles { get; } = new List<SKPoint[]>();
+        public Transform Transform => (Transform)MathElement;
+        private List<SKPoint[]> Triangles { get; } = new List<SKPoint[]>();
 
 		private SKDomainMapper SelectionMapper => WorkspaceMapper.DomainMapper(Transform.Selection[0].Domain.Id);
 		private SKDomainMapper RepeatMapper => WorkspaceMapper.DomainMapper(Transform.Repeat.Domain.Id);
 
-        //public SKDomainMapper SelectionMapper => 
-        public override SKPoint StartPoint
-        {
-	        get { return SKPoint.Empty; }
-	        set {  }
-        }
-        public override SKPoint MidPoint => SKPoint.Empty;
-        public override SKPoint EndPoint
-        {
-	        get { return SKPoint.Empty; }
-	        set {}
-        }
         private SKPoint SKOrigin => SelectionMapper.BasisSegment.StartPoint;
 
-        public SKTransformMapper(Workspace workspace, Transform transform) : base(workspace, transform)
+        public SKTransformMapper(DesktopAgent agent, Transform transform) : base(agent, transform)
         {
-	        Transform = transform;
         }
 
         private Range _selRange;
@@ -57,17 +44,17 @@ namespace Numbers.Mappers
 			r0_s0 = -repNum.StartValue * selNum.StartValue;
 			r1_s1 = repNum.EndValue * selNum.EndValue;
 
-			var org = selDr.DisplayLine.PointAlongLine(0.5f);
+			var org = selDr.Guideline.PointAlongLine(0.5f);
 
-			var s0Unit = selDr.DisplayLine.PointAlongLine(_selRange.StartF);
-			var s1Unit = selDr.DisplayLine.PointAlongLine(_selRange.EndF);
-			var r0Unit = repDr.DisplayLine.PointAlongLine(_repRange.StartF);
-			var r1Unit = repDr.DisplayLine.PointAlongLine(_repRange.EndF);
+			var s0Unit = selDr.Guideline.PointAlongLine(_selRange.StartF);
+			var s1Unit = selDr.Guideline.PointAlongLine(_selRange.EndF);
+			var r0Unit = repDr.Guideline.PointAlongLine(_repRange.StartF);
+			var r1Unit = repDr.Guideline.PointAlongLine(_repRange.EndF);
 
-			var s0Unot = selDr.DisplayLine.PointAlongLine(1f - _selRange.StartF);
-			var s1Unot = selDr.DisplayLine.PointAlongLine(1f - _selRange.EndF);
-			var r0Unot = repDr.DisplayLine.PointAlongLine(1f - _repRange.StartF);
-			var r1Unot = repDr.DisplayLine.PointAlongLine(1f - _repRange.EndF);
+			var s0Unot = selDr.Guideline.PointAlongLine(1f - _selRange.StartF);
+			var s1Unot = selDr.Guideline.PointAlongLine(1f - _selRange.EndF);
+			var r0Unot = repDr.Guideline.PointAlongLine(1f - _repRange.StartF);
+			var r1Unot = repDr.Guideline.PointAlongLine(1f - _repRange.EndF);
 
 
             DrawTriangle(r0_s1 >= 0, unotBA_Brush, false, r0Unot, s1Unit, org);
@@ -136,8 +123,8 @@ namespace Numbers.Mappers
         }
 		private void DrawAreaValues(Number selNum, Number repNum, bool unitPerspective = true)
 		{
-            var selSeg = SelectionMapper.DisplayLine;
-			var repSeg = RepeatMapper.DisplayLine;
+            var selSeg = SelectionMapper.Guideline;
+			var repSeg = RepeatMapper.Guideline;
 
 			var r0_s1Txt = $"{r0_s1:0.0}i";
 			var r1_s0Txt = $"{r1_s0:0.0}i";

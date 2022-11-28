@@ -1,23 +1,26 @@
 ﻿using Numbers.Agent;
 using Numbers.Renderer;
+using NumbersCore.Primitives;
 
 namespace Numbers.Mappers
 {
-	public class SKAgentMapper
+	public class SKAgentMapper 
     {
-	    public Agent.DesktopAgent DesktopAgent { get; set; }
 	    public CoreRenderer Renderer { get; set; }
+	    public DesktopAgent Agent { get; }
+	    public Workspace Workspace => Agent.Workspace;
+	    public SKWorkspaceMapper WorkspaceMapper => Agent.WorkspaceMapper;
 
-	    public SKAgentMapper(Agent.DesktopAgent desktopAgent, CoreRenderer renderer)
+        public SKAgentMapper(DesktopAgent desktopAgent, CoreRenderer renderer)
         {
-	        DesktopAgent = desktopAgent;
+	        Agent = desktopAgent;
 	        desktopAgent.AgentMapper = this;
             Renderer = renderer;
         }
 
 	    public void Draw()
 	    {
-		    var sel = DesktopAgent.SelHighlight;
+		    var sel = Agent.SelHighlight;
 		    if (sel.HasHighlight)
 		    {
 			    var pen = sel.ActiveHighlight.Kind.IsLine() ? Renderer.Pens.HighlightPen : Renderer.Pens.HoverPen;

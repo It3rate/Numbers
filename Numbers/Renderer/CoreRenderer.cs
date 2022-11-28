@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Numbers.Agent;
 using Numbers.Mappers;
 using Numbers.Utils;
 using NumbersCore.Primitives;
@@ -10,10 +11,11 @@ namespace Numbers.Renderer
 {
 	public class CoreRenderer
     {
-	    public Brain Brain => Brain.ActiveBrain;
-	    public Workspace CurrentWorkspace { get; private set; }
-	    public SKWorkspaceMapper CurrentWorkspaceMapper => CurrentAgentMapper.DesktopAgent.WorkspaceMappers[CurrentWorkspace.Id];
 	    public SKAgentMapper CurrentAgentMapper { get; set; }
+	    public DesktopAgent CurrentAgent => CurrentAgentMapper.Agent;
+        public Brain Brain => CurrentAgent.Brain;
+	    public Workspace Workspace => CurrentAgentMapper.Workspace;
+	    public SKWorkspaceMapper CurrentWorkspaceMapper => CurrentAgentMapper.WorkspaceMapper;
 
 	    public int Width { get; protected set; }
 	    public int Height { get; protected set; }
@@ -124,7 +126,13 @@ namespace Numbers.Renderer
 		    path.AddCircle(center.X, center.Y, radius);
 		    return path;
 	    }
-	    public SKPath GetSegmentPath(SKSegment segment, float radius = 10)
+	    public SKPath GetRectPath(SKPoint topLeft, SKPoint bottomRight)
+	    {
+		    var path = new SKPath();
+		    path.AddRect(new SKRect(topLeft.X, topLeft.Y, bottomRight.X, bottomRight.Y));
+		    return path;
+	    }
+        public SKPath GetSegmentPath(SKSegment segment, float radius = 10)
 	    {
 		    var path = new SKPath();
 		    var (pt0, pt1) = segment.PerpendicularLine(0, radius);
@@ -197,16 +205,11 @@ namespace Numbers.Renderer
 	    public void DrawOnCanvas(SKCanvas canvas)
 	    {
 		    Canvas = canvas;
-		    foreach (var workspace in Brain.Workspaces)
+		    if (Workspace.IsActive)
 		    {
-			    if (workspace.IsActive)
-			    {
-				    CurrentWorkspace = workspace;
-				    BeginDraw();
-				    Draw();
-				    EndDraw();
-				    CurrentWorkspace = null;
-			    }
+			    BeginDraw();
+			    Draw();
+			    EndDraw();
 		    }
 	    }
 	    public void DrawFraction((string, string) parts, SKPoint txtPoint, SKPaint txtPaint, SKPaint txtBkgPen)

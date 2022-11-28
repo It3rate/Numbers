@@ -28,6 +28,9 @@ namespace Numbers.Utils
             StartPoint = start;
             EndPoint = end;
         }
+
+        public void Reset(SKPoint startPoint, SKPoint endPoint) { StartPoint = startPoint; EndPoint = endPoint; }
+
         public SKSegment(float x0, float y0, float x1, float y1) : this(new SKPoint(x0, y0), new SKPoint(x1, y1)) { }
 
         public SKPoint[] Points => new[] { StartPoint, EndPoint };

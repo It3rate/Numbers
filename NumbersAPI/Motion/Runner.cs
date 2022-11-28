@@ -139,7 +139,7 @@ namespace NumbersAPI.Motion
 			}
 		}
 
-		public void Unpause()
+		public void UnPause()
 		{
 			if (_isPaused)
 			{

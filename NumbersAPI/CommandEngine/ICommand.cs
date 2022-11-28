@@ -9,26 +9,27 @@ namespace NumbersAPI.Commands
     using System.Text;
     using System.Threading.Tasks;
 
+    // selection range - segment, first, all, not, direction
+    // motion range
+    // motion type (ideally as a range) prepend, postpend, scale, or, and, not...
+    // repeat range
+    // duration range
+    // termination range & bool
+    //WorkspaceKind WorkspaceKind { get; }
     // Commands happen over time, can be repeatable, appendable, and can be evaluated to check for termination.
     // Commands are more or less formulas.
     public interface ICommand
     {
 	    int Id { get; }
-	    // selection range - segment, first, all, not, direction
-        // motion range
-        // motion type (ideally as a range) prepend, postpend, scale, or, and, not...
-        // repeat range
-        // duration range
-        // termination range & bool
         CommandAgent Agent { get; set; }
         Brain Brain { get; }
         Workspace Workspace { get; }
 
-	    //WorkspaceKind WorkspaceKind { get; }
-	    ICommandStack<ICommand> Stack { get; set; }
+	    ICommandStack Stack { get; set; }
 
 	    bool AppendElements();
 	    bool RemoveElements();
+
         bool IsMergableWith(ICommand command);
 	    bool TryMergeWith(ICommand command);
 

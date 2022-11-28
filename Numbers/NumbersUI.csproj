@@ -89,6 +89,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Agent\IDesktopAgent.cs" />
+    <Compile Include="Commands\AddSKDomainCommand.cs" />
+    <Compile Include="Commands\ISKCommand.cs" />
+    <Compile Include="Commands\SKCommandBase.cs" />
     <Compile Include="CoreForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,7 +108,7 @@
     <Compile Include="Utils\MathF.cs" />
     <Compile Include="Format\Program.cs" />
     <Compile Include="Mappers\SKAgentMapper.cs" />
-    <Compile Include="Mappers\SKPointExtension.cs" />
+    <Compile Include="Utils\SKPointExtension.cs" />
     <Compile Include="Utils\SKSegment.cs" />
     <Compile Include="Agent\DesktopAgent.cs" />
     <Compile Include="Mappers\SKDomainMapper.cs" />
@@ -142,6 +145,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NumbersAPI\NumbersAPI.csproj">
+      <Project>{DB7D67AA-69FF-4429-B623-32B694EF7251}</Project>
+      <Name>NumbersAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NumbersCore\NumbersCore.csproj">
       <Project>{2726e18f-5916-4916-bc0e-68cb18426b65}</Project>
       <Name>NumbersCore</Name>
