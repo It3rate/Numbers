@@ -11,7 +11,7 @@ namespace Numbers.Renderer
 {
 	public class CoreRenderer
     {
-	    public DesktopAgent CurrentAgent { get; set; }
+	    public MouseAgent CurrentAgent { get; set; }
         public Brain Brain => CurrentAgent.Brain;
 	    public Workspace Workspace => CurrentAgent.Workspace;
 	    public SKWorkspaceMapper CurrentWorkspaceMapper => CurrentAgent.WorkspaceMapper;

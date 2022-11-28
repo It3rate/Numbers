@@ -12,7 +12,7 @@ namespace Numbers.Mappers
 	{
 		public int Id => MathElement.Id;
 
-		public DesktopAgent Agent { get; }
+		public MouseAgent Agent { get; }
 		public Brain Brain => Agent.Brain;
 		public Workspace Workspace => Agent.Workspace;
 		protected SKWorkspaceMapper WorkspaceMapper => Agent.WorkspaceMapper;
@@ -36,7 +36,7 @@ namespace Numbers.Mappers
         }
         public SKPoint[] EndPoints => new SKPoint[] { StartPoint, EndPoint };
 
-        protected SKMapper(DesktopAgent agent, IMathElement element, SKSegment guideline = default)
+        protected SKMapper(MouseAgent agent, IMathElement element, SKSegment guideline = default)
         {
 	        Agent = agent;
 	        MathElement = element;

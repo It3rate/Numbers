@@ -40,7 +40,7 @@ namespace Numbers.Mappers
 	    public bool ShowDashedValuesOutOfRange;
 	    public bool ShowFractions => WorkspaceMapper.ShowFractions;
 
-        public SKDomainMapper(DesktopAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
+        public SKDomainMapper(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
 	    {
 		    var unit = Domain.BasisNumber;
 		    var unitMapper = WorkspaceMapper.NumberMapper(unit.Id);

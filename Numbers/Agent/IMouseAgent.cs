@@ -5,7 +5,7 @@ using NumbersCore.Utils;
 
 namespace Numbers.Agent
 {
-	public interface IDesktopAgent : IAgent
+	public interface IMouseAgent : IAgent
     {
 	    bool IsPaused { get; set; }
 

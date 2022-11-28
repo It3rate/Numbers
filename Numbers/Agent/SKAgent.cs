@@ -11,7 +11,7 @@ using SkiaSharp.Views.Desktop;
 
 namespace Numbers.Agent
 {
-	public class DesktopAgent : IDesktopAgent
+	public class MouseAgent : IMouseAgent
     {
         public static Dictionary<int, SKWorkspaceMapper> WorkspaceMappers = new Dictionary<int, SKWorkspaceMapper>();
 
@@ -81,7 +81,7 @@ namespace Numbers.Agent
 
         private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
 
-        public DesktopAgent(CoreRenderer renderer)
+        public MouseAgent(CoreRenderer renderer)
         {
             Renderer = renderer;
             Renderer.CurrentAgent = this;

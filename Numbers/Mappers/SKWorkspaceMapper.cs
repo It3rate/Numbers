@@ -45,9 +45,9 @@ namespace Numbers.Mappers
         public const float SnapDistance = 5.0f;
         public bool ShowFractions { get; set; } = true;
 
-        public SKWorkspaceMapper(DesktopAgent agent, float left, float top, float width, float height) : base(agent, agent.Workspace)
+        public SKWorkspaceMapper(MouseAgent agent, float left, float top, float width, float height) : base(agent, agent.Workspace)
         {
-	        DesktopAgent.WorkspaceMappers.Add(Id, this);
+	        MouseAgent.WorkspaceMappers.Add(Id, this);
 	        agent.WorkspaceMapper = this;
             Reset(new SKPoint(left, top), new SKPoint(left + width, top + height));
 	    }

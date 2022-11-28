@@ -1,4 +1,5 @@
-﻿using Numbers.Utils;
+﻿using Numbers.Mappers;
+using Numbers.Utils;
 using NumbersAPI.Commands;
 using NumbersCore.Utils;
 
@@ -13,6 +14,6 @@ namespace Numbers.Commands
     public interface ISKCommand : ICommand
     {
 	    List<int> PreviousSelection { get; }
-        SKSegment Guideline { get; }
+	    SKMapper Mapper { get; }
     }
 }

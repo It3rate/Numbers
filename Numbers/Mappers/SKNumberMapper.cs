@@ -18,7 +18,7 @@ namespace Numbers.Mappers
 
         public int UnitDirectionOnDomainLine => Guideline.DirectionOnLine(DomainMapper.Guideline);
 
-        public SKNumberMapper(DesktopAgent agent, Number number) : base(agent, number)
+        public SKNumberMapper(MouseAgent agent, Number number) : base(agent, number)
 	    {
 	    }
 

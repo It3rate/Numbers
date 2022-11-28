@@ -18,7 +18,7 @@ namespace Numbers.Mappers
 
         private SKPoint SKOrigin => SelectionMapper.BasisSegment.StartPoint;
 
-        public SKTransformMapper(DesktopAgent agent, Transform transform) : base(agent, transform)
+        public SKTransformMapper(MouseAgent agent, Transform transform) : base(agent, transform)
         {
         }
 

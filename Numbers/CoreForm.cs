@@ -18,7 +18,7 @@ namespace Numbers
 	    private readonly CoreRenderer _renderer;
 	    private Runner _runner;
         private readonly Control _control;
-	    private readonly Agent.DesktopAgent _desktopAgent;
+	    private readonly Agent.MouseAgent _mouseAgent;
 
         public CoreForm()
         {
@@ -39,39 +39,39 @@ namespace Numbers
             KeyUp += OnKeyUp;
             KeyPreview = true;
 
-            _desktopAgent = new Agent.DesktopAgent(_renderer);
+            _mouseAgent = new Agent.MouseAgent(_renderer);
         }
         private void OnMouseDown(object sender, MouseEventArgs e)
         {
-	        if (_desktopAgent.MouseDown(e))
+	        if (_mouseAgent.MouseDown(e))
 	        {
 		        Redraw();
 	        }
         }
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-	        if (_desktopAgent.MouseMove(e))
+	        if (_mouseAgent.MouseMove(e))
 	        {
 		        Redraw();
 	        }
         }
         private void OnMouseUp(object sender, MouseEventArgs e)
         {
-	        if (_desktopAgent.MouseUp(e))
+	        if (_mouseAgent.MouseUp(e))
 	        {
 		        Redraw();
 	        }
         }
         private void OnMouseDoubleClick(object sender, MouseEventArgs e)
         {
-	        if (_desktopAgent.MouseDoubleClick(e))
+	        if (_mouseAgent.MouseDoubleClick(e))
 	        {
 		        Redraw();
 	        }
         }
         private void OnMouseWheel(object sender, MouseEventArgs e)
         {
-	        if (_desktopAgent.MouseWheel(e))
+	        if (_mouseAgent.MouseWheel(e))
 	        {
 		        Redraw();
 	        }
@@ -79,21 +79,21 @@ namespace Numbers
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-	        if (_desktopAgent.KeyDown(e))
+	        if (_mouseAgent.KeyDown(e))
 	        {
 		        Redraw();
 	        }
         }
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
-	        if (_desktopAgent == null || _desktopAgent.KeyUp(e))
+	        if (_mouseAgent == null || _mouseAgent.KeyUp(e))
 	        {
 		        Redraw();
 	        }
         }
         private void Redraw()
         {
-	        //Renderer.DesktopAgent = DesktopAgent;
+	        //Renderer.MouseAgent = MouseAgent;
 	        _control.Invalidate();
         }
 
