@@ -15,7 +15,7 @@ namespace NumbersCore.Primitives
         public string Name { get; private set; }
 
         public Dictionary<int, long> PositionStore { get; } = new Dictionary<int, long>(4096);
-        public Dictionary<int, FocalRef> FocalStore { get; } = new Dictionary<int, FocalRef>();
+        public Dictionary<int, IFocal> FocalStore { get; } = new Dictionary<int, IFocal>();
         public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
 
         public Dictionary<int, Transform> TransformStore => Brain.TransformStore;

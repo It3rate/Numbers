@@ -33,6 +33,10 @@ namespace Numbers.Format
             var unitSeg = guideline.SegmentAlongLine(0.4f, 0.6f);
             var dc = new AddSKDomainCommand(trait, 0, 10, -800, 800, guideline, unitSeg);
             stack.Do(dc);
+            var guideline2 = new SKSegment(100, 200, 700, 200);
+            var dc2 = new AddSKDomainCommand(trait, 0, 10, -800, 800, guideline2, unitSeg);
+            stack.Do(dc2);
+            //stack.Undo();
             return wm;
         }
 
@@ -131,7 +135,7 @@ namespace Numbers.Format
 	                wm = test1(mouseAgent);
 	                break;
                 case 2:
-	                wm = test1(mouseAgent);
+	                wm = test2(mouseAgent);
 	                break;
                 case 3:
                 default:
@@ -161,7 +165,7 @@ namespace Numbers.Format
 		        var domain = trait.AddDomain(unitFocal.Id, range.Id);
 		        //domain.BasisIsReciprocal = true;
 		        result.Add(domain);
-		        var focal = FocalRef.CreateByValues(trait, focalPositions[i - 1], focalPositions[i]);
+		        var focal = FocalVal.CreateByValues(trait, focalPositions[i - 1], focalPositions[i]);
 		        var num = new Number(domain, focal.Id);
 		        mouseAgent.Workspace.AddDomains(true, domain);
 		        var displaySeg = wm.GetHorizontalSegment(yt, 100);

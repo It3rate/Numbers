@@ -82,9 +82,9 @@ namespace NumbersCore.Primitives
 	        focal.EndTickPosition = RoundToNearestTick(focal.EndTickPosition);
         }
 
-        public FocalRef CreateFocalFromRange(Range range)
+        public IFocal CreateFocalFromRange(Range range)
         {
-	        var result = FocalRef.CreateByValues(Trait, 0, 1);
+	        var result = FocalVal.CreateByValues(Trait, 0, 1);
 	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
 	        return result;
         }

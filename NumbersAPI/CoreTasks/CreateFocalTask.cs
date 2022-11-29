@@ -11,7 +11,7 @@ namespace NumbersAPI.CoreTasks
 
     public class CreateFocalTask : TaskBase, ICreateTask
     {
-	    public FocalRef Focal;
+	    public IFocal Focal;
 
 	    public Trait Trait { get; }
         public long StartPosition { get; }
