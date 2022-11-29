@@ -17,9 +17,10 @@ namespace Numbers
     public partial class CoreForm : Form
     {
 	    private readonly CoreRenderer _renderer;
-	    private Runner _runner;
         private readonly Control _control;
 	    private readonly Agent.MouseAgent _mouseAgent;
+	    private Runner _runner;
+	    private Workspace _workspace;
 
         public CoreForm()
         {
@@ -34,12 +35,12 @@ namespace Numbers
             _control.MouseDoubleClick += OnMouseDoubleClick;
             _control.MouseWheel += OnMouseWheel;
             KeyDown += OnKeyDown;
-            //KeyPress += OnKeyPress;
             KeyUp += OnKeyUp;
             KeyPreview = true;
 
+            _workspace = new Workspace(Brain.ActiveBrain);
 	        _runner = new Runner(_control);
-            _mouseAgent = new Agent.MouseAgent(Brain.ActiveBrain, _runner, _renderer);
+            _mouseAgent = new Agent.MouseAgent(_workspace, _runner, _renderer);
             _ = Execute(null, 50);
         }
 

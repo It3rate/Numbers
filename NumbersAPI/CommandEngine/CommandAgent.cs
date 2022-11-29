@@ -11,20 +11,19 @@ namespace NumbersAPI.CommandEngine
 
     public class CommandAgent : IAgent
     {
-	    public Brain Brain { get; }
-	    public Workspace Workspace { get; set; }
+	    public Brain Brain => Workspace.Brain;
+	    public virtual Workspace Workspace { get; }
 
 	    public Stack<Selection> SelectionStack { get; }
 	    public Stack<Formula> FormulaStack { get; }
 	    public Stack<Number> ResultStack { get; }
 
-	    public CommandAgent(Brain brain, Workspace workspace)
+	    public CommandAgent(Workspace workspace)
 	    {
-		    Brain = brain;
 		    Workspace = workspace;
 	    }
 
-	    public virtual void ClearAll()
+        public virtual void ClearAll()
 	    {
 		    SelectionStack?.Clear();
 		    FormulaStack?.Clear();

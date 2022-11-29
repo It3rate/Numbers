@@ -2,6 +2,7 @@
 using System.Timers;
 using System.Windows.Forms;
 using NumbersCore.Primitives;
+using NumbersCore.Utils;
 using Timer = System.Timers.Timer;
 
 namespace NumbersAPI.Motion
@@ -11,7 +12,7 @@ namespace NumbersAPI.Motion
 		public static Runner CurrentRunner;
 		public static Runner GetRunnerById(int id) => CurrentRunner;
 
-		public Workspace Workspace { get; }
+		public IAgent Agent { get; set; }
 		private readonly Control _display;
 
 		private bool _isPaused;

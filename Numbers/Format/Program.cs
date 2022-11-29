@@ -119,17 +119,16 @@ namespace Numbers.Format
             return wm;
         }
 
-        public SKWorkspaceMapper NextTest(Agent.MouseAgent mouseAgent)
+        public SKWorkspaceMapper NextTest(MouseAgent mouseAgent)
         {
 	        mouseAgent.IsPaused = true;
 	        mouseAgent.ClearAll();
 
-	        mouseAgent.Workspace = new Workspace(Brain);
-            SKWorkspaceMapper wm;
+	        SKWorkspaceMapper wm;
             switch (_tests[_testIndex])
             {
                 case 0:
-                    wm = test0(mouseAgent);
+	                wm = test0(mouseAgent);
                     break;
                 case 1:
 	                wm = test1(mouseAgent);
@@ -139,10 +138,11 @@ namespace Numbers.Format
 	                break;
                 case 3:
                 default:
-                    wm = test3(mouseAgent);
+	                wm = test3(mouseAgent);
                     break;
             }
             _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
+
             wm.EnsureRenderers();
             mouseAgent.IsPaused = false;
             return wm;

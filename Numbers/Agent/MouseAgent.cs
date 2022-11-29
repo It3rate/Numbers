@@ -14,11 +14,18 @@ using SkiaSharp.Views.Desktop;
 namespace Numbers.Agent
 {
 	public class MouseAgent : CommandAgent, IMouseAgent
-    {
-        public static Dictionary<int, SKWorkspaceMapper> WorkspaceMappers = new Dictionary<int, SKWorkspaceMapper>();
+	{
+		public static Dictionary<int, SKWorkspaceMapper> WorkspaceMappers = new Dictionary<int, SKWorkspaceMapper>();
+		public SKWorkspaceMapper WorkspaceMapper
+		{
+			get
+			{
+				WorkspaceMappers.TryGetValue(Workspace.Id, out var result);
+				return result;
+			}
+		}
 
-        public SKWorkspaceMapper WorkspaceMapper { get; set; }
-        public CoreRenderer Renderer { get; }
+		public CoreRenderer Renderer { get; }
         public Runner Runner;
 
         public Format.Program Program { get; }
@@ -77,11 +84,12 @@ namespace Numbers.Agent
 
         private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
 
-        public MouseAgent(Brain brain, Runner runner, CoreRenderer renderer) : base(brain, null)
+        public MouseAgent(Workspace workspace, Runner runner, CoreRenderer renderer) : base(workspace)
         {
             Renderer = renderer;
-            Renderer.CurrentAgent = this;
+            Renderer.Agent = this;
             Runner = runner;
+            Runner.Agent = this;
             Program = new Format.Program(Brain, Renderer);
 
             ClearMouse();
@@ -89,7 +97,7 @@ namespace Numbers.Agent
 
         public void NextTest()
         {
-	        WorkspaceMapper = Program.NextTest(this);
+	        Program.NextTest(this);
         }
 
         public void Draw()

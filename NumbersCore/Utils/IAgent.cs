@@ -6,7 +6,7 @@ namespace NumbersCore.Utils
 	public interface IAgent
     {
 	    Brain Brain { get; }
-	    Workspace Workspace { get; set; }
+	    Workspace Workspace { get; }
 
 	    Stack<Selection> SelectionStack { get; }
 	    Stack<Formula> FormulaStack { get; }
