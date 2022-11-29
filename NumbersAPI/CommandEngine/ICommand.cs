@@ -24,8 +24,11 @@ namespace NumbersAPI.Commands
         CommandAgent Agent { get; set; }
         Brain Brain { get; }
         Workspace Workspace { get; }
+        ICommandStack Stack { get; set; }
 
-	    ICommandStack Stack { get; set; }
+	    DateTime StartTime { get; }
+	    DateTime EndTime { get; }
+	    TimeSpan Duration { get; }
 
 	    bool AppendElements();
 	    bool RemoveElements();
@@ -33,13 +36,9 @@ namespace NumbersAPI.Commands
         bool IsMergableWith(ICommand command);
 	    bool TryMergeWith(ICommand command);
 
-	    DateTime StartTime { get; }
-	    DateTime EndTime { get; }
-	    TimeSpan Duration { get; }
-
-        int RepeatCount { get; }
-        int RepeatIndex { get; }
-	    bool IsRepeatable();
+        int RepeatCount { get; } // Number - this will be Number once default traits are in.
+        int RepeatIndex { get; } // Number - this will be Number once default traits are in.
+        bool IsRepeatable();
 
 	    bool IsActive { get; }
 	    bool IsContinuous { get; }
@@ -49,7 +48,7 @@ namespace NumbersAPI.Commands
 	    bool Evaluate();
 
         void Execute();
-	    void Update();//SKPoint point);
+	    void Update();//SKPoint point); 
 	    void Unexecute();
 	    void Completed();
 

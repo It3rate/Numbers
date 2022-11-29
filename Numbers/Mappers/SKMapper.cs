@@ -26,13 +26,13 @@ namespace Numbers.Mappers
         public SKPoint StartPoint
         {
 	        get => Guideline.StartPoint;
-	        set { Reset(value, EndPoint); }
-}
+	        set => Reset(value, EndPoint);
+        }
         public SKPoint MidPoint => Guideline.Midpoint;
         public SKPoint EndPoint
         {
 	        get => Guideline.EndPoint;
-	        set { Reset(StartPoint, value); }
+	        set => Reset(StartPoint, value);
         }
         public SKPoint[] EndPoints => new SKPoint[] { StartPoint, EndPoint };
 

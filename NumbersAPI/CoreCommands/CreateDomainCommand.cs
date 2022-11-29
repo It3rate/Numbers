@@ -22,15 +22,13 @@ namespace NumbersAPI.CoreCommands
 
         public Trait Trait { get; }
 
-	    public int BasisFocalId { get; private set; } = -1;
-        public int MinMaxFocalId { get; private set; } = -1;
-
         public long BasisStart { get; }
         public long BasisEnd { get; }
         public long MinMaxStart { get; }
         public long MinMaxEnd { get; }
 
-
+	    public int BasisFocalId { get; private set; } = -1;
+        public int MinMaxFocalId { get; private set; } = -1;
 
         public CreateDomainCommand(Trait trait, long basisStart, long basisEnd, long minMaxStart, long minMaxEnd)
         {

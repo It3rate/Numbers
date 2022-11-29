@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Numbers.Mappers;
 using Numbers.Renderer;
 using NumbersAPI.Motion;
+using NumbersCore.Primitives;
 
 namespace Numbers
 {
@@ -39,7 +40,7 @@ namespace Numbers
             KeyUp += OnKeyUp;
             KeyPreview = true;
 
-            _mouseAgent = new Agent.MouseAgent(_renderer);
+            _mouseAgent = new Agent.MouseAgent(Brain.ActiveBrain, _renderer);
         }
         private void OnMouseDown(object sender, MouseEventArgs e)
         {

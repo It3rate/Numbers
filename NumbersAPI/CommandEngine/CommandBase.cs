@@ -12,7 +12,7 @@ namespace NumbersAPI.CommandEngine
     public abstract class CommandBase : ICommand
     {
 	    public int Id { get; }
-	    public CommandAgent Agent { get; set; }
+	    public virtual CommandAgent Agent { get; set; } // Agent is set by the command stack.
 
 	    public Brain Brain => Agent.Brain;
 	    public Workspace Workspace => Agent.Workspace;
@@ -74,7 +74,6 @@ namespace NumbersAPI.CommandEngine
 	        }
             Tasks.Clear();
         }
-
         public virtual void Completed() { }
 
         public void AddTask(ITask task)

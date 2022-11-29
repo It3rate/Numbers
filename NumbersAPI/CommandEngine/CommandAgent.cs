@@ -11,7 +11,6 @@ namespace NumbersAPI.CommandEngine
 
     public class CommandAgent : IAgent
     {
-
 	    public Brain Brain { get; }
 	    public Workspace Workspace { get; set; }
 
@@ -25,11 +24,11 @@ namespace NumbersAPI.CommandEngine
 		    Workspace = workspace;
 	    }
 
-
-
-	    public void ClearAll()
+	    public virtual void ClearAll()
 	    {
-		    throw new NotImplementedException();
-	    }
+		    SelectionStack?.Clear();
+		    FormulaStack?.Clear();
+		    ResultStack?.Clear();
+        }
     }
 }

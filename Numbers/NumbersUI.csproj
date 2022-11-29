@@ -109,7 +109,7 @@
     <Compile Include="Format\Program.cs" />
     <Compile Include="Utils\SKPointExtension.cs" />
     <Compile Include="Utils\SKSegment.cs" />
-    <Compile Include="Agent\SKAgent.cs" />
+    <Compile Include="Agent\MouseAgent.cs" />
     <Compile Include="Mappers\SKDomainMapper.cs" />
     <Compile Include="Mappers\SKMapper.cs" />
     <Compile Include="Mappers\SKNumberMapper.cs" />

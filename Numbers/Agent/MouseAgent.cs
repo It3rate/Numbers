@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Numbers.Mappers;
 using Numbers.Renderer;
+using NumbersAPI.CommandEngine;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;
@@ -11,18 +12,15 @@ using SkiaSharp.Views.Desktop;
 
 namespace Numbers.Agent
 {
-	public class MouseAgent : IMouseAgent
+	public class MouseAgent : CommandAgent, IMouseAgent
     {
         public static Dictionary<int, SKWorkspaceMapper> WorkspaceMappers = new Dictionary<int, SKWorkspaceMapper>();
 
-        public Brain Brain => Brain.ActiveBrain;
-        public Workspace Workspace { get; set; } // todo: Potentially need multiple workspaces in an agent.
         public SKWorkspaceMapper WorkspaceMapper { get; set; }
         public CoreRenderer Renderer { get; }
 
         private Format.Program Program { get; }
         public bool IsPaused { get; set; } = true;
-
 
         public bool IsDown { get; private set; }
         public bool IsDragging { get; private set; }
@@ -31,15 +29,11 @@ namespace Numbers.Agent
         //public event EventHandler OnDisplayModeChange;
         public event EventHandler OnSelectionChange;
 
-        private Highlight _highlight = new Highlight();
+        private readonly Highlight _highlight = new Highlight();
         public HighlightSet SelBegin { get; } = new HighlightSet();
         public HighlightSet SelCurrent { get; } = new HighlightSet();
         public HighlightSet SelHighlight { get; } = new HighlightSet();
         public HighlightSet SelSelection { get; } = new HighlightSet();
-
-        public Stack<Selection> SelectionStack { get; } = new Stack<Selection>();
-        public Stack<Formula> FormulaStack { get; } = new Stack<Formula>();
-        public Stack<Number> ResultStack { get; } = new Stack<Number>(); // can have multiple results?
 
         public bool LockBasisOnDrag { get; set; }
         public bool LockTicksOnDrag { get; set; }
@@ -81,7 +75,7 @@ namespace Numbers.Agent
 
         private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
 
-        public MouseAgent(CoreRenderer renderer)
+        public MouseAgent(Brain brain, CoreRenderer renderer) : base(brain, null)
         {
             Renderer = renderer;
             Renderer.CurrentAgent = this;
@@ -501,8 +495,9 @@ namespace Numbers.Agent
 	        SelHighlight.Clear();
 	        SelSelection.Clear();
         }
-        public void ClearAll()
+        public override void ClearAll()
         {
+            base.ClearAll();
 	        ClearMouse();
 	        ClearHighlights();
 	        foreach (var workspaceMapper in WorkspaceMappers.Values)
