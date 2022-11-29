@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace Numbers
 {
-    static class Program
+    static class ProgramMain
     {
         [STAThread]
         static void Main()

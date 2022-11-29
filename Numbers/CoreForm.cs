@@ -27,8 +27,6 @@ namespace Numbers
             InitializeComponent();
 
             _renderer = new CoreRenderer();
-            _runner = new Runner(this);
-
             _control = _renderer.AddAsControl(corePanel, false);
             _control.MouseDown += OnMouseDown;
             _control.MouseMove += OnMouseMove;
@@ -40,62 +38,29 @@ namespace Numbers
             KeyUp += OnKeyUp;
             KeyPreview = true;
 
-            _mouseAgent = new Agent.MouseAgent(Brain.ActiveBrain, _renderer);
-        }
-        private void OnMouseDown(object sender, MouseEventArgs e)
-        {
-	        if (_mouseAgent.MouseDown(e))
-	        {
-		        Redraw();
-	        }
-        }
-        private void OnMouseMove(object sender, MouseEventArgs e)
-        {
-	        if (_mouseAgent.MouseMove(e))
-	        {
-		        Redraw();
-	        }
-        }
-        private void OnMouseUp(object sender, MouseEventArgs e)
-        {
-	        if (_mouseAgent.MouseUp(e))
-	        {
-		        Redraw();
-	        }
-        }
-        private void OnMouseDoubleClick(object sender, MouseEventArgs e)
-        {
-	        if (_mouseAgent.MouseDoubleClick(e))
-	        {
-		        Redraw();
-	        }
-        }
-        private void OnMouseWheel(object sender, MouseEventArgs e)
-        {
-	        if (_mouseAgent.MouseWheel(e))
-	        {
-		        Redraw();
-	        }
+	        _runner = new Runner(_control);
+            _mouseAgent = new Agent.MouseAgent(Brain.ActiveBrain, _runner, _renderer);
+            _ = Execute(null, 50);
         }
 
-        private void OnKeyDown(object sender, KeyEventArgs e)
+        public async Task Execute(Action action, int timeoutInMilliseconds)
         {
-	        if (_mouseAgent.KeyDown(e))
-	        {
-		        Redraw();
-	        }
+	        await Task.Delay(timeoutInMilliseconds);
+            _mouseAgent.NextTest();
         }
-        private void OnKeyUp(object sender, KeyEventArgs e)
-        {
-	        if (_mouseAgent == null || _mouseAgent.KeyUp(e))
-	        {
-		        Redraw();
-	        }
-        }
-        private void Redraw()
-        {
-	        //Renderer.MouseAgent = MouseAgent;
-	        _control.Invalidate();
+
+        private void OnMouseDown(object sender, MouseEventArgs e) { if (_mouseAgent.MouseDown(e)) { NeedsUpdate(); } }
+        private void OnMouseMove(object sender, MouseEventArgs e) { if (_mouseAgent.MouseMove(e)) { NeedsUpdate(); } }
+        private void OnMouseUp(object sender, MouseEventArgs e) { if (_mouseAgent.MouseUp(e)) { NeedsUpdate(); } }
+        private void OnMouseDoubleClick(object sender, MouseEventArgs e) { if (_mouseAgent.MouseDoubleClick(e)) { NeedsUpdate(); } }
+        private void OnMouseWheel(object sender, MouseEventArgs e) { if (_mouseAgent.MouseWheel(e)) { NeedsUpdate(); } }
+
+        private void OnKeyDown(object sender, KeyEventArgs e) { if (_mouseAgent.KeyDown(e)) { NeedsUpdate(); } }
+        private void OnKeyUp(object sender, KeyEventArgs e) { if (_mouseAgent == null || _mouseAgent.KeyUp(e)) { NeedsUpdate(); } }
+
+        private void NeedsUpdate() 
+        { 
+	        _runner.NeedsUpdate();
         }
 
     }

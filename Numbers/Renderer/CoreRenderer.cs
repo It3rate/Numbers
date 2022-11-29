@@ -204,7 +204,7 @@ namespace Numbers.Renderer
 	    public void DrawOnCanvas(SKCanvas canvas)
 	    {
 		    Canvas = canvas;
-		    if (Workspace.IsActive)
+		    if (Workspace != null && Workspace.IsActive)
 		    {
 			    BeginDraw();
 			    Draw();

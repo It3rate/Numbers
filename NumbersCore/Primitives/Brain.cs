@@ -65,6 +65,8 @@ namespace NumbersCore.Primitives
         public Trait TimeTrait => _timeTrait ?? (_timeTrait = new Trait(this, "Timer"));
         private Domain _time60Domain;
         public Domain Time60Domain => _time60Domain ?? (_time60Domain = TimeTrait.AddDomain(60));
+        private Domain _timeMsDomain;
+        public Domain TimeMsDomain => _timeMsDomain ?? (_timeMsDomain = TimeTrait.AddDomain(1000));
 
         private Trait _countTrait;
         public Trait CountTrait => _countTrait ?? (_countTrait = new Trait(this, "Count"));

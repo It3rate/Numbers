@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Numbers.Mappers;
 using Numbers.Renderer;
 using NumbersAPI.CommandEngine;
+using NumbersAPI.Motion;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;
@@ -18,8 +19,9 @@ namespace Numbers.Agent
 
         public SKWorkspaceMapper WorkspaceMapper { get; set; }
         public CoreRenderer Renderer { get; }
+        public Runner Runner;
 
-        private Format.Program Program { get; }
+        public Format.Program Program { get; }
         public bool IsPaused { get; set; } = true;
 
         public bool IsDown { get; private set; }
@@ -75,14 +77,19 @@ namespace Numbers.Agent
 
         private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
 
-        public MouseAgent(Brain brain, CoreRenderer renderer) : base(brain, null)
+        public MouseAgent(Brain brain, Runner runner, CoreRenderer renderer) : base(brain, null)
         {
             Renderer = renderer;
             Renderer.CurrentAgent = this;
+            Runner = runner;
             Program = new Format.Program(Brain, Renderer);
 
             ClearMouse();
-            Program.NextTest(this);
+        }
+
+        public void NextTest()
+        {
+	        WorkspaceMapper = Program.NextTest(this);
         }
 
         public void Draw()
@@ -367,9 +374,9 @@ namespace Numbers.Agent
                 case Keys.N:
 	                FlipBasis();
 	                break;
-                //case Keys.F:
-                //    UIMode = UIMode.CreateFocal;
-                //    break;
+                case Keys.P:
+	                Runner.TogglePause();
+                    break;
                 case Keys.D:
                     ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
                     break;

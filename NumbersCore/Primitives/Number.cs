@@ -9,11 +9,11 @@ namespace NumbersCore.Primitives
 		public MathElementKind Kind => MathElementKind.Number;
 
 		public Brain Brain => Domain.Brain;
-        public Number this[int i] => Brain.NumberStore[i];
+		public Number this[int i] => Brain.NumberStore[i];
 
 		public int Id { get; set; }
-		public int CreationIndex => Id - (int)Kind - 1;
-        public int DomainId
+		public int CreationIndex => Id - (int) Kind - 1;
+		public int DomainId
 		{
 			get => Domain.Id;
 			set => Domain = Domain.Trait.DomainStore[value];
@@ -45,10 +45,15 @@ namespace NumbersCore.Primitives
 			Brain.NumberStore.Add(Id, this);
 		}
 
-		public Number(Domain domain, Range value) : this(domain, domain.CreateFocalFromRange(value).Id) { }
-		public Number(Domain domain, long start, long end) : this(domain, FocalRef.CreateByValues(domain.Trait, start, end).Id) { }
+		public Number(Domain domain, Range value) : this(domain, domain.CreateFocalFromRange(value).Id)
+		{
+		}
 
-        private long StartTickPosition
+		public Number(Domain domain, long start, long end) : this(domain, FocalRef.CreateByValues(domain.Trait, start, end).Id)
+		{
+		}
+
+		private long StartTickPosition
 		{
 			get => Focal.StartTickPosition;
 			set => Focal.StartTickPosition = value;
@@ -72,15 +77,15 @@ namespace NumbersCore.Primitives
 
 		public double StartValue
 		{
-			get => Value.Start;//Domain.ValueFromStartTickPosition(StartTickPosition); // Value.Start is a little less efficient
+			get => Value.Start; //Domain.ValueFromStartTickPosition(StartTickPosition); // Value.Start is a little less efficient
 			set => Value = new Range(value, Value.End); //StartTicks = Domain.StartTickPositionFrom(value);
 
 		}
 		public double EndValue
 		{
-			get => Value.End;//Domain.ValueFromEndTickPosition(EndTickPosition); // Value.End is a little less efficient
-            set => Value = new Range(Value.Start, value); //EndTicks = Domain.EndTickPositionFrom(value);
-        }
+			get => Value.End; //Domain.ValueFromEndTickPosition(EndTickPosition); // Value.End is a little less efficient
+			set => Value = new Range(Value.Start, value); //EndTicks = Domain.EndTickPositionFrom(value);
+		}
 		public Range Value //*
 		{
 			get => Domain.GetValueOf(Focal); //Focal.RangeWithBasis(BasisFocal);
@@ -88,10 +93,10 @@ namespace NumbersCore.Primitives
 		}
 		public Range ValueInRenderPerspective => new Range(-StartValue, EndValue);
 
-        public long WholeStartValue => (long)StartValue;
-		public long WholeEndValue => (long)EndValue;
-		public long RemainderStartValue => Domain.BasisIsReciprocal ? 0 : Math.Abs(StartTicks % BasisFocal.NonZeroLength); 
-        public long RemainderEndValue => Domain.BasisIsReciprocal ? 0 : Math.Abs(EndTicks % BasisFocal.NonZeroLength);
+		public long WholeStartValue => (long) StartValue;
+		public long WholeEndValue => (long) EndValue;
+		public long RemainderStartValue => Domain.BasisIsReciprocal ? 0 : Math.Abs(StartTicks % BasisFocal.NonZeroLength);
+		public long RemainderEndValue => Domain.BasisIsReciprocal ? 0 : Math.Abs(EndTicks % BasisFocal.NonZeroLength);
 		public Range RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal); //*
 
 		public Range FloorRange => new Range(Math.Ceiling(StartValue), Math.Floor(EndValue));
@@ -99,6 +104,11 @@ namespace NumbersCore.Primitives
 		public Range RoundedRange => new Range(Math.Round(StartValue), Math.Round(EndValue));
 		public Range RemainderRange => Value - FloorRange;
 
+		public void PlusTick() => EndTickPosition += 1;
+		public void MinusTick() => EndTickPosition -= 1;
+        public void AddStartTicks(long ticks) => StartTickPosition += ticks;
+        public void AddEndTicks(long ticks) => EndTickPosition += ticks;
+		public void AddTicks(long startTicks, long endTicks) { StartTickPosition += startTicks; EndTickPosition += endTicks; }
 
 	// Operations with segments and units allow moving the unit around freely, so for example,
         // you can shift a segment by aligning the unit with start or end,

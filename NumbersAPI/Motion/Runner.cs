@@ -12,7 +12,7 @@ namespace NumbersAPI.Motion
 		public static Runner GetRunnerById(int id) => CurrentRunner;
 
 		public Workspace Workspace { get; }
-		private readonly Form _display;
+		private readonly Control _display;
 
 		private bool _isPaused;
 		private static DateTime _pauseTime;
@@ -30,7 +30,7 @@ namespace NumbersAPI.Motion
 		public double CurrentMs => _currentTime.TotalMilliseconds;
 
 
-		public Runner(Form display)
+		public Runner(Control display)
 		{
 			CurrentRunner = this;
 			_display = display;
@@ -46,60 +46,26 @@ namespace NumbersAPI.Motion
 			_sysTimer.Elapsed += Tick;
 			_sysTimer.Interval = 8;
 			_sysTimer.Enabled = true;
-
-			if (_display != null)
-			{
-				_display.Paint += OnDraw;
-			}
 		}
 
-		//private float t = 0;
-		private bool _isBusy = false;
+        //private float t = 0;
+        private bool _isBusy = false;
+        private bool _needsUpdate = true;
+        public bool NeedsUpdate() => _needsUpdate = true;
 
 		private void Tick(object sender, ElapsedEventArgs e)
 		{
-			if (!_isPaused && !_isBusy)
+			if (!_isPaused && !_isBusy && _needsUpdate)
 			{
 				_isBusy = true;
-
 				_currentTime = e.SignalTime - (StartTime + _delayTime);
 				double deltaTime = (_currentTime - _lastTime).TotalMilliseconds;
 				//Composites.Update(CurrentMs, deltaTime);
-
-				if (_display != null)
-				{
-					_display.Invalidate();
-				}
-
+				_display?.Invalidate();
 				_lastTime = _currentTime;
+				_needsUpdate = false;
 			}
-
 			_isBusy = false;
-		}
-
-		private void OnDraw(object sender, PaintEventArgs e)
-		{
-			//if (!Composites.NeedsDestroy)
-			//{
-			//	Composites.CanDestroy = false;
-			//	{
-			//		e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-			//		var activeIds = Composites.ActiveIdsCopy;
-			//		foreach (var id in activeIds)
-			//		{
-			//			if (Composites.ContainsKey(id))
-			//			{
-			//				var element = Composites[id];
-			//				if (element is IDrawable drawable)
-			//				{
-			//					drawable.Draw(e.Graphics, new Dictionary<PropertyId, ISeries>());
-			//				}
-			//			}
-			//		}
-			//	}
-			//}
-
-			//Composites.CanDestroy = true;
 		}
 
 		public void ActivateComposite(int id)
@@ -146,8 +112,12 @@ namespace NumbersAPI.Motion
 				OnPause(this, null);
 			}
 		}
+		public void TogglePause()
+		{
+			OnPause(this, null);
+		}
 
-		public void OnPause(object sender, EventArgs e)
+        private void OnPause(object sender, EventArgs e)
 		{
 			_isPaused = !_isPaused;
 			if (_isPaused)
