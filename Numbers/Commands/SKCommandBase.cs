@@ -17,14 +17,9 @@ namespace Numbers.Commands
 
 	    public SKMapper Mapper { get; protected set; }
 	    public SKSegment Guideline { get; }
-	    public new MouseAgent Agent;
-	    //public override CommandAgent Agent // agent in Desktop UI must be a mouse agent
-	    //{
-		   // get => MouseAgent;
-		   // set => MouseAgent = (MouseAgent)value;
-	    //}
+	    public MouseAgent MouseAgent => (MouseAgent) Agent;
 
-	    public float DefaultDuration => 250;
+        public float DefaultDuration => 250;
 
 	    public SKCommandBase(SKSegment guideline)
 	    {

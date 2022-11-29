@@ -33,7 +33,7 @@ namespace Numbers.Mappers
 	    public bool ShowNumberOffsets;
 	    public bool ShowKeyValues;
 	    public bool ShowValueMarkers = true;
-	    public bool ShowUnits;
+	    public bool ShowBasis;
 	    public bool ShowBasisMarkers;
 	    public bool ShowUnotArrow;
 	    public bool ShowMaxMinValues;
@@ -92,7 +92,7 @@ namespace Numbers.Mappers
 	    }
         private void DrawUnit()
 	    {
-		    if (ShowUnits)
+		    if (ShowBasis)
 		    {
 			    WorkspaceMapper.NumberMapper(Domain.BasisNumberId).DrawUnit();
             }
@@ -198,7 +198,7 @@ namespace Numbers.Mappers
 			    var pnt = CorePens.GetGradientPen(gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 10);
 			    Renderer.DrawSegment(Guideline, pnt);
 		    }
-		    else if (!ShowUnits) // if not showing units at least color the line
+		    else if (!ShowBasis) // if not showing units at least color the line
 		    {
 			    var pnt = CorePens.GetGradientPen( gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 3);
 			    Renderer.DrawSegment(Guideline, pnt);

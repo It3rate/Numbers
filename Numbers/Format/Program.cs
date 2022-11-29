@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Numbers.Agent;
+using Numbers.Commands;
 using Numbers.Mappers;
 using Numbers.Renderer;
+using Numbers.Utils;
+using NumbersAPI.CommandEngine;
 using NumbersCore.Primitives;
 
 namespace Numbers.Format
@@ -11,10 +15,25 @@ namespace Numbers.Format
     {
 	    private Brain Brain { get; }
         private CoreRenderer Renderer { get; }
+        private int _testIndex = 3;
+        private readonly int[] _tests = new int[] { 0, 1, 2, 3 };
         public Program(Brain brain, CoreRenderer renderer)
         {
 	        Brain = brain;
 	        Renderer = renderer;
+        }
+
+        private SKWorkspaceMapper test3(MouseAgent mouseAgent)
+        {
+	        Trait trait = new Trait(Brain);
+	        var stack = new CommandStack(mouseAgent);
+
+            var wm = new SKWorkspaceMapper(mouseAgent, 20, 20, 1000, 400);
+            var guideline = new SKSegment(100,100,700,100);
+            var unitSeg = guideline.SegmentAlongLine(0.4f, 0.6f);
+            var dc = new AddSKDomainCommand(trait, 0, 10, -800, 800, guideline, unitSeg);
+            stack.Do(dc);
+            return wm;
         }
 
         private SKWorkspaceMapper test2(Agent.MouseAgent mouseAgent)
@@ -56,13 +75,13 @@ namespace Numbers.Format
             dm.ShowGradientNumberLine = false;
             dm.ShowValueMarkers = true;
             dm.ShowBasisMarkers = false;
-            dm.ShowUnits = false;
+            dm.ShowBasis = false;
 
             var dm2 = wm.GetOrCreateDomainMapper(vDomain, wm.GetVerticalSegment(.5f, 50));
             dm2.ShowGradientNumberLine = false;
             dm2.ShowValueMarkers = true;
             dm2.ShowBasisMarkers = false;
-            dm2.ShowUnits = false;
+            dm2.ShowBasis = false;
             return wm;
         }
         private SKWorkspaceMapper test1(Agent.MouseAgent mouseAgent)
@@ -89,14 +108,13 @@ namespace Numbers.Format
             dm.ShowGradientNumberLine = true;
             dm.ShowNumberOffsets = true;
             dm.ShowBasisMarkers = true;
-            dm.ShowUnits = true;
+            dm.ShowBasis = true;
             wm.EnsureRenderers();
             var nm = wm.NumberMapper(num2.Id);
             //dm.EndPoint += new SKPoint(0, -50);
             return wm;
         }
-        private int _testIndex = 2;
-        private readonly int[] _tests = new int[] { 0, 1, 2 };
+
         public SKWorkspaceMapper NextTest(Agent.MouseAgent mouseAgent)
         {
 	        mouseAgent.IsPaused = true;
@@ -110,11 +128,14 @@ namespace Numbers.Format
                     wm = test0(mouseAgent);
                     break;
                 case 1:
-                    wm = test1(mouseAgent);
-                    break;
+	                wm = test1(mouseAgent);
+	                break;
                 case 2:
+	                wm = test1(mouseAgent);
+	                break;
+                case 3:
                 default:
-                    wm = test2(mouseAgent);
+                    wm = test3(mouseAgent);
                     break;
             }
             _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
@@ -153,7 +174,7 @@ namespace Numbers.Format
 		        dm.ShowGradientNumberLine = true;
 		        dm.ShowNumberOffsets = true;
 		        dm.ShowBasisMarkers = true;
-		        dm.ShowUnits = true;
+		        dm.ShowBasis = true;
 		        yt += ytStep;
 	        }
 

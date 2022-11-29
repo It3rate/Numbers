@@ -25,35 +25,39 @@ namespace Numbers.Commands
 	    public Domain CreatedDomain => CreateDomainCommand?.Domain;
 
 	    public SKSegment UnitSegment { get; }
-	    public SKSegment unitSegment { get; }
 
         public AddSKDomainCommand(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(guideline)
         {
 	        ExistingDomain = domain;
+	        UnitSegment = unitSegment;
         }
-	    public AddSKDomainCommand(Trait trait, long basisStart, long basisEnd, long minMaxStart, long minMaxEnd, SKSegment guideline) : base(guideline)
+	    public AddSKDomainCommand(Trait trait, long basisStart, long basisEnd, long minMaxStart, long minMaxEnd, SKSegment guideline, SKSegment unitSegment) : base(guideline)
 	    {
 		    CreateDomainCommand = new CreateDomainCommand(trait, basisStart, basisEnd, minMaxStart, minMaxEnd);
-	    }
+		    UnitSegment = unitSegment;
+        }
 
 	    public override void Execute()
 	    {
 		    base.Execute();
 		    if (ExistingDomain == null)
 		    {
-			    CreateDomainCommand.Execute();
+			    Stack.Do(CreateDomainCommand);
 		    }
-		    Mapper = new SKDomainMapper(Agent, Domain, Guideline, UnitSegment);
-		    Agent.WorkspaceMapper.Mappers[Domain.Id] = Mapper;
+		    Mapper = new SKDomainMapper(MouseAgent, Domain, Guideline, UnitSegment);
+		    DomainMapper.ShowGradientNumberLine = true;
+		    DomainMapper.ShowBasis = true;
+		    DomainMapper.ShowBasisMarkers = true;
+            MouseAgent.WorkspaceMapper.Mappers[Domain.Id] = Mapper;
         }
 
 	    public override void Unexecute()
 	    {
 		    base.Unexecute();
-		    Agent.WorkspaceMapper.Mappers.Remove(Domain.Id);
+		    MouseAgent.WorkspaceMapper.Mappers.Remove(Domain.Id);
 		    if (ExistingDomain == null)
 		    {
-			    CreateDomainCommand.Unexecute();
+			    Stack.Undo();
 		    }
         }
 
