@@ -4,7 +4,7 @@ using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
-    public class FocalRef : FocalBase
+    public class FocalRef : FocalBase // todo: Eventually need to consider what the benefits are of having virtual positions like this. Maybe none?
     {
 	    private static int _positionCounter = 1;
         public int StartId { get; set; } // ref to start point position

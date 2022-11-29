@@ -45,23 +45,24 @@ namespace NumbersCore.Primitives
 
         public int MinMaxNumberId { get; set; }
         public Number MinMaxNumber => Brain.NumberStore[MinMaxNumberId];
-        public IFocal MinMaxFocal => Trait.FocalStore[MinMaxFocalId];
         public int MinMaxFocalId => MinMaxNumber.FocalId;
+        public IFocal MinMaxFocal => MinMaxNumber.Focal;
         public Range MinMaxRange => BasisFocal.RangeAsBasis(MinMaxFocal);
 
         public bool IsUnitPerspective => BasisFocal.IsUnitPerspective;
         public bool IsUnotPerspective => BasisFocal.IsUnotPerspective;
 
-        public Domain(Trait trait, int basisFocalId, int minMaxFocalId)
+        public Domain(Trait trait, int basisFocalId, int minMaxFocalId = 0)
         {
 	        Id = domainCounter++;
 	        Brain = trait.Brain;
 	        TraitId = trait.Id;
             BasisNumberId = new Number(this, basisFocalId).Id;
-            MinMaxNumberId = new Number(this, minMaxFocalId).Id;
+            MinMaxNumberId = minMaxFocalId == 0 ? trait.MaxFocal.Id : new Number(this, minMaxFocalId).Id;
             Trait.DomainStore.Add(Id, this);
         }
-        public Domain(Trait trait, FocalRef basis, FocalRef minMax) : this(trait, basis.Id, minMax.Id) { }
+        public Domain(Trait trait, IFocal basis, IFocal minMax = default) : this(trait, basis.Id, minMax?.Id ?? 0) { }
+
         public Number CreateNumberByPositions(long start, long end) => new Number(this, start, end);
         public Number CreateNumberByValues(double start, double end) => new Number(this, new Range(start, end));
 

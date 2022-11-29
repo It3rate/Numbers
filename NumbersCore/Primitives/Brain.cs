@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
@@ -58,5 +59,16 @@ namespace NumbersCore.Primitives
             NumberStore.Clear();
         }
 
+
+        // Eventually these will all be loaded into the brain. They are innate properties, equivalent to the ones we're born with.
+        private Trait _timeTrait;
+        public Trait TimeTrait => _timeTrait ?? (_timeTrait = new Trait(this, "Timer"));
+        private Domain _time60Domain;
+        public Domain Time60Domain => _time60Domain ?? (_time60Domain = TimeTrait.AddDomain(60));
+
+        private Trait _countTrait;
+        public Trait CountTrait => _countTrait ?? (_countTrait = new Trait(this, "Count"));
+        private Domain _intDomain;
+        public Domain IntDomain => _intDomain ?? (_intDomain = CountTrait.AddDomain(1));
     }
 }

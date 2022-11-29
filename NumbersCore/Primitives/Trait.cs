@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
@@ -27,7 +28,7 @@ namespace NumbersCore.Primitives
 		    Id = Brain.NextTraitId();
 		    Name = name == "" ? "Trait_" + CreationIndex : name;
             TraitStore.Add(Id, this);
-	    }
+        }
 
         public Transform AddTransform(Selection selection, Number repeats, TransformKind kind)
 	    {
@@ -35,16 +36,20 @@ namespace NumbersCore.Primitives
             TransformStore.Add(result.Id, result);
             return result;
 	    }
-        public Domain AddDomain(int basisIndex, int rangeIndex)
+        private Domain AddDomain(int basisIndex, int rangeIndex)
 	    {
 		    var result = new Domain(this, basisIndex, rangeIndex);
 		    return result;
 	    }
-	    public Domain AddDomain(FocalRef basis, FocalRef range)
+	    public Domain AddDomain(IFocal basis, IFocal range)
 	    {
 		    return AddDomain(basis.Id, range.Id);
 	    }
-	    public IEnumerable<Domain> Domains()
+	    public Domain AddDomain(long basisTicks)
+	    {
+		    return AddDomain(CreateZeroFocal(basisTicks).Id, MaxFocal.Id);
+	    }
+        public IEnumerable<Domain> Domains()
 	    {
 		    foreach (var domain in DomainStore.Values)
 		    {
@@ -58,5 +63,11 @@ namespace NumbersCore.Primitives
 			    yield return transform;
 		    }
 	    }
-    }
+
+
+	    public IFocal CreateZeroFocal(long ticks) { return FocalVal.CreateByValues(this, 0, ticks); }
+	    public IFocal CreateBalancedFocal(long halfTicks) { return FocalVal.CreateByValues(this, -halfTicks, halfTicks); }
+	    private IFocal _maxFocal;
+	    public IFocal MaxFocal =>_maxFocal ?? (_maxFocal = FocalVal.CreateByValues(this, long.MinValue, long.MaxValue));
+	}
 }

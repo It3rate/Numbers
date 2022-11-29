@@ -13,7 +13,7 @@ namespace NumbersCore.Primitives
 	    public override long StartTickPosition { get; set; }
 	    public override long EndTickPosition { get; set; }
 
-        private FocalVal(Trait trait, long startTickPosition, long endTickPosition) : base(trait)
+        public FocalVal(Trait trait, long startTickPosition, long endTickPosition) : base(trait)
         {
 	        StartTickPosition = startTickPosition;
 	        EndTickPosition = endTickPosition;

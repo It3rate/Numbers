@@ -59,8 +59,8 @@ namespace Numbers.Format
             var unitSize = 8;
             var unit = FocalRef.CreateByValues(trait, 0, unitSize);
             var range = FocalRef.CreateByValues(trait, -16 * unitSize, 16 * unitSize);
-            var hDomain = trait.AddDomain(unit.Id, range.Id);
-            var vDomain = trait.AddDomain(unit.Id, range.Id);
+            var hDomain = trait.AddDomain(unit, range);
+            var vDomain = trait.AddDomain(unit, range);
             var hFocal = FocalRef.CreateByValues(trait, -2 * unitSize, 9 * unitSize);
             var vFocal = FocalRef.CreateByValues(trait, 3 * unitSize, 6 * unitSize);
             //var val2 = FocalRef.CreateByValues(t0, unitSize, unitSize);
@@ -94,7 +94,7 @@ namespace Numbers.Format
             var unitSize = 4;
             var unit = FocalRef.CreateByValues(trait, 3, 3 + unitSize);
             var range = FocalRef.CreateByValues(trait, -40, 40);
-            var domain = trait.AddDomain(unit.Id, range.Id);
+            var domain = trait.AddDomain(unit, range);
             //var domain2 = t0.AddDomain(unit.Id, range.Id);
             var val2 = FocalRef.CreateByValues(trait, -15, 20);
             //var val3 = FocalRef.CreateByValues(t0, -40, 60);
@@ -162,7 +162,7 @@ namespace Numbers.Format
 	        var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
 	        for (int i = 1; i < focalPositions.Length; i += 2)
 	        {
-		        var domain = trait.AddDomain(unitFocal.Id, range.Id);
+		        var domain = trait.AddDomain(unitFocal, range);
 		        //domain.BasisIsReciprocal = true;
 		        result.Add(domain);
 		        var focal = FocalVal.CreateByValues(trait, focalPositions[i - 1], focalPositions[i]);
