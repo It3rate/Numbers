@@ -52,6 +52,7 @@ namespace NumbersAPI.Motion
         //private float t = 0;
         private bool _isBusy = false;
         private bool _needsUpdate = true;
+        public bool HasUpdated { get; set; } = false;
         public bool NeedsUpdate() => _needsUpdate = true;
 
 		private void Tick(object sender, ElapsedEventArgs e)
@@ -64,8 +65,9 @@ namespace NumbersAPI.Motion
 				//Composites.Update(CurrentMs, deltaTime);
 				_display?.Invalidate();
 				_lastTime = _currentTime;
-				_needsUpdate = false;
+				_needsUpdate = !HasUpdated;
 			}
+
 			_isBusy = false;
 		}
 

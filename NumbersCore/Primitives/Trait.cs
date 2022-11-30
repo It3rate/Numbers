@@ -65,7 +65,20 @@ namespace NumbersCore.Primitives
 	    }
 
 
-	    public IFocal CreateZeroFocal(long ticks) { return FocalVal.CreateByValues(this, 0, ticks); }
+	    public Domain DomainAt(int index)
+	    {
+		    var id = index + (int)MathElementKind.Domain;
+		    DomainStore.TryGetValue(id, out var result);
+		    return result;
+	    }
+	    public IFocal FocalAt(int index)
+	    {
+		    var id = index + (int)MathElementKind.Focal;
+		    FocalStore.TryGetValue(id, out var result);
+		    return result;
+	    }
+
+        public IFocal CreateZeroFocal(long ticks) { return FocalVal.CreateByValues(this, 0, ticks); }
 	    public IFocal CreateBalancedFocal(long halfTicks) { return FocalVal.CreateByValues(this, -halfTicks, halfTicks); }
 	    private IFocal _maxFocal;
 	    public IFocal MaxFocal =>_maxFocal ?? (_maxFocal = FocalVal.CreateByValues(this, long.MinValue, long.MaxValue));

@@ -97,7 +97,9 @@ namespace Numbers.Agent
 
         public void NextTest()
         {
+	        Runner.HasUpdated = false;
 	        Program.NextTest(this);
+	        Runner.HasUpdated = true;
         }
 
         public void Draw()

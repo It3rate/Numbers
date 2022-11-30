@@ -26,7 +26,7 @@ namespace NumbersCore.Primitives
 	    public Dictionary<int, Transform> TransformStore { get; } = new Dictionary<int, Transform>();
 	    public Dictionary<int, Number> NumberStore { get; } = new Dictionary<int, Number>();
 
-	    private int _networkCounter = 1 + (int)MathElementKind.Network;
+        private int _networkCounter = 1 + (int)MathElementKind.Network;
 	    private int _formulaCounter = 1 + (int)MathElementKind.Formula;
 	    private int _definitionCounter = 1 + (int)MathElementKind.Definition;
         private int _traitCounter = 1 + (int)MathElementKind.Trait;
@@ -57,6 +57,19 @@ namespace NumbersCore.Primitives
             TraitStore.Clear();
             TransformStore.Clear();
             NumberStore.Clear();
+        }
+
+        public Trait TraitAt(int index)
+        {
+	        var id = index + (int)MathElementKind.Trait;
+	        TraitStore.TryGetValue(id, out var result);
+	        return result;
+        }
+        public Number NumberAt(int index)
+        {
+	        var id = index + (int)MathElementKind.Number;
+	        NumberStore.TryGetValue(id, out var result);
+	        return result;
         }
 
 
