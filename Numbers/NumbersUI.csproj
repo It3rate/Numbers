@@ -90,6 +90,7 @@
   <ItemGroup>
     <Compile Include="Agent\IMouseAgent.cs" />
     <Compile Include="Commands\AddSKDomainCommand.cs" />
+    <Compile Include="Commands\AddSKNumberCommand.cs" />
     <Compile Include="Commands\ISKCommand.cs" />
     <Compile Include="Commands\SKCommandBase.cs" />
     <Compile Include="CoreForm.cs">

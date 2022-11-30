@@ -24,7 +24,7 @@ namespace Numbers.Mappers
 	    public Range UnitRangeOnDomainLine
 	    {
 		    get => Guideline.RatiosAsBasis(BasisSegment);
-		    set => BasisMapper.Reset(Guideline.SegmentAlongLine(value));
+		    set => BasisMapper.Reset(SegmentAlongGuideline(value));
 	    }
 	    public int UnitDirectionOnDomainLine => BasisSegment.DirectionOnLine(Guideline);
 
@@ -52,7 +52,9 @@ namespace Numbers.Mappers
             base.Reset(startPoint, endPoint);
             AddValidNumbers();
 	    }
-	    private void AddValidNumbers()
+	    public SKSegment SegmentAlongGuideline(Range ratio) => Guideline.SegmentAlongLine(ratio);
+
+        private void AddValidNumbers()
 	    {
 		    ValidNumberIds.Clear();
 		    foreach (var id in Domain.NumberIds)
@@ -74,7 +76,7 @@ namespace Numbers.Mappers
 		    {
 			    StartPoint = newPoint;
 		    }
-            BasisMapper.Reset(Guideline.SegmentAlongLine(unitRatio));
+            BasisMapper.Reset(SegmentAlongGuideline(unitRatio));
         }
 
         public void Draw()

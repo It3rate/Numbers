@@ -35,6 +35,13 @@ namespace NumbersCore.Primitives
 		        ActiveIds.Add(element.Id);
 	        }
         }
+        public void RemoveElements(params IMathElement[] elements)
+        {
+	        foreach (var element in elements)
+	        {
+		        ActiveIds.Remove(element.Id);
+	        }
+        }
         public void AddElementsById(params int[] elementIds)
         {
 	        foreach (var id in elementIds)

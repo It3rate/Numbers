@@ -14,8 +14,7 @@ using NumbersCore.Primitives;
 
 namespace Numbers.Commands
 {
-
-    public class AddSKDomainCommand : SKCommandBase
+	public class AddSKDomainCommand : SKCommandBase
     {
 	    public SKDomainMapper DomainMapper => (SKDomainMapper)Mapper;
 
@@ -40,7 +39,7 @@ namespace Numbers.Commands
 	    public override void Execute()
 	    {
 		    base.Execute();
-		    if (ExistingDomain == null)
+		    if (CreateDomainCommand != null)
 		    {
 			    Stack.Do(CreateDomainCommand);
 		    }
@@ -48,14 +47,14 @@ namespace Numbers.Commands
 		    DomainMapper.ShowGradientNumberLine = true;
 		    DomainMapper.ShowBasis = true;
 		    DomainMapper.ShowBasisMarkers = true;
-            MouseAgent.WorkspaceMapper.Mappers[Domain.Id] = Mapper;
+            MouseAgent.WorkspaceMapper.Mappers[DomainMapper.Id] = Mapper;
         }
 
 	    public override void Unexecute()
 	    {
 		    base.Unexecute();
-		    MouseAgent.WorkspaceMapper.Mappers.Remove(Domain.Id);
-		    if (ExistingDomain == null)
+		    MouseAgent.WorkspaceMapper.Mappers.Remove(Mapper.Id);
+		    if (CreateDomainCommand != null)
 		    {
 			    Stack.Undo();
 		    }

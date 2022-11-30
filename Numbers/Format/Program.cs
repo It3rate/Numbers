@@ -8,6 +8,7 @@ using Numbers.Renderer;
 using Numbers.Utils;
 using NumbersAPI.CommandEngine;
 using NumbersCore.Primitives;
+using NumbersCore.Utils;
 
 namespace Numbers.Format
 {
@@ -36,6 +37,9 @@ namespace Numbers.Format
             var guideline2 = new SKSegment(100, 200, 700, 200);
             var dc2 = new AddSKDomainCommand(trait, 0, 10, -800, 800, guideline2, unitSeg);
             stack.Do(dc2);
+            var num = new AddSKNumberCommand(dc.DomainMapper, new Range(1.5, -0.4));
+            var num2 = new AddSKNumberCommand(dc2.DomainMapper, new Range(-2.2, 1.4));
+            stack.Do(num, num2);
             //stack.Undo();
             return wm;
         }
