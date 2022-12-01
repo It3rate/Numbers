@@ -14,22 +14,22 @@ namespace NumbersAPI.CoreTasks
 	    public Domain Domain;
 
 	    public Trait Trait { get; }
-	    public int BasisFocalId { get; }
-	    public int MinMaxId { get; }
+	    public IFocal BasisFocal { get; }
+	    public IFocal MinMax { get; }
 
         public override bool IsValid => true;
 
-	    public CreateDomainTask(Trait trait, int basisFocalId, int minMaxId) 
+	    public CreateDomainTask(Trait trait, IFocal basisFocal, IFocal minMax) 
 	    {
 		    Trait = trait;
-		    BasisFocalId = basisFocalId;
-		    MinMaxId = minMaxId;
+		    BasisFocal = basisFocal;
+		    MinMax = minMax;
 	    }
 	    public override void RunTask()
 	    {
 		    if (Domain == null)
 		    {
-			    Domain = new Domain(Trait, BasisFocalId, MinMaxId);
+			    Domain = new Domain(Trait, BasisFocal, MinMax);
 		    }
 		    else
 		    {

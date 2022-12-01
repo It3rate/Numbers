@@ -35,36 +35,41 @@ namespace NumbersCore.Primitives
 	        }
         }
 
-        public int BasisNumberId { get; set; }
-        public Number BasisNumber => Brain.NumberStore[BasisNumberId];
-        public IFocal BasisFocal => Trait.FocalStore[BasisNumber.FocalId];
-        public int BasisFocalId => BasisNumber.FocalId;
+        public IFocal BasisFocal { get; set; }
+        public IFocal MinMaxFocal { get; set; }
+        public Number BasisNumber { get; set; }
+        public Number MinMaxNumber { get; set; }
         public bool BasisIsReciprocal { get; set; }// True when ticks are larger than the unit basis
 
-        public double TickToBasisRatio => BasisIsReciprocal ? BasisFocal.NonZeroLength : 1.0 / BasisFocal.NonZeroLength;
 
-        public int MinMaxNumberId { get; set; }
-        public Number MinMaxNumber => Brain.NumberStore[MinMaxNumberId];
+        public int BasisNumberId => BasisNumber.Id;
+        public int BasisFocalId => BasisNumber.BasisFocal.Id;
         public int MinMaxFocalId => MinMaxNumber.FocalId;
-        public IFocal MinMaxFocal => MinMaxNumber.Focal;
+        public int MinMaxNumberId => MinMaxNumber.Id;
+
         public Range MinMaxRange => BasisFocal.RangeAsBasis(MinMaxFocal);
+        public double TickToBasisRatio => BasisIsReciprocal ? BasisFocal.NonZeroLength : 1.0 / BasisFocal.NonZeroLength;
 
         public bool IsUnitPerspective => BasisFocal.IsUnitPerspective;
         public bool IsUnotPerspective => BasisFocal.IsUnotPerspective;
 
-        public Domain(Trait trait, int basisFocalId, int minMaxFocalId = 0)
+        public Domain(Trait trait, IFocal basisFocal, IFocal minMaxFocal = default)
         {
 	        Id = domainCounter++;
 	        Brain = trait.Brain;
 	        TraitId = trait.Id;
-            BasisNumberId = new Number(this, basisFocalId).Id;
-            MinMaxNumberId = minMaxFocalId == 0 ? trait.MaxFocal.Id : new Number(this, minMaxFocalId).Id;
+	        BasisFocal = basisFocal;
+	        MinMaxFocal = minMaxFocal;
+            BasisNumber = new Number(this, basisFocal);
+            MinMaxNumber = minMaxFocal == default ? new Number(this, trait.MaxFocal) : new Number(this, minMaxFocal);
             Trait.DomainStore.Add(Id, this);
         }
-        public Domain(Trait trait, IFocal basis, IFocal minMax = default) : this(trait, basis.Id, minMax?.Id ?? 0) { }
 
-        public Number CreateNumberByPositions(long start, long end) => new Number(this, start, end);
-        public Number CreateNumberByValues(double start, double end) => new Number(this, new Range(start, end));
+        public Number Zero() => new Number(this, BasisFocal.StartTickPosition, BasisFocal.StartTickPosition, false);
+        public Number One() => new Number(this, BasisFocal.StartTickPosition, BasisFocal.EndTickPosition, false);
+
+        public Number CreateNumberByPositions(long start, long end, bool addToStore) => new Number(this, start, end, addToStore);
+        public Number CreateNumberByValues(double start, double end, bool addToStore) => new Number(this, new Range(start, end), addToStore);
 
         public Range GetValueOf(IFocal focal) => focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal);
         public void SetValueOf(IFocal focal, Range range) => focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
@@ -83,9 +88,9 @@ namespace NumbersCore.Primitives
 	        focal.EndTickPosition = RoundToNearestTick(focal.EndTickPosition);
         }
 
-        public IFocal CreateFocalFromRange(Range range)
+        public IFocal CreateFocalFromRange(Range range, bool addToStore)
         {
-	        var result = FocalVal.CreateByValues(Trait, 0, 1);
+	        var result = Focal.CreateByValues(Trait, 0, 1, addToStore);
 	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
 	        return result;
         }

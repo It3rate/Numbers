@@ -48,12 +48,12 @@ namespace Numbers.Format
         {
 	        Trait trait = new Trait(Brain);
             var unitSize = 10;
-            var unit = FocalRef.CreateByValues(trait, 0, unitSize);
+            var unit = Focal.CreateByValues(trait, 0, unitSize, true);
             var wm = new SKWorkspaceMapper(mouseAgent, 20, 20, 1000, 400);
             var domains = CreateDomainLines((Agent.MouseAgent)mouseAgent, trait, 15, 10, -40, -30, 35, 24, 4, -13);
             var d2 = domains[2];
             var d1n2 = Brain.NumberStore[domains[1].NumberIds[2]];
-            var nn = new Number(d2, d1n2.FocalId);
+            var nn = new Number(d2, d1n2.Focal);
             mouseAgent.Workspace.AddElements(nn);
             return wm;
         }
@@ -61,17 +61,17 @@ namespace Numbers.Format
         {
             Trait trait = new Trait(Brain);
             var unitSize = 8;
-            var unit = FocalRef.CreateByValues(trait, 0, unitSize);
-            var range = FocalRef.CreateByValues(trait, -16 * unitSize, 16 * unitSize);
+            var unit = Focal.CreateByValues(trait, 0, unitSize, true);
+            var range = Focal.CreateByValues(trait, -16 * unitSize, 16 * unitSize, true);
             var hDomain = trait.AddDomain(unit, range);
             var vDomain = trait.AddDomain(unit, range);
-            var hFocal = FocalRef.CreateByValues(trait, -2 * unitSize, 9 * unitSize);
-            var vFocal = FocalRef.CreateByValues(trait, 3 * unitSize, 6 * unitSize);
-            //var val2 = FocalRef.CreateByValues(t0, unitSize, unitSize);
-            //var val3 = FocalRef.CreateByValues(t0, unitSize, unitSize);
+            var hFocal = Focal.CreateByValues(trait, -2 * unitSize, 9 * unitSize, true);
+            var vFocal = Focal.CreateByValues(trait, 3 * unitSize, 6 * unitSize, true);
+            //var val2 = Focal.CreateByValues(t0, unitSize, unitSize);
+            //var val3 = Focal.CreateByValues(t0, unitSize, unitSize);
 
-            var hNum = new Number(hDomain, hFocal.Id);
-            var vNum = new Number(vDomain, vFocal.Id);
+            var hNum = new Number(hDomain, hFocal);
+            var vNum = new Number(vDomain, vFocal);
             var hSel = new Selection(hNum);
             var transform = trait.AddTransform(hSel, vNum, TransformKind.Blend);
 
@@ -96,16 +96,16 @@ namespace Numbers.Format
         {
             Trait trait = new Trait(Brain);
             var unitSize = 4;
-            var unit = FocalRef.CreateByValues(trait, 3, 3 + unitSize);
-            var range = FocalRef.CreateByValues(trait, -40, 40);
+            var unit = Focal.CreateByValues(trait, 3, 3 + unitSize, true);
+            var range = Focal.CreateByValues(trait, -40, 40, true);
             var domain = trait.AddDomain(unit, range);
             //var domain2 = t0.AddDomain(unit.Id, range.Id);
-            var val2 = FocalRef.CreateByValues(trait, -15, 20);
-            //var val3 = FocalRef.CreateByValues(t0, -40, 60);
-            //var val2 = FocalRef.CreateByValues(t0, unitSize, unitSize);
-            //var val3 = FocalRef.CreateByValues(t0, unitSize, unitSize);
+            var val2 = Focal.CreateByValues(trait, -15, 20, true);
+            //var val3 = Focal.CreateByValues(t0, -40, 60);
+            //var val2 = Focal.CreateByValues(t0, unitSize, unitSize);
+            //var val3 = Focal.CreateByValues(t0, unitSize, unitSize);
 
-            var num2 = new Number(domain, val2.Id);
+            var num2 = new Number(domain, val2);
             //var num3 = new Number(domain2, val3.Id);
             //var sel = new Selection(num2);
             //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
@@ -160,7 +160,7 @@ namespace Numbers.Format
 	        var padding = 1.4;
 	        long maxPos = (long)Math.Max((focalPositions.Max() * padding), unitFocal.AbsLengthInTicks * padding);
 	        long minPos = (long)Math.Min((focalPositions.Min() * padding), -unitFocal.AbsLengthInTicks * padding);
-	        var range = FocalRef.CreateByValues(trait, minPos, maxPos);
+	        var range = Focal.CreateByValues(trait, minPos, maxPos, true);
 	        var rangeLen = (double)range.LengthInTicks;
 	        var yt = 0.1f;
 	        var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
@@ -169,8 +169,8 @@ namespace Numbers.Format
 		        var domain = trait.AddDomain(unitFocal, range);
 		        //domain.BasisIsReciprocal = true;
 		        result.Add(domain);
-		        var focal = FocalVal.CreateByValues(trait, focalPositions[i - 1], focalPositions[i]);
-		        var num = new Number(domain, focal.Id);
+		        var focal = Focal.CreateByValues(trait, focalPositions[i - 1], focalPositions[i], true);
+		        var num = new Number(domain, focal);
 		        mouseAgent.Workspace.AddDomains(true, domain);
 		        var displaySeg = wm.GetHorizontalSegment(yt, 100);
 		        var y = displaySeg.StartPoint.Y;

@@ -27,8 +27,8 @@ namespace NumbersAPI.CoreCommands
         public long MinMaxStart { get; }
         public long MinMaxEnd { get; }
 
-	    public int BasisFocalId { get; private set; } = -1;
-        public int MinMaxFocalId { get; private set; } = -1;
+	    public IFocal BasisFocal { get; private set; }
+        public IFocal MinMaxFocal { get; private set; }
 
         public CreateDomainCommand(Trait trait, long basisStart, long basisEnd, long minMaxStart, long minMaxEnd)
         {
@@ -38,27 +38,27 @@ namespace NumbersAPI.CoreCommands
 	        MinMaxStart = minMaxStart;
 	        MinMaxEnd = minMaxEnd;
         }
-	    public CreateDomainCommand(Trait trait, int basisFocalId, int minMaxId)
+	    public CreateDomainCommand(Trait trait, IFocal basisFocal, IFocal minMax)
 	    {
 		    Trait = trait;
-		    BasisFocalId = basisFocalId;
-		    MinMaxFocalId = minMaxId;
+		    BasisFocal = basisFocal;
+		    MinMaxFocal = minMax;
 	    }
 
 	    public override void Execute()
 	    {
 		    base.Execute();
-		    if (BasisFocalId == -1)
+		    if (BasisFocal == null)
 		    {
 			    BasisTask = new CreateFocalTask(Trait, BasisStart, BasisEnd);
 			    MinMaxTask = new CreateFocalTask(Trait, MinMaxStart, MinMaxEnd);
 			    AddTaskAndRun(BasisTask);
 			    AddTaskAndRun(MinMaxTask);
-	            BasisFocalId = BasisTask.Focal.Id;
-			    MinMaxFocalId = MinMaxTask.Focal.Id;
+	            BasisFocal = BasisTask.Focal;
+			    MinMaxFocal = MinMaxTask.Focal;
 		    }
 
-		    DomainTask = new CreateDomainTask(Trait, BasisFocalId, MinMaxFocalId);
+		    DomainTask = new CreateDomainTask(Trait, BasisFocal, MinMaxFocal);
 		    AddTaskAndRun(DomainTask);
 	    }
 
@@ -69,8 +69,8 @@ namespace NumbersAPI.CoreCommands
 		    {
 			    BasisTask = null;
 			    MinMaxTask = null;
-			    BasisFocalId = -1;
-                MinMaxFocalId = -1;
+			    BasisFocal = null;
+                MinMaxFocal = null;
                 // todo: undo should probably roll back all index counters as well.
             }
 	    }

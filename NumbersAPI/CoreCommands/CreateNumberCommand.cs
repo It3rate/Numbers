@@ -26,7 +26,7 @@ namespace NumbersAPI.CoreCommands
         private CreateNumberByRangeTask NumberByRangeTask;
         private CreateNumberByPositionsTask NumberByPositionsTask;
 
-        public int FocalId { get; }
+        public IFocal Focal { get; }
 
         public Range Range { get; }
 
@@ -38,10 +38,10 @@ namespace NumbersAPI.CoreCommands
         private readonly bool _isByPositions = false;
 
 
-        public CreateNumberCommand(Domain domain, int focalId)
+        public CreateNumberCommand(Domain domain, IFocal focal)
         {
 	        Domain = domain;
-	        FocalId = focalId;
+	        Focal = focal;
 	        _isById = true;
         }
         public CreateNumberCommand(Domain domain, Range range)
@@ -63,7 +63,7 @@ namespace NumbersAPI.CoreCommands
             base.Execute();
             if (_isById)
             {
-	            NumberByFocalIdTask = new CreateNumberByFocalIdTask(Domain, FocalId);
+	            NumberByFocalIdTask = new CreateNumberByFocalIdTask(Domain, Focal);
 	            AddTaskAndRun(NumberByFocalIdTask);
 	            Number = NumberByFocalIdTask.Number;
             }

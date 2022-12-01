@@ -64,7 +64,6 @@ namespace NumbersAPI.Motion
                 }
 
                 InterpolationT = IsReverse ? 1f - InterpolationT : InterpolationT;
-
                 StepTimedEvent?.Invoke(this, EventArgs.Empty);
             }
         }

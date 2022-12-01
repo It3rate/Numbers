@@ -20,12 +20,12 @@ namespace NumbersCore.Primitives
 		}
 
 		// number to the power of x, where x is also a focal. Eventually this is equations, lazy solve them.
-		public int FocalId { get; set; }
+		public int FocalId => Focal.Id;
 
+		public Trait Trait => Domain?.Trait;
 		public Domain Domain { get; set; }
-		public Trait Trait => Domain.Trait;
-		public IFocal Focal => Trait.FocalStore[FocalId];
-		public IFocal BasisFocal => Domain.BasisFocal;
+		public IFocal Focal { get; set; } 
+		public IFocal BasisFocal => Domain?.BasisFocal;
 
 		public long ZeroTick => BasisFocal.StartTickPosition;
 		public long BasisTicks => BasisFocal.LengthInTicks;
@@ -36,20 +36,22 @@ namespace NumbersCore.Primitives
 		public bool IsUnotPerspective => Domain.IsUnotPerspective;
 		public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
 
-		public Number(Domain domain, int focalId)
+		public Number(Domain domain, IFocal focal, bool addToStore = true)
 		{
 			Domain = domain;
-			FocalId = focalId;
-			Id = Brain.NextNumberId();
-			domain.NumberIds.Add(Id);
-			Brain.NumberStore.Add(Id, this);
+			Focal = focal;
+			if (addToStore)
+			{
+				Id = Brain.NextNumberId();
+				domain.NumberIds.Add(Id);
+				Brain.NumberStore.Add(Id, this);
+            }
 		}
 
-		public Number(Domain domain, Range value) : this(domain, domain.CreateFocalFromRange(value).Id)
+		public Number(Domain domain, Range value, bool addToStore) : this(domain, domain.CreateFocalFromRange(value, addToStore))
 		{
 		}
-
-		public Number(Domain domain, long start, long end) : this(domain, FocalRef.CreateByValues(domain.Trait, start, end).Id)
+		public Number(Domain domain, long start, long end, bool addToStore) : this(domain, Primitives.Focal.CreateByValues(domain.Trait, start, end, addToStore))
 		{
 		}
 
@@ -132,7 +134,12 @@ namespace NumbersCore.Primitives
 			Value /= other.Value;
         }
 
-        public Number Clone() => new Number(Domain, Focal.Clone().Id);
+        public void InterpolateFromZero(Number T)
+        {
+
+        }
+
+        public Number Clone() => new Number(Domain, Focal.Clone());
 
 		public override string ToString()
 		{

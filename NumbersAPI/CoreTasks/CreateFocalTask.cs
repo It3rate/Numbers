@@ -29,7 +29,7 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    if (Focal == null)
 		    {
-			    Focal = FocalRef.CreateByValues(Trait, StartPosition, EndPosition);
+			    Focal = NumbersCore.Primitives.Focal.CreateByValues(Trait, StartPosition, EndPosition, true);
 		    }
 		    else
 		    {

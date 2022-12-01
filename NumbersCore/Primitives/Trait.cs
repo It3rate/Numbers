@@ -36,18 +36,13 @@ namespace NumbersCore.Primitives
             TransformStore.Add(result.Id, result);
             return result;
 	    }
-        private Domain AddDomain(int basisIndex, int rangeIndex)
+	    public Domain AddDomain(IFocal basis, IFocal minMax)
 	    {
-		    var result = new Domain(this, basisIndex, rangeIndex);
-		    return result;
-	    }
-	    public Domain AddDomain(IFocal basis, IFocal range)
-	    {
-		    return AddDomain(basis.Id, range.Id);
+		    return new Domain(this, basis, minMax);
 	    }
 	    public Domain AddDomain(long basisTicks)
 	    {
-		    return AddDomain(CreateZeroFocal(basisTicks).Id, MaxFocal.Id);
+		    return AddDomain(CreateZeroFocal(basisTicks), MaxFocal);
 	    }
         public IEnumerable<Domain> Domains()
 	    {
@@ -78,9 +73,9 @@ namespace NumbersCore.Primitives
 		    return result;
 	    }
 
-        public IFocal CreateZeroFocal(long ticks) { return FocalVal.CreateByValues(this, 0, ticks); }
-	    public IFocal CreateBalancedFocal(long halfTicks) { return FocalVal.CreateByValues(this, -halfTicks, halfTicks); }
+        public IFocal CreateZeroFocal(long ticks) { return Focal.CreateByValues(this, 0, ticks, false); }
+	    public IFocal CreateBalancedFocal(long halfTicks) { return Focal.CreateByValues(this, -halfTicks, halfTicks, false); }
 	    private IFocal _maxFocal;
-	    public IFocal MaxFocal =>_maxFocal ?? (_maxFocal = FocalVal.CreateByValues(this, long.MinValue, long.MaxValue));
+	    public IFocal MaxFocal =>_maxFocal ?? (_maxFocal = Focal.CreateByValues(this, long.MinValue, long.MaxValue, false));
 	}
 }

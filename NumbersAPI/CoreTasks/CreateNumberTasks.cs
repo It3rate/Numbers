@@ -20,20 +20,20 @@ namespace NumbersAPI.CoreTasks
     {
 	    public Domain Domain { get; }
 	    public Number Number { get; private set; }
-	    public int FocalId { get; }
+	    public IFocal Focal { get; }
 
 	    public override bool IsValid => true;
 
-	    public CreateNumberByFocalIdTask(Domain domain, int focalId) : base()
+	    public CreateNumberByFocalIdTask(Domain domain, IFocal focal) : base()
 	    {
 		    Domain = domain;
-		    FocalId = focalId;
+		    Focal = focal;
 	    }
 	    public override void RunTask()
 	    {
 		    if (Number == null)
 		    {
-			    Number = new Number(Domain, FocalId);
+			    Number = new Number(Domain, Focal);
 		    }
 		    else
 		    {
@@ -66,7 +66,7 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    if (Number == null)
 		    {
-			    Number = new Number(Domain, Range);
+			    Number = new Number(Domain, Range, true);
 		    }
 		    else
 		    {
@@ -101,7 +101,7 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    if (Number == null)
 		    {
-			    Number = new Number(Domain, StartPosition, EndPosition);
+			    Number = new Number(Domain, StartPosition, EndPosition, true);
 		    }
 		    else
 		    {
