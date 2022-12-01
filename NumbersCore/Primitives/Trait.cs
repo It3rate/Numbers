@@ -9,45 +9,34 @@ namespace NumbersCore.Primitives
     /// </summary>
     public class Trait : IMathElement
 	{
-		public Brain Brain { get; }
+		public Brain Brain { get; internal set; }
         public MathElementKind Kind => MathElementKind.Trait;
-        public int Id { get; }
+        public int Id { get; internal set; }
         public int CreationIndex => Id - (int)Kind - 1;
         
         public virtual string Name { get; }
 
-        public Dictionary<int, long> PositionStore { get; } = new Dictionary<int, long>(4096);
-        public Dictionary<int, IFocal> FocalStore { get; } = new Dictionary<int, IFocal>();
-        public Dictionary<int, Domain> DomainStore { get; } = new Dictionary<int, Domain>();
+        public readonly Dictionary<int, long> PositionStore = new Dictionary<int, long>(4096);
+        public readonly Dictionary<int, IFocal> FocalStore = new Dictionary<int, IFocal>();
+        public readonly Dictionary<int, Domain> DomainStore = new Dictionary<int, Domain>();
 
-        public Dictionary<int, Transform> TransformStore => Brain.TransformStore;
-        public Dictionary<int, Trait> TraitStore => Brain.TraitStore;
-
-        public Trait(Brain brain, string name = "") : this(brain)
+        protected internal Trait()
         {
-	        Name = name == "" ? "Trait_" + CreationIndex : name;
+        }
+        private Trait(string name)
+        {
+	        Name = name;
         }
 
-        protected Trait(Brain brain)
-        {
-	        Brain = brain;
-	        Id = Brain.NextTraitId();
-	        TraitStore.Add(Id, this);
-        }
+        public static Trait CreateIn(Brain brain, string name) => brain.AddTrait(new Trait(name));
 
-        public Transform AddTransform(Selection selection, Number repeats, TransformKind kind)
-	    {
-            var result = new Transform(selection, repeats, kind);
-            TransformStore.Add(result.Id, result);
-            return result;
-	    }
 	    public Domain AddDomain(IFocal basis, IFocal minMax)
 	    {
 		    return new Domain(this, basis, minMax);
 	    }
 	    public Domain AddDomain(long basisTicks)
 	    {
-		    return AddDomain(CreateZeroFocal(basisTicks), MaxFocal);
+		    return AddDomain(Focal.CreateZeroFocal(basisTicks), Focal.MaxFocal);
 	    }
         public IEnumerable<Domain> Domains()
 	    {
@@ -56,16 +45,8 @@ namespace NumbersCore.Primitives
 			    yield return domain;
 		    }
 	    }
-	    public IEnumerable<Transform> Transforms()
-	    {
-		    foreach (var transform in TransformStore.Values)
-		    {
-			    yield return transform;
-		    }
-	    }
 
-
-	    public Domain DomainAt(int index)
+        public Domain DomainAt(int index)
 	    {
 		    var id = index + (int)MathElementKind.Domain;
 		    DomainStore.TryGetValue(id, out var result);
@@ -77,10 +58,5 @@ namespace NumbersCore.Primitives
 		    FocalStore.TryGetValue(id, out var result);
 		    return result;
 	    }
-
-        public IFocal CreateZeroFocal(long ticks) { return Focal.CreateByValues(this, 0, ticks); }
-	    public IFocal CreateBalancedFocal(long halfTicks) { return Focal.CreateByValues(this, -halfTicks, halfTicks); }
-	    private IFocal _maxFocal;
-	    public IFocal MaxFocal =>_maxFocal ?? (_maxFocal = Focal.CreateByValues(this, long.MinValue, long.MaxValue));
 	}
 }

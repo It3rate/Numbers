@@ -18,33 +18,24 @@ namespace NumbersCore.Primitives
     {
 	    public  MathElementKind Kind => MathElementKind.Domain;
         private static int domainCounter = 1 + (int)MathElementKind.Domain;
-        public int Id { get; }
+        public int Id { get; internal set; }
         public int CreationIndex => Id - (int)Kind - 1;
 
-	    public Brain Brain => Trait.Brain;
+	    //public Brain Brain => Trait.Brain;
 	    public Trait Trait { get; protected set; }
         public IFocal BasisFocal { get; protected set; }
         public IFocal MinMaxFocal { get; protected set; }
         public Number BasisNumber { get; protected set; }
         public Number MinMaxNumber { get; protected set; }
-        public int TraitId => Trait.Id;
 
-        public List<int> NumberIds { get; } = new List<int>();
-        public IEnumerable<Number> Numbers()
-        {
-	        foreach (var id in NumberIds)
-	        {
-		        yield return Brain.NumberStore[id];
-	        }
-        }
+        public readonly Dictionary<int, Number> NumberStore = new Dictionary<int, Number>();
 
         public bool BasisIsReciprocal { get; set; }// True when ticks are larger than the unit basis
 
-
-        public int BasisNumberId => BasisNumber.Id;
-        public int BasisFocalId => BasisNumber.BasisFocal.Id;
-        public int MinMaxFocalId => MinMaxNumber.FocalId;
-        public int MinMaxNumberId => MinMaxNumber.Id;
+        //public int BasisNumberId => BasisNumber.Id;
+        //public int BasisFocalId => BasisNumber.BasisFocal.Id;
+        //public int MinMaxFocalId => MinMaxNumber.FocalId;
+        //public int MinMaxNumberId => MinMaxNumber.Id;
 
         public Range MinMaxRange => BasisFocal.RangeAsBasis(MinMaxFocal);
         public double TickToBasisRatio => BasisIsReciprocal ? BasisFocal.NonZeroLength : 1.0 / BasisFocal.NonZeroLength;
@@ -58,16 +49,50 @@ namespace NumbersCore.Primitives
 	        Trait = trait;
 	        BasisFocal = basisFocal;
 	        MinMaxFocal = minMaxFocal;
-            BasisNumber = new Number(this, basisFocal);
-            MinMaxNumber = minMaxFocal == default ? new Number(this, trait.MaxFocal) : new Number(this, minMaxFocal);
+            BasisNumber = CreateNumber(basisFocal);
+            MinMaxNumber = minMaxFocal == default ? CreateNumber(Focal.MaxFocal) : CreateNumber(minMaxFocal);
             Trait.DomainStore.Add(Id, this);
         }
 
-        public Number Zero() => new Number(this, BasisFocal.StartTickPosition, BasisFocal.StartTickPosition, false);
-        public Number One() => new Number(this, BasisFocal.StartTickPosition, BasisFocal.EndTickPosition, false);
+        public int[] NumberIds() => NumberStore.Values.Select(num => num.Id).ToArray();
+        public Number GetNumber(int numberId)
+        {
+	        NumberStore.TryGetValue(numberId, out var result);
+	        return result;
+        }
+        public Number CreateNumber(IFocal focal, bool addToStore = true)
+        {
+	        return AddNumber(new Number(focal), addToStore);
+        }
+        public Number CreateNumber(Range value, bool addToStore = true)
+        {
+	        var focal = CreateFocalFromRange(value);
+	        return AddNumber(new Number(focal), addToStore);
+        }
 
-        public Number CreateNumberByPositions(long start, long end, bool addToStore) => new Number(this, start, end, addToStore);
-        public Number CreateNumberByValues(double start, double end, bool addToStore) => new Number(this, new Range(start, end), addToStore);
+        public Number CreateNumber(long start, long end, bool addToStore = true)
+        {
+	        var focal = Focal.CreateByValues(start, end);
+	        return AddNumber(new Number(focal), addToStore);
+        }
+        public Number AddNumber(Number number, bool addToStore = true)
+        {
+	        number.Domain = this;
+	        if (addToStore)
+	        {
+		        number.Id = number.Id == 0 ? NextNumberId() : number.Id;
+		        NumberStore[number.Id] = number;
+	        }
+	        return number;
+        }
+        public bool RemoveNumber(Number number)
+        {
+	        number.Domain = null;
+	        return NumberStore.Remove(number.Id);
+        }
+
+        public Number Zero() => CreateNumber(BasisFocal.StartTickPosition, BasisFocal.StartTickPosition);
+        public Number One() => CreateNumber(BasisFocal.StartTickPosition, BasisFocal.EndTickPosition);
 
         public Range GetValueOf(IFocal focal) => focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal);
         public void SetValueOf(IFocal focal, Range range) => focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
@@ -86,11 +111,27 @@ namespace NumbersCore.Primitives
 	        focal.EndTickPosition = RoundToNearestTick(focal.EndTickPosition);
         }
 
-        public IFocal CreateFocalFromRange(Range range, bool addToStore)
+        public IFocal CreateFocalFromRange(Range range)
         {
-	        var result = Focal.CreateByValues(Trait, 0, 1);
+	        var result = Focal.CreateByValues(0, 1);
 	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
 	        return result;
+        }
+
+        public void ClearAll()
+        {
+	        NumberStore.Clear();
+        }
+
+        private int _numberCounter = 1 + (int)MathElementKind.Number;
+        public int NextNumberId() => _numberCounter++ + Id;
+
+        public IEnumerable<Number> Numbers()
+        {
+	        foreach (var number in NumberStore.Values)
+	        {
+		        yield return number;
+	        }
         }
         public void SaveNumberValues(Dictionary<int, Range> dict, params int[] ignoreIds)
         {
@@ -109,7 +150,7 @@ namespace NumbersCore.Primitives
 	        {
 		        if (!ignoreIds.Contains(kvp.Key))
 		        {
-			        Brain.NumberStore[kvp.Key].Value = kvp.Value;
+			        NumberStore[kvp.Key].Value = kvp.Value;
                 }
 	        }
         }

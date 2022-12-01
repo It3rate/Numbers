@@ -337,9 +337,9 @@ namespace Numbers.Agent
 		        var nbRange = domainMapper.UnitRangeOnDomainLine;
 		        foreach (var sibDomain in Workspace.ActiveSiblingDomains(domainMapper.Domain))
 		        {
-			        if (sibDomain.BasisFocalId == focal.Id)
+			        if (sibDomain.BasisFocal.Id == focal.Id)
 			        {
-				        WorkspaceMapper.DomainMapper(sibDomain.Id).UnitRangeOnDomainLine = nbRange;
+				        WorkspaceMapper.DomainMapper(sibDomain).UnitRangeOnDomainLine = nbRange;
 			        }
 		        }
 	        }
@@ -528,25 +528,25 @@ namespace Numbers.Agent
         public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
         {
 	        numValues.Clear();
-	        foreach (var kvp in Brain.NumberStore)
-	        {
-		        if (!ignoreIds.Contains(kvp.Key))
-		        {
-			        numValues.Add(kvp.Key, kvp.Value.Value);
-		        }
-	        }
+	        //foreach (var kvp in Workspace.AddDomains)
+	        //{
+		       // if (!ignoreIds.Contains(kvp.Key))
+		       // {
+			      //  numValues.Add(kvp.Key, kvp.Value.Value);
+		       // }
+	        //}
         }
         public void RestoreNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
         {
-	        foreach (var kvp in numValues)
-	        {
-		        var id = kvp.Key;
-		        var storedValue = kvp.Value;
-		        if (!ignoreIds.Contains(id))
-		        {
-			        Brain.NumberStore[id].Value = storedValue;
-		        }
-	        }
+	        //foreach (var kvp in numValues)
+	        //{
+		       // var id = kvp.Key;
+		       // var storedValue = kvp.Value;
+		       // if (!ignoreIds.Contains(id))
+		       // {
+			      //  Brain.NumberStore[id].Value = storedValue;
+		       // }
+	        //}
         }
     }
 

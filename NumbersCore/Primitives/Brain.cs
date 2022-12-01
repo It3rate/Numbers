@@ -19,29 +19,48 @@ namespace NumbersCore.Primitives
 
 	    public List<Workspace> Workspaces { get; } = new List<Workspace>();
 
-        public Dictionary<int, Network> NetworkStore { get; } = new Dictionary<int, Network>();
-        public Dictionary<int, Formula> FormulaStore { get; } = new Dictionary<int, Formula>();
-        public Dictionary<int, Definition> DefinitionStore { get; } = new Dictionary<int, Definition>();
-        public Dictionary<int, Trait> TraitStore { get; } = new Dictionary<int, Trait>();
-	    public Dictionary<int, Transform> TransformStore { get; } = new Dictionary<int, Transform>();
-	    public Dictionary<int, Number> NumberStore { get; } = new Dictionary<int, Number>();
+        public readonly Dictionary<int, Network> NetworkStore = new Dictionary<int, Network>();
+        public readonly Dictionary<int, Formula> FormulaStore = new Dictionary<int, Formula>();
+        public readonly Dictionary<int, Definition> DefinitionStore = new Dictionary<int, Definition>();
+        public readonly Dictionary<int, Trait> TraitStore = new Dictionary<int, Trait>();
+	    public readonly Dictionary<int, Transform> TransformStore = new Dictionary<int, Transform>();
 
         private int _networkCounter = 1 + (int)MathElementKind.Network;
 	    private int _formulaCounter = 1 + (int)MathElementKind.Formula;
 	    private int _definitionCounter = 1 + (int)MathElementKind.Definition;
         private int _traitCounter = 1 + (int)MathElementKind.Trait;
 	    private int _transformCounter = 1 + (int)MathElementKind.Transform;
-	    private int _numberCounter = 1 + (int)MathElementKind.Number;
         public int NextNetworkId() => _networkCounter++;
         public int NextFormulaId() => _formulaCounter++;
         public int NextDefinitionId() => _definitionCounter++;
         public int NextTraitId() => _traitCounter++;
 	    public int NextTransformId() => _transformCounter++;
-	    public int NextNumberId() => _numberCounter++;
 
-        // specialized traits
-        public Trait ValueTrait { get; private set; }
-	    public Trait CounterTrait { get; private set; }
+	    public Trait AddTrait(Trait trait)
+	    {
+		    trait.Brain = this;
+		    trait.Id = NextTraitId();
+		    TraitStore.Add(trait.Id, trait);
+		    return trait;
+	    }
+	    public bool RemoveTrait(Trait trait)
+	    {
+		    trait.Brain = null;
+		    return TraitStore.Remove(trait.Id);
+	    }
+        public Transform AddTransform(Selection selection, Number repeats, TransformKind kind)
+	    {
+		    var result = new Transform(selection, repeats, kind);
+		    TransformStore.Add(result.Id, result);
+		    return result;
+	    }
+	    public IEnumerable<Transform> Transforms()
+	    {
+		    foreach (var transform in TransformStore.Values)
+		    {
+			    yield return transform;
+		    }
+	    }
 
         public void ClearAll()
 	    {
@@ -56,7 +75,6 @@ namespace NumbersCore.Primitives
             FormulaStore.Clear();
             TraitStore.Clear();
             TransformStore.Clear();
-            NumberStore.Clear();
         }
 
         public Trait TraitAt(int index)
@@ -65,25 +83,5 @@ namespace NumbersCore.Primitives
 	        TraitStore.TryGetValue(id, out var result);
 	        return result;
         }
-        public Number NumberAt(int index)
-        {
-	        var id = index + (int)MathElementKind.Number;
-	        NumberStore.TryGetValue(id, out var result);
-	        return result;
-        }
-
-
-        // Eventually these will all be loaded into the brain. They are innate properties, equivalent to the ones we're born with.
-        private Trait _timeTrait;
-        public Trait TimeTrait => _timeTrait ?? (_timeTrait = new Trait(this, "Timer"));
-        private Domain _time60Domain;
-        public Domain Time60Domain => _time60Domain ?? (_time60Domain = TimeTrait.AddDomain(60));
-        private Domain _timeMsDomain;
-        public Domain TimeMsDomain => _timeMsDomain ?? (_timeMsDomain = TimeTrait.AddDomain(1000));
-
-        private Trait _countTrait;
-        public Trait CountTrait => _countTrait ?? (_countTrait = new Trait(this, "Count"));
-        private Domain _intDomain;
-        public Domain IntDomain => _intDomain ?? (_intDomain = CountTrait.AddDomain(1));
     }
 }

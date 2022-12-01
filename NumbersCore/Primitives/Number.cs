@@ -7,13 +7,13 @@ namespace NumbersCore.Primitives
 	public class Number : IMathElement
 	{
 		public MathElementKind Kind => MathElementKind.Number;
-
-		public Brain Brain => Domain.Brain;
-
-		public int Id { get; set; }
+		public int Id { get; internal set; }
 		public int CreationIndex => Id - (int) Kind - 1;
 
-		public int DomainId
+		public Brain Brain => Trait?.Brain;
+		public virtual Trait Trait => Domain?.Trait;
+        public virtual Domain Domain { get; set; }
+        public int DomainId
 		{
 			get => Domain.Id;
 			set => Domain = Domain.Trait.DomainStore[value];
@@ -21,8 +21,6 @@ namespace NumbersCore.Primitives
 
 		// number to the power of x, where x is also a focal. Eventually this is equations, lazy solve them.
 
-		public virtual Trait Trait => Domain?.Trait;
-        public virtual Domain Domain { get; set; }
         public virtual IFocal BasisFocal => Domain?.BasisFocal;
 		public IFocal Focal { get; set; }
 
@@ -32,28 +30,14 @@ namespace NumbersCore.Primitives
 		public long BasisTicks => BasisFocal.LengthInTicks;
 		public long AbsBasisTicks => BasisFocal.AbsLengthInTicks;
 
-		public bool IsBasis => Domain.BasisNumberId == Id;
+		public bool IsBasis => Domain.BasisNumber.Id == Id;
 		public bool IsUnitPerspective => Domain.IsUnitPerspective;
 		public bool IsUnotPerspective => Domain.IsUnotPerspective;
 		public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
 
-		public Number(Domain domain, IFocal focal, bool addToStore = true)
+		internal Number(IFocal focal)
 		{
-			Domain = domain;
 			Focal = focal;
-			if (addToStore)
-			{
-				Id = Brain.NextNumberId();
-				domain.NumberIds.Add(Id);
-				Brain.NumberStore.Add(Id, this);
-            }
-		}
-
-		public Number(Domain domain, Range value, bool addToStore) : this(domain, domain.CreateFocalFromRange(value, addToStore))
-		{
-		}
-		public Number(Domain domain, long start, long end, bool addToStore) : this(domain, Primitives.Focal.CreateByValues(domain.Trait, start, end))
-		{
 		}
 
 		private long StartTickPosition
@@ -161,9 +145,14 @@ namespace NumbersCore.Primitives
             result.EndValue = (targetValue.End - sourceValue.End) * tValue.End + sourceValue.End;
         }
 
-        public Number Clone() => new Number(Domain, Focal.Clone());
+        public Number Clone()
+        {
+	        var result = new Number(Focal.Clone());
+	        Domain.AddNumber(result);
+	        return result;
+        }
 
-		public override string ToString()
+        public override string ToString()
 		{
 			var v = Value;
 			return $"[{-v.Start:0.00}->{v.End:0.00}]";

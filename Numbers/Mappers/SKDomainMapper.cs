@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Numbers.Agent;
 using Numbers.Renderer;
 using Numbers.Utils;
@@ -13,7 +14,11 @@ namespace Numbers.Mappers
 	{
 	    public Domain Domain => (Domain)MathElement;
 
-        private SKNumberMapper BasisMapper => WorkspaceMapper.NumberMapper(Domain.BasisNumberId);
+	    private Dictionary<int, SKNumberMapper> NumberMappers = new Dictionary<int, SKNumberMapper>();
+	    public SKNumberMapper NumberMapper(Number number) => GetOrCreateNumberMapper(number);
+	    public SKNumberMapper NumberMapper(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
+
+        private SKNumberMapper BasisMapper => NumberMapper(Domain.BasisNumber);
 	    public Number BasisNumber => Domain.BasisNumber;
 	    public SKSegment BasisSegment => BasisMapper.Guideline;
 	    public int BasisNumberSign => BasisNumber.Direction;
@@ -43,11 +48,40 @@ namespace Numbers.Mappers
         public SKDomainMapper(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
 	    {
 		    var unit = Domain.BasisNumber;
-		    var unitMapper = WorkspaceMapper.NumberMapper(unit.Id);
+		    var unitMapper = NumberMapper(unit);
 		    unitMapper.Guideline.Reset(guideline.ProjectPointOnto(unitSegment.StartPoint), guideline.ProjectPointOnto(unitSegment.EndPoint));
 	    }
 
-	    public override void Reset(SKPoint startPoint, SKPoint endPoint)
+        public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
+        {
+	        NumberMappers[numberMapper.Id] = numberMapper;
+	        return numberMapper;
+        }
+        public bool RemoveNumberMapper(SKNumberMapper numberMapper) => NumberMappers.Remove(numberMapper.Id);
+        
+        public IEnumerable<SKNumberMapper> GetNumberMappers(bool reverse = false)
+        {
+	        var mappers = reverse ? NumberMappers.Values.Reverse() : NumberMappers.Values;
+	        foreach (var dm in mappers)
+	        {
+		        yield return dm;
+	        }
+        }
+        public SKNumberMapper GetOrCreateNumberMapper(int id)
+        {
+	        return GetOrCreateNumberMapper(Domain.NumberStore[id]);
+        }
+        public SKNumberMapper GetOrCreateNumberMapper(Number number)
+        {
+	        if (!NumberMappers.TryGetValue(number.Id, out var result))
+	        {
+		        result = new SKNumberMapper(Agent, number);
+		        NumberMappers[number.Id] = result;
+	        }
+	        return (SKNumberMapper)result;
+        }
+
+        public override void Reset(SKPoint startPoint, SKPoint endPoint)
 	    {
             base.Reset(startPoint, endPoint);
             AddValidNumbers();
@@ -57,11 +91,11 @@ namespace Numbers.Mappers
         private void AddValidNumbers()
 	    {
 		    ValidNumberIds.Clear();
-		    foreach (var id in Domain.NumberIds)
+		    foreach (var num in Domain.Numbers())
 		    {
-			    if (Workspace.IsElementActive(id) && id != Domain.BasisNumberId && id != Domain.MinMaxNumberId)
+			    if (Workspace.IsElementActive(num.Id) && num.Id != Domain.BasisNumber.Id && num.Id != Domain.MinMaxNumber.Id)
 			    {
-				    ValidNumberIds.Add(id);
+				    ValidNumberIds.Add(num.Id);
 			    }
 		    }
 	    }
@@ -96,7 +130,7 @@ namespace Numbers.Mappers
 	    {
 		    if (ShowBasis)
 		    {
-			    WorkspaceMapper.NumberMapper(Domain.BasisNumberId).DrawUnit();
+			    NumberMapper(Domain.BasisNumber).DrawUnit();
             }
 	    }
         private void DrawNumbers()
@@ -106,19 +140,19 @@ namespace Numbers.Mappers
 	        foreach (var numberId in ValidNumberIds)
 	        {
 		        offset += step;
-		        var num = WorkspaceMapper.NumberMapper(numberId);
+		        var nm = NumberMapper(numberId);
 		        var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
-		        num.DrawNumber(offset, pen);
+		        nm.DrawNumber(offset, pen);
 
 		        if (Domain.IsUnitPerspective)
 		        {
 			        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
-			        num.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
+			        nm.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
 		        }
 		        else
 		        {
 			        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
-			        num.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
+			        nm.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
 		        }
 	        }
 
@@ -136,9 +170,9 @@ namespace Numbers.Mappers
 	        {
 		        foreach (var id in ValidNumberIds)
 		        {
-			        var num = Brain.NumberStore[id];
-			        DrawMarker(num, true);
-			        DrawMarker(num, false);
+			        var nm = Domain.GetNumber(id);
+			        DrawMarker(nm, true);
+			        DrawMarker(nm, false);
 		        }
             }
         }

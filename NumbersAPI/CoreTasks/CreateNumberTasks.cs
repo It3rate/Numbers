@@ -33,19 +33,14 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    if (Number == null)
 		    {
-			    Number = new Number(Domain, Focal);
+			    Number = Domain.CreateNumber(Focal, false);
 		    }
-		    else
-		    {
-			    Domain.NumberIds.Add(Number.Id);
-			    Agent.Brain.NumberStore.Add(Number.Id, Number);
-		    }
+		    Domain.AddNumber(Number);
 	    }
 
 	    public override void UnRunTask()
 	    {
-		    Domain.NumberIds.Remove(Number.Id);
-		    Agent.Brain.NumberStore.Remove(Number.Id);
+		    Domain.RemoveNumber(Number);
 	    }
     }
     public class CreateNumberByRangeTask : TaskBase, ICreateNumberTask
@@ -66,20 +61,15 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    if (Number == null)
 		    {
-			    Number = new Number(Domain, Range, true);
+			    Number = Domain.CreateNumber(Range, false);
 		    }
-		    else
-		    {
-			    Domain.NumberIds.Add(Number.Id);
-			    Agent.Brain.NumberStore.Add(Number.Id, Number);
-		    }
+		    Domain.AddNumber(Number);
 	    }
 
 	    public override void UnRunTask()
 	    {
-		    Domain.NumberIds.Remove(Number.Id);
-		    Agent.Brain.NumberStore.Remove(Number.Id);
-	    }
+		    Domain.RemoveNumber(Number);
+        }
     }
     public class CreateNumberByPositionsTask : TaskBase, ICreateNumberTask
     {
@@ -101,19 +91,14 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    if (Number == null)
 		    {
-			    Number = new Number(Domain, StartPosition, EndPosition, true);
+			    Number = Domain.CreateNumber(StartPosition, EndPosition, false);
 		    }
-		    else
-		    {
-			    Domain.NumberIds.Add(Number.Id);
-			    Agent.Brain.NumberStore.Add(Number.Id, Number);
-		    }
+		    Domain.AddNumber(Number);
 	    }
 
 	    public override void UnRunTask()
 	    {
-		    Domain.NumberIds.Remove(Number.Id);
-		    Agent.Brain.NumberStore.Remove(Number.Id);
+		    Domain.RemoveNumber(Number);
 	    }
     }
 }

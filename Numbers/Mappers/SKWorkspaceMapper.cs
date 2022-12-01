@@ -5,17 +5,17 @@ using Numbers.Renderer;
 using Numbers.Utils;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
+using OpenTK.Graphics.ES30;
 using SkiaSharp;
 
 namespace Numbers.Mappers
 {
 	public class SKWorkspaceMapper : SKMapper
     {
-	    public Dictionary<int, SKMapper> Mappers = new Dictionary<int, SKMapper>();
-
-	    public SKDomainMapper DomainMapper(int id) => (SKDomainMapper)Mappers[id]; // todo: slow to get domain from domain id (nested in traits).
-	    public SKTransformMapper TransformMapper(int id) => GetOrCreateTransformMapper(id);
-	    public SKNumberMapper NumberMapper(int id) => GetOrCreateNumberMapper(id);
+        private readonly Dictionary<int, SKDomainMapper> DomainMappers = new Dictionary<int, SKDomainMapper>();
+        private readonly Dictionary<int, SKTransformMapper> TransformMappers = new Dictionary<int, SKTransformMapper>();
+        public SKDomainMapper DomainMapper(Domain domain) => GetOrCreateDomainMapper(domain);
+	    public SKTransformMapper TransformMapper(Transform transform) => GetOrCreateTransformMapper(transform);
 
 	    public SKPoint TopLeft
 	    {
@@ -56,7 +56,7 @@ namespace Numbers.Mappers
             highlight.Reset();
             highlight.OrginalPoint = input;
             // number segments and units
-            foreach (var nm in NumberMappersByDomain(true))
+            foreach (var nm in AllNumberMappers(true))
             {
 	            if (nm.RenderSegment != null)
 	            {
@@ -85,7 +85,7 @@ namespace Numbers.Mappers
 	            }
             }
 
-            foreach (var dm in DomainMappers())
+            foreach (var dm in DomainMappers.Values)
             {
                 // Domain segment endpoints
                 for (int i = 0; i < dm.EndPoints.Length; i++)
@@ -120,20 +120,20 @@ namespace Numbers.Mappers
 	        EnsureRenderers();
 	        if (Workspace.IsActive)
 	        {
-	            foreach (var transformMapper in TransformMappers())
+	            foreach (var transformMapper in TransformMappers.Values)
 		        {
 			        transformMapper.Draw();
 		        }
-		        foreach (var domainMapper in DomainMappers())
+		        foreach (var domainMapper in DomainMappers.Values)
 		        {
 			        domainMapper.Draw();
 		        }
 	        }
         }
 
-        public IEnumerable<SKTransformMapper> TransformMappers(bool reverse = false)
+        public IEnumerable<SKTransformMapper> GetTransformMappers(bool reverse = false)
         {
-	        var vals = reverse ? Mappers.Values.Reverse() : Mappers.Values;
+	        var vals = reverse ? TransformMappers.Values.Reverse() : TransformMappers.Values;
 	        foreach (var mapper in vals)
 	        {
 		        if (mapper is SKTransformMapper tm)
@@ -142,9 +142,9 @@ namespace Numbers.Mappers
 		        }
 	        }
         }
-        public IEnumerable<SKDomainMapper> DomainMappers(bool reverse = false)
+        public IEnumerable<SKDomainMapper> GetDomainMappers(bool reverse = false)
         {
-	        var vals = reverse ? Mappers.Values.Reverse() : Mappers.Values;
+	        var vals = reverse ? DomainMappers.Values.Reverse() : DomainMappers.Values;
 	        foreach (var mapper in vals)
 	        {
 		        if (mapper is SKDomainMapper dm)
@@ -153,66 +153,14 @@ namespace Numbers.Mappers
 		        }
 	        }
         }
-        public IEnumerable<SKNumberMapper> AllNumberMappers()
-        {
-	        foreach (var mapper in Mappers.Values)
-	        {
-		        if (mapper is SKNumberMapper nm)
-		        {
-			        yield return nm;
-                }
-	        }
-        }
-        public IEnumerable<SKNumberMapper> NumberMappersByDomain(bool reverse = false)
-        {
-	        foreach (var mapper in Mappers.Values)
-	        {
-		        if (mapper is SKDomainMapper dm)
-		        {
-			        var ids = dm.Domain.NumberIds;
-			        if (reverse)
-			        {
-				        for (int i = ids.Count - 1; i >= 0; i--)
-				        {
-					        yield return NumberMapper(ids[i]);
-				        }
-			        }
-			        else
-			        {
-				        foreach (var numId in ids)
-				        {
-					        yield return NumberMapper(numId);
-				        }
-			        }
-		        }
-	        }
-        }
-        public IEnumerable<SKMapper> MappersOfKind(MathElementKind kind)
-        {
-	        var values = Mappers.Where(kvp => kvp.Value.MathElement.Kind == kind);
-	        foreach (var kvp in values)
-	        {
-		        yield return kvp.Value;
-	        }
-        }
-        public IEnumerable<SKMapper> MappersOfKindReversed(MathElementKind kind)
-        {
-	        var values = Mappers.Where(kvp => kvp.Value.MathElement.Kind == kind).Reverse();
-	        foreach (var kvp in values)
-	        {
-		        yield return kvp.Value;
-	        }
-        }
-
         public SKDomainMapper DomainMapperByIndex(int index)
         {
 	        SKDomainMapper result = null;
-	        foreach (var mapper in Mappers.Values)
+	        if (index < DomainMappers.Count)
 	        {
-		        if (mapper is SKDomainMapper dm)
+		        foreach (var dm in DomainMappers.Values)
 		        {
-			        index--;
-			        if (index < 0)
+			        if (--index < 0)
 			        {
 				        result = dm;
 				        break;
@@ -220,6 +168,17 @@ namespace Numbers.Mappers
 		        }
 	        }
 	        return result;
+        }
+
+        public IEnumerable<SKNumberMapper> AllNumberMappers(bool reverse = false)
+        {
+	        foreach (var dm in GetDomainMappers(reverse))
+	        {
+		        foreach (var nm in dm.GetNumberMappers(reverse))
+		        {
+			        yield return nm;
+		        }
+	        }
         }
 
         public SKSegment GetHorizontalSegment(float t, int margins)
@@ -243,25 +202,19 @@ namespace Numbers.Mappers
 
         public void EnsureRenderers()
         {
-            //var cx = Renderer.Width / 2f - 100;
-            //var cy = Renderer.Height / 2f;
-            //var armLen = 280;
-            //// all this etc will be a workspace element eventually
-            //var lines = new[] { new SKSegment(cx - armLen, cy, cx + armLen, cy), new SKSegment(cx, cy + armLen, cx, cy - armLen) };
-
             foreach (var trait in Brain.TraitStore.Values)
 	        {
 		        int index = 0;
 		        foreach (var domain in trait.DomainStore.Values)
 		        {
-			        GetOrCreateDomainMapper(domain);
+			        var dm = GetOrCreateDomainMapper(domain);
 			        foreach (var number in domain.Numbers())
 			        {
-				        GetOrCreateNumberMapper(number);
+				        var nm = dm.GetOrCreateNumberMapper(number);
 			        }
 			        index++;
 		        }
-		        foreach (var transform in trait.TransformStore.Values)
+		        foreach (var transform in Brain.TransformStore.Values)
 		        {
 			        GetOrCreateTransformMapper(transform);
 		        }
@@ -270,47 +223,37 @@ namespace Numbers.Mappers
 
         public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
         {
-	        if (!Mappers.TryGetValue(domain.Id, out var result))
+	        if (!DomainMappers.TryGetValue(domain.Id, out var result))
 	        {
 		        var seg = line ?? NextDefaultLine();
 		        var uSeg = unitLine ?? line.SegmentAlongLine(.45f, .55f);
 		        result = new SKDomainMapper(Agent, domain, seg, uSeg);
-		        Mappers[domain.Id] = result;
+		        DomainMappers[domain.Id] = result;
 	        }
 	        return (SKDomainMapper)result;
         }
-        public SKNumberMapper GetOrCreateNumberMapper(int id)
-        {
-	        return GetOrCreateNumberMapper(Brain.NumberStore[id]);
-        }
-        public SKNumberMapper GetOrCreateNumberMapper(Number number)
-        {
-            if (!Mappers.TryGetValue(number.Id, out var result))
-	        {
-		        result = new SKNumberMapper(Agent, number);
-		        Mappers[number.Id] = result;
-	        }
 
-	        return (SKNumberMapper)result;
-        }
+        public bool RemoveDomainMapper(int id) => DomainMappers.Remove(id);
+
         public SKTransformMapper GetOrCreateTransformMapper(int id)
         {
 	        return GetOrCreateTransformMapper(Brain.TransformStore[id]);
         }
         public SKTransformMapper GetOrCreateTransformMapper(Transform transform)
         {
-	        if (!Mappers.TryGetValue(transform.Id, out var result))
+	        if (!TransformMappers.TryGetValue(transform.Id, out var result))
 	        {
 		        result = new SKTransformMapper(Agent, transform);
-		        Mappers[transform.Id] = result;
+		        TransformMappers[transform.Id] = result;
 	        }
 	        return (SKTransformMapper)result;
         }
 
         public void ClearAll()
         {
-	        Mappers.Clear();
-	        defaultLineT = 0.1f;
+	        DomainMappers.Clear();
+	        TransformMappers.Clear();
+            defaultLineT = 0.1f;
         }
     }
 }

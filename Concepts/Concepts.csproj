@@ -41,8 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mind.cs" />
+    <Compile Include="Knowledge.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Time\Fps60TimeDomain.cs" />
     <Compile Include="Time\MillisecondTimeDomain.cs" />
     <Compile Include="Time\TimeTrait.cs" />
   </ItemGroup>

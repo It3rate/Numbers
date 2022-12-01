@@ -24,11 +24,13 @@ namespace Numbers.Commands
 	    public Number ExistingNumber { get; }
 
         public AddSKNumberCommand(SKDomainMapper domainMapper, Range range) : base(domainMapper.SegmentAlongGuideline(range))
-	    {
-		    CreateNumberCommand = new CreateNumberCommand(domainMapper.Domain, range);
+        {
+	        DomainMapper = domainMapper;
+            CreateNumberCommand = new CreateNumberCommand(domainMapper.Domain, range);
 	    }
 	    public AddSKNumberCommand(SKDomainMapper domainMapper, Number existingNumber) : base(domainMapper.SegmentAlongGuideline(existingNumber.Value))
 	    {
+		    DomainMapper = domainMapper;
 		    ExistingNumber = existingNumber;
 	    }
 
@@ -39,16 +41,19 @@ namespace Numbers.Commands
 		    {
 			    Stack.Do(CreateNumberCommand);
             }
-		    
-		    Mapper = new SKNumberMapper(MouseAgent, CreateNumberCommand.Number);
-		    MouseAgent.WorkspaceMapper.Mappers[Mapper.Id] = Mapper;
+
+		    if (Mapper == null)
+		    {
+			    Mapper = new SKNumberMapper(MouseAgent, CreateNumberCommand.Number);
+            }
+		    DomainMapper.AddNumberMapper(NumberMapper);
             MouseAgent.Workspace.AddElements(Number);
 	    }
 
 	    public override void Unexecute()
 	    {
 		    base.Unexecute();
-		    MouseAgent.WorkspaceMapper.Mappers.Remove(Mapper.Id);
+		    DomainMapper.RemoveNumberMapper(NumberMapper);
 		    MouseAgent.Workspace.RemoveElements(Number);
             if (CreateNumberCommand != null)
 		    {

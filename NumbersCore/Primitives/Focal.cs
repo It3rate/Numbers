@@ -10,24 +10,26 @@ namespace NumbersCore.Primitives
 
     public class Focal : FocalBase
     {
-	    public override long StartTickPosition { get; set; }
-	    public override long EndTickPosition { get; set; }
-
-        public Focal(Trait trait, long startTickPosition, long endTickPosition) : base(trait)
+        public Focal(long startTickPosition, long endTickPosition)
         {
 	        StartTickPosition = startTickPosition;
 	        EndTickPosition = endTickPosition;
         }
-	    public static Focal CreateByValues(Trait trait, long startPosition, long endPosition)
+	    public static Focal CreateByValues(long startPosition, long endPosition)
 	    {
-		    var result = new Focal(trait, startPosition, endPosition);
+		    var result = new Focal(startPosition, endPosition);
 		    return result;
 	    }
 
 	    public override IFocal Clone()
 	    {
-		    return CreateByValues(MyTrait, StartTickPosition, EndTickPosition);
+		    return CreateByValues(StartTickPosition, EndTickPosition);
 	    }
+
+	    public static IFocal CreateZeroFocal(long ticks) { return Focal.CreateByValues(0, ticks); }
+        public static IFocal CreateBalancedFocal(long halfTicks) { return Focal.CreateByValues(-halfTicks, halfTicks); }
+	    private static IFocal _maxFocal;
+	    public static IFocal MaxFocal => _maxFocal ?? (_maxFocal = Focal.CreateByValues(long.MinValue, long.MaxValue));
 
     }
 }

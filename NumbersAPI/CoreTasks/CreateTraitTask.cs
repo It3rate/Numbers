@@ -22,19 +22,17 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    if (Trait == null)
 		    {
-			    Trait = new Trait(Agent.Brain, Name);
+			    Trait = Trait.CreateIn(Agent.Brain, Name);
 		    }
 		    else
 		    {
-			    Agent.Brain.TraitStore.Add(Trait.Id, Trait);
-            }
-		    Agent.Workspace.AddTraits(false, Trait);
+			    Agent.Brain.AddTrait(Trait);
+		    }
 	    }
 
 	    public override void UnRunTask()
 	    {
-		    Agent.Workspace.RemoveTraits(false, Trait);
-		    Agent.Brain.TraitStore.Remove(Trait.Id);
-	    }
+		    Agent.Brain.RemoveTrait(Trait);
+        }
     }
 }

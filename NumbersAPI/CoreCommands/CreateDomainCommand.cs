@@ -50,12 +50,12 @@ namespace NumbersAPI.CoreCommands
 		    base.Execute();
 		    if (BasisFocal == null)
 		    {
-			    BasisTask = new CreateFocalTask(Trait, BasisStart, BasisEnd);
-			    MinMaxTask = new CreateFocalTask(Trait, MinMaxStart, MinMaxEnd);
+			    BasisTask = new CreateFocalTask(BasisStart, BasisEnd);
+			    MinMaxTask = new CreateFocalTask(MinMaxStart, MinMaxEnd);
 			    AddTaskAndRun(BasisTask);
 			    AddTaskAndRun(MinMaxTask);
-	            BasisFocal = BasisTask.Focal;
-			    MinMaxFocal = MinMaxTask.Focal;
+	            BasisFocal = BasisTask.CreatedFocal;
+			    MinMaxFocal = MinMaxTask.CreatedFocal;
 		    }
 
 		    DomainTask = new CreateDomainTask(Trait, BasisFocal, MinMaxFocal);

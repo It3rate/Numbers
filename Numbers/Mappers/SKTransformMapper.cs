@@ -13,8 +13,8 @@ namespace Numbers.Mappers
         public Transform Transform => (Transform)MathElement;
         private List<SKPoint[]> Triangles { get; } = new List<SKPoint[]>();
 
-		private SKDomainMapper SelectionMapper => WorkspaceMapper.DomainMapper(Transform.Selection[0].Domain.Id);
-		private SKDomainMapper RepeatMapper => WorkspaceMapper.DomainMapper(Transform.Repeat.Domain.Id);
+		private SKDomainMapper SelectionMapper => WorkspaceMapper.DomainMapper(Transform.Selection[0].Domain);
+		private SKDomainMapper RepeatMapper => WorkspaceMapper.DomainMapper(Transform.Repeat.Domain);
 
         private SKPoint SKOrigin => SelectionMapper.BasisSegment.StartPoint;
 

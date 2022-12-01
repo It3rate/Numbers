@@ -88,7 +88,7 @@ namespace NumbersCore.Primitives
 		        AddElementsById(domain.Id);
 		        if (includeChildren)
 		        {
-			        AddElementsById(domain.NumberIds.ToArray());
+			        AddElementsById(domain.NumberIds());
 		        }
 	        }
         }
@@ -99,7 +99,7 @@ namespace NumbersCore.Primitives
 		        RemoveElementsById(domain.Id);
 		        if (includeChildren)
 		        {
-			        RemoveElementsById(domain.NumberIds.ToArray());
+			        RemoveElementsById(domain.NumberIds());
 		        }
 	        }
         }

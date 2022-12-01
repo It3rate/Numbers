@@ -10,11 +10,11 @@ namespace Concepts
     using System.Text;
     using System.Threading.Tasks;
 
-    public class Mind
+    public class Knowledge
     {
 	    public Brain Brain { get; }
 
-	    public Mind(Brain brain)
+	    public Knowledge(Brain brain)
 	    {
 		    Brain = brain;
             Initialize();
@@ -23,7 +23,7 @@ namespace Concepts
 	    private void Initialize()
 	    {
             // these typed domains will be loaded from a file or something.
-		    TimeTrait = new TimeTrait(Brain);
+		    TimeTrait = TimeTrait.CreateIn(this);
 		    MillisecondTimeDomain = new MillisecondTimeDomain(this);
         }
 

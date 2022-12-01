@@ -10,7 +10,7 @@ namespace Concepts.Time
 
     public class MillisecondTimeDomain : Domain
     {
-	    public MillisecondTimeDomain(Mind mind) : base(mind.TimeTrait, mind.TimeTrait.CreateZeroFocal(1000), mind.TimeTrait.MaxFocal)
+	    public MillisecondTimeDomain(Knowledge knowledge) : base(knowledge.TimeTrait, Focal.CreateZeroFocal(1000), Focal.MaxFocal)
 	    {
         }
     }

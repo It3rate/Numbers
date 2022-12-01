@@ -47,9 +47,8 @@ namespace NumbersCore.Primitives
         //bool startRangeOverflow;
         //bool endRangeOverflow;
 
-        public Trait MyTrait { get; }
-        public abstract long StartTickPosition { get; set; }
-        public abstract long EndTickPosition { get; set; }
+        public long StartTickPosition { get; set; }
+        public long EndTickPosition { get; set; }
 
         public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
         public bool IsUnitPerspective => StartTickPosition <= EndTickPosition;
@@ -62,9 +61,8 @@ namespace NumbersCore.Primitives
         // Focal values are always added as unit perspective positions, because
         // there is no unit defined that allows the start point to be interpreted as a unot perspective.
         // Focals are pre-number, positions, not value interpretations.
-        protected FocalBase(Trait trait)
+        protected FocalBase()
         {
-            MyTrait = trait;
             Id = _focalCounter++;
         }
         public void Reset(long start, long end)

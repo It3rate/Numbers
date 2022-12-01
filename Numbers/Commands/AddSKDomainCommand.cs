@@ -43,17 +43,17 @@ namespace Numbers.Commands
 		    {
 			    Stack.Do(CreateDomainCommand);
 		    }
-		    Mapper = new SKDomainMapper(MouseAgent, Domain, Guideline, UnitSegment);
+
+		    Mapper = MouseAgent.WorkspaceMapper.GetOrCreateDomainMapper(Domain, Guideline, UnitSegment);
 		    DomainMapper.ShowGradientNumberLine = true;
 		    DomainMapper.ShowBasis = true;
 		    DomainMapper.ShowBasisMarkers = true;
-            MouseAgent.WorkspaceMapper.Mappers[DomainMapper.Id] = Mapper;
         }
 
 	    public override void Unexecute()
 	    {
 		    base.Unexecute();
-		    MouseAgent.WorkspaceMapper.Mappers.Remove(Mapper.Id);
+		    MouseAgent.WorkspaceMapper.RemoveDomainMapper(DomainMapper.Id);
 		    if (CreateDomainCommand != null)
 		    {
 			    Stack.Undo();

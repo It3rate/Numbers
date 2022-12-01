@@ -1,4 +1,5 @@
-﻿using NumbersCore.Primitives;
+﻿using System.Dynamic;
+using NumbersCore.Primitives;
 
 namespace Concepts.Traits
 {
@@ -12,6 +13,6 @@ namespace Concepts.Traits
     {
 	    public override string Name => "Time";
 
-	    public TimeTrait(Brain brain) : base(brain) {}
+	    public static TimeTrait CreateIn(Knowledge knowledge) => (TimeTrait)knowledge.Brain.AddTrait(new TimeTrait());
     }
 }
