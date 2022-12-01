@@ -23,18 +23,18 @@ namespace NumbersTests
 	    public void Init()
 	    {
 		    _brain = Brain.ActiveBrain;
-            _trait = new Trait(_brain);
-		    _unitFocal = FocalRef.CreateByValues(_trait, 0, 10);
+		    _trait = Trait.CreateIn(_brain, "number tests");
+            _unitFocal = FocalRef.CreateByValues(_trait, 0, 10);
 		    _maxMin = FocalRef.CreateByValues(_trait, -1000, 1010);
 		    _domain = new Domain(_trait, _unitFocal, _maxMin);
 	    }
 	    [TestMethod]
 	    public void UnitChangePositionTests()
 	    {
-		    var n0 = _domain.CreateNumberByPositions(0, 20, true);
-		    var n1 = _domain.CreateNumberByPositions(20, 0, true);
-		    var n2 = _domain.CreateNumberByPositions(-30, 20, true);
-		    var n3 = _domain.CreateNumberByPositions(-20, -30, true);
+		    var n0 = _domain.CreateNumber(0, 20, true);
+		    var n1 = _domain.CreateNumber(20, 0, true);
+		    var n2 = _domain.CreateNumber(-30, 20, true);
+		    var n3 = _domain.CreateNumber(-20, -30, true);
 		    Assert.AreEqual(0, n0.StartValue);
 		    Assert.AreEqual(2, n0.EndValue);
 		    Assert.AreEqual(-2, n1.StartValue);
@@ -84,10 +84,10 @@ namespace NumbersTests
 	    [TestMethod]
 	    public void UnitChangeValueTests()
 	    {
-		    var n0 = _domain.CreateNumberByValues(0, 20, true);
-		    var n1 = _domain.CreateNumberByValues(20, 0, true);
-		    var n2 = _domain.CreateNumberByValues(-30, 20, true);
-		    var n3 = _domain.CreateNumberByValues(-20, -30, true);
+		    var n0 = _domain.CreateNumber(new Range(0, 20), true);
+		    var n1 = _domain.CreateNumber(new Range(20, 0), true);
+		    var n2 = _domain.CreateNumber(new Range(-30, 20), true);
+		    var n3 = _domain.CreateNumber(new Range(-20, -30), true);
 		    Assert.AreEqual(0, n0.StartValue);
 		    Assert.AreEqual(20, n0.EndValue);
 		    Assert.AreEqual(20, n1.StartValue);
@@ -112,17 +112,17 @@ namespace NumbersTests
 	    public void CoreNumberTests()
 	    {
 		    var f0 = FocalRef.CreateByValues(_trait, 0, 20);
-		    var n0 = new Number(_domain, f0);
+		    var n0 = _domain.CreateNumber(f0);
 		    var f1 = FocalRef.CreateByValues(_trait, 0, 30);
-		    var n1 = new Number(_domain, f1);
+		    var n1 = _domain.CreateNumber(f1);
 		    var f2 = FocalRef.CreateByValues(_trait, -32, 0);
-		    var n2 = new Number(_domain, f2);
+		    var n2 = _domain.CreateNumber(f2);
 		    var f3 = FocalRef.CreateByValues(_trait, -50, 45);
-		    var n3 = new Number(_domain, f3);
+		    var n3 = _domain.CreateNumber(f3);
 		    var f4 = FocalRef.CreateByValues(_trait, 50, -45);
-		    var n4 = new Number(_domain, f4);
+		    var n4 = _domain.CreateNumber(f4);
 		    var f5 = FocalRef.CreateByValues(_trait, 53, 69);
-		    var n5 = new Number(_domain, f5);
+		    var n5 = _domain.CreateNumber(f5);
 
 		    Assert.AreEqual(MathElementKind.Number, n0.Kind);
 		    var n0b = n0.Clone();

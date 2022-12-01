@@ -10,12 +10,12 @@ namespace NumbersCore.Primitives
 	    public Trait MyTrait { get; }
         public int StartId { get; set; } // ref to start point position
 	    public int EndId { get; set; } // ref to end point position
-        public new long StartTickPosition
+        public override long StartTickPosition
 	    {
 		    get => MyTrait.PositionStore[StartId];
 		    set => MyTrait.PositionStore[StartId] = value;
 	    }
-	    public new long EndTickPosition
+	    public override long EndTickPosition
         {
 		    get => MyTrait.PositionStore[EndId];
 		    set => MyTrait.PositionStore[EndId] = value;

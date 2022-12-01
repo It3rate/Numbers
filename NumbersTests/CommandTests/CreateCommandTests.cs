@@ -23,8 +23,8 @@ namespace NumbersTests.CommandTests
 			_workspace = new Workspace(_brain);
 			_agent = new CommandAgent(_workspace);
             _stack = new CommandStack(_agent);
-			_trait = new Trait(_brain);
-		}
+			_trait = Trait.CreateIn(_brain, "create command tests");
+        }
 
 		[TestMethod]
 		public void WorkspaceCommandTests()

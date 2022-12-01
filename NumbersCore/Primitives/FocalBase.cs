@@ -47,8 +47,8 @@ namespace NumbersCore.Primitives
         //bool startRangeOverflow;
         //bool endRangeOverflow;
 
-        public long StartTickPosition { get; set; }
-        public long EndTickPosition { get; set; }
+        public virtual long StartTickPosition { get; set; }
+        public virtual long EndTickPosition { get; set; }
 
         public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
         public bool IsUnitPerspective => StartTickPosition <= EndTickPosition;

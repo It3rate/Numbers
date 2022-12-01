@@ -8,13 +8,14 @@ namespace NumbersTests
     [TestClass]
     public class FocalTests
     {
-	    private Trait _trait;
+	    private Brain _brain => Brain.ActiveBrain;
+        private Trait _trait;
 
 	    [TestInitialize]
 	    public void Init()
 	    {
-		    _trait = new Trait(Brain.ActiveBrain);
-	    }
+		    _trait = Trait.CreateIn(_brain, "numbers tests");
+        }
 
 	    [TestMethod]
 	    public void BasisSignTests()
