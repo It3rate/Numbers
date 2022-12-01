@@ -15,17 +15,19 @@ namespace NumbersAPI.Motion
         private bool _isPaused;
         private float _delayTime = 0;
         protected bool IsReverse { get; set; } = false;
-        public Number Delay { get; }
-        public Number Duration { get; }
+
+        public Number DelayDuration { get; } // can 'type' numbers, this would be on a domain of 0-30 focal unit, and 0-max range, time trait.
+        public double DelayValue => DelayDuration.StartValue; // Delay is unot, duration is unit
+        public double DurationValue => DelayDuration.EndValue;
+
 
         public event TimedEventHandler StartTimedEvent;
         public event TimedEventHandler StepTimedEvent;
         public event TimedEventHandler EndTimedEvent;
 
-        public TaskTimer(float delay = 0, float duration = 0)
+        public TaskTimer(Number delayDuration)
         {
-            //Delay = new FloatSeries(1, delay);
-            //Duration = new FloatSeries(1, duration);
+	        DelayDuration = delayDuration;
             _pauseTime = DateTime.Now;
         }
 
@@ -50,8 +52,7 @@ namespace NumbersAPI.Motion
                 _runningTime += deltaTime + _delayTime;
                 _delayTime = 0;
                 _currentTime = StartTime + _runningTime;
-                float dur = (float)Duration.EndValue;
-                if (_currentTime > StartTime + dur)
+                if (_currentTime > StartTime + DurationValue)
                 {
                     IsComplete = true;
                     InterpolationT = 1f;
@@ -59,8 +60,8 @@ namespace NumbersAPI.Motion
                 else
                 {
                     InterpolationT = (float)(_currentTime < StartTime ? 0 :
-                        _currentTime > StartTime + dur ? 1f :
-                        (_currentTime - StartTime) / dur);
+                        _currentTime > StartTime + DurationValue ? 1f :
+                        (_currentTime - StartTime) / DurationValue);
                 }
 
                 InterpolationT = IsReverse ? 1f - InterpolationT : InterpolationT;

@@ -13,7 +13,8 @@ namespace NumbersCore.Primitives
         public MathElementKind Kind => MathElementKind.Trait;
         public int Id { get; }
         public int CreationIndex => Id - (int)Kind - 1;
-        public string Name { get; private set; }
+        
+        public virtual string Name { get; }
 
         public Dictionary<int, long> PositionStore { get; } = new Dictionary<int, long>(4096);
         public Dictionary<int, IFocal> FocalStore { get; } = new Dictionary<int, IFocal>();
@@ -22,12 +23,16 @@ namespace NumbersCore.Primitives
         public Dictionary<int, Transform> TransformStore => Brain.TransformStore;
         public Dictionary<int, Trait> TraitStore => Brain.TraitStore;
 
-        public Trait(Brain brain, string name = "")
+        public Trait(Brain brain, string name = "") : this(brain)
+        {
+	        Name = name == "" ? "Trait_" + CreationIndex : name;
+        }
+
+        protected Trait(Brain brain)
         {
 	        Brain = brain;
-		    Id = Brain.NextTraitId();
-		    Name = name == "" ? "Trait_" + CreationIndex : name;
-            TraitStore.Add(Id, this);
+	        Id = Brain.NextTraitId();
+	        TraitStore.Add(Id, this);
         }
 
         public Transform AddTransform(Selection selection, Number repeats, TransformKind kind)

@@ -18,13 +18,15 @@ namespace NumbersAPI.Motion
 	    //double PreviousTime { get; }
 
 	    double StartTime { get; set; }
-	    Number Duration { get; }
-	    Number Delay { get; }
 
-	    //bool IsReverse { get; }
-	    //bool IsComplete { get; }
+	    Number DelayDuration { get; }
+	    double DelayValue { get; }
+        double DurationValue { get; }
 
-	    event TimedEventHandler StartTimedEvent;
+        //bool IsReverse { get; }
+        //bool IsComplete { get; }
+
+        event TimedEventHandler StartTimedEvent;
 	    event TimedEventHandler StepTimedEvent;
 	    event TimedEventHandler EndTimedEvent;
 

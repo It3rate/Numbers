@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumbersCore", "NumbersCore\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumbersAPI", "NumbersAPI\NumbersAPI.csproj", "{DB7D67AA-69FF-4429-B623-32B694EF7251}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Concepts", "Concepts\Concepts.csproj", "{322C713B-BA0F-4458-A0DF-68122CCE1DCB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{DB7D67AA-69FF-4429-B623-32B694EF7251}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB7D67AA-69FF-4429-B623-32B694EF7251}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB7D67AA-69FF-4429-B623-32B694EF7251}.Release|Any CPU.Build.0 = Release|Any CPU
+		{322C713B-BA0F-4458-A0DF-68122CCE1DCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{322C713B-BA0F-4458-A0DF-68122CCE1DCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{322C713B-BA0F-4458-A0DF-68122CCE1DCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{322C713B-BA0F-4458-A0DF-68122CCE1DCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

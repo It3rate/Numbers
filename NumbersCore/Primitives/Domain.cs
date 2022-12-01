@@ -16,16 +16,19 @@ namespace NumbersCore.Primitives
     // Min size is tick size. BasisFocal is start/end point (only one focal allowed for a unit). MinMaxFocal is bounds in ticks. todo: add conversion methods etc.
     public class Domain : IMathElement
     {
-	    public Brain Brain { get; }
-
 	    public  MathElementKind Kind => MathElementKind.Domain;
         private static int domainCounter = 1 + (int)MathElementKind.Domain;
-
         public int Id { get; }
         public int CreationIndex => Id - (int)Kind - 1;
 
-        public int TraitId { get; }
-        public Trait Trait => Brain.TraitStore[TraitId];
+	    public Brain Brain => Trait.Brain;
+	    public Trait Trait { get; protected set; }
+        public IFocal BasisFocal { get; protected set; }
+        public IFocal MinMaxFocal { get; protected set; }
+        public Number BasisNumber { get; protected set; }
+        public Number MinMaxNumber { get; protected set; }
+        public int TraitId => Trait.Id;
+
         public List<int> NumberIds { get; } = new List<int>();
         public IEnumerable<Number> Numbers()
         {
@@ -35,10 +38,6 @@ namespace NumbersCore.Primitives
 	        }
         }
 
-        public IFocal BasisFocal { get; set; }
-        public IFocal MinMaxFocal { get; set; }
-        public Number BasisNumber { get; set; }
-        public Number MinMaxNumber { get; set; }
         public bool BasisIsReciprocal { get; set; }// True when ticks are larger than the unit basis
 
 
@@ -56,8 +55,7 @@ namespace NumbersCore.Primitives
         public Domain(Trait trait, IFocal basisFocal, IFocal minMaxFocal = default)
         {
 	        Id = domainCounter++;
-	        Brain = trait.Brain;
-	        TraitId = trait.Id;
+	        Trait = trait;
 	        BasisFocal = basisFocal;
 	        MinMaxFocal = minMaxFocal;
             BasisNumber = new Number(this, basisFocal);

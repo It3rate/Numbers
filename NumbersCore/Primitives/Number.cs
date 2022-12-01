@@ -9,10 +9,10 @@ namespace NumbersCore.Primitives
 		public MathElementKind Kind => MathElementKind.Number;
 
 		public Brain Brain => Domain.Brain;
-		public Number this[int i] => Brain.NumberStore[i];
 
 		public int Id { get; set; }
 		public int CreationIndex => Id - (int) Kind - 1;
+
 		public int DomainId
 		{
 			get => Domain.Id;
@@ -20,12 +20,13 @@ namespace NumbersCore.Primitives
 		}
 
 		// number to the power of x, where x is also a focal. Eventually this is equations, lazy solve them.
-		public int FocalId => Focal.Id;
 
-		public Trait Trait => Domain?.Trait;
-		public Domain Domain { get; set; }
-		public IFocal Focal { get; set; } 
-		public IFocal BasisFocal => Domain?.BasisFocal;
+		public virtual Trait Trait => Domain?.Trait;
+        public virtual Domain Domain { get; set; }
+        public virtual IFocal BasisFocal => Domain?.BasisFocal;
+		public IFocal Focal { get; set; }
+
+		public int FocalId => Focal.Id;
 
 		public long ZeroTick => BasisFocal.StartTickPosition;
 		public long BasisTicks => BasisFocal.LengthInTicks;
@@ -134,9 +135,30 @@ namespace NumbersCore.Primitives
 			Value /= other.Value;
         }
 
-        public void InterpolateFromZero(Number T)
+        public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
+        public void InterpolateFrom(Number source, Number t, Number result) => Interpolate(source, this, t, result);
+        public void InterpolateTo(Number target, Number t, Number result) => Interpolate(this, target, t, result);
+        public static void InterpolateFromZero(Number target, Number t, Number result)
         {
-
+	        var targetValue = target.Value;
+	        var tValue = t.Value;
+	        result.StartValue = targetValue.Start * tValue.Start;
+	        result.EndValue = targetValue.End * tValue.End;
+        }
+        public static void InterpolateFromOne(Number target, Number t, Number result)
+        {
+	        var targetValue = target.Value;
+	        var tValue = t.Value;
+	        result.StartValue = targetValue.Start * tValue.Start;
+	        result.EndValue = (targetValue.End - 1.0) * tValue.End + 1.0;
+        }
+        public static void Interpolate(Number source, Number target, Number t, Number result)
+        {
+	        var sourceValue = source.Value;
+	        var targetValue = target.Value;
+            var tValue = t.Value;
+            result.StartValue = (targetValue.Start - sourceValue.Start) * tValue.Start + sourceValue.Start;
+            result.EndValue = (targetValue.End - sourceValue.End) * tValue.End + sourceValue.End;
         }
 
         public Number Clone() => new Number(Domain, Focal.Clone());
