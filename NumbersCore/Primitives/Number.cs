@@ -51,7 +51,7 @@ namespace NumbersCore.Primitives
 		public Number(Domain domain, Range value, bool addToStore) : this(domain, domain.CreateFocalFromRange(value, addToStore))
 		{
 		}
-		public Number(Domain domain, long start, long end, bool addToStore) : this(domain, Primitives.Focal.CreateByValues(domain.Trait, start, end, addToStore))
+		public Number(Domain domain, long start, long end, bool addToStore) : this(domain, Primitives.Focal.CreateByValues(domain.Trait, start, end))
 		{
 		}
 

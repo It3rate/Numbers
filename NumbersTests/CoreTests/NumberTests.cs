@@ -15,8 +15,8 @@ namespace NumbersTests
     {
 	    private Brain _brain;
 	    private Trait _trait;
-        private FocalRefx _unitFocal;
-	    private FocalRefx _maxMin;
+        private FocalRef _unitFocal;
+	    private FocalRef _maxMin;
 	    private Domain _domain;
 
 	    [TestInitialize]
@@ -24,8 +24,8 @@ namespace NumbersTests
 	    {
 		    _brain = Brain.ActiveBrain;
             _trait = new Trait(_brain);
-		    _unitFocal = FocalRefx.CreateByValues(_trait, 0, 10);
-		    _maxMin = FocalRefx.CreateByValues(_trait, -1000, 1010);
+		    _unitFocal = FocalRef.CreateByValues(_trait, 0, 10);
+		    _maxMin = FocalRef.CreateByValues(_trait, -1000, 1010);
 		    _domain = new Domain(_trait, _unitFocal, _maxMin);
 	    }
 	    [TestMethod]
@@ -111,17 +111,17 @@ namespace NumbersTests
         [TestMethod]
 	    public void CoreNumberTests()
 	    {
-		    var f0 = FocalRefx.CreateByValues(_trait, 0, 20);
+		    var f0 = FocalRef.CreateByValues(_trait, 0, 20);
 		    var n0 = new Number(_domain, f0);
-		    var f1 = FocalRefx.CreateByValues(_trait, 0, 30);
+		    var f1 = FocalRef.CreateByValues(_trait, 0, 30);
 		    var n1 = new Number(_domain, f1);
-		    var f2 = FocalRefx.CreateByValues(_trait, -32, 0);
+		    var f2 = FocalRef.CreateByValues(_trait, -32, 0);
 		    var n2 = new Number(_domain, f2);
-		    var f3 = FocalRefx.CreateByValues(_trait, -50, 45);
+		    var f3 = FocalRef.CreateByValues(_trait, -50, 45);
 		    var n3 = new Number(_domain, f3);
-		    var f4 = FocalRefx.CreateByValues(_trait, 50, -45);
+		    var f4 = FocalRef.CreateByValues(_trait, 50, -45);
 		    var n4 = new Number(_domain, f4);
-		    var f5 = FocalRefx.CreateByValues(_trait, 53, 69);
+		    var f5 = FocalRef.CreateByValues(_trait, 53, 69);
 		    var n5 = new Number(_domain, f5);
 
 		    Assert.AreEqual(MathElementKind.Number, n0.Kind);

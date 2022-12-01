@@ -90,7 +90,7 @@ namespace NumbersCore.Primitives
 
         public IFocal CreateFocalFromRange(Range range, bool addToStore)
         {
-	        var result = Focal.CreateByValues(Trait, 0, 1, addToStore);
+	        var result = Focal.CreateByValues(Trait, 0, 1);
 	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
 	        return result;
         }

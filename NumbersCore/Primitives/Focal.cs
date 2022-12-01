@@ -12,27 +12,21 @@ namespace NumbersCore.Primitives
     {
 	    public override long StartTickPosition { get; set; }
 	    public override long EndTickPosition { get; set; }
-        public bool InStore { get; }
 
-        public Focal(Trait trait, long startTickPosition, long endTickPosition, bool addToStore) : base(trait)
+        public Focal(Trait trait, long startTickPosition, long endTickPosition) : base(trait)
         {
 	        StartTickPosition = startTickPosition;
 	        EndTickPosition = endTickPosition;
-	        InStore = addToStore;
-		    if (addToStore)
-		    {
-			    trait.FocalStore.Add(Id, this);
-            }
         }
-	    public static Focal CreateByValues(Trait trait, long startPosition, long endPosition, bool addToStore)
+	    public static Focal CreateByValues(Trait trait, long startPosition, long endPosition)
 	    {
-		    var result = new Focal(trait, startPosition, endPosition, addToStore);
+		    var result = new Focal(trait, startPosition, endPosition);
 		    return result;
 	    }
 
 	    public override IFocal Clone()
 	    {
-		    return CreateByValues(MyTrait, StartTickPosition, EndTickPosition, InStore);
+		    return CreateByValues(MyTrait, StartTickPosition, EndTickPosition);
 	    }
 
     }

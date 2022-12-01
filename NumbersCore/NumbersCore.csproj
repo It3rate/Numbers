@@ -44,7 +44,7 @@
     <Compile Include="Primitives\Brain.cs" />
     <Compile Include="Primitives\Definition.cs" />
     <Compile Include="Primitives\Domain.cs" />
-    <Compile Include="Primitives\FocalRefx.cs" />
+    <Compile Include="Primitives\FocalRef.cs" />
     <Compile Include="Primitives\FocalBase.cs" />
     <Compile Include="Primitives\Focal.cs" />
     <Compile Include="Primitives\Formula.cs" />
