@@ -1,4 +1,5 @@
 ﻿using System;
+using Concepts.Time;
 using NumbersCore.Primitives;
 
 namespace NumbersAPI.Motion
@@ -16,7 +17,7 @@ namespace NumbersAPI.Motion
         private float _delayTime = 0;
         protected bool IsReverse { get; set; } = false;
 
-        public Number DelayDuration { get; } // can 'type' numbers, this would be on a domain of 0-30 focal unit, and 0-max range, time trait.
+        public MillisecondNumber DelayDuration { get; } // can 'type' numbers, this would be on a domain of 0-30 focal unit, and 0-max range, time trait.
         public double DelayValue => DelayDuration.StartValue; // Delay is unot, duration is unit
         public double DurationValue => DelayDuration.EndValue;
 
@@ -25,7 +26,7 @@ namespace NumbersAPI.Motion
         public event TimedEventHandler StepTimedEvent;
         public event TimedEventHandler EndTimedEvent;
 
-        public TaskTimer(Number delayDuration)
+        public TaskTimer(MillisecondNumber delayDuration)
         {
 	        DelayDuration = delayDuration;
             _pauseTime = DateTime.Now;

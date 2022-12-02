@@ -1,4 +1,6 @@
-﻿using NumbersAPI.Commands;
+﻿using Concepts.Time;
+using NumbersAPI.Commands;
+using NumbersAPI.Motion;
 using NumbersCore.Primitives;
 
 namespace NumbersAPI.CommandEngine
@@ -16,6 +18,7 @@ namespace NumbersAPI.CommandEngine
 
         public ICommand Command { get; }
         public CommandAgent Agent { get; set; }
+        public TaskTimer Timer { get; }
 
         public abstract bool IsValid { get; }
         public virtual void Initialize() { }
@@ -23,6 +26,7 @@ namespace NumbersAPI.CommandEngine
         protected TaskBase()
         {
 	        Id = _idCounter++;
+            Timer = new TaskTimer(MillisecondNumber.Create(0));
         }
         public virtual void RunTask() { }
         public virtual void UnRunTask() { }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Concepts;
 using Numbers.Mappers;
 using Numbers.Renderer;
 using NumbersAPI.CommandEngine;
@@ -25,8 +26,10 @@ namespace Numbers.Agent
 			}
 		}
 
+        public Knowledge Knowledge { get; }
 		public CoreRenderer Renderer { get; }
         public Runner Runner;
+        public CommandStack Stack { get; }
 
         public Format.Program Program { get; }
         public bool IsPaused { get; set; } = true;
@@ -86,10 +89,13 @@ namespace Numbers.Agent
 
         public MouseAgent(Workspace workspace, Runner runner, CoreRenderer renderer) : base(workspace)
         {
+	        Knowledge = new Knowledge(workspace.Brain);
             Renderer = renderer;
             Renderer.Agent = this;
             Runner = runner;
             Runner.Agent = this;
+            Stack = new CommandStack(this);
+
             Program = new Format.Program(Brain, Renderer);
 
             ClearMouse();

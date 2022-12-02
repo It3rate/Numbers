@@ -12,11 +12,13 @@ namespace Concepts
 
     public class Knowledge
     {
+        public static Knowledge Instance { get; private set; } // todo: integrate knowledge at the brain level.
 	    public Brain Brain { get; }
 
 	    public Knowledge(Brain brain)
 	    {
 		    Brain = brain;
+		    Instance = this;
             Initialize();
 	    }
 

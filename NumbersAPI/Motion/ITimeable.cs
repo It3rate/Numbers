@@ -1,4 +1,5 @@
-﻿using NumbersCore.Primitives;
+﻿using Concepts.Time;
+using NumbersCore.Primitives;
 
 namespace NumbersAPI.Motion
 {
@@ -19,7 +20,7 @@ namespace NumbersAPI.Motion
 
 	    double StartTime { get; set; }
 
-	    Number DelayDuration { get; }
+	    MillisecondNumber DelayDuration { get; }
 	    double DelayValue { get; }
         double DurationValue { get; }
 

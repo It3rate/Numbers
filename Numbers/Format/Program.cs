@@ -27,19 +27,18 @@ namespace Numbers.Format
         private SKWorkspaceMapper test3(MouseAgent mouseAgent)
         {
 	        Trait trait = Trait.CreateIn(Brain, "test3");
-            var stack = new CommandStack(mouseAgent);
 
             var wm = new SKWorkspaceMapper(mouseAgent, 20, 20, 1000, 400);
             var guideline = new SKSegment(100,100,700,100);
             var unitSeg = guideline.SegmentAlongLine(0.4f, 0.6f);
             var dc = new AddSKDomainCommand(trait, 0, 10, -800, 800, guideline, unitSeg);
-            stack.Do(dc);
+            mouseAgent.Stack.Do(dc);
             var guideline2 = new SKSegment(100, 200, 700, 200);
             var dc2 = new AddSKDomainCommand(trait, 0, 10, -800, 800, guideline2, unitSeg);
-            stack.Do(dc2);
+            mouseAgent.Stack.Do(dc2);
             var num = new AddSKNumberCommand(dc.DomainMapper, new Range(1.5, -0.4));
             var num2 = new AddSKNumberCommand(dc2.DomainMapper, new Range(-2.2, 1.4));
-            stack.Do(num, num2);
+            mouseAgent.Stack.Do(num, num2);
             //stack.Undo();
             return wm;
         }

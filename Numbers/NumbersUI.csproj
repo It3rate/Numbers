@@ -146,6 +146,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Concepts\Concepts.csproj">
+      <Project>{322C713B-BA0F-4458-A0DF-68122CCE1DCB}</Project>
+      <Name>Concepts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NumbersAPI\NumbersAPI.csproj">
       <Project>{DB7D67AA-69FF-4429-B623-32B694EF7251}</Project>
       <Name>NumbersAPI</Name>

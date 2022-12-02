@@ -6,10 +6,10 @@ namespace NumbersAPI.CommandEngine
 {
 	public interface ICommandStack
     {
-	    //CommandAgent Agent { get; }
+	    CommandAgent Agent { get; }
 	    Brain Brain { get; }
-        //Workspace Workspace { get; }
-		bool CanUndo { get; }
+        Workspace Workspace { get; }
+        bool CanUndo { get; }
 		int UndoSize { get; }
         bool CanRedo { get; }
 		int RedoSize { get; }

@@ -1,4 +1,5 @@
 ﻿using NumbersAPI.Commands;
+using NumbersAPI.Motion;
 using NumbersCore.Primitives;
 
 namespace NumbersAPI.CommandEngine
@@ -14,6 +15,7 @@ namespace NumbersAPI.CommandEngine
 	    int Id { get; }
 	    ICommand Command { get; }
 	    CommandAgent Agent { get; set; }
+        TaskTimer Timer { get; }
         bool IsValid { get; }
 	    void RunTask();
 	    void UnRunTask();

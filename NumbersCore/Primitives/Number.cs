@@ -35,7 +35,7 @@ namespace NumbersCore.Primitives
 		public bool IsUnotPerspective => Domain.IsUnotPerspective;
 		public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
 
-		internal Number(IFocal focal)
+		protected internal Number(IFocal focal)
 		{
 			Focal = focal;
 		}
