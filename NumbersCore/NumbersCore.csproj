@@ -41,13 +41,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoreConcepts\Knowledge.cs" />
+    <Compile Include="CoreConcepts\Time\MillisecondNumber.cs" />
+    <Compile Include="CoreConcepts\Time\MillisecondTimeDomain.cs" />
+    <Compile Include="CoreConcepts\Time\TimeTrait.cs" />
     <Compile Include="Primitives\Brain.cs" />
     <Compile Include="Primitives\Definition.cs" />
     <Compile Include="Primitives\Domain.cs" />
+    <Compile Include="Primitives\Evaluate.cs" />
     <Compile Include="Primitives\FocalRef.cs" />
     <Compile Include="Primitives\FocalBase.cs" />
     <Compile Include="Primitives\Focal.cs" />
     <Compile Include="Primitives\Formula.cs" />
+    <Compile Include="Primitives\Relation.cs" />
+    <Compile Include="Primitives\Repeat.cs" />
     <Compile Include="Utils\IAgent.cs" />
     <Compile Include="Utils\IMathElement.cs" />
     <Compile Include="Primitives\Network.cs" />

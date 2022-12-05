@@ -7,6 +7,7 @@ using Numbers.Mappers;
 using Numbers.Renderer;
 using NumbersAPI.CommandEngine;
 using NumbersAPI.Motion;
+using NumbersCore.CoreConcepts;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;

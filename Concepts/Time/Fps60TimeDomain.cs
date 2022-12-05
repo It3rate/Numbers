@@ -1,4 +1,5 @@
-﻿using NumbersCore.Primitives;
+﻿using NumbersCore.CoreConcepts;
+using NumbersCore.Primitives;
 
 namespace Concepts.Time
 {

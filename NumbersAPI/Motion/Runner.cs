@@ -28,7 +28,7 @@ namespace NumbersAPI.Motion
 		private Timer _sysTimer;
 		private TimeSpan _lastTime;
 		private TimeSpan _currentTime;
-		public double CurrentMs => _currentTime.TotalMilliseconds;
+		public long CurrentTimeMs => (long)_currentTime.TotalMilliseconds;
 
 
 		public Runner(Control display)
@@ -57,12 +57,13 @@ namespace NumbersAPI.Motion
 
 		private void Tick(object sender, ElapsedEventArgs e)
 		{
-			if (!_isPaused && !_isBusy && _needsUpdate)
+			if (!_isPaused && !_isBusy) // && _needsUpdate)
 			{
 				_isBusy = true;
 				_currentTime = e.SignalTime - (StartTime + _delayTime);
-				double deltaTime = (_currentTime - _lastTime).TotalMilliseconds;
-				//Composites.Update(CurrentMs, deltaTime);
+				long deltaTime = (long)(_currentTime - _lastTime).TotalMilliseconds;
+
+                Agent?.Workspace?.Update(CurrentTimeMs, deltaTime);
 				_display?.Invalidate();
 				_lastTime = _currentTime;
 				_needsUpdate = !HasUpdated;

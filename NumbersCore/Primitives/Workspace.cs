@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
@@ -23,6 +25,17 @@ namespace NumbersCore.Primitives
 	        Brain = brain;
 	        Id = _idCounter++;
             Brain.Workspaces.Add(this);
+        }
+
+        private int test = 1;
+        public void Update(long currentTime, long deltaTime)
+        {
+	        var num = lastDomain?.Numbers().ElementAt(2);
+	        if (num != null)
+	        {
+		        num.Focal.EndTickPosition = num.Focal.EndTickPosition + test;
+                if(Math.Abs(num.Focal.EndTickPosition) > 70){test = -test;}
+	        }
         }
 
         public bool IsElementActive(int id) => ActiveIds.Contains(id);
@@ -81,10 +94,12 @@ namespace NumbersCore.Primitives
 	        }
         }
 
+        private Domain lastDomain;
         public void AddDomains(bool includeChildren, params Domain[] domains)
         {
 	        foreach (var domain in domains)
 	        {
+		        lastDomain = domain;
 		        AddElementsById(domain.Id);
 		        if (includeChildren)
 		        {

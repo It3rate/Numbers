@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using NumbersCore.CoreConcepts;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
@@ -14,12 +15,14 @@ namespace NumbersCore.Primitives
 	    public static Brain BrainB = new Brain();
 	    public Brain()
 	    {
+            Knowledge = new Knowledge(this);
 		    Brains.Add(this);
 	    }
 
+        public Knowledge Knowledge { get; }
 	    public List<Workspace> Workspaces { get; } = new List<Workspace>();
 
-        public readonly Dictionary<int, Network> NetworkStore = new Dictionary<int, Network>();
+        public readonly Dictionary<int, Network> NetworkStore = new Dictionary<int, Network>(); 
         public readonly Dictionary<int, Formula> FormulaStore = new Dictionary<int, Formula>();
         public readonly Dictionary<int, Definition> DefinitionStore = new Dictionary<int, Definition>();
         public readonly Dictionary<int, Trait> TraitStore = new Dictionary<int, Trait>();

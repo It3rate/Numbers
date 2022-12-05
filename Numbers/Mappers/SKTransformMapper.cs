@@ -13,8 +13,8 @@ namespace Numbers.Mappers
         public Transform Transform => (Transform)MathElement;
         private List<SKPoint[]> Triangles { get; } = new List<SKPoint[]>();
 
-		private SKDomainMapper SelectionMapper => WorkspaceMapper.DomainMapper(Transform.Selection[0].Domain);
-		private SKDomainMapper RepeatMapper => WorkspaceMapper.DomainMapper(Transform.Repeat.Domain);
+		private SKDomainMapper SelectionMapper => WorkspaceMapper.DomainMapper(Transform.Source[0].Domain);
+		private SKDomainMapper RepeatMapper => WorkspaceMapper.DomainMapper(Transform.Change.Domain);
 
         private SKPoint SKOrigin => SelectionMapper.BasisSegment.StartPoint;
 
@@ -32,8 +32,8 @@ namespace Numbers.Mappers
         public void Draw()
 		{
             Triangles.Clear();
-			var selNum = Transform.Selection[0];
-			var repNum = Transform.Repeat;
+			var selNum = Transform.Source[0];
+			var repNum = Transform.Change;
 			var selDr = SelectionMapper;
 			var repDr = RepeatMapper;
 
@@ -179,8 +179,8 @@ namespace Numbers.Mappers
 			var org = SKOrigin;
 			var unitLen = RepeatMapper.BasisSegment.Length;
 
-			var rNum = Transform.Repeat.Value;
-            var sNum = Transform.Selection[0].Value;
+			var rNum = Transform.Change.Value;
+            var sNum = Transform.Source[0].Value;
             var prod = rNum * sNum;
 
             var ri = (float)rNum.Start;

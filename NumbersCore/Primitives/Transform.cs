@@ -14,7 +14,7 @@ namespace NumbersCore.Primitives
     //   - powers: repeating addition (becomes form of multiplication) or multiplication proportional moves, output becomes input.
     //   - turns: proportional move balances between two unit segments.
 
-    // Operations on selection(s)
+    // Operations on source(s)
     // Select (can add segments)
     // Multiply (stretch)
     // Add (jump, shift)
@@ -33,9 +33,9 @@ namespace NumbersCore.Primitives
     {
 	    public override MathElementKind Kind => MathElementKind.Transform;
 
-        public Transform(Selection selection, Number repeat, TransformKind kind) : base(repeat, kind)
+        public Transform(Selection source, Number change, TransformKind kind) : base(change, kind)
         {
-	        Selection = selection;
+	        Source = source;
         }
 
         public override void ApplyStart() { }
@@ -47,7 +47,7 @@ namespace NumbersCore.Primitives
     public delegate void TransformEventHandler(object sender, ITransform e);
     public interface ITransform : IMathElement
     {
-        Number Repeat { get; set; }
+        Number Change { get; set; }
         event TransformEventHandler StartTransformEvent;
 	    event TransformEventHandler TickTransformEvent;
 	    event TransformEventHandler EndTransformEvent;
@@ -64,17 +64,19 @@ namespace NumbersCore.Primitives
 	    public int Id { get; set; }
 	    public int CreationIndex => Id - (int)Kind - 1;
         public Brain Brain { get; }
-        public TransformKind TransformKind { get; set; }
-	    public Selection Selection { get; set; }
-	    public Number Repeat { get; set; }
-	    public Number Relatedness { get; set; } // angle of relation between selection and Repeat, like the dot product. Determines 'perpendicularness' of axis. Can be non linear.
 
-        protected TransformBase(Number repeat, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
+        public TransformKind TransformKind { get; set; }
+	    public Selection Source { get; set; } // the object being transformed
+	    public Number Change { get; set; } // the amount to transform (can change per repeat)
+	    public Number Repeat { get; set; } // the number of times to repeat (zero means unlimited, ended only by evaluation) 
+	    public Number EvaluationTarget { get; set; } // the number to evaluate against to decide if complete
+
+        protected TransformBase(Number change, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
         {
-	        Brain = repeat.Brain;
+	        Brain = change.Brain;
 	        Id = Brain.NextTransformId();
 	        TransformKind = kind;
-	        Repeat = repeat;
+	        Change = change;
         }
 
         public event TransformEventHandler StartTransformEvent;
@@ -84,6 +86,8 @@ namespace NumbersCore.Primitives
 	    public virtual void ApplyStart() { OnStartTransformEvent(this); }
 	    public virtual void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
 	    public virtual void ApplyEnd() { OnEndTransformEvent(this); }
+
+	    public virtual bool Evaluate() => true;
 
 	    protected virtual void OnStartTransformEvent(ITransform e)
 	    {
@@ -105,7 +109,20 @@ namespace NumbersCore.Primitives
     {
 	    None, // leave repeat in place
 	    AppendAll, // repeat are added together ('regular' multiplication)
-        MultiplyAll, // repeat are multiplied together (exponents)
-        Blend, // multiply as in area, blend from unot to unit
+	    MultiplyAll, // repeat are multiplied together (exponents)
+	    Blend, // multiply as in area, blend from unot to unit
+    }
+
+    // todo: Evaluation of two segments are very much like the 16 bool operations, probably the same.
+    public enum EvaluationKind
+    {
+        // can use overlap, equal, contain, not contain, minmax ranges, unit range, basis direction, number direction...
+
+	    None, // Never continue
+        InTarget, // continue unless result escapes containment of EvaluationTarget
+        NotInTarget,  // continue unless result enters containment of EvaluationTarget
+        TargetIn,  // continue unless EvaluationTarget escapes containment of result
+        NotTargetIn,  // continue unless EvaluationTarget enters containment of result
+        Always, // always continue
     }
 }

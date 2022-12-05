@@ -1,9 +1,11 @@
 ﻿using System;
 using Concepts.Time;
+using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
 namespace NumbersAPI.Motion
 {
+    // todo: a task timer for animation is really just a transform.
     public class TaskTimer : ITimeable
     {
         public float InterpolationT { get; set; }

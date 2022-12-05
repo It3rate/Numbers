@@ -2,7 +2,7 @@
 
 namespace NumbersCore.Primitives
 {
-	/// <summary>
+    /// <summary>
     /// Selection is a selected set of numbers. This can be manually set, or derived from an operation using an number (eg last two results in fibonacci sequence).
     /// </summary>
     public class Selection : IMathElement

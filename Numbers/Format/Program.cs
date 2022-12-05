@@ -107,7 +107,7 @@ namespace Numbers.Format
 
             var num2 = domain.CreateNumber(val2);
             //var num3 = new Number(domain2, val3.Id);
-            //var sel = new Selection(num2);
+            //var sel = new Source(num2);
             //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
             mouseAgent.Workspace.AddDomains(true, domain);//, domain2);

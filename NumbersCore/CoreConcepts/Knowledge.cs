@@ -1,16 +1,9 @@
-﻿using Concepts.Time;
-using Concepts.Traits;
+﻿using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
-namespace Concepts
+namespace NumbersCore.CoreConcepts
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class Knowledge
+	public class Knowledge
     {
         public static Knowledge Instance { get; private set; } // todo: integrate knowledge at the brain level.
 	    public Brain Brain { get; }

@@ -1,16 +1,8 @@
-﻿using System.Dynamic;
-using System.Runtime.CompilerServices;
-using NumbersCore.Primitives;
+﻿using NumbersCore.Primitives;
 
-namespace Concepts.Time
+namespace NumbersCore.CoreConcepts.Time
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class MillisecondNumber : Number
+	public class MillisecondNumber : Number
     {
 	    private MillisecondTimeDomain MillisecondTimeDomain => (MillisecondTimeDomain) Domain;
 
