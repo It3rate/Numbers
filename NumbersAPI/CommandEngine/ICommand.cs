@@ -27,7 +27,7 @@ namespace NumbersAPI.Commands
         Workspace Workspace { get; }
         ICommandStack Stack { get; set; }
 
-        MillisecondNumber LiveTime { get; }
+        MillisecondNumber LiveTimeSpan { get; set; }
 	    long DurationMS { get; }
 
 	    bool AppendElements();

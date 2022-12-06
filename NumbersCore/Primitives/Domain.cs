@@ -78,9 +78,9 @@ namespace NumbersCore.Primitives
         public Number AddNumber(Number number, bool addToStore = true)
         {
 	        number.Domain = this;
+	        number.Id = number.Id == 0 ? NextNumberId() : number.Id;
 	        if (addToStore)
 	        {
-		        number.Id = number.Id == 0 ? NextNumberId() : number.Id;
 		        NumberStore[number.Id] = number;
 	        }
 	        return number;

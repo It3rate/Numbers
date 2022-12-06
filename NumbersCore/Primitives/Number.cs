@@ -31,7 +31,9 @@ namespace NumbersCore.Primitives
 		public long AbsBasisTicks => BasisFocal.AbsLengthInTicks;
 
 		public bool IsBasis => Domain.BasisNumber.Id == Id;
-		public bool IsUnitPerspective => Domain.IsUnitPerspective;
+		public bool IsMinMax => Domain.MinMaxNumber.Id == Id;
+		public bool IsDomainNumber => IsBasis || IsMinMax;
+        public bool IsUnitPerspective => Domain.IsUnitPerspective;
 		public bool IsUnotPerspective => Domain.IsUnotPerspective;
 		public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
 
@@ -40,12 +42,12 @@ namespace NumbersCore.Primitives
 			Focal = focal;
 		}
 
-		private long StartTickPosition
+		protected long StartTickPosition
 		{
 			get => Focal.StartTickPosition;
 			set => Focal.StartTickPosition = value;
 		}
-		private long EndTickPosition
+		protected long EndTickPosition
 		{
 			get => Focal.EndTickPosition;
 			set => Focal.EndTickPosition = value;
@@ -73,12 +75,26 @@ namespace NumbersCore.Primitives
 			get => Value.End; //Domain.ValueFromEndTickPosition(EndTickPosition); // Value.End is a little less efficient
 			set => Value = new Range(Value.Start, value); //EndTicks = Domain.EndTickPositionFrom(value);
 		}
-		public Range Value //*
+		public Range Value 
 		{
 			get => Domain.GetValueOf(Focal); //Focal.RangeWithBasis(BasisFocal);
 			set => Domain.SetValueOf(Focal, value);
 		}
 		public Range ValueInRenderPerspective => new Range(-StartValue, EndValue);
+
+		public Number SetWith(Number other)
+		{
+			if (Domain.Id == other.Domain.Id)
+			{
+				StartTickPosition = other.StartTickPosition;
+				EndTickPosition = other.EndTickPosition;
+			}
+			else
+			{
+				Value = other.Value;
+            }
+			return other;
+		}
 
 		public long WholeStartValue => (long) StartValue;
 		public long WholeEndValue => (long) EndValue;
@@ -119,6 +135,12 @@ namespace NumbersCore.Primitives
 			Value /= other.Value;
         }
 
+        public double RatioAt(double pointOnLine)
+        {
+	        var val = Value;
+	        var len = val.Length;
+	        return (pointOnLine - val.Start) / len;
+        }
         public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
         public void InterpolateFrom(Number source, Number t, Number result) => Interpolate(source, this, t, result);
         public void InterpolateTo(Number target, Number t, Number result) => Interpolate(this, target, t, result);
@@ -135,6 +157,23 @@ namespace NumbersCore.Primitives
 	        var tValue = t.Value;
 	        result.StartValue = targetValue.Start * tValue.Start;
 	        result.EndValue = (targetValue.End - 1.0) * tValue.End + 1.0;
+        }
+        public void InterpolateFromOne(Number target, double t)
+        {
+	        if (target != null)
+	        {
+		        var targetValue = target.Value;
+		        StartValue = targetValue.Start * t;
+		        EndValue = (targetValue.End - 1.0) * t + 1.0;
+	        }
+        }
+        public void InterpolateFromOne(Range range, double t)
+        {
+	        if (range != null)
+	        {
+		        StartValue = range.Start * t;
+		        EndValue = (range.End - 1.0) * t + 1.0;
+	        }
         }
         public static void Interpolate(Number source, Number target, Number t, Number result)
         {

@@ -27,7 +27,8 @@ namespace NumbersAPI.CommandEngine
 
 	    public void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
 	    {
-		    Workspace.Update(currentTime, deltaTime);
+		    //Workspace.Update(currentTime, deltaTime);
+            Stack.Update(currentTime, deltaTime);
 	    }
 
         public virtual void ClearAll()

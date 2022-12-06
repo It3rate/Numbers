@@ -19,7 +19,9 @@ namespace Numbers.Commands
 	    public SKNumberMapper NumberMapper => (SKNumberMapper)Mapper;
 	    public SKDomainMapper DomainMapper { get; }
 
-        public CreateNumberCommand CreateNumberCommand { get; private set; }
+	    public override bool IsContinuous => true;
+
+	    public CreateNumberCommand CreateNumberCommand { get; private set; }
 	    public Number Number => ExistingNumber ?? CreatedNumber;
 	    public Number CreatedNumber => NumberMapper?.Number;
 	    public Number ExistingNumber { get; }
@@ -45,11 +47,15 @@ namespace Numbers.Commands
 
 		    if (Mapper == null)
 		    {
-			    Mapper = new SKNumberMapper(MouseAgent, CreateNumberCommand.Number);
+			    _targetRange = CreateNumberCommand.Number.Value;
+			    CreateNumberCommand.Number.Value = new Range(0.0, 1.0);
+                Mapper = new SKNumberMapper(MouseAgent, CreateNumberCommand.Number);
             }
 		    DomainMapper.AddNumberMapper(NumberMapper);
             MouseAgent.Workspace.AddElements(Number);
 	    }
+
+        private Range _targetRange;
 
 	    public override void Unexecute()
 	    {
@@ -62,13 +68,20 @@ namespace Numbers.Commands
 		    }
 	    }
 
+	    private double _t = 0;
 	    public override void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
 	    {
 		    base.Update(currentTime, deltaTime);
+		    _t = LiveTimeSpan.RatioAt(currentTime.EndValue);
+		    CreateNumberCommand.Number.InterpolateFromOne(_targetRange, _t);
 	    }
 
-        public override void Completed()
-	    {
-	    }
+	    public override bool IsComplete() => _t >= 1.0;
+
+	    public override void Completed()
+        {
+	        _t = 1.0;
+	        CreateNumberCommand.Number.Value = _targetRange;
+        }
     }
 }

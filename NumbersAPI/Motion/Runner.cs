@@ -8,7 +8,13 @@ using Timer = System.Timers.Timer;
 
 namespace NumbersAPI.Motion
 {
-	public class Runner
+	public interface IRunner
+	{
+		MillisecondNumber CurrentMS { get; }
+		MillisecondNumber DeltaMS { get; }
+    }
+
+	public class Runner : IRunner
 	{
 		public static Runner CurrentRunner;
 		public static Runner GetRunnerById(int id) => CurrentRunner;
@@ -24,8 +30,8 @@ namespace NumbersAPI.Motion
 		private static TimeSpan _delayTime = new TimeSpan(0);
 		public static DateTime StartTime { get; private set; }
 
-		private MillisecondNumber _currentMS = MillisecondNumber.Zero(false);
-		private MillisecondNumber _deltaMS = MillisecondNumber.Zero(false);
+		public MillisecondNumber CurrentMS { get; } = MillisecondNumber.Zero(false);
+		public MillisecondNumber DeltaMS { get; } = MillisecondNumber.Zero(false);
 
 		private Timer _sysTimer;
 		private TimeSpan _lastTime;
@@ -38,18 +44,7 @@ namespace NumbersAPI.Motion
 			Agent = agent;
 			_display = display;
 			CurrentRunner = this;
-			Initialize();
-		}
-
-		private void Initialize()
-		{
-			_currentTime = DateTime.Now - StartTime;
-			_lastTime = _currentTime;
-
-			_sysTimer = new Timer();
-			_sysTimer.Elapsed += Tick;
-			_sysTimer.Interval = 8;
-			_sysTimer.Enabled = true;
+			Reset();
 		}
 
         //private float t = 0;
@@ -64,10 +59,10 @@ namespace NumbersAPI.Motion
 			{
 				_isBusy = true;
 				_currentTime = e.SignalTime - (StartTime + _delayTime);
-				_currentMS.EndTicks = (long)_currentTime.TotalMilliseconds;
-				_deltaMS.EndTicks = (long)(_currentMS.EndTicks - _lastTime.TotalMilliseconds);
+				CurrentMS.EndTicks = (long)_currentTime.TotalMilliseconds;
+				DeltaMS.EndTicks = (long)(CurrentMS.EndTicks - _lastTime.TotalMilliseconds);
 
-                Agent.Update(_currentMS, _deltaMS);
+                Agent.Update(CurrentMS, DeltaMS);
 				_display.Invalidate();
 
 				_lastTime = _currentTime;
@@ -98,13 +93,25 @@ namespace NumbersAPI.Motion
 
 		public void Clear()
 		{
-			//Composites.Clear();
+			_sysTimer?.Stop();
+            _sysTimer.Close();
+            _sysTimer = null;
+            Reset();
 		}
 
 		public void Reset()
 		{
-			//Composites.Reset();
-		}
+			StartTime = DateTime.Now; // or leave at zero?
+
+			_currentTime = DateTime.Now - StartTime;
+			_lastTime = _currentTime;
+			CurrentMS.EndTicks = (long)_currentTime.TotalMilliseconds;
+
+			_sysTimer = new Timer();
+			_sysTimer.Elapsed += Tick;
+			_sysTimer.Interval = 8;
+			_sysTimer.Enabled = true;
+        }
 
 		public void Pause()
 		{

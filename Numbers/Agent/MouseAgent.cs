@@ -93,6 +93,7 @@ namespace Numbers.Agent
             Renderer = renderer;
             Renderer.Agent = this;
             Runner = new Runner(this, control);
+            Stack.LastTime.SetWith(Runner.CurrentMS);
 
             Program = new Format.Program(Brain, Renderer);
 
@@ -527,6 +528,7 @@ namespace Numbers.Agent
 	        }
 	        WorkspaceMappers.Clear();
             Brain.ClearAll();
+            Runner.Clear();
         }
 
         public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)

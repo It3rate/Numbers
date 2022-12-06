@@ -37,8 +37,8 @@ namespace NumbersAPI.CommandEngine
 	    }
 	    public virtual bool TryMergeWith(ICommand command) => false;
 
-	    public MillisecondNumber LiveTime { get; }
-	    public long DurationMS => LiveTime.TickCount;
+	    public MillisecondNumber LiveTimeSpan { get; set; }
+	    public long DurationMS => LiveTimeSpan.TickCount;
 
 	    public virtual int RepeatCount { get; }
 	    public virtual int RepeatIndex { get; }

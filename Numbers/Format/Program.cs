@@ -27,14 +27,14 @@ namespace Numbers.Format
         private SKWorkspaceMapper test3(MouseAgent mouseAgent)
         {
 	        Trait trait = Trait.CreateIn(Brain, "test3");
-
+	        long unitSize = 100;
             var wm = new SKWorkspaceMapper(mouseAgent, 20, 20, 1000, 400);
             var guideline = new SKSegment(100,100,700,100);
             var unitSeg = guideline.SegmentAlongLine(0.4f, 0.6f);
-            var dc = new AddSKDomainCommand(trait, 0, 10, -800, 800, guideline, unitSeg);
+            var dc = new AddSKDomainCommand(trait, 0, unitSize, -800, 800, guideline, unitSeg);
             mouseAgent.Stack.Do(dc);
             var guideline2 = new SKSegment(100, 200, 700, 200);
-            var dc2 = new AddSKDomainCommand(trait, 0, 10, -800, 800, guideline2, unitSeg);
+            var dc2 = new AddSKDomainCommand(trait, 0, unitSize, -800, 800, guideline2, unitSeg);
             mouseAgent.Stack.Do(dc2);
             var num = new AddSKNumberCommand(dc.DomainMapper, new Range(1.5, -0.4));
             var num2 = new AddSKNumberCommand(dc2.DomainMapper, new Range(-2.2, 1.4));
@@ -119,7 +119,7 @@ namespace Numbers.Format
             dm.ShowBasisMarkers = true;
             dm.ShowBasis = true;
             wm.EnsureRenderers();
-            var nm = dm.NumberMapper(num2.Id);
+            //var nm = dm.NumberMapper(num2.Id);
             //dm.EndPoint += new SKPoint(0, -50);
             return wm;
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NumbersAPI.Commands;
 using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
@@ -18,7 +19,9 @@ namespace NumbersAPI.CommandEngine
 
 		void Do(ICommand command);
 		ICommand PreviousCommand();
-		bool Undo();
+		void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime);
+
+        bool Undo();
 		void UndoAll();
 		void UndoToIndex(int index);
 		bool Redo();
@@ -42,7 +45,9 @@ namespace NumbersAPI.CommandEngine
 		private readonly List<ICommand> _toDelete = new List<ICommand>(); // commands that natrually end
 		private readonly List<ICommand> _toTerminate = new List<ICommand>(); // commands that didn't naturally finish
 
-		public bool CanUndo => _stackIndex > 0;
+		public readonly MillisecondNumber LastTime = MillisecondNumber.Zero(false);
+
+        public bool CanUndo => _stackIndex > 0;
 		public int UndoSize => _stackIndex;
         public bool CanRedo => RedoSize > 0;
 		public int RedoSize => _stack.Count - _stackIndex;
@@ -50,6 +55,25 @@ namespace NumbersAPI.CommandEngine
 		public CommandStack(CommandAgent agent)
 		{
 			Agent = agent;
+		}
+
+		public void Do(ICommand command)
+		{
+			command.Stack = this;
+			command.Agent = Agent;
+			if (command.CanUndo)
+			{
+				RemoveRedoCommands();
+				AddCommand(command);
+			}
+			else
+			{
+				if (command.IsContinuous)
+				{
+					_liveCommands.Add(command);
+				}
+				command.Execute();
+			}
 		}
 
         public void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
@@ -67,41 +91,28 @@ namespace NumbersAPI.CommandEngine
             UpdateLiveCommands(currentTime, deltaTime);
             PerformCommits();
             RemoveCompletedCommands();
+
+            LastTime.SetWith(currentTime);
             AddNewCommands();
-        }
+		}
 
-        public void Do(ICommand command)
+
+        private void AddCommand(ICommand command)
         {
-	        command.Stack = this;
-	        command.Agent = Agent;
-	        if (command.CanUndo)
+	        bool merged = AttemptToMerge(command);
+	        if (!merged)
 	        {
-		        RemoveRedoCommands();
-		        bool merged = AttemptToMerge(command);
-		        if (!merged)
-		        {
-			        _stack.Add(command);
-			        if (command.IsContinuous)
-			        {
-				        _liveCommands.Add(command);
-			        }
-
-			        _stackIndex++;
-			        command.Execute();
-		        }
-	        }
-	        else
-	        {
+		        _stack.Add(command);
 		        if (command.IsContinuous)
 		        {
-			        _liveCommands.Add(command);
+					command.LiveTimeSpan = MillisecondNumber.Create(LastTime.EndTicks, 1000); 
+                    _liveCommands.Add(command);
 		        }
 
+		        _stackIndex++;
 		        command.Execute();
 	        }
         }
-
-
         private void RemoveRedoCommands()
         {
 	        if (CanRedo)
@@ -121,19 +132,47 @@ namespace NumbersAPI.CommandEngine
 			        if (command.IsComplete())
 			        {
 				        _toDelete.Add(command);
+                        command.Completed();
 				        // fire end animation event
 				        // remove end animation event handlers
 			        }
-			        command.Update(currentTime, deltaTime);
+			        else
+			        {
+				        command.Update(currentTime, deltaTime);
+                    }
 			        result = true;
 		        }
 	        }
             return result;
         }
         private bool PerformCommits() { return true; }
-        private bool RemoveCompletedCommands() { return true; }
-        private bool AddNewCommands() { return true; }
 
+        private bool RemoveCompletedCommands()
+        {
+	        var result = false;
+	        if (_toDelete.Count > 0)
+	        {
+		        var commands = _toDelete.ToArray();
+		        foreach (var command in commands)
+		        {
+			        _liveCommands.Remove(command);
+		        }
+		        _toDelete.Clear();
+		        result = true;
+	        }
+	        return result;
+        }
+
+        private bool AddNewCommands()
+        {
+	        var result = false;
+	        foreach (var command in _toAdd)
+	        {
+		        result = true;
+                AddCommand(command);
+	        }
+	        return result;
+        }
 
 		public ICommand PreviousCommand() => CanUndo ? _stack[_stackIndex - 1] : default;
 
@@ -202,9 +241,13 @@ namespace NumbersAPI.CommandEngine
 
 		public void Clear()
 		{
+            _liveCommands.Clear();
 			_stack.Clear();
 			_toAdd.Clear();
 			_toDelete.Clear();
+			_toCommit.Clear(); 
+            _toTerminate.Clear();
+
 			_stackIndex = 0;
 		}
 

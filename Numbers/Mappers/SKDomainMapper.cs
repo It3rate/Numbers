@@ -17,6 +17,7 @@ namespace Numbers.Mappers
 	    private Dictionary<int, SKNumberMapper> NumberMappers = new Dictionary<int, SKNumberMapper>();
 	    public SKNumberMapper NumberMapper(Number number) => GetOrCreateNumberMapper(number);
 	    public SKNumberMapper NumberMapper(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
+        //public SKNumberMapper NumberMapper(int numId) => GetNumberMapper(numId);
 
         private SKNumberMapper BasisMapper => NumberMapper(Domain.BasisNumber);
 	    public Number BasisNumber => Domain.BasisNumber;
@@ -66,6 +67,11 @@ namespace Numbers.Mappers
 	        {
 		        yield return dm;
 	        }
+        }
+        public SKNumberMapper GetNumberMapper(int id)
+        {
+	        NumberMappers.TryGetValue(id, out var result);
+	        return result;
         }
         public SKNumberMapper GetOrCreateNumberMapper(int id)
         {
@@ -139,20 +145,23 @@ namespace Numbers.Mappers
 	        var step = ShowNumberOffsets ? 1f : 0f;
 	        foreach (var numberId in ValidNumberIds)
 	        {
-		        offset += step;
+                offset += step;
 		        var nm = NumberMapper(numberId);
-		        var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
-		        nm.DrawNumber(offset, pen);
+		        if (nm != null)
+		        {
+			        var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
+			        nm.DrawNumber(offset, pen); // background
 
-		        if (Domain.IsUnitPerspective)
-		        {
-			        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
-			        nm.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
-		        }
-		        else
-		        {
-			        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
-			        nm.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
+			        if (Domain.IsUnitPerspective)
+			        {
+				        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
+				        nm.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
+			        }
+			        else
+			        {
+				        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
+				        nm.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
+			        }
 		        }
 	        }
 
