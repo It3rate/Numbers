@@ -34,10 +34,6 @@ namespace NumbersAPI.CoreCommands
 		    base.Unexecute();
 	    }
 
-	    public override void Update()
-	    {
-	    }
-
 	    public override void Completed()
 	    {
 	    }

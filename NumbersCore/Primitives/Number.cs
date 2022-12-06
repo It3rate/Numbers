@@ -50,17 +50,17 @@ namespace NumbersCore.Primitives
 			get => Focal.EndTickPosition;
 			set => Focal.EndTickPosition = value;
 		}
-		private long StartTicks
+		public long StartTicks
 		{
 			get => -StartTickPosition + ZeroTick;
 			set => StartTickPosition = ZeroTick - value;
 		}
-		private long EndTicks
+		public long EndTicks
 		{
 			get => EndTickPosition - ZeroTick;
 			set => EndTickPosition = value + ZeroTick;
 		}
-		private long TickCount => EndTickPosition - StartTickPosition;
+		public long TickCount => EndTickPosition - StartTickPosition;
 
 		public double StartValue
 		{

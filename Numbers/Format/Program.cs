@@ -38,7 +38,8 @@ namespace Numbers.Format
             mouseAgent.Stack.Do(dc2);
             var num = new AddSKNumberCommand(dc.DomainMapper, new Range(1.5, -0.4));
             var num2 = new AddSKNumberCommand(dc2.DomainMapper, new Range(-2.2, 1.4));
-            mouseAgent.Stack.Do(num, num2);
+            mouseAgent.Stack.Do(num);
+            mouseAgent.Stack.Do(num2);
             //stack.Undo();
             return wm;
         }

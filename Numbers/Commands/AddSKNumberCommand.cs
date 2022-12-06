@@ -2,6 +2,7 @@
 using Numbers.Mappers;
 using Numbers.Utils;
 using NumbersAPI.CoreCommands;
+using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 
@@ -61,11 +62,12 @@ namespace Numbers.Commands
 		    }
 	    }
 
-	    public override void Update()
+	    public override void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
 	    {
+		    base.Update(currentTime, deltaTime);
 	    }
 
-	    public override void Completed()
+        public override void Completed()
 	    {
 	    }
     }

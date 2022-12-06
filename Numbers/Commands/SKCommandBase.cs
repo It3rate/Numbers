@@ -3,6 +3,7 @@ using Numbers.Mappers;
 using Numbers.Utils;
 using NumbersAPI.CommandEngine;
 using NumbersAPI.Motion;
+using NumbersCore.CoreConcepts.Time;
 
 namespace Numbers.Commands
 {
@@ -37,10 +38,10 @@ namespace Numbers.Commands
 		    base.Unexecute();
 	    }
 
-	    public override void Update()
+	    public override void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
 	    {
-		    base.Update();
-        }
+		    base.Update(currentTime, deltaTime);
+	    }
 
 	    public override void Completed()
 	    {

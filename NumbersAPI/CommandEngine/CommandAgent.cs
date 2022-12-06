@@ -1,4 +1,6 @@
-﻿using NumbersCore.Primitives;
+﻿using NumbersCore.CoreConcepts;
+using NumbersCore.CoreConcepts.Time;
+using NumbersCore.Primitives;
 using NumbersCore.Utils;
 
 namespace NumbersAPI.CommandEngine
@@ -12,22 +14,25 @@ namespace NumbersAPI.CommandEngine
     public class CommandAgent : IAgent
     {
 	    public Brain Brain => Workspace.Brain;
-	    public virtual Workspace Workspace { get; }
+	    public Knowledge Knowledge => Brain.Knowledge;
+        public Workspace Workspace { get; }
 
-	    public Stack<Selection> SelectionStack { get; }
-	    public Stack<Formula> FormulaStack { get; }
-	    public Stack<Number> ResultStack { get; }
+	    public CommandStack Stack { get; }
 
 	    public CommandAgent(Workspace workspace)
 	    {
 		    Workspace = workspace;
+		    Stack = new CommandStack(this);
+        }
+
+	    public void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
+	    {
+		    Workspace.Update(currentTime, deltaTime);
 	    }
 
         public virtual void ClearAll()
 	    {
-		    SelectionStack?.Clear();
-		    FormulaStack?.Clear();
-		    ResultStack?.Clear();
+		    Stack.Clear();
         }
     }
 }

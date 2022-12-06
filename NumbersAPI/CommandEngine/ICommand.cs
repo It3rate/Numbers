@@ -1,4 +1,5 @@
 ﻿using NumbersAPI.CommandEngine;
+using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
 namespace NumbersAPI.Commands
@@ -26,31 +27,30 @@ namespace NumbersAPI.Commands
         Workspace Workspace { get; }
         ICommandStack Stack { get; set; }
 
-	    DateTime StartTime { get; }
-	    DateTime EndTime { get; }
-	    TimeSpan Duration { get; }
+        MillisecondNumber LiveTime { get; }
+	    long DurationMS { get; }
 
 	    bool AppendElements();
 	    bool RemoveElements();
-
-        bool IsMergableWith(ICommand command);
+	    bool IsMergableWith(ICommand command);
 	    bool TryMergeWith(ICommand command);
 
         int RepeatCount { get; } // Number - this will be Number once default traits are in.
         int RepeatIndex { get; } // Number - this will be Number once default traits are in.
-        bool IsRepeatable();
 
-	    bool IsActive { get; }
+        bool IsActive { get; }
 	    bool IsContinuous { get; }
+	    bool CanUndo { get; }
 	    bool IsRetainedCommand { get; }
-	    bool IsComplete();
 
-	    bool Evaluate();
+        bool IsRepeatable();
+        bool IsComplete();
 
         void Execute();
-	    void Update();//SKPoint point); 
-	    void Unexecute();
+	    void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime);
 	    void Completed();
+	    bool Evaluate();
+	    void Unexecute();
 
 	    List<ITask> Tasks { get; }
 	    void AddTask(ITask task);

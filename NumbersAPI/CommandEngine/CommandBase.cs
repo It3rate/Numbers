@@ -1,4 +1,5 @@
 ﻿using NumbersAPI.Commands;
+using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
 namespace NumbersAPI.CommandEngine
@@ -36,19 +37,18 @@ namespace NumbersAPI.CommandEngine
 	    }
 	    public virtual bool TryMergeWith(ICommand command) => false;
 
-        public virtual DateTime StartTime { get; }
-	    public virtual DateTime EndTime { get; }
-	    public virtual TimeSpan Duration { get; }
+	    public MillisecondNumber LiveTime { get; }
+	    public long DurationMS => LiveTime.TickCount;
+
 	    public virtual int RepeatCount { get; }
 	    public virtual int RepeatIndex { get; }
-	    public virtual bool IsRepeatable()
-	    {
-		    throw new NotImplementedException();
-	    }
 
-	    public virtual bool IsActive { get; }
-	    public virtual bool IsContinuous { get; }
-	    public virtual bool IsRetainedCommand { get; } = true;
+	    public virtual bool IsActive { get; protected set; }
+	    public virtual bool IsContinuous => false;
+	    public virtual bool CanUndo => true;
+	    public virtual bool IsRetainedCommand => true;
+
+        public virtual bool IsRepeatable() => false;
 	    public virtual bool IsComplete() => true;
 	    public virtual bool Evaluate() => true;
 
@@ -63,7 +63,7 @@ namespace NumbersAPI.CommandEngine
 	        // task.RunTask();
 	        //}
         }
-        public virtual void Update()
+        public virtual void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
         {
         }
         public virtual void Unexecute()

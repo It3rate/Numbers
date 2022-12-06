@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
@@ -28,14 +29,14 @@ namespace NumbersCore.Primitives
         }
 
         private int test = 1;
-        public void Update(long currentTime, long deltaTime)
+        public void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
         {
-	        var num = lastDomain?.Numbers().ElementAt(2);
-	        if (num != null)
-	        {
-		        num.Focal.EndTickPosition = num.Focal.EndTickPosition + test;
-                if(Math.Abs(num.Focal.EndTickPosition) > 70){test = -test;}
-	        }
+	        //var num = lastDomain?.Numbers().ElementAt(2);
+	        //if (num != null)
+	        //{
+		       // num.Focal.EndTickPosition = num.Focal.EndTickPosition + test;
+         //       if(Math.Abs(num.Focal.EndTickPosition) > 70){test = -test;}
+	        //}
         }
 
         public bool IsElementActive(int id) => ActiveIds.Contains(id);

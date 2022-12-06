@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using NumbersCore.CoreConcepts;
+using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
 namespace NumbersCore.Utils
@@ -6,12 +8,11 @@ namespace NumbersCore.Utils
 	public interface IAgent
     {
 	    Brain Brain { get; }
+	    Knowledge Knowledge { get; }
 	    Workspace Workspace { get; }
 
-	    Stack<Selection> SelectionStack { get; }
-	    Stack<Formula> FormulaStack { get; }
-	    Stack<Number> ResultStack { get; }
+	    void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime);
 
-	    void ClearAll();
+        void ClearAll();
     }
 }

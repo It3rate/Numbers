@@ -1,4 +1,5 @@
 ﻿using NumbersAPI.CommandEngine;
+using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
 namespace NumbersAPI.CoreTasks
@@ -36,7 +37,7 @@ namespace NumbersAPI.CoreTasks
 		    base.Unexecute();
 	    }
 
-	    public override void Update()
+	    public override void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
 	    {
 	    }
 

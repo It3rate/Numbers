@@ -39,8 +39,8 @@ namespace Numbers
             KeyPreview = true;
 
             _workspace = new Workspace(Brain.ActiveBrain);
-	        _runner = new Runner(_control);
-            _mouseAgent = new Agent.MouseAgent(_workspace, _runner, _renderer);
+            _mouseAgent = new Agent.MouseAgent(_workspace, _control, _renderer);
+            _runner = _mouseAgent.Runner;
             _ = Execute(null, 50);
         }
 

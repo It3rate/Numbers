@@ -27,10 +27,9 @@ namespace Numbers.Agent
 			}
 		}
 
-        public Knowledge Knowledge { get; }
+		public Control Control;
 		public CoreRenderer Renderer { get; }
-        public Runner Runner;
-        public CommandStack Stack { get; }
+		public Runner Runner;
 
         public Format.Program Program { get; }
         public bool IsPaused { get; set; } = true;
@@ -88,14 +87,12 @@ namespace Numbers.Agent
 
         private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
 
-        public MouseAgent(Workspace workspace, Runner runner, CoreRenderer renderer) : base(workspace)
+        public MouseAgent(Workspace workspace, Control control, CoreRenderer renderer) : base(workspace)
         {
-	        Knowledge = new Knowledge(workspace.Brain);
+	        Control = control;
             Renderer = renderer;
             Renderer.Agent = this;
-            Runner = runner;
-            Runner.Agent = this;
-            Stack = new CommandStack(this);
+            Runner = new Runner(this, control);
 
             Program = new Format.Program(Brain, Renderer);
 

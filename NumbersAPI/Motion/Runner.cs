@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Timers;
 using System.Windows.Forms;
+using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using Timer = System.Timers.Timer;
@@ -13,6 +14,9 @@ namespace NumbersAPI.Motion
 		public static Runner GetRunnerById(int id) => CurrentRunner;
 
 		public IAgent Agent { get; set; }
+		public Brain Brain => Agent.Brain;
+		public Workspace Workspace => Agent.Workspace;
+
 		private readonly Control _display;
 
 		private bool _isPaused;
@@ -20,10 +24,8 @@ namespace NumbersAPI.Motion
 		private static TimeSpan _delayTime = new TimeSpan(0);
 		public static DateTime StartTime { get; private set; }
 
-		static Runner()
-		{
-			StartTime = DateTime.Now;
-		}
+		private MillisecondNumber _currentMS = MillisecondNumber.Zero(false);
+		private MillisecondNumber _deltaMS = MillisecondNumber.Zero(false);
 
 		private Timer _sysTimer;
 		private TimeSpan _lastTime;
@@ -31,10 +33,11 @@ namespace NumbersAPI.Motion
 		public long CurrentTimeMs => (long)_currentTime.TotalMilliseconds;
 
 
-		public Runner(Control display)
+		public Runner(IAgent agent, Control display)
 		{
-			CurrentRunner = this;
+			Agent = agent;
 			_display = display;
+			CurrentRunner = this;
 			Initialize();
 		}
 
@@ -55,16 +58,18 @@ namespace NumbersAPI.Motion
         public bool HasUpdated { get; set; } = false;
         public bool NeedsUpdate() => _needsUpdate = true;
 
-		private void Tick(object sender, ElapsedEventArgs e)
+        private void Tick(object sender, ElapsedEventArgs e)
 		{
 			if (!_isPaused && !_isBusy) // && _needsUpdate)
 			{
 				_isBusy = true;
 				_currentTime = e.SignalTime - (StartTime + _delayTime);
-				long deltaTime = (long)(_currentTime - _lastTime).TotalMilliseconds;
+				_currentMS.EndTicks = (long)_currentTime.TotalMilliseconds;
+				_deltaMS.EndTicks = (long)(_currentMS.EndTicks - _lastTime.TotalMilliseconds);
 
-                Agent?.Workspace?.Update(CurrentTimeMs, deltaTime);
-				_display?.Invalidate();
+                Agent.Update(_currentMS, _deltaMS);
+				_display.Invalidate();
+
 				_lastTime = _currentTime;
 				_needsUpdate = !HasUpdated;
 			}

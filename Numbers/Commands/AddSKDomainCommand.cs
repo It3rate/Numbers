@@ -10,6 +10,7 @@ using NumbersAPI.CommandEngine;
 using NumbersAPI.Commands;
 using NumbersAPI.CoreCommands;
 using NumbersAPI.CoreTasks;
+using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
 namespace Numbers.Commands
@@ -60,11 +61,12 @@ namespace Numbers.Commands
 		    }
         }
 
-	    public override void Update()
+	    public override void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
 	    {
+		    base.Update(currentTime, deltaTime);
 	    }
 
-	    public override void Completed()
+        public override void Completed()
 	    {
 	    }
     }
