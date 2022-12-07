@@ -20,9 +20,6 @@ namespace Numbers.Commands
 	    public SKMapper Mapper { get; protected set; }
 	    public SKSegment Guideline { get; }
 	    public MouseAgent MouseAgent => (MouseAgent) Agent;
-        public TaskTimer Timer { get; protected set; }
-
-        public float DefaultDuration => 250;
 
 	    public SKCommandBase(SKSegment guideline)
 	    {

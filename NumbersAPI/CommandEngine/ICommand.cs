@@ -27,10 +27,13 @@ namespace NumbersAPI.Commands
         Workspace Workspace { get; }
         ICommandStack Stack { get; set; }
 
+        // todo: rather than time commands, all commands will be formulas that exit when their stop condition is met.
         MillisecondNumber LiveTimeSpan { get; set; }
 	    long DurationMS { get; }
+	    long DefaultDelay { get; set; }
+	    long DefaultDuration { get; set; }
 
-	    bool AppendElements();
+        bool AppendElements();
 	    bool RemoveElements();
 	    bool IsMergableWith(ICommand command);
 	    bool TryMergeWith(ICommand command);

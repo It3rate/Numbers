@@ -39,8 +39,10 @@ namespace NumbersAPI.CommandEngine
 
 	    public MillisecondNumber LiveTimeSpan { get; set; }
 	    public long DurationMS => LiveTimeSpan.TickCount;
+	    public long DefaultDelay { get; set; }
+	    public long DefaultDuration { get; set; }
 
-	    public virtual int RepeatCount { get; }
+        public virtual int RepeatCount { get; }
 	    public virtual int RepeatIndex { get; }
 
 	    public virtual bool IsActive { get; protected set; }

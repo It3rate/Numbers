@@ -40,7 +40,8 @@ namespace NumbersAPI.CommandEngine
 		private readonly List<ICommand> _stack = new List<ICommand>(4096);
 
 		private readonly List<ICommand> _toAdd = new List<ICommand>();
-		private readonly List<ICommand> _liveCommands = new List<ICommand>();
+		private readonly List<ICommand> _toAddAfterDelay = new List<ICommand>();
+        private readonly List<ICommand> _liveCommands = new List<ICommand>();
 		private readonly List<ICommand> _toCommit = new List<ICommand>(); // changes
 		private readonly List<ICommand> _toDelete = new List<ICommand>(); // commands that natrually end
 		private readonly List<ICommand> _toTerminate = new List<ICommand>(); // commands that didn't naturally finish
@@ -61,19 +62,26 @@ namespace NumbersAPI.CommandEngine
 		{
 			command.Stack = this;
 			command.Agent = Agent;
-			if (command.CanUndo)
+			if (command.LiveTimeSpan == null)
 			{
-				RemoveRedoCommands();
-				AddCommand(command);
+				command.LiveTimeSpan = MillisecondNumber.Create(-LastTime.EndTicks + command.DefaultDelay, command.DefaultDuration);
 			}
+
+			if (command.DefaultDelay == 0)
+			{
+                if (command.CanUndo)
+                {
+	                AddStackCommand(command);
+                }
+                else
+                {
+	                AddLiveCommand(command);
+                }
+            }
 			else
-			{
-				if (command.IsContinuous)
-				{
-					_liveCommands.Add(command);
-				}
-				command.Execute();
-			}
+            {
+	            _toAddAfterDelay.Add(command);
+            }
 		}
 
         public void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
@@ -87,25 +95,45 @@ namespace NumbersAPI.CommandEngine
             // remove completed commands
             // add new commands and clear toAdd
 
+            AddNewCommands(currentTime);
             RemoveRedoCommands();
             UpdateLiveCommands(currentTime, deltaTime);
             PerformCommits();
             RemoveCompletedCommands();
 
             LastTime.SetWith(currentTime);
-            AddNewCommands();
 		}
 
 
-        private void AddCommand(ICommand command)
+        private void AddNewCommands(MillisecondNumber currentTime)
         {
-	        bool merged = AttemptToMerge(command);
+	        var delayed = _toAddAfterDelay.ToArray();
+	        foreach (var command in delayed)
+	        {
+		        if (currentTime.EndValue >= -command.LiveTimeSpan.StartValue)
+		        {
+			        if (command.CanUndo)
+			        {
+				        AddStackCommand(command);
+			        }
+			        else
+			        {
+				        AddLiveCommand(command);
+			        }
+			        _toAddAfterDelay.Remove(command);
+		        }
+	        }
+        }
+
+        private void AddStackCommand(ICommand command)
+        {
+	        RemoveRedoCommands();
+            bool merged = AttemptToMerge(command);
 	        if (!merged)
 	        {
 		        _stack.Add(command);
 		        if (command.IsContinuous)
 		        {
-					command.LiveTimeSpan = MillisecondNumber.Create(LastTime.EndTicks, 1000); 
                     _liveCommands.Add(command);
 		        }
 
@@ -113,6 +141,16 @@ namespace NumbersAPI.CommandEngine
 		        command.Execute();
 	        }
         }
+        private void AddLiveCommand(ICommand command)
+        {
+	        if (command.IsContinuous)
+	        {
+		        _liveCommands.Add(command);
+	        }
+	        command.Execute();
+        }
+
+
         private void RemoveRedoCommands()
         {
 	        if (CanRedo)
@@ -163,18 +201,7 @@ namespace NumbersAPI.CommandEngine
 	        return result;
         }
 
-        private bool AddNewCommands()
-        {
-	        var result = false;
-	        foreach (var command in _toAdd)
-	        {
-		        result = true;
-                AddCommand(command);
-	        }
-	        return result;
-        }
-
-		public ICommand PreviousCommand() => CanUndo ? _stack[_stackIndex - 1] : default;
+        public ICommand PreviousCommand() => CanUndo ? _stack[_stackIndex - 1] : default;
 
 		public bool Undo()
 		{
@@ -243,7 +270,7 @@ namespace NumbersAPI.CommandEngine
 		{
             _liveCommands.Clear();
 			_stack.Clear();
-			_toAdd.Clear();
+			_toAddAfterDelay.Clear();
 			_toDelete.Clear();
 			_toCommit.Clear(); 
             _toTerminate.Clear();

@@ -139,7 +139,7 @@ namespace NumbersCore.Primitives
         {
 	        var val = Value;
 	        var len = val.Length;
-	        return (pointOnLine - val.Start) / len;
+	        return (pointOnLine + val.Start) / len;
         }
         public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
         public void InterpolateFrom(Number source, Number t, Number result) => Interpolate(source, this, t, result);

@@ -30,7 +30,9 @@ namespace Numbers.Commands
         {
 	        DomainMapper = domainMapper;
             CreateNumberCommand = new CreateNumberCommand(domainMapper.Domain, range);
-	    }
+            DefaultDuration = 2100;
+            DefaultDelay = -900;
+        }
 	    public AddSKNumberCommand(SKDomainMapper domainMapper, Number existingNumber) : base(domainMapper.SegmentAlongGuideline(existingNumber.Value))
 	    {
 		    DomainMapper = domainMapper;
@@ -68,15 +70,15 @@ namespace Numbers.Commands
 		    }
 	    }
 
-	    private double _t = 0;
+        private double _t = 0.001;
 	    public override void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
 	    {
 		    base.Update(currentTime, deltaTime);
-		    _t = LiveTimeSpan.RatioAt(currentTime.EndValue);
+		    _t = Math.Sin(LiveTimeSpan.RatioAt(currentTime.EndValue));
 		    CreateNumberCommand.Number.InterpolateFromOne(_targetRange, _t);
-	    }
+        }
 
-	    public override bool IsComplete() => _t >= 1.0;
+	    public override bool IsComplete() => Math.Abs(_t) >= 4.0;
 
 	    public override void Completed()
         {
