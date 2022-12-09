@@ -3,6 +3,7 @@ using NumbersAPI.CommandEngine;
 using NumbersAPI.Commands;
 using NumbersAPI.CoreCommands;
 using NumbersAPI.CoreTasks;
+using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
 namespace NumbersTests.CommandTests
@@ -80,13 +81,13 @@ namespace NumbersTests.CommandTests
 			var domainCommand = new CreateDomainCommand(_trait, 0, 10, -1000, 1000);
 			_stack.Do(domainCommand);
 
-            var command = new CreateNumberCommand(domainCommand.Domain, 100, 200);
-            _stack.Do(command);
-            Assert.AreEqual(2, _stack.UndoSize);
+			var command = new CreateNumberCommand(domainCommand.Domain, 100, 200);
+			_stack.Do(command);
+			Assert.AreEqual(2, _stack.UndoSize);
 			Assert.AreEqual(0, _stack.RedoSize);
 			Assert.AreEqual(100, command.Number.Focal.StartTickPosition);
 			Assert.AreEqual(200, command.Number.Focal.EndTickPosition);
-            _stack.Undo();
+			_stack.Undo();
 			Assert.AreEqual(1, _stack.UndoSize);
 			Assert.AreEqual(1, _stack.RedoSize);
 			Assert.AreEqual(0, command.Tasks.Count);
@@ -94,5 +95,26 @@ namespace NumbersTests.CommandTests
 			Assert.AreEqual(2, _stack.UndoSize);
 			Assert.AreEqual(1, command.Tasks.Count);
 		}
+
+		[TestMethod]
+		public void DelayCommandTests()
+		{
+			var domainCommand = new CreateDomainCommand(_trait, 0, 10, -1000, 1000);
+			_stack.Do(domainCommand);
+			var command = new CreateNumberCommand(domainCommand.Domain, 100, 200) {DefaultDelay = -500};
+			_stack.Do(command);
+			Assert.AreEqual(1, _stack.UndoSize);
+			Assert.AreEqual(0, _stack.RedoSize);
+            var time = MillisecondNumber.Create(0, 600);
+            _stack.Update(time, time);
+            Assert.AreEqual(2, _stack.UndoSize);
+            Assert.AreEqual(0, _stack.RedoSize);
+            _stack.Undo();
+            Assert.AreEqual(1, _stack.UndoSize);
+            Assert.AreEqual(1, _stack.RedoSize);
+            _stack.Redo();
+            Assert.AreEqual(2, _stack.UndoSize);
+            Assert.AreEqual(0, _stack.RedoSize);
+        }
     }
 }

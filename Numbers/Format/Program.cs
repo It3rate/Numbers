@@ -27,7 +27,7 @@ namespace Numbers.Format
         private SKWorkspaceMapper test3(MouseAgent mouseAgent)
         {
 	        Trait trait = Trait.CreateIn(Brain, "test3");
-	        long unitSize = 100;
+	        long unitSize = 64;
             var wm = new SKWorkspaceMapper(mouseAgent, 20, 20, 1000, 400);
             var guideline = new SKSegment(100,100,700,100);
             var unitSeg = guideline.SegmentAlongLine(0.4f, 0.6f);
