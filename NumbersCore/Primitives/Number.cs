@@ -141,7 +141,23 @@ namespace NumbersCore.Primitives
 	        var len = val.Length;
 	        return (pointOnLine + val.Start) / len;
         }
-        public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
+
+		public void ChangeDomain(Domain newDomain)
+		{
+			if(newDomain != Domain)
+			{
+				var value = Value;
+				Domain = newDomain; 
+				Value = value;
+			}
+		}
+		public static Number NormalizeTo(Number target, Domain domain)
+		{
+			var result = target.Clone();
+			result.ChangeDomain(domain);
+			return result;
+		}
+		public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
         public void InterpolateFrom(Number source, Number t, Number result) => Interpolate(source, this, t, result);
         public void InterpolateTo(Number target, Number t, Number result) => Interpolate(this, target, t, result);
         public static void InterpolateFromZero(Number target, Number t, Number result)
