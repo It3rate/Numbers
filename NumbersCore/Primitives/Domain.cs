@@ -50,7 +50,7 @@ namespace NumbersCore.Primitives
 	        BasisFocal = basisFocal;
 	        MinMaxFocal = minMaxFocal;
             BasisNumber = CreateNumber(basisFocal);
-            MinMaxNumber = minMaxFocal == default ? CreateNumber(Focal.MaxFocal) : CreateNumber(minMaxFocal);
+            MinMaxNumber = minMaxFocal == default ? CreateNumber(Focal.MinMaxFocal) : CreateNumber(minMaxFocal);
             Trait.DomainStore.Add(Id, this);
         }
 

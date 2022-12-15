@@ -2,7 +2,7 @@
 
 namespace NumbersCore.Primitives
 {
-	// **** All ops, history, sequences, equations should fit on traits as focals.
+    // **** All ops, history, sequences, equations should fit on traits as focals.
 
     // ** All operations can be reduced to one or more proportional moves, maybe (select what point(s) move relative to what, for what lengths and repeat)
     // **        operations can be reduced to equations using only select>move primitives where amounts are recorded in segments as well.
@@ -29,6 +29,19 @@ namespace NumbersCore.Primitives
     // Compare
     // Choose (can reduce unchosen segments)
 
+    public delegate void TransformEventHandler(object sender, ITransform e);
+    public interface ITransform : IMathElement
+    {
+	    Number Change { get; set; }
+	    event TransformEventHandler StartTransformEvent;
+	    event TransformEventHandler TickTransformEvent;
+	    event TransformEventHandler EndTransformEvent;
+
+	    void ApplyStart();
+	    void ApplyEnd();
+	    void ApplyPartial(long tickOffset);
+    }
+
     public class Transform : TransformBase
     {
 	    public override MathElementKind Kind => MathElementKind.Transform;
@@ -42,19 +55,6 @@ namespace NumbersCore.Primitives
 	    public override void ApplyEnd() { }
 	    public override void ApplyPartial(long tickOffset) { }
 
-    }
-
-    public delegate void TransformEventHandler(object sender, ITransform e);
-    public interface ITransform : IMathElement
-    {
-        Number Change { get; set; }
-        event TransformEventHandler StartTransformEvent;
-	    event TransformEventHandler TickTransformEvent;
-	    event TransformEventHandler EndTransformEvent;
-
-	    void ApplyStart();
-	    void ApplyEnd();
-	    void ApplyPartial(long tickOffset);
     }
 
     public abstract class TransformBase : ITransform

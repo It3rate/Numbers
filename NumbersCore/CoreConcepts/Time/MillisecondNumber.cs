@@ -4,12 +4,9 @@ namespace NumbersCore.CoreConcepts.Time
 {
 	public class MillisecondNumber : Number
     {
-        private static readonly MillisecondTimeDomain _millisecondTimeDomain = new MillisecondTimeDomain();
-
-        private MillisecondTimeDomain MillisecondTimeDomain => _millisecondTimeDomain;
         public override Domain Domain
         {
-	        get => MillisecondTimeDomain;
+	        get => MillisecondTimeDomain.MinMax;
 	        set { }
         }
 

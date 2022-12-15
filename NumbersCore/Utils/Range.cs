@@ -1,4 +1,5 @@
 ﻿using System;
+using NumbersCore.Primitives;
 
 namespace NumbersCore.Utils
 {
@@ -11,6 +12,7 @@ namespace NumbersCore.Utils
         public static readonly Range Umid = new Range(-0.5, 0.5);
         public static readonly Range MaxRange = new Range(double.MaxValue, double.MaxValue);
         public static readonly Range MinRange = new Range(double.MinValue, double.MinValue);
+        public static readonly double Tolerance = 0.000000001;
 
         public double Start { get; set; }
         public double End { get; set; }
@@ -49,8 +51,8 @@ namespace NumbersCore.Utils
 
         public Range Clone() => new Range(Start, End);
 
-        public double Min => Start < End ? Start : End;
-        public double Max => Start > End ? Start : End;
+        public double Min => Start >= End ? End : Start;
+        public double Max => End >= Start ? End : Start;
         public float MinF => (float)Min;
         public float MaxF => (float)Max;
         public double Length => Range.AbsLength(this);
@@ -64,10 +66,14 @@ namespace NumbersCore.Utils
         public Range ClampInner() => Range.ClampInner(this);
         public Range ClampOuter() => Range.ClampOuter(this);
         public Range Round() => Range.Round(this);
+        public Range PositiveDirection() => PositiveDirection(this);
+        public Range NegativeDirection() => NegativeDirection(this);
 
         public bool IsZero => End == 0 && Start == 0;
         public bool IsZeroLength => (End == Start);
-        public bool IsForward => End >= Start;
+        public bool IsForward => End - Start > Tolerance;
+        public bool IsBackward => Start - End > Tolerance;
+        public bool IsPoint => Length < Tolerance;
         public double Direction => End >= Start ? 1.0 : -1.0;
 
         // because everything is segments, can add 'prepositions' (before, after, between, entering, leaving, near etc)
@@ -86,6 +92,8 @@ namespace NumbersCore.Utils
         public static Range operator *(Range a, double value) => new Range(a.Start * value, a.End * value);
         public static Range operator /(Range a, double value) => new Range(value == 0 ? double.MaxValue : a.Start / value, value == 0 ? double.MaxValue : a.End / value);
 
+        public static Range PositiveDirection(Range value) => new Range(value.Min, value.Max);
+        public static Range NegativeDirection(Range value) => new Range(value.Max, value.Min);
         public static Range Negate(Range value) => -value;
         public static Range Add(Range left, Range right) => left + right;
         public static Range Subtract(Range left, Range right) => left - right;
@@ -159,6 +167,21 @@ namespace NumbersCore.Utils
         }
         public static Range Pow(Range value, double power) => Range.Pow(value, new Range(0.0, power));
         private static Range Scale(Range value, double factor) => new Range(factor * value.Start, factor * value.End);
+
+        public bool IsSameDirection(Range range) => Math.Abs(range.Direction - Direction) > Tolerance;
+        public bool FullyContains(Range toTest, bool includeEndpoints = true)
+        {
+	        bool result = false;
+	        if (IsSameDirection(toTest))
+	        {
+		        var pd = PositiveDirection();
+		        var pdTest = toTest.PositiveDirection();
+		        result = includeEndpoints ? pdTest.IsWithin(pd) : pdTest.IsBetween(pd);
+            }
+	        return result;
+        }
+
+
 
         public static bool operator ==(Range left, Range right) => left.End == right.End && left.Start == right.Start;
         public static bool operator !=(Range left, Range right) => left.End != right.End || left.Start != right.Start;

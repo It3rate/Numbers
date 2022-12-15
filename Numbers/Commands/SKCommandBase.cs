@@ -4,6 +4,7 @@ using Numbers.Utils;
 using NumbersAPI.CommandEngine;
 using NumbersAPI.Motion;
 using NumbersCore.CoreConcepts.Time;
+using NumbersCore.Primitives;
 
 namespace Numbers.Commands
 {
@@ -20,6 +21,7 @@ namespace Numbers.Commands
 	    public SKMapper Mapper { get; protected set; }
 	    public SKSegment Guideline { get; }
 	    public MouseAgent MouseAgent => (MouseAgent) Agent;
+        public Evaluation HaltEvaluation { get; }
 
 	    public SKCommandBase(SKSegment guideline)
 	    {
@@ -39,6 +41,8 @@ namespace Numbers.Commands
 	    {
 		    base.Update(currentTime, deltaTime);
 	    }
+
+	    public override bool IsComplete() => HaltEvaluation?.Result ?? true;
 
 	    public override void Completed()
 	    {

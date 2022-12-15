@@ -51,5 +51,7 @@
             // compare Numbers for the testFlag matches. (maybe just test all, then & with TestFlags)
 	        return Result;
         }
+
+        public bool TargetContainsSource() => Target.FullyContains(Source);
     }
 }

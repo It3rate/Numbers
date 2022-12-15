@@ -49,15 +49,15 @@ namespace Numbers.Commands
 
 		    if (Mapper == null)
 		    {
-			    _targetRange = CreateNumberCommand.Number.Value;
-			    CreateNumberCommand.Number.Value = new Range(0.0, 1.0);
+			    //_targetRange = CreateNumberCommand.Number.Value;
+			    //CreateNumberCommand.Number.Value = new Range(0.0, 1.0);
                 Mapper = new SKNumberMapper(MouseAgent, CreateNumberCommand.Number);
             }
 		    DomainMapper.AddNumberMapper(NumberMapper);
             MouseAgent.Workspace.AddElements(Number);
 	    }
 
-        private Range _targetRange;
+        //private Range _targetRange;
 
 	    public override void Unexecute()
 	    {
@@ -70,20 +70,20 @@ namespace Numbers.Commands
 		    }
 	    }
 
-        private double _t = 0.001;
-	    public override void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
-	    {
-		    base.Update(currentTime, deltaTime);
-		    _t = Math.Sin(LiveTimeSpan.RatioAt(currentTime.EndValue));
-		    CreateNumberCommand.Number.InterpolateFromOne(_targetRange, _t);
-        }
+     //   private double _t = 0.001;
+	    //public override void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
+	    //{
+		   // base.Update(currentTime, deltaTime);
+		   // _t = Math.Sin(LiveTimeSpan.RatioAt(currentTime.EndValue));
+		   // CreateNumberCommand.Number.InterpolateFromOne(_targetRange, _t);
+     //   }
 
-	    public override bool IsComplete() => Math.Abs(_t) >= 4.0;
+	    //public override bool IsComplete() => Math.Abs(_t) >= 4.0;
 
 	    public override void Completed()
         {
-	        _t = 1.0;
-	        CreateNumberCommand.Number.Value = _targetRange;
+	        //_t = 1.0;
+	        //CreateNumberCommand.Number.Value = _targetRange;
         }
     }
 }

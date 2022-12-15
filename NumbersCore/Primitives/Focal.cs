@@ -28,8 +28,10 @@ namespace NumbersCore.Primitives
 
 	    public static IFocal CreateZeroFocal(long ticks) { return Focal.CreateByValues(0, ticks); }
         public static IFocal CreateBalancedFocal(long halfTicks) { return Focal.CreateByValues(-halfTicks, halfTicks); }
-	    private static IFocal _maxFocal;
-	    public static IFocal MaxFocal => _maxFocal ?? (_maxFocal = Focal.CreateByValues(long.MinValue, long.MaxValue));
+        private static IFocal _minMaxFocal;
+        public static IFocal MinMaxFocal => _minMaxFocal ?? (_minMaxFocal = Focal.CreateByValues(long.MinValue, long.MaxValue));
+        private static IFocal _upMaxFocal;
+        public static IFocal UpMaxFocal => _upMaxFocal ?? (_upMaxFocal = Focal.CreateByValues(0, long.MaxValue));
 
     }
 }

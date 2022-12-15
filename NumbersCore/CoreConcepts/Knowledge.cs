@@ -19,7 +19,7 @@ namespace NumbersCore.CoreConcepts
 	    {
             // these typed domains will be loaded from a file or something.
 		    TimeTrait = TimeTrait.CreateIn(this);
-		    MillisecondTimeDomain = new MillisecondTimeDomain();
+		    MillisecondTimeDomain = MillisecondTimeDomain.MinMax;
         }
 
 	    public TimeTrait TimeTrait { get; private set; }

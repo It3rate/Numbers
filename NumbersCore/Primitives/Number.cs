@@ -151,12 +151,16 @@ namespace NumbersCore.Primitives
 				Value = value;
 			}
 		}
-		public static Number NormalizeTo(Number target, Domain domain)
+
+		public bool FullyContains(Number toTest, bool includeEndpoints = true) => Value.FullyContains(toTest.Value, includeEndpoints);
+		public Number AlignedDomainCopy(Number toCopy) => AlignToDomain(toCopy, Domain);
+		public static Number AlignToDomain(Number target, Domain domain)
 		{
 			var result = target.Clone();
 			result.ChangeDomain(domain);
 			return result;
 		}
+
 		public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
         public void InterpolateFrom(Number source, Number t, Number result) => Interpolate(source, this, t, result);
         public void InterpolateTo(Number target, Number t, Number result) => Interpolate(this, target, t, result);
