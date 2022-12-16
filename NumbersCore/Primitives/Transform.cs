@@ -1,4 +1,5 @@
-﻿using NumbersCore.Utils;
+﻿using NumbersCore.CoreConcepts.Counter;
+using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
@@ -29,37 +30,9 @@ namespace NumbersCore.Primitives
     // Compare
     // Choose (can reduce unchosen segments)
 
-    public delegate void TransformEventHandler(object sender, ITransform e);
-    public interface ITransform : IMathElement
+    public class Transform : ITransform
     {
-	    Number Change { get; set; }
-	    event TransformEventHandler StartTransformEvent;
-	    event TransformEventHandler TickTransformEvent;
-	    event TransformEventHandler EndTransformEvent;
-
-	    void ApplyStart();
-	    void ApplyEnd();
-	    void ApplyPartial(long tickOffset);
-    }
-
-    public class Transform : TransformBase
-    {
-	    public override MathElementKind Kind => MathElementKind.Transform;
-
-        public Transform(Selection source, Number change, TransformKind kind) : base(change, kind)
-        {
-	        Source = source;
-        }
-
-        public override void ApplyStart() { }
-	    public override void ApplyEnd() { }
-	    public override void ApplyPartial(long tickOffset) { }
-
-    }
-
-    public abstract class TransformBase : ITransform
-    {
-	    public abstract MathElementKind Kind { get; }
+	    public MathElementKind Kind => MathElementKind.Transform;
 
 	    public int Id { get; set; }
 	    public int CreationIndex => Id - (int)Kind - 1;
@@ -68,26 +41,29 @@ namespace NumbersCore.Primitives
         public TransformKind TransformKind { get; set; }
 	    public Selection Source { get; set; } // the object being transformed
 	    public Number Change { get; set; } // the amount to transform (can change per repeat)
-	    public Number Repeat { get; set; } // the number of times to repeat (zero means unlimited, ended only by evaluation) 
-	    public Number EvaluationTarget { get; set; } // the number to evaluate against to decide if complete
 
-        protected TransformBase(Number change, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
+	    public UpCounter Counter { get; } = new UpCounter(); // counts the number of repeats 
+	    public Evaluation HaltCondition { get; set; } // the evaluation that decides if the transform can continue
+
+        public Transform(Selection source, Number change, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
         {
+	        Source = source;
+	        Change = change;
+	        TransformKind = kind;
 	        Brain = change.Brain;
 	        Id = Brain.NextTransformId();
-	        TransformKind = kind;
-	        Change = change;
         }
 
         public event TransformEventHandler StartTransformEvent;
 	    public event TransformEventHandler TickTransformEvent;
 	    public event TransformEventHandler EndTransformEvent;
 
-	    public virtual void ApplyStart() { OnStartTransformEvent(this); }
-	    public virtual void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
-	    public virtual void ApplyEnd() { OnEndTransformEvent(this); }
+	    public void ApplyStart() { OnStartTransformEvent(this); Counter.AddOne();}
+	    public void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
+	    public void ApplyEnd() { OnEndTransformEvent(this); }
 
-	    public virtual bool Evaluate() => true;
+	    public bool Evaluate() => true;
+	    public bool IsComplete() => HaltCondition?.EvaluateFlags() ?? true;
 
 	    protected virtual void OnStartTransformEvent(ITransform e)
 	    {
@@ -103,6 +79,20 @@ namespace NumbersCore.Primitives
 	    {
 		    EndTransformEvent?.Invoke(this, e);
 	    }
+    }
+
+    public delegate void TransformEventHandler(object sender, ITransform e);
+    public interface ITransform : IMathElement
+    {
+	    Number Change { get; set; }
+	    event TransformEventHandler StartTransformEvent;
+	    event TransformEventHandler TickTransformEvent;
+	    event TransformEventHandler EndTransformEvent;
+
+	    void ApplyStart();
+	    void ApplyEnd();
+	    void ApplyPartial(long tickOffset);
+	    bool IsComplete();
     }
 
     public enum TransformKind

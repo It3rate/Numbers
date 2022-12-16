@@ -9,6 +9,7 @@
     [Flags]
     public enum EvalFlag
     {
+        None = 0,
         Trait,
         Domain,
         BasisFocal,
@@ -43,15 +44,23 @@
         public Number Source { get; }
         public Number Target { get; }
         public EvalFlag TestFlags { get; } = (EvalFlag) 0x7FFFFFFF;
-        public EvalFlag ResultFlags { get; } = 0;
-        public bool Result { get; }
+        public EvalFlag ResultFlags { get; private set; }
 
-        public bool Update()
+        /// <summary>
+        /// Tests all the flags set in TestFlags, sets the ResultFlags to the set bits.
+        /// </summary>
+        /// <returns>Returns true if any of the flags are set.</returns>
+        public bool EvaluateFlags()
         {
             // compare Numbers for the testFlag matches. (maybe just test all, then & with TestFlags)
-	        return Result;
+            ResultFlags = EvalFlag.None;
+
+            ResultFlags |= TargetContainsSource() ? EvalFlag.Contains : 0;
+
+            return (int)ResultFlags > 0;
         }
 
-        public bool TargetContainsSource() => Target.FullyContains(Source);
+
+        public bool TargetContainsSource() => Target?.FullyContains(Source) ?? false;
     }
 }

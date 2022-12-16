@@ -21,7 +21,7 @@ namespace Numbers.Commands
 	    public SKMapper Mapper { get; protected set; }
 	    public SKSegment Guideline { get; }
 	    public MouseAgent MouseAgent => (MouseAgent) Agent;
-        public Evaluation HaltEvaluation { get; }
+        public Evaluation HaltCondition { get; }
 
 	    public SKCommandBase(SKSegment guideline)
 	    {
@@ -42,7 +42,7 @@ namespace Numbers.Commands
 		    base.Update(currentTime, deltaTime);
 	    }
 
-	    public override bool IsComplete() => HaltEvaluation?.Result ?? true;
+	    public override bool IsComplete() => HaltCondition?.EvaluateFlags() ?? true;
 
 	    public override void Completed()
 	    {

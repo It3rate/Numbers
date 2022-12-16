@@ -152,7 +152,7 @@ namespace NumbersCore.Primitives
 			}
 		}
 
-		public bool FullyContains(Number toTest, bool includeEndpoints = true) => Value.FullyContains(toTest.Value, includeEndpoints);
+		public bool FullyContains(Number toTest, bool includeEndpoints = true) => toTest != null ? Value.FullyContains(toTest.Value, includeEndpoints) : false;
 		public Number AlignedDomainCopy(Number toCopy) => AlignToDomain(toCopy, Domain);
 		public static Number AlignToDomain(Number target, Domain domain)
 		{

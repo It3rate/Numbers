@@ -16,7 +16,19 @@ namespace NumbersCore.CoreConcepts.Counter
 		    set { }
 	    }
 
-	    protected UpCounter() : base(new Focal(0, 0)) { }
+	    public UpCounter() : base(new Focal(0, 0))
+	    {
+	    }
 
+	    public long AddOne()
+	    {
+		    Focal.EndTickPosition += 1;
+		    return Focal.EndTickPosition;
+	    }
+
+	    public void Reset()
+	    {
+		    Focal.EndTickPosition = 0;
+	    }
     }
 }
