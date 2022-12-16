@@ -36,12 +36,14 @@ namespace Numbers.Format
             var guideline2 = new SKSegment(100, 200, 700, 200);
             var dc2 = new AddSKDomainCommand(trait, 0, unitSize, -800, 800, guideline2, unitSeg);
             mouseAgent.Stack.Do(dc2);
-            var num = new AddSKNumberCommand(dc.DomainMapper, new Range(-1.5, 0.4));
+
+            var num = new AddSKNumberCommand(dc.DomainMapper, new Range(-1.5, 2.4));
+            mouseAgent.Stack.Do(num);
+
             var num2 = new AddSKNumberCommand(dc2.DomainMapper, new Range(-1.2, -1.4));
             num2.DefaultDelay = -600;
-            mouseAgent.Stack.Do(num);
             mouseAgent.Stack.Do(num2);
-            //stack.Undo();
+
             return wm;
         }
 

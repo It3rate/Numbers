@@ -46,6 +46,12 @@
         public EvalFlag TestFlags { get; } = (EvalFlag) 0x7FFFFFFF;
         public EvalFlag ResultFlags { get; private set; }
 
+        public Evaluation(Number source, Number target)
+        {
+	        Source = source;
+	        Target = target;
+        }
+
         /// <summary>
         /// Tests all the flags set in TestFlags, sets the ResultFlags to the set bits.
         /// </summary>

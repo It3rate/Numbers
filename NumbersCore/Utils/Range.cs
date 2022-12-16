@@ -168,7 +168,7 @@ namespace NumbersCore.Utils
         public static Range Pow(Range value, double power) => Range.Pow(value, new Range(0.0, power));
         private static Range Scale(Range value, double factor) => new Range(factor * value.Start, factor * value.End);
 
-        public bool IsSameDirection(Range range) => Math.Abs(range.Direction - Direction) > Tolerance;
+        public bool IsSameDirection(Range range) => Math.Abs(range.Direction + Direction) > Tolerance;
         public bool FullyContains(Range toTest, bool includeEndpoints = true)
         {
 	        bool result = false;
