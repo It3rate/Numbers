@@ -204,30 +204,86 @@ namespace NumbersCore.Primitives
             result.EndValue = (targetValue.End - sourceValue.End) * tValue.End + sourceValue.End;
         }
 
-        // segment comparison considers unot numbers to also have positive segments in the negative space, and
-        // unit numbers to be unot in its negative space. So two unit numbers that have a point on both ends of a range,
-        // can be considered an ordinary unot number. eg: [+++>....++>] == [....<---...]
+		// segment comparison considers unot numbers to also have positive segments in the negative space, and
+		// unit numbers to be unot in its negative space. So two unit numbers that have a point on both ends of a range,
+		// can be considered an ordinary unot number. eg: [+++>....++>] == [....<---...]
+		// This should also handle things like gt lt div0 etc
 
-        //  0000	Never			0			FALSE
-        //  0001	Both            A ^ B       AND
-        //  0010	Only A          A ^ !B      A AND NOT B
-        //  0011	A Maybe B       A           A
-        //  0100	Only B			!A ^ B      NOT A AND B
-        //  0101	B Maybe A       B           B
-        //  0110	One of          A xor B     XOR
-        //  0111	At least one    A v B       OR
-        //  1000	No one          A nor B     NOR
-        //  1001	Both or no one  A XNOR B    XNOR
-        //  1010	A or no one		!B          NOT B
-        //  1011	Not B alone     A v !B      A OR NOT B
-        //  1100	B or no one		!A          NOT A
-        //  1101	Not A alone		!A v B      NOT A OR B
-        //  1110	Not both        A nand B    NAND
-        //  1111	Always			1			TRUE
+		//  0000	Never			0			FALSE
+		//  0001	Both            A ^ B       AND
+		//  0010	Only A          A ^ !B      A AND NOT B
+		//  0011	A Maybe B       A           A
+		//  0100	Only B			!A ^ B      NOT A AND B
+		//  0101	B Maybe A       B           B
+		//  0110	One of          A xor B     XOR
+		//  0111	At least one    A v B       OR
+		//  1000	No one          A nor B     NOR
+		//  1001	Both or no one  A XNOR B    XNOR
+		//  1010	A or no one		!B          NOT B
+		//  1011	Not B alone     A v !B      A OR NOT B
+		//  1100	B or no one		!A          NOT A
+		//  1101	Not A alone		!A v B      NOT A OR B
+		//  1110	Not both        A nand B    NAND
+		//  1111	Always			1			TRUE
 
+		/*
+		function BooleanOperations()
+		{
+			this.Never = function(a, b) { return 0; };
+			this.And = function(a, b) { return a & b; };
+			this.LeftandNotRight = function(a, b) { return a & ~b; };
+			this.Left = function(a, b) { return a; };
+			this.NotLeftAndRight = function(a, b) { return ~a & b; };
+			this.Right = function(a, b) { return b; };
+			this.Xor = function(a, b) { return a ^ b; };
+			this.Or = function(a, b) { return a | b; };
+			this.Nor = function(a, b) { return ~(a | b); };
+			this.Xnor = function(a, b) { return ~(a ^ b); };
+			this.NotRight = function(a, b) { return ~b; };
+			this.LeftOrNotRight = function(a, b) { return a | ~b; };// implies
+			this.NotLeft = function(a, b) { return ~a; };
+			this.RightOrNotLeft = function(a, b) { return ~a | b; }; // implies
+			this.Nand = function(a, b) { return ~(a & b); };
+			this.Always = function(a, b) { return 1; };
+		}
 
+		*/
+		// use segments rather than ints
+		// convert values to first param's domain's context
+		// result in first params's domain
+			public int Zero(int a) { return 0; } // Null
+			public int Transfer(int a) { return a; }
+			public int Not(int a) { return ~a; }
+			public int Identity(int a) { return -1; }
 
-        public Number Clone()
+			public int Zero(int a, int b) { return 0; } // Null
+			public int And(int a, int b) { return a & b; }
+			public int A_GreaterThan_B(int a, int b) { return a & ~b; } // inhibition, div a/b. ab`
+			public int Transfer_A(int a, int b) { return a; }					// transfer
+			public int B_GreaterThan_A(int a, int b) { return ~a & b; } // inhibition, div b/a. a`b
+			public int Transfer_B(int a, int b) { return b; }					// transfer
+			public int Xor(int a, int b) { return a ^ b; }
+			public int Or(int a, int b) { return a | b; }
+
+			public int Nor(int a, int b) { return ~(a | b); }
+			public int Xnor(int a, int b) { return ~(a ^ b); } // equivalence, ==. (xy)`
+			public int Not_B(int a, int b) { return ~b; } // complement
+			public int A_Implies_B(int a, int b) { return a | ~b; } // implication (Not B alone)
+			public int Not_A(int a, int b) { return ~a; } // complement
+			public int B_Implies_A(int a, int b) { return b | ~a; } // implication (Not A alone)
+			public int Nand(int a, int b) { return ~(a & b); }
+			public int Identity(int a, int b) { return -1; }
+
+			public int Equals(int a, int b) { return ~(a ^ b); } // xnor
+			public int NotEquals(int a, int b) { return a ^ b; } // xor
+			public int GreaterThan(int a, int b) { return ~a & b; } // b > a
+			public int LessThan(int a, int b) { return a & ~b; } // a > b
+			public int GreaterThanOrEqual(int a, int b) { return ~a | b; } // a implies b
+			public int LessThanOrEqual(int a, int b) { return a | ~b; } // b implies a
+
+		
+
+		public Number Clone()
         {
 	        var result = new Number(Focal.Clone());
 	        Domain.AddNumber(result);
