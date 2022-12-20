@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="CommandTests\CreateCommandTests.cs" />
     <Compile Include="CoreTests\DomainTests.cs" />
+    <Compile Include="CoreTests\FocalBoolTests\FocalNotTests.cs" />
     <Compile Include="CoreTests\FocalTests.cs" />
     <Compile Include="MathF.cs" />
     <Compile Include="CoreTests\NumberTests.cs" />

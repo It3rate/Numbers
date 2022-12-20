@@ -34,4 +34,4 @@ namespace NumbersCore.Primitives
         public static IFocal UpMaxFocal => _upMaxFocal ?? (_upMaxFocal = Focal.CreateByValues(0, long.MaxValue));
 
     }
-}
+ }
