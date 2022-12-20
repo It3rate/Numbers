@@ -204,6 +204,29 @@ namespace NumbersCore.Primitives
             result.EndValue = (targetValue.End - sourceValue.End) * tValue.End + sourceValue.End;
         }
 
+        // segment comparison considers unot numbers to also have positive segments in the negative space, and
+        // unit numbers to be unot in its negative space. So two unit numbers that have a point on both ends of a range,
+        // can be considered an ordinary unot number. eg: [+++>....++>] == [....<---...]
+
+        //  0000	Never			0			FALSE
+        //  0001	Both            A ^ B       AND
+        //  0010	Only A          A ^ !B      A AND NOT B
+        //  0011	A Maybe B       A           A
+        //  0100	Only B			!A ^ B      NOT A AND B
+        //  0101	B Maybe A       B           B
+        //  0110	One of          A xor B     XOR
+        //  0111	At least one    A v B       OR
+        //  1000	No one          A nor B     NOR
+        //  1001	Both or no one  A XNOR B    XNOR
+        //  1010	A or no one		!B          NOT B
+        //  1011	Not B alone     A v !B      A OR NOT B
+        //  1100	B or no one		!A          NOT A
+        //  1101	Not A alone		!A v B      NOT A OR B
+        //  1110	Not both        A nand B    NAND
+        //  1111	Always			1			TRUE
+
+
+
         public Number Clone()
         {
 	        var result = new Number(Focal.Clone());

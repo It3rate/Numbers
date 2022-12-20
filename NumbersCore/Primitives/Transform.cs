@@ -42,7 +42,8 @@ namespace NumbersCore.Primitives
 	    public Selection Source { get; set; } // the object being transformed
 	    public Number Change { get; set; } // the amount to transform (can change per repeat)
 
-	    public UpCounter Counter { get; } = new UpCounter(); // counts the number of repeats 
+	    public bool IsActive { get; private set; }
+        public UpCounter Counter { get; } = new UpCounter(); // counts the number of repeats 
 	    public Evaluation HaltCondition { get; set; } // the evaluation that decides if the transform can continue
 
         public Transform(Selection source, Number change, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
@@ -58,9 +59,18 @@ namespace NumbersCore.Primitives
 	    public event TransformEventHandler TickTransformEvent;
 	    public event TransformEventHandler EndTransformEvent;
 
-	    public void ApplyStart() { OnStartTransformEvent(this); Counter.AddOne();}
+	    public void ApplyStart()
+	    {
+		    OnStartTransformEvent(this);
+		    IsActive = true;
+		    Counter.AddOne();
+	    }
 	    public void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
-	    public void ApplyEnd() { OnEndTransformEvent(this); }
+	    public void ApplyEnd()
+	    {
+		    OnEndTransformEvent(this);
+		    IsActive = false;
+	    }
 
 	    public bool Evaluate() => true;
 	    public bool IsComplete() => HaltCondition?.EvaluateFlags() ?? true;
