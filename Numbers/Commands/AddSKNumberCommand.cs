@@ -51,7 +51,7 @@ namespace Numbers.Commands
 		    {
 			    _targetNumber = CreateNumberCommand.Number.Clone();
 			    CreateNumberCommand.Number.Value = new Range(0.0, 1.0);
-                HaltCondition = new Evaluation(CreateNumberCommand.Number, _targetNumber);
+                HaltCondition = new Evaluation(CreateNumberCommand.Number, _targetNumber, FilterOperator.B_Implies_A);
                 Mapper = new SKNumberMapper(MouseAgent, CreateNumberCommand.Number);
 
             }

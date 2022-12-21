@@ -9,17 +9,16 @@ using System.Threading.Tasks;
 namespace NumbersTests.CoreTests.FocalBoolTests
 {
     [TestClass]
-    public class FocalNotTests
+    public class FocalNandTests
     {
         [TestMethod]
         public void NoOverlapTest()
         {
             IFocal p = new Focal(10, 20);
             IFocal q = new Focal(30, 40);
-            IFocal[] result = FocalBase.Not(p, q);
-            Assert.AreEqual(2, result.Length);
-            CollectionAssert.Contains(result, p);
-            CollectionAssert.Contains(result, q);
+            IFocal[] result = FocalBase.Nand(p, q);
+            Assert.AreEqual(1, result.Length);
+            Assert.AreEqual(p, result[0]);
         }
 
         [TestMethod]
@@ -27,10 +26,10 @@ namespace NumbersTests.CoreTests.FocalBoolTests
         {
             IFocal p = new Focal(10, 20);
             IFocal q = new Focal(15, 25);
-            IFocal[] result = FocalBase.Not(p, q);
-            Assert.AreEqual(1, result.Length);
-            Assert.AreEqual(10, result[0].StartTickPosition);
-            Assert.AreEqual(14, result[0].EndTickPosition);
+            IFocal[] result = FocalBase.Nand(p, q);
+            Assert.AreEqual(2, result.Length);
+            CollectionAssert.Contains(result, new Focal(10, 14));
+            CollectionAssert.Contains(result, new Focal(26, 20));
         }
 
         [TestMethod]
@@ -38,10 +37,10 @@ namespace NumbersTests.CoreTests.FocalBoolTests
         {
             IFocal p = new Focal(20, 30);
             IFocal q = new Focal(10, 15);
-            IFocal[] result = FocalBase.Not(p, q);
-            Assert.AreEqual(1, result.Length);
-            Assert.AreEqual(16, result[0].StartTickPosition);
-            Assert.AreEqual(30, result[0].EndTickPosition);
+            IFocal[] result = FocalBase.Nand(p, q);
+            Assert.AreEqual(2, result.Length);
+            CollectionAssert.Contains(result, new Focal(16, 30));
+            CollectionAssert.Contains(result, q);
         }
     }
 

@@ -138,7 +138,7 @@ namespace NumbersCore.Primitives
             return new Range(start, end);
         }
 
-        public static long MinStart(IFocal p, IFocal q) => MinStart(p, q);
+        public static long MinStart(IFocal p, IFocal q) => Math.Min(p.StartTickPosition, q.StartTickPosition);
         public static long MaxStart(IFocal p, IFocal q) => Math.Max(p.StartTickPosition, q.StartTickPosition);
         public static long MinEnd(IFocal p, IFocal q) => Math.Min(p.EndTickPosition, q.EndTickPosition);
         public static long MaxEnd(IFocal p, IFocal q) => Math.Max(p.EndTickPosition, q.EndTickPosition);
@@ -328,7 +328,7 @@ namespace NumbersCore.Primitives
 		        return new IFocal[] { new Focal(MaxStart(p, q), MinEnd(p, q)) };
 	        }
         }
-        public static IFocal[] Nand(IFocal p, IFocal q)
+        public static IFocal[] Nandx(IFocal p, IFocal q)
         {
             // Return the complement of the intersection of the two input IFocals as a new array of IFocals
             List<IFocal> result = new List<IFocal>();
@@ -348,6 +348,29 @@ namespace NumbersCore.Primitives
             }
             return result.ToArray();
         }
+        public static IFocal[] Nand(IFocal p, IFocal q)
+        {
+            if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
+            {
+                // p and q do not overlap, return p
+                return new IFocal[] { p };
+            }
+            else
+            {
+                // p and q overlap, return the "not" of the overlap
+                if (p.StartTickPosition < q.StartTickPosition)
+                {
+                    // p starts before q, return segments from p.Start to q.Start and from q.End to p.End
+                    return new IFocal[] { new Focal(p.StartTickPosition, q.StartTickPosition - 1), new Focal(q.EndTickPosition + 1, p.EndTickPosition) };
+                }
+                else
+                {
+                    // q starts before p, return segments from q.Start to p.Start and from p.End to q.End
+                    return new IFocal[] { new Focal(q.StartTickPosition, p.StartTickPosition - 1), new Focal(p.EndTickPosition + 1, q.EndTickPosition) };
+                }
+            }
+        }
+
         public static IFocal[] Always(IFocal p, IFocal q)
         {
             return new IFocal[] { new Focal(long.MinValue, long.MaxValue) };
