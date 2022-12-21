@@ -144,8 +144,43 @@ namespace NumbersCore.Primitives
         public static long MaxEnd(IFocal p, IFocal q) => Math.Max(p.EndTickPosition, q.EndTickPosition);
 
         // gtpChat generated
+        public static IFocal[] Never(IFocal p)
+        {
+	        return new IFocal[0];
+        }
+        public static IFocal[] Not(IFocal p)
+        {
+	        // If p starts at the beginning of the time frame and ends at the end, A is always true and the "not A" relationship is empty
+	        if (p.StartTickPosition == 0 && p.EndTickPosition == long.MaxValue)
+	        {
+		        return new IFocal[] { };
+	        }
+	        // If p starts at the beginning of the time frame and ends before the end, the "not A" relationship consists of a single interval from p.EndTickPosition + 1 to the end of the time frame
+	        else if (p.StartTickPosition == 0)
+	        {
+		        return new IFocal[] { new Focal(p.EndTickPosition + 1, long.MaxValue) };
+	        }
+	        // If p starts after the beginning of the time frame and ends at the end, the "not A" relationship consists of a single interval from the beginning of the time frame to p.StartTickPosition - 1
+	        else if (p.EndTickPosition == long.MaxValue)
+	        {
+		        return new IFocal[] { new Focal(0, p.StartTickPosition - 1) };
+	        }
+	        // If p starts and ends within the time frame, the "not A" relationship consists of two intervals: from the beginning of the time frame to p.StartTickPosition - 1, and from p.EndTickPosition + 1 to the end of the time frame
+	        else
+	        {
+		        return new IFocal[] { new Focal(0, p.StartTickPosition - 1), new Focal(p.EndTickPosition + 1, long.MaxValue) };
+	        }
+        }
+        public static IFocal[] Transfer(IFocal p)
+        {
+	        return new IFocal[] { p.Clone() };
+        }
+        public static IFocal[] Always(IFocal p)
+        {
+	        return new IFocal[] { Focal.MinMaxFocal.Clone()};
+        }
 
-        public static IFocal[] Zero(IFocal p, IFocal q)
+        public static IFocal[] Never(IFocal p, IFocal q)
         {
             return new IFocal[0];
         }
@@ -160,7 +195,36 @@ namespace NumbersCore.Primitives
                 return new IFocal[] { new Focal(MaxStart(p, q), MinEnd(p, q)) };
             }
         }
-
+        public static IFocal[] B_Inhibits_A(IFocal p, IFocal q)
+        {
+	        if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
+	        {
+		        return new IFocal[] { p };
+	        }
+	        else
+	        {
+		        return new IFocal[] { new Focal(p.StartTickPosition, q.StartTickPosition - 1) };
+	        }
+        }
+        public static IFocal[] Transfer_A(IFocal p, IFocal q)
+        {
+	        return new IFocal[] { p };
+        }
+        public static IFocal[] A_Inhibits_B(IFocal p, IFocal q)
+        {
+	        if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
+	        {
+		        return new IFocal[] { q };
+	        }
+	        else
+	        {
+		        return new IFocal[] { new Focal(q.StartTickPosition, p.StartTickPosition - 1) };
+	        }
+        }
+        public static IFocal[] Transfer_B(IFocal p, IFocal q)
+        {
+	        return new IFocal[] { q };
+        }
         public static IFocal[] Xor(IFocal p, IFocal q)
         {
             // Return the symmetric difference of the two input segments as a new array of segments
@@ -234,7 +298,36 @@ namespace NumbersCore.Primitives
             }
             return result.ToArray();
         }
-
+        public static IFocal[] Not_B(IFocal p, IFocal q)
+        {
+	        return Not(q);
+        }
+        public static IFocal[] B_Implies_A(IFocal p, IFocal q)
+        {
+	        if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
+	        {
+		        return new IFocal[] { };
+	        }
+	        else
+	        {
+		        return new IFocal[] { new Focal(MaxStart(p, q), MinEnd(p, q)) };
+	        }
+        }
+        public static IFocal[] Not_A(IFocal p, IFocal q)
+        {
+	        return Not(p);
+        }
+        public static IFocal[] A_Implies_B(IFocal p, IFocal q)
+        {
+	        if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
+	        {
+		        return new IFocal[] { };
+	        }
+	        else
+	        {
+		        return new IFocal[] { new Focal(MaxStart(p, q), MinEnd(p, q)) };
+	        }
+        }
         public static IFocal[] Nand(IFocal p, IFocal q)
         {
             // Return the complement of the intersection of the two input IFocals as a new array of IFocals
@@ -260,112 +353,52 @@ namespace NumbersCore.Primitives
             return new IFocal[] { new Focal(long.MinValue, long.MaxValue) };
         }
 
-        public static IFocal[] Not(IFocal p, IFocal q)
-        {
-            if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
-            {
-                // p and q do not overlap, return them both
-                return new IFocal[] { p, q };
-            }
-            else
-            {
-                // p and q overlap, return the "not" of the overlap
-                if (p.StartTickPosition < q.StartTickPosition)
-                {
-                    // p starts before q, return segment from p.Start to q.Start
-                    return new IFocal[] { new Focal(p.StartTickPosition, q.StartTickPosition - 1) };
-                }
-                else
-                {
-                    // q starts before p, return segment from q.End to p.End
-                    return new IFocal[] { new Focal(q.EndTickPosition + 1, p.EndTickPosition) };
-                }
-            }
-        }
 
+        //  0000	Never			0			FALSE
+        //  0001	Both            A ^ B       AND
+        //  0010	Only A          A ^ !B      A AND NOT B
+        //  0011	A Maybe B       A           A
+        //  0100	Only B			!A ^ B      NOT A AND B
+        //  0101	B Maybe A       B           B
+        //  0110	One of          A xor B     XOR
+        //  0111	At least one    A v B       OR
+        //  1000	No one          A nor B     NOR
+        //  1001	Both or no one  A XNOR B    XNOR
+        //  1010	A or no one		!B          NOT B
+        //  1011	Not B alone     A v !B      A OR NOT B
+        //  1100	B or no one		!A          NOT A
+        //  1101	Not A alone		!A v B      NOT A OR B
+        //  1110	Not both        A nand B    NAND
+        //  1111	Always			1			TRUE
 
-        public static IFocal[] OrNot(IFocal p, IFocal q)
-        {
-            // Return the union of the two input IFocals, with the complement of q in p
-            List<IFocal> result = new List<IFocal>();
-            IFocal[] andResult = And(p, q);
-            if (andResult.Length == 0)
-            {
-                // If the IFocals do not intersect, return the union of the IFocals as a single IFocal
-                result.Add(new Focal(MinStart(p, q), MaxEnd(p, q)));
-            }
-            else
-            {
-                // If the IFocals intersect, return the complement of the intersection in p and q
-                IFocal[] complement1 = Nor(p, andResult[0]);
-                IFocal[] complement2 = Nor(q, andResult[0]);
-                result.AddRange(complement1);
-                result.AddRange(complement2);
-            }
-            return result.ToArray();
-        }
-        public static IFocal[] Transfer(IFocal p, IFocal q)
-        {
-            // Return the complement of the intersection of the two input IFocals as a new array of IFocals
-            return Nor(p, q);
-        }
-        public static IFocal[] Implication(IFocal p, IFocal q)
-        {
-            // Return the union of the two input IFocals, with the complement of p in q
-            List<IFocal> result = new List<IFocal>();
-            IFocal[] andResult = And(p, q);
-            if (andResult.Length == 0)
-            {
-                // If the IFocals do not intersect, return the union of the IFocals as a single IFocal
-                result.Add(new Focal(MinStart(p, q), MaxEnd(p, q)));
-            }
-            else
-            {
-                // If the IFocals intersect, return the complement of the intersection in p and q
-                IFocal[] complement1 = Nor(p, andResult[0]);
-                IFocal[] complement2 = Nor(q, andResult[0]);
-                result.AddRange(complement1);
-                result.AddRange(complement2);
-            }
-            return result.ToArray();
-        }
-        public static IFocal[] AndNot(IFocal p, IFocal q)
-        {
-            // Return the difference of p and q as a new array of IFocals
-            List<IFocal> result = new List<IFocal>();
-            IFocal[] andResult = And(p, q);
-            if (andResult.Length == 0)
-            {
-                // If the IFocals do not intersect, return p as a single IFocal
-                result.Add(p);
-            }
-            else
-            {
-                // If the IFocals intersect, return the complement of the intersection in p
-                IFocal[] complement = Nor(p, andResult[0]);
-                result.AddRange(complement);
-            }
-            return result.ToArray();
-        }
+        public long Never(long a) { return 0; } // Null
+        public long Transfer(long a) { return a; }
+        public long Not(long a) { return ~a; }
+        public long Identity(long a) { return -1; }
 
-
-        public long Zero(long a, long b) { return 0; } // Null
+        public long Never(long a, long b) { return 0; } // Null
         public long And(long a, long b) { return a & b; }
-        public long A_GreaterThan_B(long a, long b) { return a & ~b; } // inhibition, div a/b. ab`
+        public long B_Inhibits_A(long a, long b) { return a & ~b; } // inhibition, div a/b. ab`
         public long Transfer_A(long a, long b) { return a; }                   // transfer
-        public long B_GreaterThan_A(long a, long b) { return ~a & b; } // inhibition, div b/a. a`b
+        public long A_Inhibits_B(long a, long b) { return ~a & b; } // inhibition, div b/a. a`b
         public long Transfer_B(long a, long b) { return b; }                   // transfer
         public long Xor(long a, long b) { return a ^ b; }
         public long Or(long a, long b) { return a | b; }
-
         public long Nor(long a, long b) { return ~(a | b); }
         public long Xnor(long a, long b) { return ~(a ^ b); } // equivalence, ==. (xy)`
         public long Not_B(long a, long b) { return ~b; } // complement
-        public long A_Implies_B(long a, long b) { return a | ~b; } // implication (Not B alone)
+        public long B_Implies_A(long a, long b) { return a | ~b; } // implication (Not B alone)
         public long Not_A(long a, long b) { return ~a; } // complement
-        public long B_Implies_A(long a, long b) { return b | ~a; } // implication (Not A alone)
+        public long A_Implies_B(long a, long b) { return b | ~a; } // implication (Not A alone)
         public long Nand(long a, long b) { return ~(a & b); }
-        public long Identity(long a, long b) { return -1; }
+        public long Always(long a, long b) { return -1; }
+
+        public long Equals(long a, long b) { return ~(a ^ b); } // xnor
+        public long NotEquals(long a, long b) { return a ^ b; } // xor
+        public long GreaterThan(long a, long b) { return ~a & b; } // b > a
+        public long LessThan(long a, long b) { return a & ~b; } // a > b
+        public long GreaterThanOrEqual(long a, long b) { return ~a | b; } // a implies b
+        public long LessThanOrEqual(long a, long b) { return a | ~b; } // b implies a
 
 
 

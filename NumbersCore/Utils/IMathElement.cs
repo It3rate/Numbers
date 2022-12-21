@@ -19,7 +19,7 @@
 	    Relation   = 0x04000000,
         Number     = 0x08000000,
 	    Transform  = 0x10000000,
-        Selection  = 0x20000000,
-	    Focal      = 0x40000000,
+	    NumberSet  = 0x20000000,
+        Focal      = 0x40000000,
     }
-}
+}  
