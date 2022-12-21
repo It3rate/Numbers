@@ -29,6 +29,7 @@ namespace NumbersCore.Primitives
         public Number MinMaxNumber { get; protected set; }
 
         public readonly Dictionary<int, Number> NumberStore = new Dictionary<int, Number>();
+        public readonly Dictionary<int, NumberSet> NumberSetStore = new Dictionary<int, NumberSet>();
 
         public bool BasisIsReciprocal { get; set; }// True when ticks are larger than the unit basis
 
@@ -89,6 +90,25 @@ namespace NumbersCore.Primitives
         {
 	        number.Domain = null;
 	        return NumberStore.Remove(number.Id);
+        }
+
+
+        private int _numberSetCounter = 1 + (int)MathElementKind.NumberSet;
+        public int NextNumberSetId() => _numberSetCounter++ + Id;
+        public NumberSet AddNumberSet(NumberSet numberSet, bool addToStore = true)
+        {
+	        numberSet.Domain = this;
+	        numberSet.Id = numberSet.Id == 0 ? NextNumberSetId() : numberSet.Id;
+	        if (addToStore)
+	        {
+                NumberSetStore[numberSet.Id] = numberSet;
+	        }
+	        return numberSet;
+        }
+        public bool RemoveNumberSet(NumberSet numberSet)
+        {
+	        numberSet.Domain = null;
+	        return NumberSetStore.Remove(numberSet.Id);
         }
 
         public Number Zero() => CreateNumber(BasisFocal.StartTickPosition, BasisFocal.StartTickPosition);

@@ -22,6 +22,7 @@ namespace Numbers.Mappers
 	    {
 	    }
 
+        public void ResetNumber(Number number) => MathElement = number;
         public void EnsureSegment()
         {
 	        var val = Number.ValueInRenderPerspective;

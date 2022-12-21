@@ -20,7 +20,7 @@ namespace Numbers.Mappers
         protected SKCanvas Canvas => Renderer.Canvas;
         protected CorePens Pens => Renderer.Pens;
 
-        public IMathElement MathElement { get; private set; }
+        public IMathElement MathElement { get; protected set; }
         public SKSegment Guideline { get; private set; } = new SKSegment(0,0,1,1);
 
         public SKPoint StartPoint

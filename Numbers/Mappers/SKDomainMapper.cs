@@ -17,7 +17,8 @@ namespace Numbers.Mappers
 	    private Dictionary<int, SKNumberMapper> NumberMappers = new Dictionary<int, SKNumberMapper>();
 	    public SKNumberMapper NumberMapper(Number number) => GetOrCreateNumberMapper(number);
 	    public SKNumberMapper NumberMapper(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
-        //public SKNumberMapper NumberMapper(int numId) => GetNumberMapper(numId);
+
+	    private Dictionary<int, SKNumberSetMapper> NumberSetMappers = new Dictionary<int, SKNumberSetMapper>();
 
         private SKNumberMapper BasisMapper => NumberMapper(Domain.BasisNumber);
 	    public Number BasisNumber => Domain.BasisNumber;
@@ -86,6 +87,15 @@ namespace Numbers.Mappers
 	        }
 	        return (SKNumberMapper)result;
         }
+        public SKNumberSetMapper GetOrCreateNumberSetMapper(NumberSet numberSet)
+        {
+	        if (!NumberSetMappers.TryGetValue(numberSet.Id, out SKNumberSetMapper result))
+	        {
+		        result = new SKNumberSetMapper(Agent, numberSet);
+                NumberSetMappers[numberSet.Id] = result;
+	        }
+	        return result;
+        }
 
         public override void Reset(SKPoint startPoint, SKPoint endPoint)
 	    {
@@ -129,8 +139,9 @@ namespace Numbers.Mappers
 			    DrawUnit();
 			    DrawTicks();
 			    DrawMarkers();
-                DrawNumbers();
-		    }
+			    DrawNumbers();
+			    DrawNumberSets();
+            }
 	    }
         private void DrawUnit()
 	    {
@@ -138,34 +149,47 @@ namespace Numbers.Mappers
 		    {
 			    NumberMapper(Domain.BasisNumber).DrawUnit();
             }
-	    }
+        }
         private void DrawNumbers()
         {
 	        var offset = ShowNumberOffsets ? 1f : 0f;
 	        var step = ShowNumberOffsets ? 1f : 0f;
 	        foreach (var numberId in ValidNumberIds)
 	        {
-                offset += step;
-		        var nm = NumberMapper(numberId);
-		        if (nm != null)
-		        {
-			        var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
-			        nm.DrawNumber(offset, pen); // background
+		        offset += step;
+		        DrawNumber(NumberMapper(numberId), offset);
+	        }
+        }
+        private void DrawNumberSets()
+        {
+	        foreach (var numSet in Domain.NumberSetStore.Values)
+	        {
+		        var nsm = GetOrCreateNumberSetMapper(numSet);
+                nsm.DrawNumberSet();
+	        }
+        }
 
-			        if (Domain.IsUnitPerspective)
-			        {
-				        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
-				        nm.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
-			        }
-			        else
-			        {
-				        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
-				        nm.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
-			        }
+        // Draws number with Domain relevant coloring
+        public void DrawNumber(SKNumberMapper nm, float offset)
+        {
+	        if (nm != null)
+	        {
+		        var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
+		        nm.DrawNumber(offset, pen); // background
+
+		        if (Domain.IsUnitPerspective)
+		        {
+			        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
+			        nm.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
+		        }
+		        else
+		        {
+			        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
+			        nm.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
 		        }
 	        }
-
         }
+
         private void DrawMarkers()
         {
 	        if (ShowBasisMarkers)
