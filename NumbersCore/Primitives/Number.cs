@@ -253,10 +253,12 @@ namespace NumbersCore.Primitives
         // result in first params's domain
 
         public NumberSet And(Number q) => new NumberSet(Domain, FocalBase.And(Focal, q.Focal));
+        public void And(Number q, NumberSet result) => result.Reset(FocalBase.And(Focal, q.Focal));
         public NumberSet Or(Number q) => new NumberSet(Domain, FocalBase.Or(Focal, q.Focal));
+        public void Or(Number q, NumberSet result) => result.Reset(FocalBase.Or(Focal, q.Focal));
 
 
-		public Number Clone()
+        public Number Clone()
         {
 	        var result = new Number(Focal.Clone());
 	        Domain.AddNumber(result);

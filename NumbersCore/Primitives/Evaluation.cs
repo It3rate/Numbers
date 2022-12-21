@@ -43,6 +43,7 @@
 
         public Number Source { get; }
         public Number Target { get; }
+        public NumberSet Result { get; }
         public EvalFlag TestFlags { get; } = (EvalFlag) 0x7FFFFFFF;
         public EvalFlag ResultFlags { get; private set; }
 
