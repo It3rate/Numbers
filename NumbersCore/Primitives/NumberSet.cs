@@ -40,6 +40,40 @@ namespace NumbersCore.Primitives
         public void Add(IFocal focal) => Focals.Add(focal);
         public void Remove(IFocal focal) => Focals.Remove(focal);
 
+        public void RemoveOverlaps()
+        {
+            if (Focals.Count > 1)
+            {
+                List<IFocal> result = new List<IFocal>();
+                // Sort the list by start tick position
+                Focals.Sort((a, b) => a.StartTickPosition.CompareTo(b.StartTickPosition));
+
+                long start = Focals[0].StartTickPosition;
+                long end = Focals[0].EndTickPosition;
+                for (int i = 1; i < Focals.Count; i++)
+                {
+                    // Check for overlap
+                    if (Focals[i].StartTickPosition <= end)
+                    {
+                        // Overlap, merge the ranges
+                        end = Math.Max(end, Focals[i].EndTickPosition);
+                    }
+                    else
+                    {
+                        // No overlap, add the current non-overlapping range to the result list
+                        result.Add(new Focal(start, end));
+                        start = Focals[i].StartTickPosition;
+                        end = Focals[i].EndTickPosition;
+                    }
+                }
+                result.Add(new Focal(start, end));
+
+                Focals.Clear();
+                Focals.AddRange(result);
+            }
+        }
+
+
         public void Reset(IFocal[] focals)
         {
             Focals.Clear();
@@ -52,6 +86,16 @@ namespace NumbersCore.Primitives
 	        {
 		        yield return Domain.CreateNumber(focal, false);
 	        }
+        }
+
+        public Number SumAll()
+        {
+            var result = Domain.CreateNumber(new Focal(0,0));
+            foreach (var number in Numbers())
+            {
+                result.Add(number);
+            }
+            return result;
         }
 
 

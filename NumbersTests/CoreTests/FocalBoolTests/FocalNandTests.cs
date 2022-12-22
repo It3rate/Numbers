@@ -11,37 +11,37 @@ namespace NumbersTests.CoreTests.FocalBoolTests
     [TestClass]
     public class FocalNandTests
     {
-        [TestMethod]
-        public void NoOverlapTest()
-        {
-            IFocal p = new Focal(10, 20);
-            IFocal q = new Focal(30, 40);
-            IFocal[] result = FocalBase.Nand(p, q);
-            Assert.AreEqual(1, result.Length);
-            Assert.AreEqual(p, result[0]);
-        }
+        //[TestMethod]
+        //public void NoOverlapTest()
+        //{
+        //    IFocal p = new Focal(10, 20);
+        //    IFocal q = new Focal(30, 40);
+        //    IFocal[] result = FocalBase.Nand(p, q);
+        //    Assert.AreEqual(1, result.Length);
+        //    Assert.AreEqual(p, result[0]);
+        //}
 
-        [TestMethod]
-        public void OverlapTest()
-        {
-            IFocal p = new Focal(10, 20);
-            IFocal q = new Focal(15, 25);
-            IFocal[] result = FocalBase.Nand(p, q);
-            Assert.AreEqual(2, result.Length);
-            CollectionAssert.Contains(result, new Focal(10, 14));
-            CollectionAssert.Contains(result, new Focal(26, 20));
-        }
+        //[TestMethod]
+        //public void OverlapTest()
+        //{
+        //    IFocal p = new Focal(10, 20);
+        //    IFocal q = new Focal(15, 25);
+        //    IFocal[] result = FocalBase.Nand(p, q);
+        //    Assert.AreEqual(2, result.Length);
+        //    CollectionAssert.Contains(result, new Focal(10, 14));
+        //    CollectionAssert.Contains(result, new Focal(26, 20));
+        //}
 
-        [TestMethod]
-        public void qBeforePTest()
-        {
-            IFocal p = new Focal(20, 30);
-            IFocal q = new Focal(10, 15);
-            IFocal[] result = FocalBase.Nand(p, q);
-            Assert.AreEqual(2, result.Length);
-            CollectionAssert.Contains(result, new Focal(16, 30));
-            CollectionAssert.Contains(result, q);
-        }
+        //[TestMethod]
+        //public void qBeforePTest()
+        //{
+        //    IFocal p = new Focal(20, 30);
+        //    IFocal q = new Focal(10, 15);
+        //    IFocal[] result = FocalBase.Nand(p, q);
+        //    Assert.AreEqual(2, result.Length);
+        //    CollectionAssert.Contains(result, new Focal(16, 30));
+        //    CollectionAssert.Contains(result, q);
+        //}
     }
 
 }
