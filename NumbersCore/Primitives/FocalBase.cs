@@ -16,6 +16,8 @@ namespace NumbersCore.Primitives
         int Direction { get; }
         bool IsUnitPerspective { get; }
         bool IsUnotPerspective { get; }
+        long Min { get; }
+        long Max { get; }
 
         FocalPositions FocalPositions { get; set; }
         void Reset(long start, long end);
@@ -137,11 +139,21 @@ namespace NumbersCore.Primitives
             var end = (EndTickPosition - basis.StartTickPosition) / len;
             return new Range(start, end);
         }
+        public long Min => StartTickPosition <= EndTickPosition ? StartTickPosition : EndTickPosition;
+        public long Max => StartTickPosition >= EndTickPosition ? StartTickPosition : EndTickPosition;
 
+        public static long MinPosition(IFocal p, IFocal q) => Math.Min(p.Min, q.Min);
+        public static long MaxPosition(IFocal p, IFocal q) => Math.Max(p.Max, q.Max);
         public static long MinStart(IFocal p, IFocal q) => Math.Min(p.StartTickPosition, q.StartTickPosition);
         public static long MaxStart(IFocal p, IFocal q) => Math.Max(p.StartTickPosition, q.StartTickPosition);
         public static long MinEnd(IFocal p, IFocal q) => Math.Min(p.EndTickPosition, q.EndTickPosition);
         public static long MaxEnd(IFocal p, IFocal q) => Math.Max(p.EndTickPosition, q.EndTickPosition);
+        public static IFocal Overlap(IFocal p, IFocal q)
+        {
+            var start = Math.Max(p.Min, q.Min);
+            var end = Math.Min(p.Max, q.Max);
+            return (start >= end) ? new Focal(0, 0) : new Focal(start, end);
+        }
 
         // gtpChat generated
         public static IFocal[] Never(IFocal p)
@@ -350,30 +362,25 @@ namespace NumbersCore.Primitives
         }
         public static IFocal[] Nand(IFocal p, IFocal q)
         {
-            if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
+            IFocal[] result;
+            var overlap = Overlap(p, q);
+            if(overlap.LengthInTicks == 0)
             {
-                // p and q do not overlap, return p
-                return new IFocal[] { p };
+                result = new IFocal[] { Focal.MinMaxFocal.Clone() };
             }
             else
             {
-                // p and q overlap, return the "not" of the overlap
-                if (p.StartTickPosition < q.StartTickPosition)
-                {
-                    // p starts before q, return segments from p.Start to q.Start and from q.End to p.End
-                    return new IFocal[] { new Focal(p.StartTickPosition, q.StartTickPosition - 1), new Focal(q.EndTickPosition + 1, p.EndTickPosition) };
-                }
-                else
-                {
-                    // q starts before p, return segments from q.Start to p.Start and from p.End to q.End
-                    return new IFocal[] { new Focal(q.StartTickPosition, p.StartTickPosition - 1), new Focal(p.EndTickPosition + 1, q.EndTickPosition) };
-                }
+                result = new IFocal[]
+                { 
+                    new Focal(long.MinValue, overlap.StartTickPosition),
+                    new Focal(overlap.EndTickPosition, long.MaxValue)
+                };
             }
+            return result;
         }
-
         public static IFocal[] Always(IFocal p, IFocal q)
         {
-            return new IFocal[] { new Focal(long.MinValue, long.MaxValue) };
+            return new IFocal[] { Focal.MinMaxFocal.Clone() };
         }
 
 

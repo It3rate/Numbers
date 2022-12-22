@@ -33,11 +33,12 @@ namespace NumbersCore.Primitives
         {
 	        Domain = domain;
 	        Focals.AddRange(focals);
+            RemoveOverlaps();
         }
 
         public IFocal[] GetFocals() => Focals.ToArray();
         public int Count => Focals.Count;
-        public void Add(IFocal focal) => Focals.Add(focal);
+        public void Add(IFocal focal) { Focals.Add(focal); RemoveOverlaps(); }
         public void Remove(IFocal focal) => Focals.Remove(focal);
 
         public void RemoveOverlaps()
