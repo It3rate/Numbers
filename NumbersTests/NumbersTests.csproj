@@ -52,6 +52,7 @@
     <Compile Include="CommandTests\CreateCommandTests.cs" />
     <Compile Include="CoreTests\DomainTests.cs" />
     <Compile Include="CoreTests\FocalBoolTests\FocalNandTests.cs" />
+    <Compile Include="CoreTests\FocalBoolTests\FocalOrTests.cs" />
     <Compile Include="CoreTests\FocalTests.cs" />
     <Compile Include="CoreTests\NumberSetTests.cs" />
     <Compile Include="MathF.cs" />
