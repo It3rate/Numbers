@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31205.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumbersUI", "Numbers\NumbersUI.csproj", "{3229F532-8F6A-4EC6-9DBA-C1B5BFAE6FAE}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumbersAPI", "NumbersAPI\NumbersAPI.csproj", "{DB7D67AA-69FF-4429-B623-32B694EF7251}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Concepts", "Concepts\Concepts.csproj", "{322C713B-BA0F-4458-A0DF-68122CCE1DCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathDemo", "MathDemo\MathDemo.csproj", "{A6CC309B-94E8-4817-8148-8EA1616F3FBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{322C713B-BA0F-4458-A0DF-68122CCE1DCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{322C713B-BA0F-4458-A0DF-68122CCE1DCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{322C713B-BA0F-4458-A0DF-68122CCE1DCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6CC309B-94E8-4817-8148-8EA1616F3FBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6CC309B-94E8-4817-8148-8EA1616F3FBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6CC309B-94E8-4817-8148-8EA1616F3FBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6CC309B-94E8-4817-8148-8EA1616F3FBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

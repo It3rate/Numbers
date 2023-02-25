@@ -13,7 +13,7 @@ using Numbers.Renderer;
 using NumbersAPI.Motion;
 using NumbersCore.Primitives;
 
-namespace Numbers
+namespace MathDemo
 {
     public partial class CoreForm : Form
     {
@@ -40,7 +40,7 @@ namespace Numbers
             KeyPreview = true;
 
             _workspace = new Workspace(Brain.ActiveBrain);
-            _mouseAgent = new Agent.MouseAgent(_workspace, _control, _renderer);
+            _mouseAgent = new MouseAgent(_workspace, _control, _renderer);
             _runner = _mouseAgent.Runner;
             _ = Execute(null, 50);
         }
