@@ -150,12 +150,18 @@ namespace NumbersCore.Primitives
         public static long MaxEnd(IFocal p, IFocal q) => Math.Max(p.EndTickPosition, q.EndTickPosition);
         public static IFocal Overlap(IFocal p, IFocal q)
         {
-            var start = Math.Max(p.Min, q.Min);
-            var end = Math.Min(p.Max, q.Max);
-            return (start >= end) ? new Focal(0, 0) : new Focal(start, end);
+	        var start = Math.Max(p.Min, q.Min);
+	        var end = Math.Min(p.Max, q.Max);
+	        return (start >= end) ? new Focal(0, 0) : new Focal(start, end);
+        }
+        public static IFocal Extent(IFocal p, IFocal q)
+        {
+	        var start = Math.Min(p.Min, q.Min);
+	        var end = Math.Max(p.Max, q.Max);
+	        return new Focal(start, end);
         }
 
-        // gtpChat generated
+        // Q. Should direction be preserved in a bool operation?
         public static IFocal[] Never(IFocal p)
         {
 	        return new IFocal[0];
@@ -198,14 +204,8 @@ namespace NumbersCore.Primitives
         }
         public static IFocal[] And(IFocal p, IFocal q)
         {
-            if (p.EndTickPosition < q.StartTickPosition || q.EndTickPosition < p.StartTickPosition)
-            {
-                return new IFocal[0];
-            }
-            else
-            {
-                return new IFocal[] { new Focal(MaxStart(p, q), MinEnd(p, q)) };
-            }
+	        var overlap = Overlap(p, q);
+	        return (overlap.LengthInTicks == 0) ? new IFocal[0] : new IFocal[] {overlap};
         }
         public static IFocal[] B_Inhibits_A(IFocal p, IFocal q)
         {
@@ -260,14 +260,8 @@ namespace NumbersCore.Primitives
         }
         public static IFocal[] Or(IFocal p, IFocal q)
         {
-            if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
-            {
-                return new IFocal[] { p, q };
-            }
-            else
-            {
-                return new IFocal[] { new Focal(MinStart(p, q), MaxEnd(p, q)) };
-            }
+	        var overlap = Overlap(p, q);
+	        return (overlap.LengthInTicks == 0) ? new IFocal[] {p, q} : new IFocal[] {Extent(p, q)};
         }
         public static IFocal[] Nor(IFocal p, IFocal q)
         {

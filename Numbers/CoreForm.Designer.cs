@@ -36,7 +36,7 @@ namespace Numbers
             // 
             this.corePanel.Location = new System.Drawing.Point(0, 65);
             this.corePanel.Name = "corePanel";
-            this.corePanel.Size = new System.Drawing.Size(1792, 1071);
+            this.corePanel.Size = new System.Drawing.Size(1920, 1080);
             this.corePanel.TabIndex = 0;
             // 
             // CoreForm
