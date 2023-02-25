@@ -31,7 +31,7 @@ namespace Numbers.Agent
 		public CoreRenderer Renderer { get; }
 		public Runner Runner;
 
-        public Format.Program Program { get; }
+        public Format.Demos Program { get; }
         public bool IsPaused { get; set; } = true;
 
         public bool IsDown { get; private set; }
@@ -95,16 +95,9 @@ namespace Numbers.Agent
             Runner = new Runner(this, control);
             Stack.LastTime.SetWith(Runner.CurrentMS);
 
-            Program = new Format.Program(Brain, Renderer);
+            Program = new Format.Demos(Brain, Renderer);
 
             ClearMouse();
-        }
-
-        public void NextTest()
-        {
-	        Runner.HasUpdated = false;
-	        Program.NextTest(this);
-	        Runner.HasUpdated = true;
         }
 
         public void Draw()

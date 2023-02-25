@@ -16,9 +16,10 @@ using NumbersCore.Primitives;
 namespace MathDemo
 {
     public partial class CoreForm : Form
-    {
-	    private readonly CoreRenderer _renderer;
-        private readonly Control _control;
+	{
+		private readonly Demos _demos;
+		private readonly CoreRenderer _renderer;
+		private readonly Control _control;
 	    private readonly MouseAgent _mouseAgent;
 	    private Runner _runner;
 	    private Workspace _workspace;
@@ -40,6 +41,7 @@ namespace MathDemo
             KeyPreview = true;
 
             _workspace = new Workspace(Brain.ActiveBrain);
+            _demos = new Demos(_workspace.Brain, _renderer);
             _mouseAgent = new MouseAgent(_workspace, _control, _renderer);
             _runner = _mouseAgent.Runner;
             _ = Execute(null, 50);
@@ -48,10 +50,17 @@ namespace MathDemo
         public async Task Execute(Action action, int timeoutInMilliseconds)
         {
 	        await Task.Delay(timeoutInMilliseconds);
-            _mouseAgent.NextTest();
-        }
+            NextTest();
+		}
+		public void NextTest()
+		{
+			_runner.HasUpdated = false;
+			_demos.NextTest(_mouseAgent);
+			_runner.HasUpdated = true;
+		}
 
-        private void OnMouseDown(object sender, MouseEventArgs e) { if (_mouseAgent.MouseDown(e)) { NeedsUpdate(); } }
+
+		private void OnMouseDown(object sender, MouseEventArgs e) { if (_mouseAgent.MouseDown(e)) { NeedsUpdate(); } }
         private void OnMouseMove(object sender, MouseEventArgs e) { if (_mouseAgent.MouseMove(e)) { NeedsUpdate(); } }
         private void OnMouseUp(object sender, MouseEventArgs e) { if (_mouseAgent.MouseUp(e)) { NeedsUpdate(); } }
         private void OnMouseDoubleClick(object sender, MouseEventArgs e) { if (_mouseAgent.MouseDoubleClick(e)) { NeedsUpdate(); } }

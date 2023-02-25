@@ -12,13 +12,13 @@ using NumbersCore.Utils;
 
 namespace Numbers.Format
 {
-	public class Program
+	public class Demos
     {
 	    private Brain Brain { get; }
         private CoreRenderer Renderer { get; }
         private int _testIndex = 3;
         private readonly int[] _tests = new int[] { 0, 1, 2, 3 };
-        public Program(Brain brain, CoreRenderer renderer)
+        public Demos(Brain brain, CoreRenderer renderer)
         {
 	        Brain = brain;
 	        Renderer = renderer;
