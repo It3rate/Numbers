@@ -31,7 +31,7 @@ namespace Numbers.Agent
 		public CoreRenderer Renderer { get; }
 		public Runner Runner;
 
-        public Format.Demos Program { get; }
+        public IDemos Demos { get; }
         public bool IsPaused { get; set; } = true;
 
         public bool IsDown { get; private set; }
@@ -87,7 +87,7 @@ namespace Numbers.Agent
 
         private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
 
-        public MouseAgent(Workspace workspace, Control control, CoreRenderer renderer) : base(workspace)
+        public MouseAgent(Workspace workspace, Control control, CoreRenderer renderer, IDemos demos) : base(workspace)
         {
 	        Control = control;
             Renderer = renderer;
@@ -95,7 +95,7 @@ namespace Numbers.Agent
             Runner = new Runner(this, control);
             Stack.LastTime.SetWith(Runner.CurrentMS);
 
-            Program = new Format.Demos(Brain, Renderer);
+            Demos = demos;// new Demos(Brain, Renderer);
 
             ClearMouse();
         }
@@ -377,7 +377,7 @@ namespace Numbers.Agent
 	                LockTicksOnDrag = true;
 	                break;
                 case Keys.T:
-	                Program.NextTest(this);
+	                Demos.NextTest(this);
 	                break;
                 case Keys.N:
 	                FlipBasis();

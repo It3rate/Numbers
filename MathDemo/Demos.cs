@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Numbers;
 using Numbers.Agent;
 using Numbers.Commands;
 using Numbers.Mappers;
@@ -12,7 +13,7 @@ using NumbersCore.Utils;
 
 namespace MathDemo
 {
-	public class Demos
+	public class Demos : IDemos
     {
 	    private Brain Brain { get; }
         private CoreRenderer Renderer { get; }

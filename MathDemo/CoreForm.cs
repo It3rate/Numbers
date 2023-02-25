@@ -42,7 +42,7 @@ namespace MathDemo
 
             _workspace = new Workspace(Brain.ActiveBrain);
             _demos = new Demos(_workspace.Brain, _renderer);
-            _mouseAgent = new MouseAgent(_workspace, _control, _renderer);
+            _mouseAgent = new MouseAgent(_workspace, _control, _renderer, _demos);
             _runner = _mouseAgent.Runner;
             _ = Execute(null, 50);
         }
