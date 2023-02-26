@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Numbers.Agent;
 using Numbers.Renderer;
 using Numbers.Utils;
@@ -14,13 +15,13 @@ namespace Numbers.Mappers
 	{
 	    public Domain Domain => (Domain)MathElement;
 
-	    private Dictionary<int, SKNumberMapper> NumberMappers = new Dictionary<int, SKNumberMapper>();
+	    protected Dictionary<int, SKNumberMapper> NumberMappers = new Dictionary<int, SKNumberMapper>();
 	    public SKNumberMapper NumberMapper(Number number) => GetOrCreateNumberMapper(number);
 	    public SKNumberMapper NumberMapper(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
 
-	    private Dictionary<int, SKNumberSetMapper> NumberSetMappers = new Dictionary<int, SKNumberSetMapper>();
+	    protected Dictionary<int, SKNumberSetMapper> NumberSetMappers = new Dictionary<int, SKNumberSetMapper>();
 
-        private SKNumberMapper BasisMapper => NumberMapper(Domain.BasisNumber);
+        protected SKNumberMapper BasisMapper => NumberMapper(Domain.BasisNumber);
 	    public Number BasisNumber => Domain.BasisNumber;
 	    public SKSegment BasisSegment => BasisMapper.Guideline;
 	    public int BasisNumberSign => BasisNumber.Direction;
@@ -35,7 +36,8 @@ namespace Numbers.Mappers
 	    }
 	    public int UnitDirectionOnDomainLine => BasisSegment.DirectionOnLine(Guideline);
 
-        public bool ShowGradientNumberLine;
+		public bool ShowInfoOnTop = true;
+		public bool ShowGradientNumberLine;
 	    public bool ShowTicks;
 	    public bool ShowNumberOffsets;
 	    public bool ShowKeyValues;
@@ -104,7 +106,7 @@ namespace Numbers.Mappers
 	    }
 	    public SKSegment SegmentAlongGuideline(Range ratio) => Guideline.SegmentAlongLine(ratio);
 
-        private void AddValidNumbers()
+        protected void AddValidNumbers()
 	    {
 		    ValidNumberIds.Clear();
 		    foreach (var num in Domain.Numbers())
@@ -129,7 +131,7 @@ namespace Numbers.Mappers
             BasisMapper.Reset(SegmentAlongGuideline(unitRatio));
         }
 
-        public void Draw()
+        public virtual void Draw()
 	    {
             if (Domain != null)
             {
@@ -143,14 +145,14 @@ namespace Numbers.Mappers
 			    DrawNumberSets();
             }
 	    }
-        private void DrawUnit()
+        protected virtual void DrawUnit()
 	    {
 		    if (ShowBasis)
 		    {
 			    NumberMapper(Domain.BasisNumber).DrawUnit();
             }
         }
-        private void DrawNumbers()
+        protected virtual void DrawNumbers()
         {
 	        var offset = ShowNumberOffsets ? 1f : 0f;
 	        var step = ShowNumberOffsets ? 1f : 0f;
@@ -160,7 +162,7 @@ namespace Numbers.Mappers
 		        DrawNumber(NumberMapper(numberId), offset);
 	        }
         }
-        private void DrawNumberSets()
+        protected virtual void DrawNumberSets()
         {
 	        foreach (var numSet in Domain.NumberSetStore.Values)
 	        {
@@ -168,9 +170,7 @@ namespace Numbers.Mappers
                 nsm.DrawNumberSet();
 	        }
         }
-
-        // Draws number with Domain relevant coloring
-        public void DrawNumber(SKNumberMapper nm, float offset)
+        public virtual void DrawNumber(SKNumberMapper nm, float offset)
         {
 	        if (nm != null)
 	        {
@@ -190,7 +190,7 @@ namespace Numbers.Mappers
 	        }
         }
 
-        private void DrawMarkers()
+        protected virtual void DrawMarkers()
         {
 	        if (ShowBasisMarkers)
 	        {
@@ -209,7 +209,7 @@ namespace Numbers.Mappers
 		        }
             }
         }
-        private void DrawMarker(Number num, bool isStart)
+        protected virtual void DrawMarker(Number num, bool isStart)
         {
             var value = isStart ? num.Value.StartF : num.Value.EndF;
             var t = isStart ? num.ValueInRenderPerspective.StartF : num.ValueInRenderPerspective.EndF;
@@ -217,7 +217,7 @@ namespace Numbers.Mappers
             var isUnitPersp = num.IsUnitPerspective;
 		    var unitLabel = num.IsBasis && isStart ? "0" : isUnitPersp ? "1" : !isUnitPersp ? "i" : "";
 
-		    var txtPoint = DrawMarkerPointer(t);
+		    var txBaseline = DrawMarkerPointer(t);
 
 		    var numPaint = (isUnitPersp && isStart) || (!isUnitPersp && !isStart) ? Pens.UnotMarkerText : Pens.UnitMarkerText;
 		    var txtBkgPen = Pens.TextBackgroundPen;
@@ -225,38 +225,43 @@ namespace Numbers.Mappers
 		    {
 			    var txt = isStart ? "0" : isUnitPersp ? "1" : "i";
 			    var unitPaint = isUnitPersp ? Pens.UnitMarkerText : Pens.UnotMarkerText;
-                Renderer.DrawText(txtPoint, txt, unitPaint, txtBkgPen);
+                Renderer.DrawTextOnPath(txBaseline, txt, unitPaint, txtBkgPen);
             }
             else if (ShowFractions)
 		    {
 			    var parts = GetFractionText(num, isStart, suffix);
-                Renderer.DrawFraction(parts, txtPoint, numPaint, txtBkgPen);
+                Renderer.DrawFraction(parts, txBaseline.Midpoint, numPaint, txtBkgPen);
             }
 		    else
 		    {
 				var txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
-				Renderer.DrawText(txtPoint, txt, numPaint, txtBkgPen);
+				Renderer.DrawTextOnPath(txBaseline, txt, numPaint, txtBkgPen);
             }
         }
-        private SKPoint DrawMarkerPointer(float t)
+        protected virtual SKSegment DrawMarkerPointer(float t)
 	    {
+			var wPos = 5f;
 		    var sign = UnitDirectionOnDomainLine;
-            var w = 5.0f * sign;
+            var wDir = wPos * sign;
+			var isTop = ShowInfoOnTop ? -1f : 1f;
+			var w = wDir * isTop;
 		    var unitSeg = BasisSegment;
-		    var markerHW = (float) (1.0 / BasisSegment.Length) * w;
+		    var markerHW = (float) (1.0 / BasisSegment.Length) * wPos;
 		    var pt = unitSeg.PointAlongLine(t);
-		    var ptPlus = unitSeg.PointAlongLine(t + markerHW);
 		    var ptMinus = unitSeg.PointAlongLine(t - markerHW);
-		    var p0 = unitSeg.OrthogonalPoint(pt, -w * 2);
-		    var p1 = unitSeg.OrthogonalPoint(ptPlus, -w * 4);
-		    var p2 = unitSeg.OrthogonalPoint(ptMinus, -w * 4);
+		    var ptPlus = unitSeg.PointAlongLine(t + markerHW);
+		    var p0 = unitSeg.OrthogonalPoint(pt, w * 2);
+		    var p1 = unitSeg.OrthogonalPoint(ptMinus, w * 4);
+		    var p2 = unitSeg.OrthogonalPoint(ptPlus, w * 4);
 		    Renderer.FillPolyline(Pens.MarkerBrush, p0, p1, p2, p0);
+			//Renderer.DrawLine(p1, p2, Pens.Seg1TextBrush);
 
-		    var textPoint = unitSeg.OrthogonalPoint(pt, -w * 5);
-		    
-		    return textPoint;
+			var textPoint0 = unitSeg.OrthogonalPoint(p1, isTop * 2f);
+			var textPoint1 = unitSeg.OrthogonalPoint(p2, isTop * 2f);
+
+			return new SKSegment(textPoint0, textPoint1);
 	    }
-	    private void DrawNumberLine()
+	    protected virtual void DrawNumberLine()
 	    {
 		    var renderDir = UnitDirectionOnDomainLine;
 		    var basisDir = BasisNumber.BasisFocal.Direction;
@@ -275,7 +280,7 @@ namespace Numbers.Mappers
 
             Renderer.DrawSegment(Guideline, Renderer.Pens.NumberLinePen);
 	    }
-        private void DrawTicks()
+        protected virtual void DrawTicks()
 	    {
 		    if (BasisSegment.AbsLength < 4)
 		    {
@@ -310,14 +315,14 @@ namespace Numbers.Mappers
 	            }
             }
         }
-        private SKPoint DrawTick(float t, float offset, SKPaint paint)
+        protected virtual SKPoint DrawTick(float t, float offset, SKPaint paint)
         {
 	        var pts = BasisSegment.PerpendicularLine(t, offset);
 	        Renderer.DrawLine(pts.Item1, pts.Item2, paint);
 	        return pts.Item1;
         }
 
-        private (string, string) GetFractionText(Number num, bool isStart, string suffix)
+        protected (string, string) GetFractionText(Number num, bool isStart, string suffix)
         {
 	        var whole = "0";
 	        var fraction = "";

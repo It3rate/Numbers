@@ -99,18 +99,30 @@ namespace Numbers.Renderer
             Canvas.DrawCircle(seg.StartPoint, 2, paint);
             var triPts = seg.EndArrow(8);
             Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
-        }
-	    public void DrawText(SKPoint center, string text, SKPaint paint, SKPaint background = null)
-	    {
-		    if (background != null)
-		    {
-			    var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
-			    DrawTextBackground(rect, background);
-		    }
-		    Canvas.DrawText(text, center.X, center.Y, paint);
-	    }
+		}
+		public void DrawText(SKPoint center, string text, SKPaint paint, SKPaint background = null)
+		{
+			if (background != null)
+			{
+				var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
+				DrawTextBackground(rect, background);
+			}
+			Canvas.DrawText(text, center.X, center.Y, paint);
+		}
+		public void DrawTextOnPath(SKSegment baseline, string text, SKPaint paint, SKPaint background = null)
+		{
+			var path = new SKPath();
+			path.MoveTo(baseline.StartPoint);
+			path.LineTo(baseline.EndPoint);
+			if (background != null)
+			{
+				//var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
+				//DrawTextBackground(rect, background);
+			}
+			Canvas.DrawTextOnPath(text, path, SKPoint.Empty, paint);
+		}
 
-	    public void DrawTextBackground(SKRect rect, SKPaint background)
+		public void DrawTextBackground(SKRect rect, SKPaint background)
 	    {
 		    Canvas.DrawRoundRect(rect, 5, 5, background);
 	    }
