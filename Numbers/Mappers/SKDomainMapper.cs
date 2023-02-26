@@ -230,7 +230,7 @@ namespace Numbers.Mappers
             else if (ShowFractions)
 		    {
 			    var parts = GetFractionText(num, isStart, suffix);
-                Renderer.DrawFraction(parts, txBaseline.Midpoint, numPaint, txtBkgPen);
+                Renderer.DrawFraction(parts, txBaseline, numPaint, txtBkgPen);
             }
 		    else
 		    {
@@ -256,10 +256,10 @@ namespace Numbers.Mappers
 		    Renderer.FillPolyline(Pens.MarkerBrush, p0, p1, p2, p0);
 			//Renderer.DrawLine(p1, p2, Pens.Seg1TextBrush);
 
-			var textPoint0 = unitSeg.OrthogonalPoint(p1, isTop * 2f);
-			var textPoint1 = unitSeg.OrthogonalPoint(p2, isTop * 2f);
+			var textPoint0 = unitSeg.OrthogonalPoint(p1, isTop * 4f); // 4 pixel offset
+			var textPoint1 = unitSeg.OrthogonalPoint(p2, isTop * 4f);
 
-			return new SKSegment(textPoint0, textPoint1);
+			return ShowInfoOnTop ? new SKSegment(textPoint0, textPoint1) : new SKSegment(textPoint1, textPoint0);
 	    }
 	    protected virtual void DrawNumberLine()
 	    {
@@ -335,7 +335,7 @@ namespace Numbers.Mappers
 	            var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
 	            if (num.AbsBasisTicks != 0 && numerator != 0)
 	            {
-		            fraction = " " + numerator.ToString() + "|" + num.AbsBasisTicks.ToString() + suffix;
+		            fraction = " " + numerator.ToString() + "/" + num.AbsBasisTicks.ToString() + suffix;
 	            }
 	            else
 	            {

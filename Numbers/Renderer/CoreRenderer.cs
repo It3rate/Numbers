@@ -223,37 +223,51 @@ namespace Numbers.Renderer
 			    EndDraw();
 		    }
 	    }
-	    public void DrawFraction((string, string) parts, SKPoint txtPoint, SKPaint txtPaint, SKPaint txtBkgPen)
-	    {
-		    var whole = parts.Item1;
+		//public void DrawFraction((string, string) parts, SKPoint txtPoint, SKPaint txtPaint, SKPaint txtBkgPen)
+		//{
+		//}
+		public void DrawFraction((string, string) parts, SKSegment txtSeg, SKPaint txtPaint, SKPaint txtBkgPen)
+		{
+			var whole = parts.Item1;
 		    var fraction = parts.Item2;
 		    var fractionPen = Pens.TextFractionPen;
-		    if (fraction != "")
+			var wRect = GetTextBackgroundSize(0, 0, whole, txtPaint);
+			var fRect = GetTextBackgroundSize(0, 0, fraction, Pens.TextFractionPen);
+			var wWidth = wRect.Width;
+			var fWidth = fRect.Width;
+			var tWidth = wWidth = fWidth;
+			var ratio = (tWidth / txtSeg.Length) * 1.0f;
+			var bothSeg = txtSeg.SegmentAlongLine(0.5f - ratio / 2f, 0.5f + ratio / 2f);
+
+			var txtAlign = txtPaint.TextAlign;
+			var fracAlign = fractionPen.TextAlign;
+
+			if (fraction != "")
 		    {
 			    fractionPen.Color = txtPaint.Color;
 			    if (whole == "")
 			    {
-				    fractionPen.TextAlign = SKTextAlign.Center;
-				    DrawText(txtPoint, fraction, fractionPen, txtBkgPen);
-				    fractionPen.TextAlign = SKTextAlign.Left;
+				    DrawTextOnPath(bothSeg, fraction, fractionPen, txtBkgPen);
 			    }
 			    else
-			    {
-				    var txtAlign = txtPaint.TextAlign;
-				    txtPaint.TextAlign = SKTextAlign.Right;
-				    var wRect = GetTextBackgroundSize(0, 0, whole, txtPaint);
-				    var fRect = GetTextBackgroundSize(0, 0, fraction, Pens.TextFractionPen);
-				    DrawText(txtPoint, whole, txtPaint, null);
-				    var fPoint = new SKPoint(txtPoint.X - 2, txtPoint.Y);
-				    DrawText(fPoint, fraction, fractionPen, null);
-				    wRect.Union(fRect);
-				    DrawTextBackground(wRect, txtBkgPen);
+				{
+					txtPaint.TextAlign = SKTextAlign.Left;
+					fractionPen.TextAlign = SKTextAlign.Right;
+					DrawTextOnPath(bothSeg, whole, txtPaint, null);
+					DrawTextOnPath(bothSeg, fraction, fractionPen, null);
+
+					// todo: proper polygon bkg
+					var bothRect = SKRect.Create(wRect.Location, wRect.Size);
+					bothRect.Union(fRect);
+				    DrawTextBackground(bothRect, txtBkgPen);
 				    txtPaint.TextAlign = txtAlign;
-			    }
-		    }
+				}
+				fractionPen.TextAlign = fracAlign;
+				txtPaint.TextAlign = txtAlign;
+			}
 		    else
 		    {
-			    DrawText(txtPoint, whole, txtPaint, txtBkgPen);
+			    DrawTextOnPath(txtSeg, whole, txtPaint, txtBkgPen);
 		    }
 	    }
         public SKBitmap GenerateBitmap(int width, int height)

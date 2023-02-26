@@ -135,7 +135,7 @@ namespace Numbers.Renderer
             TextFractionPen = new SKPaint(new SKFont(SKTypeface.Default, 10f));
             TextFractionPen.IsAntialias = true;
             TextFractionPen.Color = new SKColor(0x40, 0x40, 0x60);
-            TextFractionPen.TextAlign = SKTextAlign.Left;
+            TextFractionPen.TextAlign = SKTextAlign.Right;
 
             SlugTextPen = new SKPaint(new SKFont(SKTypeface.Default, 8f));
             SlugTextPen.IsAntialias = true;
