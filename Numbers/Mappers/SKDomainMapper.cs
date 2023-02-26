@@ -139,8 +139,8 @@ namespace Numbers.Mappers
 
                 DrawNumberLine();
 			    DrawUnit();
-			    DrawTicks();
 			    DrawMarkers();
+			    DrawTicks();
 			    DrawNumbers();
 			    DrawNumberSets();
             }
@@ -250,14 +250,14 @@ namespace Numbers.Mappers
 		    var pt = unitSeg.PointAlongLine(t);
 		    var ptMinus = unitSeg.PointAlongLine(t - markerHW);
 		    var ptPlus = unitSeg.PointAlongLine(t + markerHW);
-		    var p0 = unitSeg.OrthogonalPoint(pt, w * 2);
-		    var p1 = unitSeg.OrthogonalPoint(ptMinus, w * 4);
-		    var p2 = unitSeg.OrthogonalPoint(ptPlus, w * 4);
+			var p0 = unitSeg.OrthogonalPoint(pt, w * .8f);
+		    var p1 = unitSeg.OrthogonalPoint(ptMinus, w * 3);
+		    var p2 = unitSeg.OrthogonalPoint(ptPlus, w * 3);
 		    Renderer.FillPolyline(Pens.MarkerBrush, p0, p1, p2, p0);
 			//Renderer.DrawLine(p1, p2, Pens.Seg1TextBrush);
 
-			var textPoint0 = unitSeg.OrthogonalPoint(p1, isTop * 4f); // 4 pixel offset
-			var textPoint1 = unitSeg.OrthogonalPoint(p2, isTop * 4f);
+			var textPoint0 = unitSeg.OrthogonalPoint(p1, isTop * 3f); // 4 pixel offset
+			var textPoint1 = unitSeg.OrthogonalPoint(p2, isTop * 3f);
 
 			return ShowInfoOnTop ? new SKSegment(textPoint0, textPoint1) : new SKSegment(textPoint1, textPoint0);
 	    }

@@ -296,7 +296,8 @@ namespace Numbers.Renderer
 	        SKPaint result = new SKPaint()
 	        {
 		        Style = SKPaintStyle.Fill,
-		        Color = color
+				IsAntialias = true,
+				Color = color
 	        };
 	        return result;
         }

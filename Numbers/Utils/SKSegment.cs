@@ -95,8 +95,15 @@ namespace Numbers.Utils
         public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Math.Max(MathF.tolerance, Length));
         public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(MathF.tolerance, Length));
         public SKPoint Vector => EndPoint - StartPoint;
+        public SKSegment Shift(float shift)
+		{
+			var p0 = OrthogonalPoint(StartPoint, shift);
+			var p1 = OrthogonalPoint(EndPoint, shift);
+            return new SKSegment(p0, p1);
 
-        public SKSegment SegmentAlongLine(Range ratios, float offsetT = 0) => SegmentAlongLine(ratios.StartF, ratios.EndF, offsetT);
+		}
+
+		public SKSegment SegmentAlongLine(Range ratios, float offsetT = 0) => SegmentAlongLine(ratios.StartF, ratios.EndF, offsetT);
         public SKSegment SegmentAlongLine(float startT, float endT, float offsetT = 0)
         {
             var startPoint = PointAlongLine(startT, offsetT);
