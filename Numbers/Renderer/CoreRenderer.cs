@@ -246,7 +246,7 @@ namespace Numbers.Renderer
 			var tWidth = wWidth + fWidth + 2f; //padding to allow space in fraction
 			var ratio = (tWidth / segLen) * 0.5f;
 			var bothSeg = txtSeg.SegmentAlongLine(0.5f - ratio, 0.5f + ratio);
-			Trace.WriteLine(tWidth + " : " + bothSeg.Length);
+			//Trace.WriteLine(tWidth + " : " + bothSeg.Length);
 			var txtAlign = txtPaint.TextAlign;
 			var fracAlign = fractionPen.TextAlign;
 
