@@ -107,6 +107,7 @@
     <Compile Include="Agent\HighlightSet.cs" />
     <Compile Include="Utils\MathF.cs" />
     <Compile Include="Utils\SKPointExtension.cs" />
+    <Compile Include="Utils\SkRectExtension.cs" />
     <Compile Include="Utils\SKSegment.cs" />
     <Compile Include="Agent\MouseAgent.cs" />
     <Compile Include="Mappers\SKDomainMapper.cs" />
