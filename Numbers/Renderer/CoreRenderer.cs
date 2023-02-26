@@ -1,4 +1,5 @@
 ﻿	using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 using Numbers.Agent;
 using Numbers.Mappers;
@@ -155,16 +156,22 @@ namespace Numbers.Renderer
         public void GeneratePens(ColorTheme colorTheme = ColorTheme.Normal)
 	    {
 		    Pens = new CorePens(1, colorTheme);
-	    }
-	    public SKRect GetTextBackgroundSize(float x, float y, String text, SKPaint paint)
-	    {
-		    var fm = paint.FontMetrics;
-		    float halfTextLength = paint.MeasureText(text) / 2 + 4;
-		    return new SKRect((int)(x - halfTextLength), (int)(y + fm.Top + 3), (int)(x + halfTextLength), (int)(y + fm.Bottom - 1));
-	    }
+		}
+		public SKRect GetTextBackgroundSize(float x, float y, String text, SKPaint paint)
+		{
+			var fm = paint.FontMetrics;
+			float halfTextLength = paint.MeasureText(text) / 2 + 4;
+			return new SKRect((int)(x - halfTextLength), (int)(y + fm.Top + 3), (int)(x + halfTextLength), (int)(y + fm.Bottom - 1));
+		}
+		public SKRect GetTextBackgroundSizeExact(float x, float y, String text, SKPaint paint)
+		{
+			var fm = paint.FontMetrics;
+			float halfTextLength = paint.MeasureText(text) / 2f;
+			return new SKRect((int)(x - halfTextLength), (int)(y + fm.Top), (int)(x + halfTextLength), (int)(y + fm.Bottom));
+		}
 
-#region RenderSurface
-	    protected bool hasControl = false;
+		#region RenderSurface
+		protected bool hasControl = false;
 	    public Control AddAsControl(Control parent, bool useGL = false)
 	    {
 		    Control result;
@@ -231,14 +238,15 @@ namespace Numbers.Renderer
 			var whole = parts.Item1;
 		    var fraction = parts.Item2;
 		    var fractionPen = Pens.TextFractionPen;
-			var wRect = GetTextBackgroundSize(0, 0, whole, txtPaint);
-			var fRect = GetTextBackgroundSize(0, 0, fraction, Pens.TextFractionPen);
+			var wRect = GetTextBackgroundSizeExact(0, 0, whole, txtPaint);
+			var fRect = GetTextBackgroundSizeExact(0, 0, fraction, Pens.TextFractionPen);
+			var segLen = (float)txtSeg.Length;
 			var wWidth = wRect.Width;
 			var fWidth = fRect.Width;
-			var tWidth = wWidth = fWidth;
-			var ratio = (tWidth / txtSeg.Length) * 1.0f;
-			var bothSeg = txtSeg.SegmentAlongLine(0.5f - ratio / 2f, 0.5f + ratio / 2f);
-
+			var tWidth = wWidth + fWidth + 2f; //padding to allow space in fraction
+			var ratio = (tWidth / segLen) * 0.5f;
+			var bothSeg = txtSeg.SegmentAlongLine(0.5f - ratio, 0.5f + ratio);
+			Trace.WriteLine(tWidth + " : " + bothSeg.Length);
 			var txtAlign = txtPaint.TextAlign;
 			var fracAlign = fractionPen.TextAlign;
 
