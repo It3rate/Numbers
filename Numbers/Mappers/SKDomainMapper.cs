@@ -149,13 +149,16 @@ namespace Numbers.Mappers
 	    {
 		    if (ShowBasis)
 		    {
-			    NumberMapper(Domain.BasisNumber).DrawUnit();
+			    NumberMapper(Domain.BasisNumber).DrawUnit(!ShowInfoOnTop);
             }
         }
         protected virtual void DrawNumbers()
         {
+			var topDir = ShowInfoOnTop ? 1f : -1f;
 	        var offset = ShowNumberOffsets ? 1f : 0f;
-	        var step = ShowNumberOffsets ? 1f : 0f;
+			offset *= topDir;
+			var step = ShowNumberOffsets ? 1f : 0f;
+			step *= topDir;
 	        foreach (var numberId in ValidNumberIds)
 	        {
 		        offset += step;
@@ -171,8 +174,8 @@ namespace Numbers.Mappers
 	        }
         }
         public virtual void DrawNumber(SKNumberMapper nm, float offset)
-        {
-	        if (nm != null)
+		{
+			if (nm != null)
 	        {
 		        var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
 		        nm.DrawNumber(offset, pen); // background
@@ -286,7 +289,8 @@ namespace Numbers.Mappers
 		    {
 			    return;
 		    }
-            var offsetRange = -8f;
+			var topDir = ShowInfoOnTop ? 1f : -1f;
+			var offsetRange = -8f;
             var tickCount = Domain.BasisNumber.AbsBasisTicks;
             var tickToBasisRatio = Domain.TickToBasisRatio;
             var upDir = UnitDirectionOnDomainLine;
@@ -297,7 +301,8 @@ namespace Numbers.Mappers
             {
 	            var isOnTick = Math.Abs(tickToBasisRatio) <= 1.0 ? true : (long)(i / tickToBasisRatio) * (long)tickToBasisRatio == i;
 	            var offset = isOnTick ? offsetRange : offsetRange / 8f;
-                TickPoints.Add(DrawTick((float)i, offset * upDir, Renderer.Pens.TickBoldPen));  
+				offset *= topDir;
+				TickPoints.Add(DrawTick((float)i, offset * upDir, Renderer.Pens.TickBoldPen));  
             }
 
             // minor ticks
@@ -306,7 +311,8 @@ namespace Numbers.Mappers
             if (showMinorTicks)
             {
 			    var offset = Domain.BasisIsReciprocal ? offsetRange * 2.5f : offsetRange;
-	            for (var i = rangeInTicks.Min; i <= rangeInTicks.Max; i += Math.Abs(tickToBasisRatio))
+				offset *= topDir;
+				for (var i = rangeInTicks.Min; i <= rangeInTicks.Max; i += Math.Abs(tickToBasisRatio))
 	            {
 		            if (i != 0) // don't draw tick on origin
 		            {
