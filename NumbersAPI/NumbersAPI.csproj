@@ -64,10 +64,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Concepts\Concepts.csproj">
-      <Project>{322C713B-BA0F-4458-A0DF-68122CCE1DCB}</Project>
-      <Name>Concepts</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NumbersCore\NumbersCore.csproj">
       <Project>{2726e18f-5916-4916-bc0e-68cb18426b65}</Project>
       <Name>NumbersCore</Name>

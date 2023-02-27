@@ -1,5 +1,4 @@
-﻿using Concepts.Time;
-using NumbersCore.CoreConcepts.Time;
+﻿using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
 namespace NumbersAPI.Motion

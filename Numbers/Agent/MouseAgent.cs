@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using Concepts;
 using Numbers.Mappers;
 using Numbers.Renderer;
 using NumbersAPI.CommandEngine;

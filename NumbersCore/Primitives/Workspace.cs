@@ -28,7 +28,6 @@ namespace NumbersCore.Primitives
             Brain.Workspaces.Add(this);
         }
 
-        private int test = 1;
         public void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
         {
 	        //var num = lastDomain?.Numbers().ElementAt(2);

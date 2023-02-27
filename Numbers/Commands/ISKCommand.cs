@@ -20,7 +20,6 @@ namespace Numbers.Commands
         SKMapper Mapper { get; }
         SKSegment Guideline { get; }
 
-        float DefaultDuration { get; }
 	    float T { get; } // this will be Number once default traits are in.
     }
 }

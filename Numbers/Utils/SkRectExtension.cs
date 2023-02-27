@@ -12,8 +12,10 @@ namespace Numbers.Utils
 	{
 		public static SKRect SKRect(this RectangleF rectF) =>
 			new SKRect(rectF.Left, rectF.Top, rectF.Right, rectF.Bottom);
+
 		public static SKRect SKRect(this Rectangle rect) =>
 			new SKRect(rect.Left, rect.Top, rect.Right, rect.Bottom);
+
 		public static SKSegment TopLine(this SKRect self) => new SKSegment(self.Left, self.Top, self.Right, self.Top);
 		public static SKSegment LeftLine(this SKRect self) => new SKSegment(self.Left, self.Bottom, self.Left, self.Top);
 		public static SKSegment BottomLine(this SKRect self) => new SKSegment(self.Left, self.Bottom, self.Right, self.Bottom);
