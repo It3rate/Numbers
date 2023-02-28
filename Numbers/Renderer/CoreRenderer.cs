@@ -175,16 +175,16 @@ namespace Numbers.Renderer
 	    public Control AddAsControl(Control parent, bool useGL = false)
 	    {
 		    Control result;
-		    if (useGL)
-		    {
-			    result = new SKGLControl();
-			    ((SKGLControl)result).PaintSurface += DrawOnGLSurface;
-		    }
-		    else
-		    {
+		    //if (useGL)
+		    //{
+			   // result = new SKGLControl();
+			   // ((SKGLControl)result).PaintSurface += DrawOnGLSurface;
+		    //}
+		    //else
+		    //{
 			    result = new SKControl();
 			    ((SKControl)result).PaintSurface += DrawOnPaintSurface;
-		    }
+		    //}
 
 		    result.Width = parent.Width;
 		    result.Height = parent.Height;
