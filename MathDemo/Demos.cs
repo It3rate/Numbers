@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Numbers;
 using Numbers.Agent;
@@ -17,12 +18,64 @@ namespace MathDemo
     {
 	    private Brain Brain { get; }
         private CoreRenderer Renderer { get; }
-        private int _testIndex = 3;
-        private readonly int[] _tests = new int[] { 0, 1, 2, 3 };
+        private int _testIndex = 4;
+        private readonly int[] _tests = new int[] { 0, 1, 2, 3, 4 };
         public Demos(Brain brain, CoreRenderer renderer)
         {
 	        Brain = brain;
 	        Renderer = renderer;
+        }
+        private SKWorkspaceMapper testTrig(MouseAgent mouseAgent)
+        {
+            Trait trait = Trait.CreateIn(Brain, "testTrig");
+            var unitSize = 100;
+            var unit = Focal.CreateByValues(0, unitSize);
+            var wm = new SKWorkspaceMapper(mouseAgent, 10, 50, 1200, 600);
+
+            var domains = CreateDomainLines((MouseAgent)mouseAgent, trait, unit, 1, 101, -100, 0, -50, 50);
+            var d0 = domains[0];
+            var seg = d0.GetNumber(d0.NumberIds()[2]);
+            //var d0n1 = d0.GetNumber(d0.NumberIds()[1]);
+            //var d0n2 = d0.GetNumber(d0.NumberIds()[2]);
+            //d0n0.InterpolateTo(d0n1, d0n0, d0n2);
+            //var nn = d0.CreateNumber(d0n0.Focal);
+            //mouseAgent.Workspace.AddElements(nn);
+
+            //var ar = new List<Range>();
+            //ar.Add(seg.ExpansiveForce);
+            //for (int i = 0; i < unitSize; i++)
+            //{
+            //    seg.ShiftTicks(-1);
+            //    var ef = seg.ExpansiveForce;
+            //    ar.Add(ef);
+            //    Trace.WriteLine(ef.MaxF - ef.MinF);
+            //}
+
+            var speed = 0f;
+            var scale = 1f/1900f;
+            var l = 0f;
+            var r = 1f;
+            for (int i = 0; i < unitSize; i++)
+            {
+                var len = (float)Math.Sqrt(l * l + r * r);
+
+                var rr = Math.Abs(r) / Math.Abs(r - l);
+                var lr = Math.Abs(l) / Math.Abs(r - l);
+                //var lr = ratio <= 0 ? Math.Abs(ratio) : (1f - ratio);
+                //var rr = ratio <= 0 ? Math.Abs(ratio + 1f) : (ratio);
+                var dl = len * lr;
+                var dr = len * rr;
+                speed += (dr - dl);
+
+                Trace.WriteLine(speed);
+                r -= speed * scale;
+                l -= speed * scale;
+                //speed += (float)Math.Sqrt(r * r) * scale;// (dr - dl);
+                //r -= 0.01f;//speed * scale;// len * scale;// 
+                //l -= 0.01f;//speed * scale;// len * scale;//
+            }
+
+            return wm;
         }
 
         private SKWorkspaceMapper test3(MouseAgent mouseAgent)
@@ -153,8 +206,10 @@ namespace MathDemo
 	                wm = test2(mouseAgent);
 	                break;
                 case 3:
-                default:
 	                wm = test3(mouseAgent);
+                    break;
+                default:
+	                wm = testTrig(mouseAgent);
                     break;
             }
             _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
@@ -164,6 +219,9 @@ namespace MathDemo
             return wm;
         }
 
+        /// <summary>
+        /// Create lines with focal pairs.
+        /// </summary>
         private List<Domain> CreateDomainLines(MouseAgent mouseAgent, Trait trait, Focal basisFocal, params long[] focalPositions)
         {
 	        var result = new List<Domain>();
@@ -175,11 +233,11 @@ namespace MathDemo
 	        var rangeLen = (double)range.LengthInTicks;
 	        var yt = 0.1f;
 	        var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
+		    var domain = trait.AddDomain(basisFocal, range);
+		    //domain.BasisIsReciprocal = true;
+		    result.Add(domain);
 	        for (int i = 1; i < focalPositions.Length; i += 2)
 	        {
-		        var domain = trait.AddDomain(basisFocal, range);
-		        //domain.BasisIsReciprocal = true;
-		        result.Add(domain);
 		        var focal = Focal.CreateByValues(focalPositions[i - 1], focalPositions[i]);
 		        var num = domain.CreateNumber(focal);
 		        mouseAgent.Workspace.AddDomains(true, domain);

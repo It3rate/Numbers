@@ -79,8 +79,21 @@ namespace NumbersCore.Primitives
 		{
 			get => Domain.GetValueOf(Focal); //Focal.RangeWithBasis(BasisFocal);
 			set => Domain.SetValueOf(Focal, value);
-		}
-		public Range ValueInRenderPerspective => new Range(-StartValue, EndValue);
+        }
+        public Range ExpansiveForce
+        {
+            get
+            {
+                var v = Value;
+                var len = (float) Math.Sqrt(v.Start * v.Start + v.End * v.End);
+                var ratio =(v.EndF) / v.AbsLength();
+                var lr = ratio <= 0 ? Math.Abs(ratio) : (1f - ratio);
+                var rr = ratio <= 0 ? Math.Abs(ratio + 1f) : (ratio);
+                return new Range( lr * len, rr * len);
+            }
+        }
+
+        public Range ValueInRenderPerspective => new Range(-StartValue, EndValue);
 
 		public Number SetWith(Number other)
 		{
@@ -111,9 +124,10 @@ namespace NumbersCore.Primitives
 		public void MinusTick() => EndTickPosition -= 1;
         public void AddStartTicks(long ticks) => StartTickPosition += ticks;
         public void AddEndTicks(long ticks) => EndTickPosition += ticks;
-		public void AddTicks(long startTicks, long endTicks) { StartTickPosition += startTicks; EndTickPosition += endTicks; }
+        public void AddTicks(long startTicks, long endTicks) { StartTickPosition += startTicks; EndTickPosition += endTicks; }
+        public void ShiftTicks(long ticks) { StartTickPosition = StartTickPosition + ticks; EndTickPosition = EndTickPosition + ticks; }
 
-	// Operations with segments and units allow moving the unit around freely, so for example,
+        // Operations with segments and units allow moving the unit around freely, so for example,
         // you can shift a segment by aligning the unit with start or end,
         // and scale in place by moving the unit to left, right or center (equivalent to affine scale, where you move to zero, scale, then move back)
         // need to have overloads that allow shifting the unit temporarily

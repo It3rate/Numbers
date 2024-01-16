@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Numbers.Agent;
 using Numbers.Utils;
 using NumbersCore.Primitives;
@@ -35,6 +36,9 @@ namespace Numbers.Mappers
 	        var offset = Guideline.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
 	        RenderSegment = Guideline + offset;
 	        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
+
+            //var ef = Number.ExpansiveForce;
+            //Trace.WriteLine(ef);
         }
 
         public void DrawUnit(bool aboveLine)
