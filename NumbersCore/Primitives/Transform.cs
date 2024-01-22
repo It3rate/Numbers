@@ -111,6 +111,17 @@ namespace NumbersCore.Primitives
 	    AppendAll, // repeat are added together ('regular' multiplication)
 	    MultiplyAll, // repeat are multiplied together (exponents)
 	    Blend, // multiply as in area, blend from unot to unit
+        Average,
+        Power,
+        Root,
+        Multiply,
+        Divide,
+        Add,
+        Subtract,
+        Wedge,
+        DotProduct,
+        GeometricProduct,
+
     }
 
     // todo: Evaluation of two segments are very much like the 16 bool operations, probably the same.

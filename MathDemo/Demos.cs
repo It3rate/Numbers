@@ -28,34 +28,19 @@ namespace MathDemo
 
         private SKWorkspaceMapper test0(MouseAgent mouseAgent)
         {
-            var hDomain = Domain.CreateDomain("test0", 8, 16);
-            var vDomain = Domain.CreateDomain("test0", 8, 16);
-
-            var hNum = hDomain.CreateNumberFromFloats(-2, 9);
+            var hDomain = Domain.CreateDomain("test0", 100, 10);
+            var vDomain = Domain.CreateDomain("test0", 100, 10);
+            var hNum = hDomain.CreateNumberFromFloats(2, 9);
             var vNum = vDomain.CreateNumberFromFloats(3, 6);
         
 
             var hSel = new Selection(hNum);
             var transform = Brain.AddTransform(hSel, vNum, TransformKind.Blend);
 
-            var wm = new SKWorkspaceMapper(mouseAgent, 150, 10, 800, 800);
-
+            var wm = new SKWorkspaceMapper(mouseAgent, 150, 0, 800, 800);
             wm.AddHorizontal(hDomain);
             wm.AddVertical(vDomain);
 
-            //mouseAgent.Workspace.AddDomains(true, hDomain, vDomain);
-
-            //var dm = wm.GetOrCreateDomainMapper(hDomain, wm.GetHorizontalSegment(.5f, 50));
-            //dm.ShowGradientNumberLine = false;
-            //dm.ShowValueMarkers = true;
-            //dm.ShowBasisMarkers = false;
-            //dm.ShowBasis = false;
-
-            //var dm2 = wm.GetOrCreateDomainMapper(vDomain, wm.GetVerticalSegment(.5f, 50));
-            //dm2.ShowGradientNumberLine = false;
-            //dm2.ShowValueMarkers = true;
-            //dm2.ShowBasisMarkers = false;
-            //dm2.ShowBasis = false;
             return wm;
         }
 
@@ -101,7 +86,7 @@ namespace MathDemo
                 var dr = len * rr;
                 speed += (dr - dl);
 
-                Trace.WriteLine(speed);
+                //Trace.WriteLine(speed);
                 r -= speed * scale;
                 l -= speed * scale;
                 //speed += (float)Math.Sqrt(r * r) * scale;// (dr - dl);

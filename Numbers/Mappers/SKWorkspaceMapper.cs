@@ -247,7 +247,8 @@ namespace Numbers.Mappers
 	        if (!DomainMappers.TryGetValue(domain.Id, out var result))
 	        {
 		        var seg = line ?? NextDefaultLine();
-		        var uSeg = unitLine ?? line.SegmentAlongLine(.45f, .55f);
+                var half_mmr = (float)(1.0 / domain.MinMaxRange.AbsLength());
+		        var uSeg = unitLine ?? line.SegmentAlongLine(0.5f, 0.5f + half_mmr);
 		        result = new SKDomainMapper(Agent, domain, seg, uSeg);
 		        DomainMappers[domain.Id] = result;
 	        }

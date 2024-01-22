@@ -306,13 +306,15 @@ namespace Numbers.Mappers
             }
 
             // minor ticks
-            var rangeInTicks = Domain.ClampToInnerTick(DisplayLineRange);
-		    var showMinorTicks = Math.Abs(BasisSegment.Length / tickToBasisRatio) >= 3; // don't show tiny ticks
+            var totalTicks = Math.Abs(BasisSegment.Length / tickToBasisRatio);
+            var showMinorTicks = true;// totalTicks >= 1000; // don't show tiny ticks
             if (showMinorTicks)
             {
+                var tickStep = BasisSegment.Length * 20 < totalTicks ? 0.1f : Math.Abs(tickToBasisRatio);
+                var rangeInTicks = Domain.ClampToInnerTick(DisplayLineRange);
 			    var offset = Domain.BasisIsReciprocal ? offsetRange * 2.5f : offsetRange;
 				offset *= topDir;
-				for (var i = rangeInTicks.Min; i <= rangeInTicks.Max; i += Math.Abs(tickToBasisRatio))
+				for (var i = rangeInTicks.Min; i <= rangeInTicks.Max; i += tickStep)
 	            {
 		            if (i != 0) // don't draw tick on origin
 		            {

@@ -17,7 +17,9 @@ namespace Numbers.Utils
         public static SKPoint PointAtDegreesAndDistance(this SKPoint a, float angle, float distance) =>
             PointAtRadiansAndDistance(a, angle / 180f * 2f, distance);
 
+        public static SKPoint Add(this SKPoint a, float xValue, float yValue) => new SKPoint(a.X + xValue, a.Y + yValue);
         public static SKPoint Add(this SKPoint a, float value) => new SKPoint(a.X + value, a.Y + value);
+        public static SKPoint Subtract(this SKPoint a, float xValue, float yValue) => new SKPoint(a.X - xValue, a.Y - yValue);
         public static SKPoint Subtract(this SKPoint a, float value) => new SKPoint(a.X - value, a.Y - value);
         public static SKPoint Multiply(this SKPoint a, float value) => new SKPoint(a.X * value, a.Y * value);
         public static SKPoint Divide(this SKPoint a, float value) => new SKPoint(value == 0 ? float.MaxValue : a.X / value, value == 0 ? float.MaxValue : a.Y / value);
@@ -57,6 +59,23 @@ namespace Numbers.Utils
             var b = self.X - pt.X;
             var c = a * self.X + b * self.Y;
             return (a, b, c);
+        }
+        public static SKPoint Center(this SKPoint[] self)
+        {
+            var minX = float.MaxValue;
+            var minY = float.MaxValue;
+            var maxX = float.MinValue;
+            var maxY = float.MinValue;
+            foreach ( SKPoint p in self)
+            {
+                if (p.X < minX) minX = p.X;
+                if (p.Y < minY) minY = p.Y;
+                if (p.X > maxX) maxX = p.X;
+                if (p.Y > maxY) maxY = p.Y;
+            }
+            var xDif = maxX - minX;
+            var yDif = maxY - minY;
+            return new SKPoint(minX + xDif / 2f, minY + yDif / 2f);
         }
     }
 

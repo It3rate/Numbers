@@ -86,7 +86,7 @@ namespace NumbersCore.Primitives
         }
         public Number CreateNumberFromFloats(float startF, float endF, bool addToStore = true)
         {
-            long start = (long)(startF * BasisFocal.LengthInTicks);
+            long start = (long)(-startF * BasisFocal.LengthInTicks);
             long end = (long)(endF * BasisFocal.LengthInTicks);
             var focal = Focal.CreateByValues(start, end);
             return AddNumber(new Number(focal), addToStore);

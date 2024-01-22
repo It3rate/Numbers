@@ -29,7 +29,7 @@ namespace MathDemo
 	        DoubleBuffered = true;
             InitializeComponent();
 
-            _renderer = new CoreRenderer();
+            _renderer = CoreRenderer.Instance;
             _control = _renderer.AddAsControl(corePanel, false);
             _control.MouseDown += OnMouseDown;
             _control.MouseMove += OnMouseMove;

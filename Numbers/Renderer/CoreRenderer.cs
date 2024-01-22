@@ -10,8 +10,20 @@ using SkiaSharp.Views.Desktop;
 
 namespace Numbers.Renderer
 {
-	public class CoreRenderer
+    public class CoreRenderer
     {
+        private static CoreRenderer _instance;
+        public static CoreRenderer Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new CoreRenderer();
+                }
+                return _instance;
+            }
+        }
 	    public MouseAgent Agent { get; set; }
         public Brain Brain => Agent.Brain;
 	    public Workspace Workspace => Agent.Workspace;
@@ -26,7 +38,7 @@ namespace Numbers.Renderer
 	    public SKBitmap Bitmap { get; set; }
 	    public bool ShowBitmap { get; set; }
 
-        public CoreRenderer()
+        private CoreRenderer()
         {
 	        GeneratePens();
         }
@@ -107,6 +119,7 @@ namespace Numbers.Renderer
 			{
 				var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
 				DrawTextBackground(rect, background);
+                center = new SKPoint(rect.Left + 4, center.Y);
 			}
 			Canvas.DrawText(text, center.X, center.Y, paint);
 		}
