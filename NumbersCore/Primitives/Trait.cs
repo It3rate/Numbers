@@ -29,8 +29,12 @@ namespace NumbersCore.Primitives
         }
 
         public static Trait CreateIn(Brain brain, string name) => brain.AddTrait(new Trait(name));
+        public static Trait GetOrCreateTrait(Brain brain, string name)
+        {
+            return brain.GetOrCreateTrait(name);
+        }
 
-	    public Domain AddDomain(IFocal basis, IFocal minMax)
+        public Domain AddDomain(IFocal basis, IFocal minMax)
 	    {
 		    return new Domain(this, basis, minMax);
 	    }

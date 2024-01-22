@@ -51,6 +51,27 @@ namespace Numbers.Mappers
             Reset(new SKPoint(left, top), new SKPoint(left + width, top + height));
 	    }
 
+        public SKDomainMapper AddDomain(Domain domain, float offset, bool isHorizontal = true, int margins = 50)
+        {
+            Agent.Workspace.AddDomains(true, domain);
+            var seg = isHorizontal ? GetHorizontalSegment(offset, margins) : GetVerticalSegment(offset, margins);
+            var dm = GetOrCreateDomainMapper(domain, seg);
+            dm.ShowGradientNumberLine = false;
+            dm.ShowValueMarkers = true;
+            dm.ShowBasisMarkers = false;
+            dm.ShowBasis = false;
+            return dm;
+        }
+        public SKDomainMapper AddHorizontal(Domain domain, int margins = 50)
+        {
+            return AddDomain(domain, 0.5f, true, margins);
+        }
+        public SKDomainMapper AddVertical(Domain domain, int margins = 50)
+        {
+            return AddDomain(domain, 0.5f, false, margins);
+        }
+
+
         public Highlight GetSnapPoint(Highlight highlight, HighlightSet ignoreSet, SKPoint input, float maxDist = SnapDistance * 2f)
         {
             highlight.Reset();

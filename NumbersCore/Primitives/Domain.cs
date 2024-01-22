@@ -55,6 +55,15 @@ namespace NumbersCore.Primitives
             Trait.DomainStore.Add(Id, this);
         }
 
+        public static Domain CreateDomain(string traitName, int unitSize = 8, int rangeSize = 16)
+        {
+            Trait trait = Trait.GetOrCreateTrait(Brain.ActiveBrain, traitName);
+            var unit = Focal.CreateByValues(0, unitSize);
+            var range = Focal.CreateByValues(-rangeSize * unitSize, rangeSize * unitSize);
+            var domain = trait.AddDomain(unit, range);
+            return domain;
+        }
+
         public int[] NumberIds() => NumberStore.Values.Select(num => num.Id).ToArray();
         public Number GetNumber(int numberId)
         {
@@ -70,12 +79,19 @@ namespace NumbersCore.Primitives
 	        var focal = CreateFocalFromRange(value);
 	        return AddNumber(new Number(focal), addToStore);
         }
-
         public Number CreateNumber(long start, long end, bool addToStore = true)
         {
 	        var focal = Focal.CreateByValues(start, end);
 	        return AddNumber(new Number(focal), addToStore);
         }
+        public Number CreateNumberFromFloats(float startF, float endF, bool addToStore = true)
+        {
+            long start = (long)(startF * BasisFocal.LengthInTicks);
+            long end = (long)(endF * BasisFocal.LengthInTicks);
+            var focal = Focal.CreateByValues(start, end);
+            return AddNumber(new Number(focal), addToStore);
+        }
+
         public Number AddNumber(Number number, bool addToStore = true)
         {
 	        number.Domain = this;

@@ -18,13 +18,47 @@ namespace MathDemo
     {
 	    private Brain Brain { get; }
         private CoreRenderer Renderer { get; }
-        private int _testIndex = 4;
+        private int _testIndex = 0;
         private readonly int[] _tests = new int[] { 0, 1, 2, 3, 4 };
         public Demos(Brain brain, CoreRenderer renderer)
         {
 	        Brain = brain;
 	        Renderer = renderer;
         }
+
+        private SKWorkspaceMapper test0(MouseAgent mouseAgent)
+        {
+            var hDomain = Domain.CreateDomain("test0", 8, 16);
+            var vDomain = Domain.CreateDomain("test0", 8, 16);
+
+            var hNum = hDomain.CreateNumberFromFloats(-2, 9);
+            var vNum = vDomain.CreateNumberFromFloats(3, 6);
+        
+
+            var hSel = new Selection(hNum);
+            var transform = Brain.AddTransform(hSel, vNum, TransformKind.Blend);
+
+            var wm = new SKWorkspaceMapper(mouseAgent, 150, 10, 800, 800);
+
+            wm.AddHorizontal(hDomain);
+            wm.AddVertical(vDomain);
+
+            //mouseAgent.Workspace.AddDomains(true, hDomain, vDomain);
+
+            //var dm = wm.GetOrCreateDomainMapper(hDomain, wm.GetHorizontalSegment(.5f, 50));
+            //dm.ShowGradientNumberLine = false;
+            //dm.ShowValueMarkers = true;
+            //dm.ShowBasisMarkers = false;
+            //dm.ShowBasis = false;
+
+            //var dm2 = wm.GetOrCreateDomainMapper(vDomain, wm.GetVerticalSegment(.5f, 50));
+            //dm2.ShowGradientNumberLine = false;
+            //dm2.ShowValueMarkers = true;
+            //dm2.ShowBasisMarkers = false;
+            //dm2.ShowBasis = false;
+            return wm;
+        }
+
         private SKWorkspaceMapper testTrig(MouseAgent mouseAgent)
         {
             Trait trait = Trait.CreateIn(Brain, "testTrig");
@@ -122,41 +156,6 @@ namespace MathDemo
             mouseAgent.Workspace.AddElements(nn);
             return wm;
         }
-        private SKWorkspaceMapper test0(MouseAgent mouseAgent)
-        {
-	        Trait trait = Trait.CreateIn(Brain, "test0");
-            var unitSize = 8;
-            var unit = Focal.CreateByValues(0, unitSize);
-            var range = Focal.CreateByValues(-16 * unitSize, 16 * unitSize);
-            var hDomain = trait.AddDomain(unit, range);
-            var vDomain = trait.AddDomain(unit, range);
-            var hFocal = Focal.CreateByValues(-2 * unitSize, 9 * unitSize);
-            var vFocal = Focal.CreateByValues(3 * unitSize, 6 * unitSize);
-            //var val2 = Focal.CreateByValues(t0, unitSize, unitSize);
-            //var val3 = Focal.CreateByValues(t0, unitSize, unitSize);
-
-            var hNum = hDomain.CreateNumber(hFocal);
-            var vNum = vDomain.CreateNumber(vFocal);
-            var hSel = new Selection(hNum);
-            var transform = Brain.AddTransform(hSel, vNum, TransformKind.Blend);
-
-            mouseAgent.Workspace.AddDomains(true, hDomain, vDomain);
-
-            var wm = new SKWorkspaceMapper(mouseAgent, 150, 10, 800, 800);
-
-            var dm = wm.GetOrCreateDomainMapper(hDomain, wm.GetHorizontalSegment(.5f, 50));
-            dm.ShowGradientNumberLine = false;
-            dm.ShowValueMarkers = true;
-            dm.ShowBasisMarkers = false;
-            dm.ShowBasis = false;
-
-            var dm2 = wm.GetOrCreateDomainMapper(vDomain, wm.GetVerticalSegment(.5f, 50));
-            dm2.ShowGradientNumberLine = false;
-            dm2.ShowValueMarkers = true;
-            dm2.ShowBasisMarkers = false;
-            dm2.ShowBasis = false;
-            return wm;
-        }
         private SKWorkspaceMapper test1(MouseAgent mouseAgent)
         {
 	        Trait trait = Trait.CreateIn(Brain, "test1");
@@ -233,12 +232,17 @@ namespace MathDemo
 	        var rangeLen = (double)range.LengthInTicks;
 	        var yt = 0.1f;
 	        var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
-		    var domain = trait.AddDomain(basisFocal, range);
-		    //domain.BasisIsReciprocal = true;
-		    result.Add(domain);
+		    //var domain = trait.AddDomain(basisFocal, range);
+		    ////domain.BasisIsReciprocal = true;
+		    //result.Add(domain);
 	        for (int i = 1; i < focalPositions.Length; i += 2)
 	        {
 		        var focal = Focal.CreateByValues(focalPositions[i - 1], focalPositions[i]);
+
+		        var domain = trait.AddDomain(basisFocal, focal);
+		        //domain.BasisIsReciprocal = true;
+		        result.Add(domain);
+
 		        var num = domain.CreateNumber(focal);
 		        mouseAgent.Workspace.AddDomains(true, domain);
 		        var displaySeg = wm.GetHorizontalSegment(yt, 100);

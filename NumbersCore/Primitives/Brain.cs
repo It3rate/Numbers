@@ -39,7 +39,23 @@ namespace NumbersCore.Primitives
         public int NextTraitId() => _traitCounter++;
 	    public int NextTransformId() => _transformCounter++;
 
-	    public Trait AddTrait(Trait trait)
+        public Trait GetOrCreateTrait(string traitName)
+        {
+            Trait trait = null;
+            foreach(var t in TraitStore.Values)
+            {
+                if(t.Name == traitName)
+                {
+                    trait = t;
+                }
+            }
+            if(trait == null)
+            {
+                trait = Trait.CreateIn(this, traitName);
+            }    
+            return trait;
+        }
+        public Trait AddTrait(Trait trait)
 	    {
 		    trait.Brain = this;
 		    trait.Id = NextTraitId();
