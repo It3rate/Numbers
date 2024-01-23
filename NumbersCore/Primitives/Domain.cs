@@ -95,7 +95,7 @@ namespace NumbersCore.Primitives
         public Number AddNumber(Number number, bool addToStore = true)
         {
 	        number.Domain = this;
-	        number.Id = number.Id == 0 ? NextNumberId() : number.Id;
+	        number.Id = number.Id == 0 ? Number.NextNumberId() : number.Id;
 	        if (addToStore)
 	        {
 		        NumberStore[number.Id] = number;
@@ -158,9 +158,6 @@ namespace NumbersCore.Primitives
         {
 	        NumberStore.Clear();
         }
-
-        private int _numberCounter = 1 + (int)MathElementKind.Number;
-        public int NextNumberId() => _numberCounter++ + Id;
 
         public IEnumerable<Number> Numbers()
         {

@@ -40,7 +40,7 @@ namespace MathDemo
             this.corePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.corePanel.Location = new System.Drawing.Point(0, 0);
             this.corePanel.Name = "corePanel";
-            this.corePanel.Size = new System.Drawing.Size(1792, 1201);
+            this.corePanel.Size = new System.Drawing.Size(1792, 1362);
             this.corePanel.TabIndex = 0;
             // 
             // label1
@@ -49,7 +49,7 @@ namespace MathDemo
             this.label1.BackColor = System.Drawing.SystemColors.Info;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label1.Location = new System.Drawing.Point(12, 1144);
+            this.label1.Location = new System.Drawing.Point(3, 1298);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(349, 29);
             this.label1.TabIndex = 0;
@@ -60,7 +60,7 @@ namespace MathDemo
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(1792, 1201);
+            this.ClientSize = new System.Drawing.Size(1792, 1362);
             this.Controls.Add(this.corePanel);
             this.Name = "CoreForm";
             this.Text = "Form1";

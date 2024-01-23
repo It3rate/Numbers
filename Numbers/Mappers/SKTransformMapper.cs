@@ -51,36 +51,33 @@ namespace Numbers.Mappers
             r_si = repNum.EndValue * selNum.StartValue;
 
             var org = selDr.Guideline.PointAlongLine(0.5f);
-
-            //var s0Unit = selDr.Guideline.PointAlongLine(_selRange.StartF);
             var sUnit = selDr.Guideline.PointAlongLine(_selRange.EndF);
-            //var r0Unit = repDr.Guideline.PointAlongLine(_repRange.StartF);
             var rUnit = repDr.Guideline.PointAlongLine(_repRange.EndF);
-
             var sUnot = selDr.Guideline.PointAlongLine(_selRange.StartF);
-            //var s1Unot = selDr.Guideline.PointAlongLine(1f - _selRange.EndF);
             var rUnot = repDr.Guideline.PointAlongLine(_repRange.StartF);
-            //var r1Unot = repDr.Guideline.PointAlongLine(1f - _repRange.EndF);
 
             r_s_shape = new SKPoint[] { rUnit, new SKPoint(sUnit.X, rUnit.Y), sUnit, org };
             DrawPolyshape(r_s >= 0, unitAA_Brush, true, r_s_shape);
             ri_si_shape = new SKPoint[] { rUnot, new SKPoint(sUnot.X, rUnot.Y), sUnot, org };
             DrawPolyshape(ri_si >= 0, unitBB_Brush, true, ri_si_shape);
-
             ri_s_shape = new SKPoint[] { rUnot, new SKPoint(sUnit.X, rUnot.Y), sUnit, org };
             DrawPolyshape(ri_s >= 0, unotBA_Brush, false, ri_s_shape);
             r_si_shape = new SKPoint[] { rUnit, new SKPoint(sUnot.X, rUnit.Y), sUnot, org };
             DrawPolyshape(r_si >= 0, unotAB_Brush, false, r_si_shape);
 
-            //DrawTriangle(r0_s1 >= 0, unotBA_Pen, false, r1Unit, s0Unot, org);
-            //DrawTriangle(r1_s0 >= 0, unotAB_Pen, false, r0Unit, s1Unot, org);
-            //DrawTriangle(r0_s0 >= 0, unitAA_Pen, true, s0Unot, r0Unot, org);
-            //DrawTriangle(r1_s1 >= 0, unitBB_Pen, true, s1Unot, r1Unot, org);
+            // draw subtraction box
+            var invSelNum = selNum.GetInverted(false);
+            var invRepNum = repNum.GetInverted(false);
+            var invSelRange = invSelNum.RangeInMinMax;
+            var invRepRange = invRepNum.RangeInMinMax;
+            var invSUnit = selDr.Guideline.PointAlongLine(invSelRange.EndF);
+            var invRUnit = repDr.Guideline.PointAlongLine(invRepRange.EndF);
+            var invSUnot = selDr.Guideline.PointAlongLine(invSelRange.StartF);
+            var invRUnot = repDr.Guideline.PointAlongLine(invRepRange.StartF);
+            DrawPolyshape(true, unitBB_Pen, false, org, invSUnot, new SKPoint(invSUnot.X, invRUnot.Y), invRUnot);
 
             DrawEquation(selNum, repNum, new SKPoint(10, 40), Pens.TextBrush);
             DrawAreaValues(selNum, repNum);
-            //DrawUnitBox(GetUnitBoxPoints(), unitRect_Pen);
-            //DrawXFormedUnitBox(GetUnitBoxPoints(), unitXformRect_Pen);
         }
         public void DrawX()
         {

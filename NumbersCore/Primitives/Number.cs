@@ -8,7 +8,10 @@ namespace NumbersCore.Primitives
 	{
 		public MathElementKind Kind => MathElementKind.Number;
 		public int Id { get; internal set; }
-		public int CreationIndex => Id - (int) Kind - 1;
+        private static int _numberCounter = 1 + (int)MathElementKind.Number;
+        public static int NextNumberId() => _numberCounter++;
+
+        public int CreationIndex => Id - (int) Kind - 1;
 
 		public Brain Brain => Trait?.Brain;
 		public virtual Trait Trait => Domain?.Trait;
@@ -95,27 +98,38 @@ namespace NumbersCore.Primitives
 
         public Range ValueInRenderPerspective => new Range(-StartValue, EndValue);
 
-		public Number SetWith(Number other)
-		{
-			if (Domain.Id == other.Domain.Id)
-			{
-				StartTickPosition = other.StartTickPosition;
-				EndTickPosition = other.EndTickPosition;
-			}
-			else
-			{
-				Value = other.Value;
+        public Number SetWith(Number other)
+        {
+            if (Domain.Id == other.Domain.Id)
+            {
+                StartTickPosition = other.StartTickPosition;
+                EndTickPosition = other.EndTickPosition;
             }
-			return other;
-		}
+            else
+            {
+                Value = other.Value;
+            }
+            return other;
+        }
+        public Number Clone(bool addToStore = true)
+        {
+            var result = new Number(Focal.Clone());
+            return Domain.AddNumber(result, addToStore);
+        }
+        public Number GetInverted(bool addToStore = true)
+        {
+            var result = Clone(false);
+            result.Value *= -1;
+            return result;
+        }
 
-		public long WholeStartValue => (long) StartValue;
+        public long WholeStartValue => (long) StartValue;
 		public long WholeEndValue => (long) EndValue;
 		public long RemainderStartValue => Domain.BasisIsReciprocal ? 0 : Math.Abs(StartTicks % BasisFocal.NonZeroLength);
 		public long RemainderEndValue => Domain.BasisIsReciprocal ? 0 : Math.Abs(EndTicks % BasisFocal.NonZeroLength);
-		public Range RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal); //*
+		public Range RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal);
 
-		public Range FloorRange => new Range(Math.Ceiling(StartValue), Math.Floor(EndValue));
+        public Range FloorRange => new Range(Math.Ceiling(StartValue), Math.Floor(EndValue));
 		public Range CeilingRange => new Range(Math.Floor(StartValue), Math.Ceiling(EndValue));
 		public Range RoundedRange => new Range(Math.Round(StartValue), Math.Round(EndValue));
 		public Range RemainderRange => Value - FloorRange;
@@ -325,7 +339,7 @@ namespace NumbersCore.Primitives
         public override string ToString()
 		{
 			var v = Value;
-			return $"[{-v.Start:0.00}->{v.End:0.00}]";
+			return $"[{v.Start:0.00}->{v.End:0.00}]";
 		}
 		public override bool Equals(object obj)
 		{
