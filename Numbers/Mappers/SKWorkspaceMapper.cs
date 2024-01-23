@@ -47,7 +47,8 @@ namespace Numbers.Mappers
 
         public SKWorkspaceMapper(MouseAgent agent, float left, float top, float width, float height) : base(agent, agent.Workspace)
         {
-	        MouseAgent.WorkspaceMappers[Id] = this;
+            Id = idCounter++;
+            MouseAgent.WorkspaceMappers[Id] = this;
             Reset(new SKPoint(left, top), new SKPoint(left + width, top + height));
 	    }
 
@@ -246,10 +247,10 @@ namespace Numbers.Mappers
         {
 	        if (!DomainMappers.TryGetValue(domain.Id, out var result))
 	        {
-		        var seg = line ?? NextDefaultLine();
+		        line = line ?? NextDefaultLine();
                 var half_mmr = (float)(1.0 / domain.MinMaxRange.AbsLength());
 		        var uSeg = unitLine ?? line.SegmentAlongLine(0.5f, 0.5f + half_mmr);
-		        result = new SKDomainMapper(Agent, domain, seg, uSeg);
+		        result = new SKDomainMapper(Agent, domain, line, uSeg);
 		        DomainMappers[domain.Id] = result;
 	        }
 	        return (SKDomainMapper)result;

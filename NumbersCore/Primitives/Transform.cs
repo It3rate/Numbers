@@ -42,7 +42,9 @@ namespace NumbersCore.Primitives
 	    public Selection Source { get; set; } // the object being transformed
 	    public Number Change { get; set; } // the amount to transform (can change per repeat)
 
-	    public bool IsActive { get; private set; }
+        public Number Value { get; set; } // current result of transform
+
+        public bool IsActive { get; private set; }
         public UpCounter Counter { get; } = new UpCounter(); // counts the number of repeats 
 	    public Evaluation HaltCondition { get; set; } // the evaluation that decides if the transform can continue
 
@@ -50,6 +52,7 @@ namespace NumbersCore.Primitives
         {
 	        Source = source;
 	        Change = change;
+            Value = change.Clone(false);
 	        TransformKind = kind;
 	        Brain = change.Brain;
 	        Id = Brain.NextTransformId();

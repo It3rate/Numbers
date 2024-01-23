@@ -10,7 +10,8 @@ namespace Numbers.Mappers
 {
 	public abstract class SKMapper
 	{
-		public int Id => MathElement.Id;
+		public int Id;
+        protected static int idCounter = 0;
 
 		public MouseAgent Agent { get; }
 		public Brain Brain => Agent.Brain;

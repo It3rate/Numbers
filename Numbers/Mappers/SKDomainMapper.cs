@@ -307,7 +307,7 @@ namespace Numbers.Mappers
 
             // minor ticks
             var totalTicks = Math.Abs(BasisSegment.Length / tickToBasisRatio);
-            var showMinorTicks = true;// totalTicks >= 1000; // don't show tiny ticks
+            var showMinorTicks = ShowTicks;// totalTicks >= 1000; // don't show tiny ticks
             if (showMinorTicks)
             {
                 var tickStep = BasisSegment.Length * 20 < totalTicks ? 0.1f : Math.Abs(tickToBasisRatio);

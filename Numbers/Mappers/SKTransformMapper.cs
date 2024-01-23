@@ -40,6 +40,9 @@ namespace Numbers.Mappers
             PolyShapes.Clear();
             var selNum = Transform.Source[0];
             var repNum = Transform.Change;
+            Transform.Value.SetWith(selNum);
+            Transform.Value.Multiply(repNum);
+
             var selDr = SelectionMapper;
             var repDr = RepeatMapper;
 
@@ -75,6 +78,7 @@ namespace Numbers.Mappers
             var invSUnot = selDr.Guideline.PointAlongLine(invSelRange.StartF);
             var invRUnot = repDr.Guideline.PointAlongLine(invRepRange.StartF);
             DrawPolyshape(true, unitBB_Pen, false, org, invSUnot, new SKPoint(invSUnot.X, invRUnot.Y), invRUnot);
+            DrawPolyshape(true, unotAB_Pen, false, org, invSUnit, new SKPoint(invSUnit.X, invRUnot.Y), invRUnot);
 
             DrawEquation(selNum, repNum, new SKPoint(10, 40), Pens.TextBrush);
             DrawAreaValues(selNum, repNum);

@@ -35,11 +35,34 @@ namespace MathDemo
         
 
             var hSel = new Selection(hNum);
-            var transform = Brain.AddTransform(hSel, vNum, TransformKind.Blend);
+            Transform transform = Brain.AddTransform(hSel, vNum, TransformKind.Blend);
 
-            var wm = new SKWorkspaceMapper(mouseAgent, 150, 0, 800, 800);
+            var wm = new SKWorkspaceMapper(mouseAgent, 300, 0, 600, 600);
             wm.AddHorizontal(hDomain);
             wm.AddVertical(vDomain);
+
+            //var wm2 = new SKWorkspaceMapper(mouseAgent, 100, 600, 1200, 200);
+
+            var nhDomain = Domain.CreateDomain("test1", 100, 20);
+            var nhn = nhDomain.CreateNumber(hNum.Focal);
+            var nhdm = wm.AddDomain(nhDomain, 1f, true, -200);
+            nhdm.ShowBasis = true;
+            nhdm.ShowBasisMarkers = true;
+            nhdm.ShowTicks = false;
+
+            var nvDomain = Domain.CreateDomain("test1", 100, 20);
+            var nvn = nvDomain.CreateNumber(vNum.Focal);
+            var nvdm = wm.AddDomain(nvDomain, 1.08f, true, -200);
+            nvdm.ShowBasis = true;
+            nvdm.ShowBasisMarkers = true;
+            nvdm.ShowTicks = false;
+
+            var resDomain = Domain.CreateDomain("test1", 100, 100);
+            var resn = resDomain.CreateNumber(transform.Value.Focal);
+            var resdm = wm.AddDomain(resDomain, 1.2f, true, -200);
+            resdm.ShowBasis = true;
+            resdm.ShowBasisMarkers = true;
+            resdm.ShowTicks = false;
 
             return wm;
         }
