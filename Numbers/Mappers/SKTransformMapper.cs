@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Numbers.Agent;
 using Numbers.Renderer;
 using Numbers.Utils;
@@ -81,7 +82,7 @@ namespace Numbers.Mappers
             var ePen = ev<0 ? unitNegPen : unitPosPen;
             DrawPolyshape(true, ePen, false, org, ep0, new SKPoint(ep0.X, ep1.Y), ep1);
             var etxt = $"{ev:0.00}";
-            Canvas.DrawText(etxt, ep0.X - 30, ep1.Y - 4, resultText);
+            Canvas.DrawText(etxt, ep0.X - 30, ep1.Y - 4, Pens.UnitMarkerText);
 
             var iv = Transform.Value.StartValue;
             var isv = Math.Sqrt(Math.Abs(iv));
@@ -90,7 +91,7 @@ namespace Numbers.Mappers
             var iPen = iv < 0 ? unotNegPen : unotPosPen;
             DrawPolyshape(true, iPen, false, org, ip0, new SKPoint(ip0.X, ip1.Y), ip1);
             var itxt = $"{iv:0.00}i";
-            Canvas.DrawText(itxt, ip0.X, ip1.Y - 4, resultText);
+            Canvas.DrawText(itxt, ip0.X, ip1.Y - 4, Pens.UnotMarkerText); 
 
 
             DrawEquation(selNum, repNum, new SKPoint(200, 40), Pens.TextBrush);
