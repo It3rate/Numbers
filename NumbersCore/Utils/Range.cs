@@ -58,6 +58,11 @@ namespace NumbersCore.Utils
         public double Length => Range.AbsLength(this);
         public double DirectedLength() => Range.DirectedLength(this);
         public double AbsLength() => Range.AbsLength(this);
+        public double TAtValue(double value)
+        {
+            var dist = value - (-Start);
+            return dist / DirectedLength();
+        }
         public Range Conjugate() => Range.Conjugate(this);
         public Range Reciprocal() => Range.Reciprocal(this);
         public Range Square() => Range.Square(this);
@@ -68,7 +73,6 @@ namespace NumbersCore.Utils
         public Range Round() => Range.Round(this);
         public Range PositiveDirection() => PositiveDirection(this);
         public Range NegativeDirection() => NegativeDirection(this);
-
         public bool IsZero => End == 0 && Start == 0;
         public bool IsZeroLength => (End == Start);
         public bool IsForward => End - Start > Tolerance;

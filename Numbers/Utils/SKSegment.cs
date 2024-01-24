@@ -83,11 +83,11 @@ namespace Numbers.Utils
         public float AbsLength => (float)Math.Abs(Length);
         public float LengthSquared => (EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y);
         public float NonZeroLength => Length == 0 ? 0.001f : Length;
-        public SKPoint PointAlongLine(float t, float offsetT = 0)
+        public SKPoint PointAlongLine(double t, float offsetT = 0)
         {
             return new SKPoint(
-                (EndPoint.X - StartPoint.X) * (t + offsetT) + StartPoint.X,
-                (EndPoint.Y - StartPoint.Y) * (t + offsetT) + StartPoint.Y);
+                (EndPoint.X - StartPoint.X) * ((float)t + offsetT) + StartPoint.X,
+                (EndPoint.Y - StartPoint.Y) * ((float)t + offsetT) + StartPoint.Y);
         }
         public (SKPoint, SKPoint) PerpendicularLine(float t, float offset) => (PointAlongLine(t), OrthogonalPoint(PointAlongLine(t), offset));
         public SKPoint RelativeOffset (float offset) => OrthogonalPoint(SKPoint.Empty, offset);

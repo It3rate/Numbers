@@ -106,6 +106,12 @@ namespace Numbers.Mappers
             AddValidNumbers();
 	    }
 	    public SKSegment SegmentAlongGuideline(Range ratio) => Guideline.SegmentAlongLine(ratio);
+        public SKPoint PointAt(double value)
+        {
+            double t = Domain.MinMaxRange.TAtValue(value);
+            var pt = Guideline.PointAlongLine(t);
+            return pt;
+        }
 
         protected void AddValidNumbers()
 	    {

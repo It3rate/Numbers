@@ -76,7 +76,7 @@ namespace Numbers.Commands
 	    public override void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
 	    {
 		   base.Update(currentTime, deltaTime);
-		   _t = Math.Sin(LiveTimeSpan.RatioAt(currentTime.EndValue));
+		   _t = Math.Sin(LiveTimeSpan.RatioFromStart(currentTime.EndValue));
 		   CreateNumberCommand.Number.InterpolateFromOne(_targetNumber.Value, _t);
         }
 

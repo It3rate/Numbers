@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Numbers.Agent;
 using Numbers.Renderer;
 using Numbers.Utils;
@@ -37,6 +38,10 @@ namespace Numbers.Mappers
 
         public void Draw()
         {
+            DrawMultiply();
+        }
+        public void DrawMultiply()
+        {
             PolyShapes.Clear();
             var selNum = Transform.Source[0];
             var repNum = Transform.Change;
@@ -66,19 +71,27 @@ namespace Numbers.Mappers
             ri_s_shape = new SKPoint[] { rUnot, new SKPoint(sUnit.X, rUnot.Y), sUnit, org };
             DrawPolyshape(ri_s >= 0, unotBA_Brush, false, ri_s_shape);
             r_si_shape = new SKPoint[] { rUnit, new SKPoint(sUnot.X, rUnit.Y), sUnot, org };
-            DrawPolyshape(r_si >= 0, unotAB_Brush, false, r_si_shape);
+            DrawPolyshape(r_si >= 0, unotBA_Brush, false, r_si_shape);
 
-            // draw subtraction box
-            var invSelNum = selNum.GetInverted(false);
-            var invRepNum = repNum.GetInverted(false);
-            var invSelRange = invSelNum.RangeInMinMax;
-            var invRepRange = invRepNum.RangeInMinMax;
-            var invSUnit = selDr.Guideline.PointAlongLine(invSelRange.EndF);
-            var invRUnit = repDr.Guideline.PointAlongLine(invRepRange.EndF);
-            var invSUnot = selDr.Guideline.PointAlongLine(invSelRange.StartF);
-            var invRUnot = repDr.Guideline.PointAlongLine(invRepRange.StartF);
-            DrawPolyshape(true, unitBB_Pen, false, org, invSUnot, new SKPoint(invSUnot.X, invRUnot.Y), invRUnot);
-            DrawPolyshape(true, unotAB_Pen, false, org, invSUnit, new SKPoint(invSUnit.X, invRUnot.Y), invRUnot);
+            // draw product boxes
+            var ev = Transform.Value.EndValue;
+            var esv = Math.Sqrt(Math.Abs(ev));
+            var ep0 = selDr.PointAt(esv);
+            var ep1 = repDr.PointAt(esv);
+            var ePen = ev<0 ? unitNegPen : unitPosPen;
+            DrawPolyshape(true, ePen, false, org, ep0, new SKPoint(ep0.X, ep1.Y), ep1);
+            var etxt = $"{ev:0.00}";
+            Canvas.DrawText(etxt, ep0.X - 30, ep1.Y - 4, resultText);
+
+            var iv = Transform.Value.StartValue;
+            var isv = Math.Sqrt(Math.Abs(iv));
+            var ip0 = selDr.PointAt(-isv);
+            var ip1 = repDr.PointAt(isv);
+            var iPen = iv < 0 ? unotNegPen : unotPosPen;
+            DrawPolyshape(true, iPen, false, org, ip0, new SKPoint(ip0.X, ip1.Y), ip1);
+            var itxt = $"{iv:0.00}i";
+            Canvas.DrawText(itxt, ip0.X, ip1.Y - 4, resultText);
+
 
             DrawEquation(selNum, repNum, new SKPoint(200, 40), Pens.TextBrush);
             DrawAreaValues(selNum, repNum);
@@ -116,10 +129,10 @@ namespace Numbers.Mappers
             DrawPolyshape(ri_si >= 0, unitAA_Brush, true, s0Unit, r0Unit, org);
             DrawPolyshape(r_s >= 0, unitBB_Brush, true, s1Unit, r1Unit, org);
 
-            DrawPolyshape(ri_s >= 0, unotBA_Pen, false, r1Unit, s0Unot, org);
-            DrawPolyshape(r_si >= 0, unotAB_Pen, false, r0Unit, s1Unot, org);
-            DrawPolyshape(ri_si >= 0, unitAA_Pen, true, s0Unot, r0Unot, org);
-            DrawPolyshape(r_s >= 0, unitBB_Pen, true, s1Unot, r1Unot, org);
+            DrawPolyshape(ri_s >= 0, unotPosPen, false, r1Unit, s0Unot, org);
+            DrawPolyshape(r_si >= 0, unotNegPen, false, r0Unit, s1Unot, org);
+            DrawPolyshape(ri_si >= 0, unitPosPen, true, s0Unot, r0Unot, org);
+            DrawPolyshape(r_s >= 0, unitNegPen, true, s1Unot, r1Unot, org);
 
             DrawEquation(selNum, repNum, new SKPoint(900, 500), Pens.TextBrush);
             DrawAreaValues(selNum, repNum);
@@ -254,8 +267,6 @@ namespace Numbers.Mappers
 
 			pt = pts[1]; // x of s01 y of r01
 			pt -= org;
-			//x = -(unitLen * su - unitLen);
-			//y = pt.Y * ri;
 			x = ((pt.X - unitLen) * prodU) / 2f;
 			y = pt.Y * ri;
             pts[1] = new SKPoint(x + org.X, y + org.Y);
@@ -268,41 +279,34 @@ namespace Numbers.Mappers
 
 			pt = pts[3]; // x of s0 y of r10
 			pt -= org;
-			//x = pt.X * si - unitLen;
-			//y = (pt.Y + unitLen) * ri;
 			x = ((pt.X + unitLen) * prodU) / 2f;
 			y = (pt.Y + unitLen) * ri;
             pts[3] = new SKPoint(x + org.X, y + org.Y);
-
-
-
-            //         var 
-            //for (int i = 0; i < pts.Length; i++)
-            //{
-            //	var pt = pts[i];
-            //	pt -= org;
-            //	var x = pt.X * ru + pt.X * ri;
-            //	var y = pt.Y * su + pt.Y * si;
-            //             pts[i] = new SKPoint(x + org.X, y+ org.Y);
-            //}
         }
 
 		private static SKColor unitAA_Color = SKColor.Parse("#700060A9");
 		private static SKColor unitBB_Color = SKColor.Parse("#50C93B0C");
 		private static SKColor unotAB_Color = SKColor.Parse("#7000BCFD");
-		private static SKColor unotBA_Color = SKColor.Parse("#7000FDBC");//"#50F87A0E");
-		private static readonly SKPaint unitAA_Brush = CorePens.GetBrush(unitAA_Color);
+		private static SKColor unotBA_Color = SKColor.Parse("#7000E0BC");//"#50F87A0E");
+
+        private static readonly SKPaint unitAA_Brush = CorePens.GetBrush(unitAA_Color);
         private static readonly SKPaint unitBB_Brush = CorePens.GetBrush(unitBB_Color);
         private static readonly SKPaint unotAB_Brush = CorePens.GetBrush(unotAB_Color);
 		private static readonly SKPaint unotBA_Brush = CorePens.GetBrush(unotBA_Color);
 
 
-		private static readonly SKPaint unitBB_Pen = CorePens.GetPen(unitBB_Color, 2);
-		private static readonly SKPaint unitAA_Pen = CorePens.GetPen(unitAA_Color, 2);
-		private static readonly SKPaint unotAB_Pen = CorePens.GetPen(unotAB_Color,1.5f);
-		private static readonly SKPaint unotBA_Pen = CorePens.GetPen(unotBA_Color, 1.5f);
+        private static SKColor unitPosColor = SKColor.Parse("#B0004089");
+        private static SKColor unitNegColor = SKColor.Parse("#B0A03000");
+        private static SKColor unotPosColor = SKColor.Parse("#B000C09C");
+        private static SKColor unotNegColor = SKColor.Parse("#B0C05030");
 
-        private static readonly SKPaint blackText = CorePens.GetText(SKColor.Parse("#FF000000"), 14);
+		private static readonly SKPaint unitNegPen = CorePens.GetPen(unitNegColor, 3f);
+		private static readonly SKPaint unitPosPen = CorePens.GetPen(unitPosColor, 3f);
+		private static readonly SKPaint unotNegPen = CorePens.GetPen(unotNegColor, 3f);
+		private static readonly SKPaint unotPosPen = CorePens.GetPen(unotPosColor, 3f);
+
+        private static readonly SKPaint blackText = CorePens.GetText(SKColor.Parse("#FF444444"), 14);
+        private static readonly SKPaint resultText = CorePens.GetText(SKColor.Parse("#B0004089"), 12);
         private static readonly SKPaint unitText = CorePens.GetText(SKColor.Parse("#A0F87A0E"), 18);
         private static readonly SKPaint unotText = CorePens.GetText(SKColor.Parse("#B000D0FF"), 18);
 

@@ -111,10 +111,12 @@ namespace NumbersCore.Primitives
             }
             return other;
         }
-        public Number Clone(bool addToStore = true)
+
+        public double RatioFromStart(double pointOnLine)
         {
-            var result = new Number(Focal.Clone());
-            return Domain.AddNumber(result, addToStore);
+            var val = Value;
+            var len = val.Length;
+            return (pointOnLine - val.Start) / len;
         }
         public Number GetInverted(bool addToStore = true)
         {
@@ -161,13 +163,6 @@ namespace NumbersCore.Primitives
         public void Divide(Number other)
 		{
 			Value /= other.Value;
-        }
-
-        public double RatioAt(double pointOnLine)
-        {
-	        var val = Value;
-	        var len = val.Length;
-	        return (pointOnLine + val.Start) / len;
         }
 
 		public void ChangeDomain(Domain newDomain)
@@ -329,11 +324,10 @@ namespace NumbersCore.Primitives
 		public void Always(Number q, NumberSet result) => result.Reset(FocalBase.Always(Focal, q.Focal));
 
 
-        public Number Clone()
+        public Number Clone(bool addToStore = true)
         {
-	        var result = new Number(Focal.Clone());
-	        Domain.AddNumber(result);
-	        return result;
+            var result = new Number(Focal.Clone());
+            return Domain.AddNumber(result, addToStore);
         }
 
         public override string ToString()

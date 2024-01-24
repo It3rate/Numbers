@@ -34,7 +34,6 @@ namespace MathDemo
             var vDomain = Domain.CreateDomain("test0", 100, 10);
             var hNum = hDomain.CreateNumberFromFloats(2, 9);
             var vNum = vDomain.CreateNumberFromFloats(3, 6);
-        
 
             var hSel = new Selection(hNum);
             Transform transform = Brain.AddTransform(hSel, vNum, TransformKind.Blend);
@@ -46,26 +45,6 @@ namespace MathDemo
             CreateSimilarDomain(hDomain, 1f, 20, hNum.Focal);
             CreateSimilarDomain(hDomain, 1.08f, 20, vNum.Focal);
             CreateSimilarDomain(hDomain, 1.2f, 100, transform.Value.Focal);
-            //var nhDomain = Domain.CreateDomain("test1", 100, 20);
-            //var nhn = nhDomain.CreateNumber(hNum.Focal);
-            //var nhdm = wm.AddDomain(nhDomain, 1f, true, -200);
-            //nhdm.ShowBasis = true;
-            //nhdm.ShowBasisMarkers = true;
-            //nhdm.ShowTicks = false;
-
-            var nvDomain = Domain.CreateDomain("test1", 100, 20);
-            var nvn = nvDomain.CreateNumber(vNum.Focal);
-            var nvdm = wm.AddDomain(nvDomain, 1.08f, true, -200);
-            nvdm.ShowBasis = true;
-            nvdm.ShowBasisMarkers = true;
-            nvdm.ShowTicks = false;
-
-            var resDomain = Domain.CreateDomain("test1", 100, 100);
-            var resn = resDomain.CreateNumber(transform.Value.Focal);
-            var resdm = wm.AddDomain(resDomain, 1.2f, true, -200);
-            resdm.ShowBasis = true;
-            resdm.ShowBasisMarkers = true;
-            resdm.ShowTicks = false;
 
             return wm;
         }

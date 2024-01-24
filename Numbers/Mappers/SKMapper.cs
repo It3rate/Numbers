@@ -43,7 +43,6 @@ namespace Numbers.Mappers
 	        MathElement = element;
 	        Guideline = guideline ?? new SKSegment(0, 0, 1, 1);
         }
-
         public virtual void Reset(SKPoint startPoint, SKPoint endPoint)
         {
 	        Guideline.Reset(startPoint, endPoint);
