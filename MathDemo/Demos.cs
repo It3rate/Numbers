@@ -18,6 +18,8 @@ namespace MathDemo
     {
 	    private Brain Brain { get; }
         private CoreRenderer Renderer { get; }
+        private MouseAgent _currentMouseAgent;
+
         private int _testIndex = 0;
         private readonly int[] _tests = new int[] { 0, 1, 2, 3, 4 };
         public Demos(Brain brain, CoreRenderer renderer)
@@ -26,7 +28,7 @@ namespace MathDemo
 	        Renderer = renderer;
         }
 
-        private SKWorkspaceMapper test0(MouseAgent mouseAgent)
+        private SKWorkspaceMapper test0()
         {
             var hDomain = Domain.CreateDomain("test0", 100, 10);
             var vDomain = Domain.CreateDomain("test0", 100, 10);
@@ -37,18 +39,19 @@ namespace MathDemo
             var hSel = new Selection(hNum);
             Transform transform = Brain.AddTransform(hSel, vNum, TransformKind.Blend);
 
-            var wm = new SKWorkspaceMapper(mouseAgent, 300, 0, 600, 600);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 300, 0, 600, 600);
             wm.AddHorizontal(hDomain);
             wm.AddVertical(vDomain);
 
-            //var wm2 = new SKWorkspaceMapper(mouseAgent, 100, 600, 1200, 200);
-
-            var nhDomain = Domain.CreateDomain("test1", 100, 20);
-            var nhn = nhDomain.CreateNumber(hNum.Focal);
-            var nhdm = wm.AddDomain(nhDomain, 1f, true, -200);
-            nhdm.ShowBasis = true;
-            nhdm.ShowBasisMarkers = true;
-            nhdm.ShowTicks = false;
+            CreateSimilarDomain(hDomain, 1f, 20, hNum.Focal);
+            CreateSimilarDomain(hDomain, 1.08f, 20, vNum.Focal);
+            CreateSimilarDomain(hDomain, 1.2f, 100, transform.Value.Focal);
+            //var nhDomain = Domain.CreateDomain("test1", 100, 20);
+            //var nhn = nhDomain.CreateNumber(hNum.Focal);
+            //var nhdm = wm.AddDomain(nhDomain, 1f, true, -200);
+            //nhdm.ShowBasis = true;
+            //nhdm.ShowBasisMarkers = true;
+            //nhdm.ShowTicks = false;
 
             var nvDomain = Domain.CreateDomain("test1", 100, 20);
             var nvn = nvDomain.CreateNumber(vNum.Focal);
@@ -66,15 +69,28 @@ namespace MathDemo
 
             return wm;
         }
+        private SKDomainMapper CreateSimilarDomain(Domain domain, float offset, int rangeSize, params IFocal[] focals)
+        {
+            var newDomain = Domain.CreateDomain(domain.Trait.Name, (int)domain.BasisFocal.LengthInTicks, rangeSize);
+            foreach (var focal in focals)
+            {
+                newDomain.CreateNumber(focal);
+            }
+            var result = _currentMouseAgent.WorkspaceMapper.AddDomain(newDomain, offset, true, -200);
+            result.ShowBasis = true;
+            result.ShowBasisMarkers = true;
+            result.ShowMinorTicks = false;
+            return result;
+        }
 
-        private SKWorkspaceMapper testTrig(MouseAgent mouseAgent)
+        private SKWorkspaceMapper testTrig()
         {
             Trait trait = Trait.CreateIn(Brain, "testTrig");
             var unitSize = 100;
             var unit = Focal.CreateByValues(0, unitSize);
-            var wm = new SKWorkspaceMapper(mouseAgent, 10, 50, 1200, 600);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 10, 50, 1200, 600);
 
-            var domains = CreateDomainLines((MouseAgent)mouseAgent, trait, unit, 1, 101, -100, 0, -50, 50);
+            var domains = CreateDomainLines(_currentMouseAgent, trait, unit, 1, 101, -100, 0, -50, 50);
             var d0 = domains[0];
             var seg = d0.GetNumber(d0.NumberIds()[2]);
             //var d0n1 = d0.GetNumber(d0.NumberIds()[1]);
@@ -120,51 +136,51 @@ namespace MathDemo
             return wm;
         }
 
-        private SKWorkspaceMapper test3(MouseAgent mouseAgent)
+        private SKWorkspaceMapper test3()
         {
 	        Trait trait = Trait.CreateIn(Brain, "test3");
 	        long unitSize = 64;
-            var wm = new SKWorkspaceMapper(mouseAgent, 20, 20, 1000, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 20, 20, 1000, 400);
             var guideline = new SKSegment(100,100,700,100);
             var unitSeg = guideline.SegmentAlongLine(0.4f, 0.6f);
             var dc = new AddSKDomainCommand(trait, 0, unitSize, -800, 800, guideline, unitSeg);
-            mouseAgent.Stack.Do(dc);
+            _currentMouseAgent.Stack.Do(dc);
             var num = new AddSKNumberCommand(dc.DomainMapper, new Range(-1.5, 2.4));
-            mouseAgent.Stack.Do(num);
+            _currentMouseAgent.Stack.Do(num);
             num = new AddSKNumberCommand(dc.DomainMapper, new Range(.5, -1.2));
-            mouseAgent.Stack.Do(num);
+            _currentMouseAgent.Stack.Do(num);
 
             var guideline2 = new SKSegment(100, 200, 700, 200);
             var dc2 = new AddSKDomainCommand(trait, 0, unitSize, -800, 800, guideline2, unitSeg);
-            mouseAgent.Stack.Do(dc2);
+            _currentMouseAgent.Stack.Do(dc2);
             var num2 = new AddSKNumberCommand(dc2.DomainMapper, new Range(-1.2, -1.4));
             num2.DefaultDelay = -600;
-            mouseAgent.Stack.Do(num2);
+            _currentMouseAgent.Stack.Do(num2);
 
             var guideline3 = new SKSegment(100, 300, 700, 300);
             var dc3 = new AddSKDomainCommand(trait, 0, unitSize, -800, 800, guideline3, unitSeg);
-            mouseAgent.Stack.Do(dc3);
+            _currentMouseAgent.Stack.Do(dc3);
             var numSet = new NumberSet(dc3.CreatedDomain, new[] { new Focal(5, 20), new Focal(-20, -10), new Focal(-40, -30) });
             dc3.CreatedDomain.AddNumberSet(numSet);
 
             return wm;
         }
 
-        private SKWorkspaceMapper test2(MouseAgent mouseAgent)
+        private SKWorkspaceMapper test2()
         {
 	        Trait trait = Trait.CreateIn(Brain, "test2");
             var unitSize = 10;
             var unit = Focal.CreateByValues(0, unitSize);
-            var wm = new SKWorkspaceMapper(mouseAgent, 10, 50, 1200, 600);
-            var domains = CreateDomainLines((MouseAgent)mouseAgent, trait, unit, 15, 10, -40, -30, 35, 24, 4, -13);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 10, 50, 1200, 600);
+            var domains = CreateDomainLines((MouseAgent)_currentMouseAgent, trait, unit, 15, 10, -40, -30, 35, 24, 4, -13);
             var d2 = domains[2];
             var d1 = domains[1];
             var d1n2 = d1.GetNumber(d1.NumberIds()[2]);
             var nn =d2.CreateNumber(d1n2.Focal);
-            mouseAgent.Workspace.AddElements(nn);
+            _currentMouseAgent.Workspace.AddElements(nn);
             return wm;
         }
-        private SKWorkspaceMapper test1(MouseAgent mouseAgent)
+        private SKWorkspaceMapper test1()
         {
 	        Trait trait = Trait.CreateIn(Brain, "test1");
             var unitSize = 4;
@@ -182,8 +198,8 @@ namespace MathDemo
             //var sel = new Source(num2);
             //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
 
-            mouseAgent.Workspace.AddDomains(true, domain);//, domain2);
-            var wm = new SKWorkspaceMapper(mouseAgent, 20, 20, 800, 800);
+            _currentMouseAgent.Workspace.AddDomains(true, domain);//, domain2);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 20, 20, 800, 800);
             var dm = wm.GetOrCreateDomainMapper(domain, wm.GetHorizontalSegment(.3f, 100));
             dm.ShowGradientNumberLine = true;
             dm.ShowNumberOffsets = true;
@@ -197,32 +213,33 @@ namespace MathDemo
 
         public SKWorkspaceMapper NextTest(MouseAgent mouseAgent)
         {
-	        mouseAgent.IsPaused = true;
-	        mouseAgent.ClearAll();
+            _currentMouseAgent = mouseAgent;
+            _currentMouseAgent.IsPaused = true;
+            _currentMouseAgent.ClearAll();
 
 	        SKWorkspaceMapper wm;
             switch (_tests[_testIndex])
             {
                 case 0:
-	                wm = test0(mouseAgent);
+	                wm = test0();
                     break;
                 case 1:
-	                wm = test1(mouseAgent);
+	                wm = test1();
 	                break;
                 case 2:
-	                wm = test2(mouseAgent);
+	                wm = test2();
 	                break;
                 case 3:
-	                wm = test3(mouseAgent);
+	                wm = test3();
                     break;
                 default:
-	                wm = testTrig(mouseAgent);
+	                wm = testTrig();
                     break;
             }
             _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
 
             wm.EnsureRenderers();
-            mouseAgent.IsPaused = false;
+            _currentMouseAgent.IsPaused = false;
             return wm;
         }
 

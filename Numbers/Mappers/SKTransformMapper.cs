@@ -80,7 +80,7 @@ namespace Numbers.Mappers
             DrawPolyshape(true, unitBB_Pen, false, org, invSUnot, new SKPoint(invSUnot.X, invRUnot.Y), invRUnot);
             DrawPolyshape(true, unotAB_Pen, false, org, invSUnit, new SKPoint(invSUnit.X, invRUnot.Y), invRUnot);
 
-            DrawEquation(selNum, repNum, new SKPoint(10, 40), Pens.TextBrush);
+            DrawEquation(selNum, repNum, new SKPoint(200, 40), Pens.TextBrush);
             DrawAreaValues(selNum, repNum);
         }
         public void DrawX()
@@ -146,13 +146,13 @@ namespace Numbers.Mappers
 			var repTxt = $"* ({rep.StartValue:0.00}i → {rep.EndValue:0.00})";
 			var result = sel.Value * rep.Value;
 			var resultTxt = $"= ({result.Start:0.00}i → {result.End:0.00})";
-			var areaTxt = $"area:  {result.Start + result.End:0.00}";
+			//var areaTxt = $"area:  {result.Start + result.End:0.00}";
 
 			Canvas.DrawText(selTxt, location.X, location.Y, Pens.Seg0TextBrush);
 			Canvas.DrawText(repTxt, location.X, location.Y + 30, Pens.Seg1TextBrush);
-			Canvas.DrawLine(location.X, location.Y + 38, location.X + 150, location.Y + 38, Pens.GrayPen);
-			Canvas.DrawText(resultTxt, location.X, location.Y + 60, Pens.TextBrush);
-			Canvas.DrawText(areaTxt, location.X, location.Y + 95, unitText);
+			Canvas.DrawLine(location.X, location.Y + 38, location.X + 160, location.Y + 40, Pens.TextFractionPen);
+			Canvas.DrawText(resultTxt, location.X, location.Y + 65, Pens.TextBrush);
+			//Canvas.DrawText(areaTxt, location.X, location.Y + 95, unitText);
 		}
         public void DrawTextOnSegment(string txt, SKPoint startPt, SKPoint endPt, SKPaint paint, bool addBkg = false)
 		{

@@ -38,8 +38,9 @@ namespace Numbers.Mappers
 
 		public bool ShowInfoOnTop = true;
 		public bool ShowGradientNumberLine;
-	    public bool ShowTicks;
-	    public bool ShowNumberOffsets;
+        public bool ShowTicks = true;
+        public bool ShowMinorTicks = true;
+        public bool ShowNumberOffsets;
 	    public bool ShowKeyValues;
 	    public bool ShowValueMarkers = true;
 	    public bool ShowBasis;
@@ -285,7 +286,7 @@ namespace Numbers.Mappers
 	    }
         protected virtual void DrawTicks()
 	    {
-		    if (BasisSegment.AbsLength < 4)
+		    if (!ShowTicks || BasisSegment.AbsLength < 4)
 		    {
 			    return;
 		    }
@@ -302,13 +303,13 @@ namespace Numbers.Mappers
 	            var isOnTick = Math.Abs(tickToBasisRatio) <= 1.0 ? true : (long)(i / tickToBasisRatio) * (long)tickToBasisRatio == i;
 	            var offset = isOnTick ? offsetRange : offsetRange / 8f;
 				offset *= topDir;
-				TickPoints.Add(DrawTick((float)i, offset * upDir, Renderer.Pens.TickBoldPen));  
+                var tickPen = ShowMinorTicks ? Renderer.Pens.TickBoldPen : Renderer.Pens.TickPen;
+                TickPoints.Add(DrawTick((float)i, offset * upDir, tickPen));  
             }
 
             // minor ticks
             var totalTicks = Math.Abs(BasisSegment.Length / tickToBasisRatio);
-            var showMinorTicks = ShowTicks;// totalTicks >= 1000; // don't show tiny ticks
-            if (showMinorTicks)
+            if (ShowMinorTicks)
             {
                 var tickStep = BasisSegment.Length * 20 < totalTicks ? 0.1f : Math.Abs(tickToBasisRatio);
                 var rangeInTicks = Domain.ClampToInnerTick(DisplayLineRange);

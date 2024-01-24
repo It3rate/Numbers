@@ -59,7 +59,7 @@ namespace Numbers.Renderer
         }
         public virtual void Draw()
         {
-	        CurrentWorkspaceMapper?.Draw();
+            CurrentWorkspaceMapper?.Draw();
 	        Agent?.Draw();
         }
         public virtual void EndDraw()
