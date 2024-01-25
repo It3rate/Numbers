@@ -228,18 +228,29 @@ namespace Numbers.Mappers
 		    var unitLabel = num.IsBasis && isStart ? "0" : isUnitPersp ? "1" : !isUnitPersp ? "i" : "";
 
 		    var txBaseline = DrawMarkerPointer(t);
+            if (!isUnitPersp)
+            {
+                txBaseline.Reverse();
+                txBaseline = txBaseline.ShiftOffLine(-6);
+            }
 
-		    var numPaint = (isUnitPersp && isStart) || (!isUnitPersp && !isStart) ? Pens.UnotMarkerText : Pens.UnitMarkerText;
-		    var txtBkgPen = Pens.TextBackgroundPen;
+            var numPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;//(isUnitPersp && isStart) || (!isUnitPersp && !isStart)
+            var txtBkgPen = Pens.TextBackgroundPen;
 		    if (num.IsBasis)
 		    {
 			    var txt = isStart ? "0" : isUnitPersp ? "1" : "i";
 			    var unitPaint = isUnitPersp ? Pens.UnitMarkerText : Pens.UnotMarkerText;
+                if (!isUnitPersp)
+                {
+                    txt = isStart ? "i" : "0";
+                    //txBaseline.Reverse();
+                    //txBaseline = txBaseline.ShiftOffLine(-6);
+                }
                 Renderer.DrawTextOnPath(txBaseline, txt, unitPaint, txtBkgPen);
             }
             else if (ShowFractions)
 		    {
-			    var parts = GetFractionText(num, isStart, suffix);
+			    var parts = GetFractionText(num, isStart, isUnitPersp);
                 Renderer.DrawFraction(parts, txBaseline, numPaint, txtBkgPen);
             }
 		    else
@@ -337,18 +348,21 @@ namespace Numbers.Mappers
 	        return pts.Item1;
         }
 
-        protected (string, string) GetFractionText(Number num, bool isStart, string suffix)
+        protected (string, string) GetFractionText(Number num, bool isStart, bool isUnitPerspective)
         {
+            var suffix = isStart ? "i" : "";
 	        var whole = "0";
 	        var fraction = "";
             var val = isStart ? num.StartValue : num.EndValue;
             if (val != 0)
             {
-	            var sign = isStart ? (num.StartValue >= 0 ? "" : "-") : (num.EndValue >= 0 ? "" : "-");
 	            var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
-	            whole = wholeNum == 0 ? "" : wholeNum.ToString();
-	            var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
-	            if (num.AbsBasisTicks != 0 && numerator != 0)
+                wholeNum = isUnitPerspective ? wholeNum : -wholeNum;
+                var sign = wholeNum >= 0 ? "" : "-";// isStart ? (num.StartValue >= 0 ? "" : "-") : (num.EndValue >= 0 ? "" : "-");
+                whole = wholeNum == 0 ? "" : wholeNum.ToString();
+                // todo:!! need to rewrite unot perspective code. hack for now.
+	            var numerator = (isStart && isUnitPerspective) || (!isStart && !isUnitPerspective) ? num.RemainderStartValue : num.RemainderEndValue;//
+                if (num.AbsBasisTicks != 0 && numerator != 0)
 	            {
 		            fraction = " " + numerator.ToString() + "/" + num.AbsBasisTicks.ToString() + suffix;
 	            }

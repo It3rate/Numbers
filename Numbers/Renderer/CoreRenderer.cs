@@ -106,8 +106,13 @@ namespace Numbers.Renderer
 		    path.AddPoly(polyline, true);
 		    Canvas.DrawPath(path, paint);
 	    }
-	    public void DrawDirectedLine(SKSegment seg, bool isUnitPerspective, SKPaint paint)
+	    public void DrawDirectedLine(SKSegment segIn, bool isUnitPerspective, SKPaint paint)
 	    {
+            var seg = segIn.Clone();
+            if (!isUnitPerspective)
+            {
+                seg.Reverse();
+            } 
             DrawPolyline(paint, seg.Points);
             Canvas.DrawCircle(seg.StartPoint, 2, paint);
             var triPts = seg.EndArrow(8);

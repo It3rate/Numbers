@@ -333,7 +333,7 @@ namespace NumbersCore.Primitives
         public override string ToString()
 		{
 			var v = Value;
-			return $"[{v.Start:0.00}->{v.End:0.00}]";
+			return $"[{v.Start:0.00}:>{v.End:0.00}]";
 		}
 		public override bool Equals(object obj)
 		{

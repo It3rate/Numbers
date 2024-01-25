@@ -95,7 +95,7 @@ namespace Numbers.Utils
         public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Math.Max(MathF.tolerance, Length));
         public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(MathF.tolerance, Length));
         public SKPoint Vector => EndPoint - StartPoint;
-        public SKSegment Shift(float shift)
+        public SKSegment ShiftOffLine(float shift)
 		{
 			var p0 = OrthogonalPoint(StartPoint, shift);
 			var p1 = OrthogonalPoint(EndPoint, shift);
@@ -112,7 +112,13 @@ namespace Numbers.Utils
         }
         public void FlipAroundStartPoint()
         {
-	        EndPoint = StartPoint + (StartPoint - EndPoint);
+            EndPoint = StartPoint + (StartPoint - EndPoint);
+        }
+        public void Reverse()
+        {
+            var temp = EndPoint;
+            EndPoint = StartPoint;
+            StartPoint = temp;
         }
 
         public SKSegment GetMeasuredSegmentByMidpoint(float length)
@@ -267,7 +273,7 @@ namespace Numbers.Utils
 	        var result = new SKPoint[3];
 	        var p0 = SKPointFromEnd(dist);
 	        result[0] = OrthogonalPoint(p0, -dist / 2f);
-	        result[1] = EndPoint ;
+	        result[1] = EndPoint;
 	        result[2] = OrthogonalPoint(p0, dist / 2f);
 
 	        return result;

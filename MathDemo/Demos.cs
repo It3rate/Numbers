@@ -20,7 +20,7 @@ namespace MathDemo
         private CoreRenderer Renderer { get; }
         private MouseAgent _currentMouseAgent;
 
-        private int _testIndex = 0;
+        private int _testIndex = 1;
         private readonly int[] _tests = new int[] { 0, 1, 2, 3, 4 };
         public Demos(Brain brain, CoreRenderer renderer)
         {
