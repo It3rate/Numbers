@@ -184,7 +184,7 @@ namespace Numbers.Renderer
 		public SKRect GetTextBackgroundSizeExact(float x, float y, String text, SKPaint paint)
 		{
 			var fm = paint.FontMetrics;
-			float halfTextLength = paint.MeasureText(text) / 2f;
+			float halfTextLength = paint.MeasureText(text) / 2f + 0.1f;
 			return new SKRect((int)(x - halfTextLength), (int)(y + fm.Top), (int)(x + halfTextLength), (int)(y + fm.Bottom));
 		}
 
@@ -292,7 +292,7 @@ namespace Numbers.Renderer
 			}
 		    else
 		    {
-			    DrawTextOnPath(txtSeg, whole, txtPaint, txtBkgPen);
+			    DrawTextOnPath(bothSeg, whole, txtPaint, txtBkgPen);
 		    }
 	    }
         public SKBitmap GenerateBitmap(int width, int height)

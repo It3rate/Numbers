@@ -320,11 +320,14 @@ namespace Numbers.Agent
         }
         private void FlipBasis()
         {
-	        var dm = WorkspaceMapper.DomainMapperByIndex(0);
-            var domain = dm.Domain;
-	        domain.BasisFocal.FlipAroundStartPoint();
-            dm.BasisSegment.FlipAroundStartPoint();
-            SyncMatchingBasis(dm, domain.BasisFocal);
+	        //var dm = WorkspaceMapper.DomainMapperByIndex(0);
+            foreach(var dm in WorkspaceMapper.DomainMappers())
+            {
+                var domain = dm.Domain;
+                domain.BasisFocal.FlipAroundStartPoint();
+                dm.BasisSegment.FlipAroundStartPoint();
+                //SyncMatchingBasis(dm, domain.BasisFocal);
+            }
         }
 
         private void SyncMatchingBasis(SKDomainMapper domainMapper, IFocal focal)
@@ -333,9 +336,9 @@ namespace Numbers.Agent
 	        {
 		        var nbRange = domainMapper.UnitRangeOnDomainLine;
 		        foreach (var sibDomain in Workspace.ActiveSiblingDomains(domainMapper.Domain))
-		        {
-			        if (sibDomain.BasisFocal.Id == focal.Id)
-			        {
+                {
+                    if (sibDomain.BasisFocal.Id == focal.Id)
+                    {
 				        WorkspaceMapper.DomainMapper(sibDomain).UnitRangeOnDomainLine = nbRange;
 			        }
 		        }

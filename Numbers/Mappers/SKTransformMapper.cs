@@ -39,15 +39,24 @@ namespace Numbers.Mappers
 
         public void Draw()
         {
-            DrawMultiply();
+            CalculateValue();
+            if (DoRender)
+            {
+                DrawMultiply();
+            }
+        }
+        private void CalculateValue()
+        {
+            var selNum = Transform.Source[0];
+            var repNum = Transform.Change;
+            Transform.Value.SetWith(selNum);
+            Transform.Value.Multiply(repNum);
         }
         public void DrawMultiply()
         {
             PolyShapes.Clear();
             var selNum = Transform.Source[0];
             var repNum = Transform.Change;
-            Transform.Value.SetWith(selNum);
-            Transform.Value.Multiply(repNum);
 
             var selDr = SelectionMapper;
             var repDr = RepeatMapper;

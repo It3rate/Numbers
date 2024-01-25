@@ -99,6 +99,26 @@ namespace Numbers.Mappers
 	        }
 	        return result;
         }
+        public SKNumberMapper CreateNumber(IFocal focal, bool addToStore = true)
+        {
+            var num = Domain.CreateNumber(focal, addToStore);
+            return GetOrCreateNumberMapper(num);
+        }
+        public SKNumberMapper CreateNumber(Range value, bool addToStore = true)
+        {
+            var num = Domain.CreateNumber(value, addToStore);
+            return GetOrCreateNumberMapper(num);
+        }
+        public SKNumberMapper CreateNumber(long start, long end, bool addToStore = true)
+        {
+            var num = Domain.CreateNumber(start, end, addToStore);
+            return GetOrCreateNumberMapper(num);
+        }
+        public SKNumberMapper CreateNumberFromFloats(float startF, float endF, bool addToStore = true)
+        {
+            var num = Domain.CreateNumberFromFloats(startF, endF, addToStore);
+            return GetOrCreateNumberMapper(num);
+        }
 
         public override void Reset(SKPoint startPoint, SKPoint endPoint)
 	    {

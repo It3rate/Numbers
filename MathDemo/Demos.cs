@@ -20,13 +20,46 @@ namespace MathDemo
         private CoreRenderer Renderer { get; }
         private MouseAgent _currentMouseAgent;
 
-        private int _testIndex = 1;
-        private readonly int[] _tests = new int[] { 0, 1, 2, 3, 4 };
         public Demos(Brain brain, CoreRenderer renderer)
         {
 	        Brain = brain;
 	        Renderer = renderer;
         }
+
+        private int _testIndex = 4;
+        private readonly int[] _tests = new int[] { 0, 1, 2, 3, 4 };
+        public SKWorkspaceMapper NextTest(MouseAgent mouseAgent)
+        {
+            _currentMouseAgent = mouseAgent;
+            _currentMouseAgent.IsPaused = true;
+            _currentMouseAgent.ClearAll();
+
+            SKWorkspaceMapper wm;
+            switch (_tests[_testIndex])
+            {
+                case 0:
+                    wm = test0();
+                    break;
+                case 1:
+                    wm = test1();
+                    break;
+                case 2:
+                    wm = test2();
+                    break;
+                case 3:
+                    wm = test3();
+                    break;
+                default:
+                    wm = testMult();
+                    break;
+            }
+            _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
+
+            wm.EnsureRenderers();
+            _currentMouseAgent.IsPaused = false;
+            return wm;
+        }
+
 
         private SKWorkspaceMapper test0()
         {
@@ -48,69 +81,53 @@ namespace MathDemo
 
             return wm;
         }
-        private SKDomainMapper CreateSimilarDomain(Domain domain, float offset, int rangeSize, params IFocal[] focals)
+
+        private SKWorkspaceMapper testMult()
         {
-            var newDomain = Domain.CreateDomain(domain.Trait.Name, (int)domain.BasisFocal.LengthInTicks, rangeSize);
-            foreach (var focal in focals)
-            {
-                newDomain.CreateNumber(focal);
-            }
-            var result = _currentMouseAgent.WorkspaceMapper.AddDomain(newDomain, offset, true, -200);
-            result.ShowBasis = true;
-            result.ShowBasisMarkers = true;
-            result.ShowMinorTicks = false;
-            return result;
-        }
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            var hDomain = CreateLowResDomain(9, 0);// Domain.CreateDomain("test0", unitSize, 16);
+            var vDomain = CreateLowResDomain(9, .2f);// Domain.CreateDomain("test0", unitSize, 16);
+            var mDomain = CreateLowResDomain(9, .3f);
+            var hNum = hDomain.CreateNumberFromFloats(0, 2);
+            var vNum = vDomain.CreateNumberFromFloats(0, 3);
 
-        private SKWorkspaceMapper testTrig()
-        {
-            Trait trait = Trait.CreateIn(Brain, "testTrig");
-            var unitSize = 100;
-            var unit = Focal.CreateByValues(0, unitSize);
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 10, 50, 1200, 600);
 
-            var domains = CreateDomainLines(_currentMouseAgent, trait, unit, 1, 101, -100, 0, -50, 50);
-            var d0 = domains[0];
-            var seg = d0.GetNumber(d0.NumberIds()[2]);
-            //var d0n1 = d0.GetNumber(d0.NumberIds()[1]);
-            //var d0n2 = d0.GetNumber(d0.NumberIds()[2]);
-            //d0n0.InterpolateTo(d0n1, d0n0, d0n2);
-            //var nn = d0.CreateNumber(d0n0.Focal);
-            //mouseAgent.Workspace.AddElements(nn);
+            var hSel = new Selection(hNum.Number);
+            Transform transform = Brain.AddTransform(hSel, vNum.Number, TransformKind.Blend);
+            var tm = wm.GetOrCreateTransformMapper(transform);
+            tm.DoRender = false;
 
-            //var ar = new List<Range>();
-            //ar.Add(seg.ExpansiveForce);
+            var mNum = mDomain.CreateNumber(transform.Value.Focal);
+
+            wm.Workspace.AddDomains(true, hDomain.Domain, vDomain.Domain, mDomain.Domain);
+
+            // CreateSimilarDomain(hDomain, 1.2f, 100, vNum.Focal);// transform.Value.Focal);
+
+
+
+            //var speed = 0f;
+            //var scale = 1f/1900f;
+            //var l = 0f;
+            //var r = 1f;
             //for (int i = 0; i < unitSize; i++)
             //{
-            //    seg.ShiftTicks(-1);
-            //    var ef = seg.ExpansiveForce;
-            //    ar.Add(ef);
-            //    Trace.WriteLine(ef.MaxF - ef.MinF);
+            //    var len = (float)Math.Sqrt(l * l + r * r);
+
+            //    var rr = Math.Abs(r) / Math.Abs(r - l);
+            //    var lr = Math.Abs(l) / Math.Abs(r - l);
+            //    //var lr = ratio <= 0 ? Math.Abs(ratio) : (1f - ratio);
+            //    //var rr = ratio <= 0 ? Math.Abs(ratio + 1f) : (ratio);
+            //    var dl = len * lr;
+            //    var dr = len * rr;
+            //    speed += (dr - dl);
+
+            //    //Trace.WriteLine(speed);
+            //    r -= speed * scale;
+            //    l -= speed * scale;
+            //    //speed += (float)Math.Sqrt(r * r) * scale;// (dr - dl);
+            //    //r -= 0.01f;//speed * scale;// len * scale;// 
+            //    //l -= 0.01f;//speed * scale;// len * scale;//
             //}
-
-            var speed = 0f;
-            var scale = 1f/1900f;
-            var l = 0f;
-            var r = 1f;
-            for (int i = 0; i < unitSize; i++)
-            {
-                var len = (float)Math.Sqrt(l * l + r * r);
-
-                var rr = Math.Abs(r) / Math.Abs(r - l);
-                var lr = Math.Abs(l) / Math.Abs(r - l);
-                //var lr = ratio <= 0 ? Math.Abs(ratio) : (1f - ratio);
-                //var rr = ratio <= 0 ? Math.Abs(ratio + 1f) : (ratio);
-                var dl = len * lr;
-                var dr = len * rr;
-                speed += (dr - dl);
-
-                //Trace.WriteLine(speed);
-                r -= speed * scale;
-                l -= speed * scale;
-                //speed += (float)Math.Sqrt(r * r) * scale;// (dr - dl);
-                //r -= 0.01f;//speed * scale;// len * scale;// 
-                //l -= 0.01f;//speed * scale;// len * scale;//
-            }
 
             return wm;
         }
@@ -190,42 +207,38 @@ namespace MathDemo
             return wm;
         }
 
-        public SKWorkspaceMapper NextTest(MouseAgent mouseAgent)
+        private SKDomainMapper CreateLowResDomain(int rangeSize, float offset, params IFocal[] focals)
         {
-            _currentMouseAgent = mouseAgent;
-            _currentMouseAgent.IsPaused = true;
-            _currentMouseAgent.ClearAll();
-
-	        SKWorkspaceMapper wm;
-            switch (_tests[_testIndex])
+            var newDomain = Domain.CreateDomain("lowres", 4, rangeSize);
+            foreach (var focal in focals)
             {
-                case 0:
-	                wm = test0();
-                    break;
-                case 1:
-	                wm = test1();
-	                break;
-                case 2:
-	                wm = test2();
-	                break;
-                case 3:
-	                wm = test3();
-                    break;
-                default:
-	                wm = testTrig();
-                    break;
+                newDomain.CreateNumber(focal);
             }
-            _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
-
-            wm.EnsureRenderers();
-            _currentMouseAgent.IsPaused = false;
-            return wm;
+            var wm = _currentMouseAgent.WorkspaceMapper;
+            var result = wm.AddDomain(newDomain, offset, true);
+            result.ShowGradientNumberLine = true;
+            result.ShowBasis = true;
+            result.ShowBasisMarkers = true;
+            result.ShowMinorTicks = true;
+            return result;
         }
-
+        private SKDomainMapper CreateSimilarDomain(Domain domain, float offset, int rangeSize, params IFocal[] focals)
+        {
+            var newDomain = Domain.CreateDomain(domain.Trait.Name, (int)domain.BasisFocal.LengthInTicks, rangeSize);
+            foreach (var focal in focals)
+            {
+                newDomain.CreateNumber(focal);
+            }
+            var result = _currentMouseAgent.WorkspaceMapper.AddDomain(newDomain, offset, true, -200);
+            result.ShowBasis = true;
+            result.ShowBasisMarkers = true;
+            result.ShowMinorTicks = false;
+            return result;
+        }
         /// <summary>
         /// Create lines with focal pairs.
         /// </summary>
-        private List<Domain> CreateDomainLines(MouseAgent mouseAgent, Trait trait, Focal basisFocal, params long[] focalPositions)
+        private List<Domain> CreateDomainLines(MouseAgent mouseAgent, Trait trait, IFocal basisFocal, params long[] focalPositions)
         {
 	        var result = new List<Domain>();
 	        var wm = mouseAgent.WorkspaceMapper;
@@ -243,7 +256,7 @@ namespace MathDemo
 	        {
 		        var focal = Focal.CreateByValues(focalPositions[i - 1], focalPositions[i]);
 
-		        var domain = trait.AddDomain(basisFocal, focal);
+		        var domain = trait.AddDomain(basisFocal.Clone(), focal); // clone to avoid duplicate focals.
 		        //domain.BasisIsReciprocal = true;
 		        result.Add(domain);
 

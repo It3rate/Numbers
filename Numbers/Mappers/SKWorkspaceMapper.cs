@@ -12,12 +12,27 @@ namespace Numbers.Mappers
 {
 	public class SKWorkspaceMapper : SKMapper
     {
-        private readonly Dictionary<int, SKDomainMapper> DomainMappers = new Dictionary<int, SKDomainMapper>();
-        private readonly Dictionary<int, SKTransformMapper> TransformMappers = new Dictionary<int, SKTransformMapper>();
+        private readonly Dictionary<int, SKDomainMapper> _domainMappers = new Dictionary<int, SKDomainMapper>();
+        private readonly Dictionary<int, SKTransformMapper> _transformMappers = new Dictionary<int, SKTransformMapper>();
         public SKDomainMapper DomainMapper(Domain domain) => GetOrCreateDomainMapper(domain);
 	    public SKTransformMapper TransformMapper(Transform transform) => GetOrCreateTransformMapper(transform);
 
-	    public SKPoint TopLeft
+        public IEnumerable<SKDomainMapper> DomainMappers()
+        {
+            foreach (var dm in _domainMappers.Values)
+            {
+                yield return dm;
+            }
+        }
+        public IEnumerable<SKTransformMapper> TransformMappers()
+        {
+            foreach (var tm in _transformMappers.Values)
+            {
+                yield return tm;
+            }
+        }
+
+        public SKPoint TopLeft
 	    {
 		    get => Guideline.StartPoint;
 		    set => Guideline.StartPoint = value;
@@ -107,7 +122,7 @@ namespace Numbers.Mappers
 	            }
             }
 
-            foreach (var dm in DomainMappers.Values)
+            foreach (var dm in _domainMappers.Values)
             {
                 // Domain segment endpoints
                 for (int i = 0; i < dm.EndPoints.Length; i++)
@@ -142,11 +157,11 @@ namespace Numbers.Mappers
 	        EnsureRenderers();
 	        if (Workspace.IsActive)
 	        {
-	            foreach (var transformMapper in TransformMappers.Values)
+	            foreach (var transformMapper in _transformMappers.Values)
 		        {
 			        transformMapper.Draw();
 		        }
-		        foreach (var domainMapper in DomainMappers.Values)
+		        foreach (var domainMapper in _domainMappers.Values)
 		        {
 			        domainMapper.Draw();
 		        }
@@ -155,7 +170,7 @@ namespace Numbers.Mappers
 
         public IEnumerable<SKTransformMapper> GetTransformMappers(bool reverse = false)
         {
-	        var vals = reverse ? TransformMappers.Values.Reverse() : TransformMappers.Values;
+	        var vals = reverse ? _transformMappers.Values.Reverse() : _transformMappers.Values;
 	        foreach (var mapper in vals)
 	        {
 		        if (mapper is SKTransformMapper tm)
@@ -166,7 +181,7 @@ namespace Numbers.Mappers
         }
         public IEnumerable<SKDomainMapper> GetDomainMappers(bool reverse = false)
         {
-	        var vals = reverse ? DomainMappers.Values.Reverse() : DomainMappers.Values;
+	        var vals = reverse ? _domainMappers.Values.Reverse() : _domainMappers.Values;
 	        foreach (var mapper in vals)
 	        {
 		        if (mapper is SKDomainMapper dm)
@@ -178,9 +193,9 @@ namespace Numbers.Mappers
         public SKDomainMapper DomainMapperByIndex(int index)
         {
 	        SKDomainMapper result = null;
-	        if (index < DomainMappers.Count)
+	        if (index < _domainMappers.Count)
 	        {
-		        foreach (var dm in DomainMappers.Values)
+		        foreach (var dm in _domainMappers.Values)
 		        {
 			        if (--index < 0)
 			        {
@@ -245,18 +260,18 @@ namespace Numbers.Mappers
 
         public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
         {
-	        if (!DomainMappers.TryGetValue(domain.Id, out var result))
+	        if (!_domainMappers.TryGetValue(domain.Id, out var result))
 	        {
 		        line = line ?? NextDefaultLine();
                 var half_mmr = (float)(1.0 / domain.MinMaxRange.AbsLength());
 		        var uSeg = unitLine ?? line.SegmentAlongLine(0.5f, 0.5f + half_mmr);
 		        result = new SKDomainMapper(Agent, domain, line, uSeg);
-		        DomainMappers[domain.Id] = result;
+		        _domainMappers[domain.Id] = result;
 	        }
 	        return (SKDomainMapper)result;
         }
 
-        public bool RemoveDomainMapper(int id) => DomainMappers.Remove(id);
+        public bool RemoveDomainMapper(int id) => _domainMappers.Remove(id);
 
         public SKTransformMapper GetOrCreateTransformMapper(int id)
         {
@@ -264,18 +279,18 @@ namespace Numbers.Mappers
         }
         public SKTransformMapper GetOrCreateTransformMapper(Transform transform)
         {
-	        if (!TransformMappers.TryGetValue(transform.Id, out var result))
+	        if (!_transformMappers.TryGetValue(transform.Id, out var result))
 	        {
 		        result = new SKTransformMapper(Agent, transform);
-		        TransformMappers[transform.Id] = result;
+		        _transformMappers[transform.Id] = result;
 	        }
 	        return (SKTransformMapper)result;
         }
 
         public void ClearAll()
         {
-	        DomainMappers.Clear();
-	        TransformMappers.Clear();
+	        _domainMappers.Clear();
+	        _transformMappers.Clear();
             defaultLineT = 0.1f;
         }
     }

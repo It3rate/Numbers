@@ -47,6 +47,7 @@ namespace NumbersCore.Primitives
                 if(t.Name == traitName)
                 {
                     trait = t;
+                    break;
                 }
             }
             if(trait == null)
