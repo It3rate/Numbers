@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 namespace Numbers
 {
 	public interface IDemos
-	{
-		SKWorkspaceMapper NextTest(MouseAgent agent);
-	}
+    {
+        SKWorkspaceMapper NextTest(MouseAgent agent, bool isReload = false);
+        SKWorkspaceMapper Reload(MouseAgent agent);
+    }
 }

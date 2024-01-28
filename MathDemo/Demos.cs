@@ -27,9 +27,14 @@ namespace MathDemo
         }
 
         private int _testIndex = 4;
+        private int _prevIndex = -1;
         private readonly int[] _tests = new int[] { 0, 1, 2, 3, 4 };
-        public SKWorkspaceMapper NextTest(MouseAgent mouseAgent)
+        public SKWorkspaceMapper NextTest(MouseAgent mouseAgent, bool isReload = false)
         {
+            if(isReload && _prevIndex != -1)
+            {
+                _testIndex = _prevIndex;
+            }
             _currentMouseAgent = mouseAgent;
             _currentMouseAgent.IsPaused = true;
             _currentMouseAgent.ClearAll();
@@ -53,14 +58,17 @@ namespace MathDemo
                     wm = testMult();
                     break;
             }
+            _prevIndex = _testIndex;
             _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
 
             wm.EnsureRenderers();
             _currentMouseAgent.IsPaused = false;
             return wm;
         }
-
-
+        public SKWorkspaceMapper Reload(MouseAgent mouseAgent)
+        {
+            return NextTest(mouseAgent, true);
+        }
         private SKWorkspaceMapper test0()
         {
             var hDomain = Domain.CreateDomain("test0", 100, 10);
@@ -85,19 +93,26 @@ namespace MathDemo
         private SKWorkspaceMapper testMult()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
-            var hDomain = CreateLowResDomain(9, 0);// Domain.CreateDomain("test0", unitSize, 16);
-            var vDomain = CreateLowResDomain(9, .2f);// Domain.CreateDomain("test0", unitSize, 16);
-            var mDomain = CreateLowResDomain(9, .3f);
+            var hDomain = CreateLowResDomain(3, 0);// Domain.CreateDomain("test0", unitSize, 16);
+            var vDomain = CreateLowResDomain(3, .1f);// Domain.CreateDomain("test0", unitSize, 16);
+            var mDomain = CreateLowResDomain(3, .3f);
             var hNum = hDomain.CreateNumberFromFloats(0, 2);
-            var vNum = vDomain.CreateNumberFromFloats(0, 3);
+            var vNum = vDomain.CreateNumberFromFloats(0, 1.25f);
+            //var vNum2 = vDomain.CreateNumberFromFloats(0, 4);
 
+            vDomain.FlipPerspective();
 
             var hSel = new Selection(hNum.Number);
             Transform transform = Brain.AddTransform(hSel, vNum.Number, TransformKind.Blend);
             var tm = wm.GetOrCreateTransformMapper(transform);
             tm.DoRender = false;
-
             var mNum = mDomain.CreateNumber(transform.Value.Focal);
+
+            //Transform transform2 = Brain.AddTransform(hSel, vNum2.Number, TransformKind.Blend);
+            //var tm2 = wm.GetOrCreateTransformMapper(transform2);
+            //tm2.DoRender = false;
+            //var mNum2 = mDomain.CreateNumber(transform2.Value.Focal);
+
 
             wm.Workspace.AddDomains(true, hDomain.Domain, vDomain.Domain, mDomain.Domain);
 

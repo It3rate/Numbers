@@ -56,6 +56,11 @@ namespace Numbers.Mappers
 		    var unitMapper = NumberMapper(unit);
 		    unitMapper.Guideline.Reset(guideline.ProjectPointOnto(unitSegment.StartPoint), guideline.ProjectPointOnto(unitSegment.EndPoint));
 	    }
+        public void FlipPerspective()
+        {
+            Domain.BasisFocal.FlipAroundStartPoint();
+            BasisSegment.FlipAroundStartPoint();
+        }
 
         public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
         {
@@ -370,7 +375,7 @@ namespace Numbers.Mappers
 
         protected (string, string) GetFractionText(Number num, bool isStart, bool isUnitPerspective)
         {
-            var suffix = isStart ? "i" : "";
+            var suffix = isStart ? "i" : "r";
 	        var whole = "0";
 	        var fraction = "";
             var val = isStart ? num.StartValue : num.EndValue;

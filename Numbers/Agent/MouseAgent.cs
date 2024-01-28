@@ -323,10 +323,7 @@ namespace Numbers.Agent
 	        //var dm = WorkspaceMapper.DomainMapperByIndex(0);
             foreach(var dm in WorkspaceMapper.DomainMappers())
             {
-                var domain = dm.Domain;
-                domain.BasisFocal.FlipAroundStartPoint();
-                dm.BasisSegment.FlipAroundStartPoint();
-                //SyncMatchingBasis(dm, domain.BasisFocal);
+                dm.FlipPerspective();
             }
         }
 
@@ -379,8 +376,11 @@ namespace Numbers.Agent
 	                LockTicksOnDrag = true;
 	                break;
                 case Keys.T:
-	                Demos.NextTest(this);
-	                break;
+                    Demos.NextTest(this);
+                    break;
+                case Keys.F5:
+                    Demos.Reload(this);
+                    break;
                 case Keys.N:
 	                FlipBasis();
 	                break;
