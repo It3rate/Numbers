@@ -14,12 +14,12 @@ namespace NumbersAPI.CoreTasks
 	    public Domain Domain;
 
 	    public Trait Trait { get; }
-	    public IFocal BasisFocal { get; }
-	    public IFocal MinMax { get; }
+	    public Focal BasisFocal { get; }
+	    public Focal MinMax { get; }
 
         public override bool IsValid => true;
 
-	    public CreateDomainTask(Trait trait, IFocal basisFocal, IFocal minMax) 
+	    public CreateDomainTask(Trait trait, Focal basisFocal, Focal minMax) 
 	    {
 		    Trait = trait;
 		    BasisFocal = basisFocal;

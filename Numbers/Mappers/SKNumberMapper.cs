@@ -46,7 +46,7 @@ namespace Numbers.Mappers
             // BasisNumber is a special case where we don't want it's direction set by the unit direction of the line (itself).
             // So don't call EnsureSegment here.
             var dir = Number.Direction;
-            var pen = dir > 0 ? Pens.UnitPen : Pens.UnotPen;
+            var pen = dir > 0 ? Pens.UnitPenLight : Pens.UnotPenLight;
 	        var offset = Guideline.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - Guideline.StartPoint;
 	        RenderSegment = aboveLine ? Guideline + offset : Guideline - offset;
 	        if (Pens.UnitStrokePen != null)

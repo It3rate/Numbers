@@ -24,6 +24,8 @@ namespace Numbers.Renderer
         public SKPaint TickPen { get; set; }
         public SKPaint UnitPen { get; set; }
         public SKPaint UnotPen { get; set; }
+        public SKPaint UnitPenLight { get; set; }
+        public SKPaint UnotPenLight { get; set; }
         public SKPaint UnitStrokePen { get; set; }
         public SKPaint MarkerBrush { get; set; }
 
@@ -68,6 +70,7 @@ namespace Numbers.Renderer
         public SKPaint UnitMarkerText { get; set; }
         public SKPaint UnotMarkerText { get; set; }
 
+        public static byte lighterAlpha = 160;
         public CorePens(float defaultWidth = 1f, ColorTheme colorTheme = ColorTheme.Normal)
         {
             DefaultWidth = defaultWidth;
@@ -96,6 +99,8 @@ namespace Numbers.Renderer
             NumberLineGradient = GetPen(TickColor, DefaultWidth * 0.75f);
             UnitPen = GetPen(UnitColor, DefaultWidth * 4f, SKStrokeCap.Butt);
             UnotPen = GetPen(UnotColor, DefaultWidth * 4f, SKStrokeCap.Butt);
+            UnitPenLight = GetPen(UnitColor.WithAlpha(lighterAlpha), DefaultWidth * 4f, SKStrokeCap.Butt);
+            UnotPenLight = GetPen(UnotColor.WithAlpha(lighterAlpha), DefaultWidth * 4f, SKStrokeCap.Butt);
             UnitStrokePen = GetPen(UnitStrokeColor, UnitPen.StrokeWidth * 1.4f, SKStrokeCap.Butt);
             TickPen = GetPen(TickColor, DefaultWidth * .25f);
             TickBoldPen = GetPen(TickColor, DefaultWidth * 2f);
@@ -158,6 +163,8 @@ namespace Numbers.Renderer
             TickColor = SKColors.Gray;
             UnitPen = GetPen(UnitColor, DefaultWidth * 4f, SKStrokeCap.Butt);
             UnotPen = GetPen(UnotColor, DefaultWidth * 4f, SKStrokeCap.Butt);
+            UnitPenLight = GetPen(UnitColor.WithAlpha(lighterAlpha), DefaultWidth * 4f, SKStrokeCap.Butt);
+            UnotPenLight = GetPen(UnotColor.WithAlpha(lighterAlpha), DefaultWidth * 4f, SKStrokeCap.Butt);
             UnitStrokePen = null;
             MarkerColor = SKColors.Gray;
 

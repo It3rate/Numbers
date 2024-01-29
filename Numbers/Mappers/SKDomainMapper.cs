@@ -104,7 +104,7 @@ namespace Numbers.Mappers
 	        }
 	        return result;
         }
-        public SKNumberMapper CreateNumber(IFocal focal, bool addToStore = true)
+        public SKNumberMapper CreateNumber(Focal focal, bool addToStore = true)
         {
             var num = Domain.CreateNumber(focal, addToStore);
             return GetOrCreateNumberMapper(num);

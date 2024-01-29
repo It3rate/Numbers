@@ -27,7 +27,7 @@ namespace NumbersAPI.CoreCommands
         private CreateNumberByRangeTask NumberByRangeTask;
         private CreateNumberByPositionsTask NumberByPositionsTask;
 
-        public IFocal Focal { get; }
+        public Focal Focal { get; }
 
         public Range Range { get; }
 
@@ -39,7 +39,7 @@ namespace NumbersAPI.CoreCommands
         private readonly bool _isByPositions = false;
 
 
-        public CreateNumberCommand(Domain domain, IFocal focal)
+        public CreateNumberCommand(Domain domain, Focal focal)
         {
 	        Domain = domain;
 	        Focal = focal;

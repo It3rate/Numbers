@@ -11,7 +11,7 @@ namespace NumbersAPI.CoreTasks
 
     public class CreateFocalTask : TaskBase, ICreateTask
     {
-	    public IFocal CreatedFocal;
+	    public Focal CreatedFocal;
 
 	    private  Trait Trait { get; }
         public long StartPosition { get; }
@@ -24,24 +24,11 @@ namespace NumbersAPI.CoreTasks
 		    StartPosition = startPosition;
 		    EndPosition = endPosition;
 	    }
-	    public CreateFocalTask(Trait trait, long startPosition, long endPosition)
-	    {
-		    Trait = trait;
-		    StartPosition = startPosition;
-		    EndPosition = endPosition;
-	    }
         public override void RunTask()
 	    {
 		    if (CreatedFocal == null)
 		    {
-			    if (Trait == null)
-			    {
-				    CreatedFocal = Focal.CreateByValues(StartPosition, EndPosition);
-                }
-			    else
-			    {
-				    CreatedFocal = FocalRef.CreateByValues(Trait, StartPosition, EndPosition);
-                }
+			    CreatedFocal = Focal.CreateByValues(StartPosition, EndPosition);
 		    }
 
 		    Trait?.FocalStore.Add(CreatedFocal.Id, CreatedFocal);

@@ -20,9 +20,9 @@ namespace NumbersTests
 	    [TestMethod]
 	    public void BasisSignTests()
 	    {
-		    IFocal fb = FocalRef.CreateByValues(_trait, 0, 10);
-		    IFocal fn = FocalRef.CreateByValues(_trait, 20, 30);
-		    IFocal ftest = FocalRef.CreateByValues(_trait, 0, 0);
+		    Focal fb = FocalRef.CreateByValues(_trait, 0, 10);
+		    Focal fn = FocalRef.CreateByValues(_trait, 20, 30);
+		    Focal ftest = FocalRef.CreateByValues(_trait, 0, 0);
 
 		    // focal [0,10]  fn [20, 30]
             Assert.AreEqual(new Range(-2, 3), fn.GetRangeWithBasis(fb, false));
@@ -77,8 +77,8 @@ namespace NumbersTests
 	    [TestMethod]
 	    public void ReciprocalTests()
 	    {
-		    IFocal f0 = FocalRef.CreateByValues(_trait, 0, 10);
-		    IFocal f1 = FocalRef.CreateByValues(_trait, 132, 287);
+		    Focal f0 = FocalRef.CreateByValues(_trait, 0, 10);
+		    Focal f1 = FocalRef.CreateByValues(_trait, 132, 287);
 		    Assert.AreEqual(-13.2, f1.GetRangeWithBasis(f0, false).Start);
 		    Assert.AreEqual(28.7, f1.GetRangeWithBasis(f0, false).End);
 		    Assert.AreEqual(-130, f1.GetRangeWithBasis(f0, true).Start);
@@ -88,9 +88,9 @@ namespace NumbersTests
         [TestMethod]
 	    public void RangeToUnitTests()
 	    {
-		    IFocal fb = FocalRef.CreateByValues(_trait, 0, 10);
-		    IFocal fn = FocalRef.CreateByValues(_trait, 20, 30);
-		    IFocal testFocal = FocalRef.CreateByValues(_trait, 0, 0);
+		    Focal fb = FocalRef.CreateByValues(_trait, 0, 10);
+		    Focal fn = FocalRef.CreateByValues(_trait, 20, 30);
+		    Focal testFocal = FocalRef.CreateByValues(_trait, 0, 0);
 		    var range = fn.GetRangeWithBasis(fb, false);
             testFocal.SetWithRangeAndBasis(range, fb, false);
             Assert.AreEqual(testFocal.StartTickPosition, fn.StartTickPosition);
@@ -101,7 +101,7 @@ namespace NumbersTests
 	    [TestMethod]
         public void CoreFocalTests()
         {
-            IFocal f = FocalRef.CreateByValues(_trait, 150, 250);
+            Focal f = FocalRef.CreateByValues(_trait, 150, 250);
             Assert.AreEqual(MathElementKind.Focal, f.Kind);
             Assert.AreEqual(150, f.StartTickPosition);
             Assert.AreEqual(250, f.EndTickPosition);

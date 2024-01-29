@@ -23,8 +23,9 @@ namespace NumbersCore.Primitives
 
 	    //public Brain Brain => Trait.Brain;
 	    public Trait Trait { get; protected set; }
-        public IFocal BasisFocal { get; protected set; }
-        public IFocal MinMaxFocal { get; protected set; }
+        public Focal BasisFocal { get; protected set; }
+        public bool IsBasisPositive => BasisFocal.Direction == 1;
+        public Focal MinMaxFocal { get; protected set; }
         public Number BasisNumber { get; protected set; }
         public Number MinMaxNumber { get; protected set; }
 
@@ -44,7 +45,7 @@ namespace NumbersCore.Primitives
         public bool IsUnitPerspective => BasisFocal.IsUnitPerspective;
         public bool IsUnotPerspective => BasisFocal.IsUnotPerspective;
 
-        public Domain(Trait trait, IFocal basisFocal, IFocal minMaxFocal = default)
+        public Domain(Trait trait, Focal basisFocal, Focal minMaxFocal = default)
         {
 	        Id = domainCounter++;
 	        Trait = trait;
@@ -70,7 +71,7 @@ namespace NumbersCore.Primitives
 	        NumberStore.TryGetValue(numberId, out var result);
 	        return result;
         }
-        public Number CreateNumber(IFocal focal, bool addToStore = true)
+        public Number CreateNumber(Focal focal, bool addToStore = true)
         {
 	        return AddNumber(new Number(focal), addToStore);
         }
@@ -130,10 +131,10 @@ namespace NumbersCore.Primitives
         public Number Zero() => CreateNumber(BasisFocal.StartTickPosition, BasisFocal.StartTickPosition);
         public Number One() => CreateNumber(BasisFocal.StartTickPosition, BasisFocal.EndTickPosition);
 
-        public Range GetValueOf(IFocal focal) => focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal);
-        public void SetValueOf(IFocal focal, Range range) => focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
-        public Range GetValueOf(Number num) => GetValueOf(num.Focal);
-        public void SetValueOf(Number num, Range range) => SetValueOf(num.Focal,range);
+        public Range GetValueOf(Focal focal, bool isAligned) => focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal, isAligned);
+        public void SetValueOf(Focal focal, Range range, bool isAligned) => focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal, isAligned);
+        public Range GetValueOf(Number num) => GetValueOf(num.Focal, num.IsAligned);
+        public void SetValueOf(Number num, Range range) => SetValueOf(num.Focal, range, num.IsAligned);
 
         public Range ClampToInnerBasis(Range range) => range.ClampInner();
         public Range ClampToInnerTick(Range range) => (range / TickToBasisRatio).ClampInner() * TickToBasisRatio;
@@ -141,16 +142,16 @@ namespace NumbersCore.Primitives
         public Range RoundToNearestTick(Range range) => (range / TickToBasisRatio).Round() * TickToBasisRatio;
 
         public long RoundToNearestTick(long value) => (long)(Math.Round(value / TickToBasisRatio) * TickToBasisRatio);
-        public void RoundToNearestTick(IFocal focal)
+        public void RoundToNearestTick(Focal focal)
         {
 	        focal.StartTickPosition = RoundToNearestTick(focal.StartTickPosition);
 	        focal.EndTickPosition = RoundToNearestTick(focal.EndTickPosition);
         }
 
-        public IFocal CreateFocalFromRange(Range range)
+        public Focal CreateFocalFromRange(Range range)
         {
 	        var result = Focal.CreateByValues(0, 1);
-	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
+	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal, true);
 	        return result;
         }
 

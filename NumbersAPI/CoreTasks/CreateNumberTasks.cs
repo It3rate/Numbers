@@ -20,11 +20,11 @@ namespace NumbersAPI.CoreTasks
     {
 	    public Domain Domain { get; }
 	    public Number Number { get; private set; }
-	    public IFocal Focal { get; }
+	    public Focal Focal { get; }
 
 	    public override bool IsValid => true;
 
-	    public CreateNumberByFocalIdTask(Domain domain, IFocal focal) : base()
+	    public CreateNumberByFocalIdTask(Domain domain, Focal focal) : base()
 	    {
 		    Domain = domain;
 		    Focal = focal;

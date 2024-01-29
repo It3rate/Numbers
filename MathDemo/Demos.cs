@@ -222,7 +222,7 @@ namespace MathDemo
             return wm;
         }
 
-        private SKDomainMapper CreateLowResDomain(int rangeSize, float offset, params IFocal[] focals)
+        private SKDomainMapper CreateLowResDomain(int rangeSize, float offset, params Focal[] focals)
         {
             var newDomain = Domain.CreateDomain("lowres", 4, rangeSize);
             foreach (var focal in focals)
@@ -237,7 +237,7 @@ namespace MathDemo
             result.ShowMinorTicks = true;
             return result;
         }
-        private SKDomainMapper CreateSimilarDomain(Domain domain, float offset, int rangeSize, params IFocal[] focals)
+        private SKDomainMapper CreateSimilarDomain(Domain domain, float offset, int rangeSize, params Focal[] focals)
         {
             var newDomain = Domain.CreateDomain(domain.Trait.Name, (int)domain.BasisFocal.LengthInTicks, rangeSize);
             foreach (var focal in focals)
@@ -253,7 +253,7 @@ namespace MathDemo
         /// <summary>
         /// Create lines with focal pairs.
         /// </summary>
-        private List<Domain> CreateDomainLines(MouseAgent mouseAgent, Trait trait, IFocal basisFocal, params long[] focalPositions)
+        private List<Domain> CreateDomainLines(MouseAgent mouseAgent, Trait trait, Focal basisFocal, params long[] focalPositions)
         {
 	        var result = new List<Domain>();
 	        var wm = mouseAgent.WorkspaceMapper;

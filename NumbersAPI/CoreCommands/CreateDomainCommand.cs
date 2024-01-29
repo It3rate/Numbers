@@ -28,8 +28,8 @@ namespace NumbersAPI.CoreCommands
         public long MinMaxStart { get; }
         public long MinMaxEnd { get; }
 
-	    public IFocal BasisFocal { get; private set; }
-        public IFocal MinMaxFocal { get; private set; }
+	    public Focal BasisFocal { get; private set; }
+        public Focal MinMaxFocal { get; private set; }
 
         public CreateDomainCommand(Trait trait, long basisStart, long basisEnd, long minMaxStart, long minMaxEnd)
         {
@@ -39,7 +39,7 @@ namespace NumbersAPI.CoreCommands
 	        MinMaxStart = minMaxStart;
 	        MinMaxEnd = minMaxEnd;
         }
-	    public CreateDomainCommand(Trait trait, IFocal basisFocal, IFocal minMax)
+	    public CreateDomainCommand(Trait trait, Focal basisFocal, Focal minMax)
 	    {
 		    Trait = trait;
 		    BasisFocal = basisFocal;

@@ -33,7 +33,7 @@ namespace NumbersTests.CoreTests
 
             result.RemoveOverlaps();
             Assert.AreEqual(2, result.Count);
-            CollectionAssert.AreEqual(new List<IFocal>
+            CollectionAssert.AreEqual(new List<Focal>
                 {
                     new Focal(10, 20),
                     new Focal(30, 40)
@@ -51,7 +51,7 @@ namespace NumbersTests.CoreTests
             });
             result.RemoveOverlaps();
             Assert.AreEqual(2, result.Count);
-            CollectionAssert.AreEqual(new List<IFocal>
+            CollectionAssert.AreEqual(new List<Focal>
                 {
                     new Focal(10, 25),
                     new Focal(30, 40)
@@ -70,7 +70,7 @@ namespace NumbersTests.CoreTests
                 });
             result.RemoveOverlaps();
             Assert.AreEqual(2, result.Count);
-            CollectionAssert.AreEqual(new List<IFocal> { new Focal(10, 25), new Focal(30, 45) }, result.GetFocals());
+            CollectionAssert.AreEqual(new List<Focal> { new Focal(10, 25), new Focal(30, 45) }, result.GetFocals());
         }
 
         [TestMethod]
@@ -84,7 +84,7 @@ namespace NumbersTests.CoreTests
                 });
             result.RemoveOverlaps();
             Assert.AreEqual(1, result.Count);
-            CollectionAssert.AreEqual(new List<IFocal> { new Focal(10, 30) }, result.GetFocals());
+            CollectionAssert.AreEqual(new List<Focal> { new Focal(10, 30) }, result.GetFocals());
         }
     }
 

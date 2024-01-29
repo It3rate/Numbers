@@ -327,7 +327,7 @@ namespace Numbers.Agent
             }
         }
 
-        private void SyncMatchingBasis(SKDomainMapper domainMapper, IFocal focal)
+        private void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)
         {
 	        if (DoSyncMatchingBasis)
 	        {

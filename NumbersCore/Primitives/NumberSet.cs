@@ -27,25 +27,25 @@ namespace NumbersCore.Primitives
 		    get => Domain.Id;
 		    set => Domain = Domain.Trait.DomainStore[value];
 	    }
-        private List<IFocal> Focals { get; } = new List<IFocal>(); // todo: Focals should have no overlap and always be sorted
+        private List<Focal> Focals { get; } = new List<Focal>(); // todo: Focals should have no overlap and always be sorted
 
-        public NumberSet(Domain domain, params IFocal[] focals)
+        public NumberSet(Domain domain, params Focal[] focals)
         {
 	        Domain = domain;
 	        Focals.AddRange(focals);
             RemoveOverlaps();
         }
 
-        public IFocal[] GetFocals() => Focals.ToArray();
+        public Focal[] GetFocals() => Focals.ToArray();
         public int Count => Focals.Count;
-        public void Add(IFocal focal) { Focals.Add(focal); RemoveOverlaps(); }
-        public void Remove(IFocal focal) => Focals.Remove(focal);
+        public void Add(Focal focal) { Focals.Add(focal); RemoveOverlaps(); }
+        public void Remove(Focal focal) => Focals.Remove(focal);
 
         public void RemoveOverlaps()
         {
             if (Focals.Count > 1)
             {
-                List<IFocal> result = new List<IFocal>();
+                List<Focal> result = new List<Focal>();
                 // Sort the list by start tick position
                 Focals.Sort((a, b) => a.StartTickPosition.CompareTo(b.StartTickPosition));
 
@@ -75,7 +75,7 @@ namespace NumbersCore.Primitives
         }
 
 
-        public void Reset(IFocal[] focals)
+        public void Reset(Focal[] focals)
         {
             Focals.Clear();
             Focals.AddRange(focals);

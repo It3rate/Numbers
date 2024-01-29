@@ -17,7 +17,7 @@ namespace NumbersCore.Primitives
         public virtual string Name { get; }
 
         public readonly Dictionary<int, long> PositionStore = new Dictionary<int, long>(4096);
-        public readonly Dictionary<int, IFocal> FocalStore = new Dictionary<int, IFocal>();
+        public readonly Dictionary<int, Focal> FocalStore = new Dictionary<int, Focal>();
         public readonly Dictionary<int, Domain> DomainStore = new Dictionary<int, Domain>();
 
         protected internal Trait()
@@ -34,7 +34,7 @@ namespace NumbersCore.Primitives
             return brain.GetOrCreateTrait(name);
         }
 
-        public Domain AddDomain(IFocal basis, IFocal minMax)
+        public Domain AddDomain(Focal basis, Focal minMax)
 	    {
 		    return new Domain(this, basis, minMax);
 	    }
@@ -56,7 +56,7 @@ namespace NumbersCore.Primitives
 		    DomainStore.TryGetValue(id, out var result);
 		    return result;
 	    }
-	    public IFocal FocalAt(int index)
+	    public Focal FocalAt(int index)
 	    {
 		    var id = index + (int)MathElementKind.Focal;
 		    FocalStore.TryGetValue(id, out var result);

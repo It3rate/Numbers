@@ -10,7 +10,7 @@ namespace NumbersCore.CoreConcepts.Time
 	        set { }
         }
 
-        protected MillisecondNumber(IFocal focal) : base(focal) { }
+        protected MillisecondNumber(Focal focal) : base(focal) { }
 
         public static MillisecondNumber Create(long duration, bool addToStore = false) => Create(0, duration, addToStore);
 	    
