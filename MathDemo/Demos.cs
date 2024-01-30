@@ -93,32 +93,26 @@ namespace MathDemo
         private SKWorkspaceMapper testMult()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
-            var hDomain = CreateLowResDomain(3, 0);// Domain.CreateDomain("test0", unitSize, 16);
-            var vDomain = CreateLowResDomain(3, .1f);// Domain.CreateDomain("test0", unitSize, 16);
-            var mDomain = CreateLowResDomain(3, .3f);
-            var hNum = hDomain.CreateNumberFromFloats(0, 2);
-            var vNum = vDomain.CreateNumberFromFloats(0, 1.25f);
-            //var vNum2 = vDomain.CreateNumberFromFloats(0, 4);
+            var hDomain = CreateLowResDomain(4, 0);// Domain.CreateDomain("test0", unitSize, 16);
+            var vDomain = CreateLowResDomain(4, .1f);// Domain.CreateDomain("test0", unitSize, 16);
+            var mDomain = CreateLowResDomain(4, .3f);
 
+            var hNum2 = hDomain.CreateNumberFromFloats(1.75f, -3);
+            hNum2.Number.Polarity = Alignment.Inverted;
+            var vNum = vDomain.CreateNumberFromFloats(1.75f, -3);
             vDomain.FlipPerspective();
 
-            var hSel = new Selection(hNum.Number);
-            Transform transform = Brain.AddTransform(hSel, vNum.Number, TransformKind.Blend);
-            var tm = wm.GetOrCreateTransformMapper(transform);
-            tm.DoRender = false;
-            var mNum = mDomain.CreateNumber(transform.Value.Focal);
+            //var hNum = hDomain.CreateNumberFromFloats(0, 2);
+            //var vNum = vDomain.CreateNumberFromFloats(0, 1.25f);
+            //vDomain.FlipPerspective();
 
-            //Transform transform2 = Brain.AddTransform(hSel, vNum2.Number, TransformKind.Blend);
-            //var tm2 = wm.GetOrCreateTransformMapper(transform2);
-            //tm2.DoRender = false;
-            //var mNum2 = mDomain.CreateNumber(transform2.Value.Focal);
-
+            //var hSel = new Selection(hNum.Number);
+            //Transform transform = Brain.AddTransform(hSel, vNum.Number, TransformKind.Blend);
+            //var tm = wm.GetOrCreateTransformMapper(transform);
+            //tm.DoRender = false;
+            //var mNum = mDomain.CreateNumber(transform.Value.Focal);
 
             wm.Workspace.AddDomains(true, hDomain.Domain, vDomain.Domain, mDomain.Domain);
-
-            // CreateSimilarDomain(hDomain, 1.2f, 100, vNum.Focal);// transform.Value.Focal);
-
-
 
             //var speed = 0f;
             //var scale = 1f/1900f;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO.Ports;
 using Numbers.Agent;
 using Numbers.Utils;
 using NumbersCore.Primitives;
@@ -22,20 +23,25 @@ namespace Numbers.Mappers
         public SKNumberMapper(MouseAgent agent, Number number) : base(agent, number)
 	    {
 	    }
-
+        public Alignment InvertPolarity()
+        {
+            return Number.InvertPolarity();
+        }
         public void ResetNumber(Number number) => MathElement = number;
         public void EnsureSegment()
         {
 	        var val = Number.ValueInRenderPerspective;
 	        Reset(UnitSegment.SegmentAlongLine(val.StartF, val.EndF));
 	    }
+
+
         public void DrawNumber(float offsetScale, SKPaint paint)
         {
 			EnsureSegment();
 			var dir = UnitDirectionOnDomainLine;
 	        var offset = Guideline.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
 	        RenderSegment = Guideline + offset;
-	        Renderer.DrawDirectedLine(RenderSegment, Number.IsUnitPerspective, paint);
+	        Renderer.DrawDirectedLine(RenderSegment, Number.IsAligned, paint);
 
             //var ef = Number.ExpansiveForce;
             //Trace.WriteLine(ef);

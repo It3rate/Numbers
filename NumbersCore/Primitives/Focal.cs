@@ -131,7 +131,7 @@ namespace NumbersCore.Primitives
                 end = Math.Round(end) * len;
             }
             var result = basis.IsUnitPerspective ? new Range(-start, end) : new Range(end, -start);
-            return isAligned ? result : new Range(-result.End, -result.Start);
+            return isAligned ? result : new Range(-result.Start, -result.End);
         }
         public void SetWithRangeAndBasis(Range range, Focal basis, bool isReciprocal, bool isAligned)
         {
@@ -158,8 +158,8 @@ namespace NumbersCore.Primitives
 
             var stp = (long)Math.Round(start);
             var etp = (long)Math.Round(end);
-            StartTickPosition = isAligned ? stp : -etp;
-            EndTickPosition = isAligned ? etp : -stp;
+            StartTickPosition = isAligned ? stp : -stp;
+            EndTickPosition = isAligned ? etp : -etp;
         }
         public Range RangeAsBasis(Focal nonBasis) => nonBasis.GetRangeWithBasis(this, false, true);
         public Range UnitTRangeIn(Focal basis)

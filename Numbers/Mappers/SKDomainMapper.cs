@@ -177,11 +177,49 @@ namespace Numbers.Mappers
 			    DrawNumberSets();
             }
 	    }
+	    protected virtual void DrawNumberLine()
+	    {
+		    var renderDir = UnitDirectionOnDomainLine;
+		    var basisDir = BasisNumber.BasisFocal.Direction;
+		    var gsp = renderDir * basisDir == 1 ? Guideline.StartPoint : Guideline.EndPoint;
+		    var gep = renderDir * basisDir == 1 ? Guideline.EndPoint : Guideline.StartPoint;
+            if (ShowGradientNumberLine)
+		    {
+			    var pnt = CorePens.GetGradientPen(gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 10);
+			    Renderer.DrawSegment(Guideline, pnt);
+		    }
+		    else if (!ShowBasis) // if not showing units at least color the line
+		    {
+			    var pnt = CorePens.GetGradientPen( gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 3);
+			    Renderer.DrawSegment(Guideline, pnt);
+		    }
+
+            Renderer.DrawSegment(Guideline, Renderer.Pens.NumberLinePen);
+	    }
         protected virtual void DrawUnit()
 	    {
 		    if (ShowBasis)
 		    {
 			    NumberMapper(Domain.BasisNumber).DrawUnit(!ShowInfoOnTop);
+            }
+        }
+        protected virtual void DrawMarkers()
+        {
+	        if (ShowBasisMarkers)
+	        {
+		        var num = Domain.BasisNumber;
+		        DrawMarker(num, true);
+		        DrawMarker(num, false);
+	        }
+
+	        if (ShowValueMarkers)
+	        {
+		        foreach (var id in ValidNumberIds)
+		        {
+			        var nm = Domain.GetNumber(id);
+			        DrawMarker(nm, true);
+			        DrawMarker(nm, false);
+		        }
             }
         }
         protected virtual void DrawNumbers()
@@ -205,14 +243,15 @@ namespace Numbers.Mappers
                 nsm.DrawNumberSet();
 	        }
         }
+
         public virtual void DrawNumber(SKNumberMapper nm, float offset)
 		{
 			if (nm != null)
 	        {
-		        var pen = Pens.SegPens[Domain.CreationIndex % Pens.SegPens.Count];
+		        var pen = Pens.SegPens[nm.Number.StoreIndex % Pens.SegPens.Count];
 		        nm.DrawNumber(offset, pen); // background
 
-		        if (Domain.IsUnitPerspective)
+		        if (nm.Number.IsAligned)
 		        {
 			        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
 			        nm.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
@@ -225,57 +264,38 @@ namespace Numbers.Mappers
 	        }
         }
 
-        protected virtual void DrawMarkers()
-        {
-	        if (ShowBasisMarkers)
-	        {
-		        var num = Domain.BasisNumber;
-		        DrawMarker(num, true);
-		        DrawMarker(num, false);
-	        }
-
-	        if (ShowValueMarkers)
-	        {
-		        foreach (var id in ValidNumberIds)
-		        {
-			        var nm = Domain.GetNumber(id);
-			        DrawMarker(nm, true);
-			        DrawMarker(nm, false);
-		        }
-            }
-        }
         protected virtual void DrawMarker(Number num, bool isStart)
         {
-            var value = isStart ? num.Value.StartF : num.Value.EndF;
-            var t = isStart ? num.ValueInRenderPerspective.StartF : num.ValueInRenderPerspective.EndF;
-            var suffix = isStart ? "i" : "";
-            var isUnitPersp = num.IsUnitPerspective;
-		    var unitLabel = num.IsBasis && isStart ? "0" : isUnitPersp ? "1" : !isUnitPersp ? "i" : "";
+            var domainIsUnitPersp = num.Domain.IsUnitPerspective;
+            var useStart = isStart == num.IsAligned;
+
+            var value = useStart ? num.Value.StartF : num.Value.EndF;
+            var t = useStart ? num.ValueInRenderPerspective.StartF : num.ValueInRenderPerspective.EndF;
+            var suffix = useStart ? "i" : "";  
+		    var unitLabel = num.IsBasis && useStart ? "0" : domainIsUnitPersp ? "1" : !domainIsUnitPersp ? "i" : "";
 
 		    var txBaseline = DrawMarkerPointer(t);
-            if (!isUnitPersp)
+            if (!domainIsUnitPersp)
             {
                 txBaseline.Reverse();
                 txBaseline = txBaseline.ShiftOffLine(-6);
             }
 
-            var numPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;//(isUnitPersp && isStart) || (!isUnitPersp && !isStart)
+            var numPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;
             var txtBkgPen = Pens.TextBackgroundPen;
 		    if (num.IsBasis)
 		    {
-			    var txt = isStart ? "0" : isUnitPersp ? "1" : "i";
-			    var unitPaint = isUnitPersp ? Pens.UnitMarkerText : Pens.UnotMarkerText;
-                if (!isUnitPersp)
+			    var txt = useStart ? "0" : domainIsUnitPersp ? "1" : "i";
+			    var unitPaint = domainIsUnitPersp ? Pens.UnitMarkerText : Pens.UnotMarkerText;
+                if (!domainIsUnitPersp)
                 {
-                    txt = isStart ? "i" : "0";
-                    //txBaseline.Reverse();
-                    //txBaseline = txBaseline.ShiftOffLine(-6);
+                    txt = useStart ? "i" : "0";
                 }
                 Renderer.DrawTextOnPath(txBaseline, txt, unitPaint, txtBkgPen);
             }
             else if (ShowFractions)
 		    {
-			    var parts = GetFractionText(num, isStart, isUnitPersp);
+			    var parts = GetFractionText(num, isStart);
                 Renderer.DrawFraction(parts, txBaseline, numPaint, txtBkgPen);
             }
 		    else
@@ -306,25 +326,6 @@ namespace Numbers.Mappers
 			var textPoint1 = unitSeg.OrthogonalPoint(p2, isTop * 3f);
 
 			return ShowInfoOnTop ? new SKSegment(textPoint0, textPoint1) : new SKSegment(textPoint1, textPoint0);
-	    }
-	    protected virtual void DrawNumberLine()
-	    {
-		    var renderDir = UnitDirectionOnDomainLine;
-		    var basisDir = BasisNumber.BasisFocal.Direction;
-		    var gsp = renderDir * basisDir == 1 ? Guideline.StartPoint : Guideline.EndPoint;
-		    var gep = renderDir * basisDir == 1 ? Guideline.EndPoint : Guideline.StartPoint;
-            if (ShowGradientNumberLine)
-		    {
-			    var pnt = CorePens.GetGradientPen(gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 10);
-			    Renderer.DrawSegment(Guideline, pnt);
-		    }
-		    else if (!ShowBasis) // if not showing units at least color the line
-		    {
-			    var pnt = CorePens.GetGradientPen( gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 3);
-			    Renderer.DrawSegment(Guideline, pnt);
-		    }
-
-            Renderer.DrawSegment(Guideline, Renderer.Pens.NumberLinePen);
 	    }
         protected virtual void DrawTicks()
 	    {
@@ -373,20 +374,22 @@ namespace Numbers.Mappers
 	        return pts.Item1;
         }
 
-        protected (string, string) GetFractionText(Number num, bool isStart, bool isUnitPerspective)
+        protected (string, string) GetFractionText(Number num, bool isStart)
         {
-            var suffix = isStart ? "i" : "r";
+            var domainIsUnitPersp = num.Domain.IsUnitPerspective;
+            var isIValue = isStart == num.IsAligned;
+            var suffix = isIValue ? "i" : "r";
 	        var whole = "0";
 	        var fraction = "";
             var val = isStart ? num.StartValue : num.EndValue;
             if (val != 0)
             {
 	            var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
-                wholeNum = isUnitPerspective ? wholeNum : -wholeNum;
+                //wholeNum = domainIsUnitPersp ? wholeNum : -wholeNum;
                 var sign = wholeNum >= 0 ? "" : "-";// isStart ? (num.StartValue >= 0 ? "" : "-") : (num.EndValue >= 0 ? "" : "-");
                 whole = wholeNum == 0 ? "" : wholeNum.ToString();
                 // todo:!! need to rewrite unot perspective code. hack for now.
-	            var numerator = (isStart && isUnitPerspective) || (!isStart && !isUnitPerspective) ? num.RemainderStartValue : num.RemainderEndValue;//
+	            var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
                 if (num.AbsBasisTicks != 0 && numerator != 0)
 	            {
 		            fraction = " " + numerator.ToString() + "/" + num.AbsBasisTicks.ToString() + suffix;

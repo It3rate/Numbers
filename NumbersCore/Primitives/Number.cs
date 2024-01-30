@@ -77,8 +77,8 @@ namespace NumbersCore.Primitives
 			set => Domain.SetValueOf(Focal, value, IsAligned);
         }
 
-        public bool IsUnitPerspective => Domain.IsUnitPerspective; // domains can have a pos or neg basis, numbers can conform or counter that with polarity
-		public bool IsUnotPerspective => Domain.IsUnotPerspective;
+        //public bool IsUnitPerspective => IsAligned;// Domain.IsUnitPerspective; // domains can have a pos or neg basis, numbers can conform or counter that with polarity
+        //public bool IsUnotPerspective => IsInverted;// Domain.IsUnotPerspective;
         //public Alignment Direction => (Focal.Direction == BasisFocal.Direction) ? Alignment.Aligned : Alignment.Inverted;
         public long ZeroTick => BasisFocal.StartTickPosition;
         public long BasisTicks => BasisFocal.LengthInTicks;
@@ -88,6 +88,7 @@ namespace NumbersCore.Primitives
         public bool IsMinMax => Domain.MinMaxNumber.Id == Id;
         public bool IsDomainNumber => IsBasis || IsMinMax;
 
+        public int StoreIndex { get; set; } // order added to domain
 
         public Number(Focal focal)
 		{
@@ -107,7 +108,7 @@ namespace NumbersCore.Primitives
             }
         }
 
-        public Range ValueInRenderPerspective => new Range(-StartValue, EndValue);
+        public Range ValueInRenderPerspective => IsAligned ? new Range(-StartValue, EndValue) : new Range(-EndValue, StartValue);
 
         public Number SetWith(Number other)
         {
@@ -129,6 +130,11 @@ namespace NumbersCore.Primitives
             var len = val.Length;
             return (pointOnLine - val.Start) / len;
         }
+        public Alignment InvertPolarity()
+        {
+            Polarity = Polarity == Alignment.Aligned ? Alignment.Inverted : Alignment.Aligned;
+            return Polarity;
+        }
         public Number GetInverted(bool addToStore = true)
         {
             var result = Clone(false);
@@ -138,8 +144,8 @@ namespace NumbersCore.Primitives
 
         public long WholeStartValue => (long) StartValue;
 		public long WholeEndValue => (long) EndValue;
-		public long RemainderStartValue => Domain.BasisIsReciprocal ? 0 : Math.Abs(StartTicks % BasisFocal.NonZeroLength);
-		public long RemainderEndValue => Domain.BasisIsReciprocal ? 0 : Math.Abs(EndTicks % BasisFocal.NonZeroLength);
+		public long RemainderStartValue => Domain.BasisIsReciprocal ? 0 : (long)(Math.Abs(StartValue % 1) * AbsBasisTicks);
+		public long RemainderEndValue => Domain.BasisIsReciprocal ? 0 : (long)(Math.Abs(EndValue % 1) * AbsBasisTicks);
 		public Range RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal);
 
         public Range FloorRange => new Range(Math.Ceiling(StartValue), Math.Floor(EndValue));

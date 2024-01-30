@@ -93,6 +93,7 @@ namespace NumbersCore.Primitives
             return AddNumber(new Number(focal), addToStore);
         }
 
+        public int _nextStoreIndex = 0;
         public Number AddNumber(Number number, bool addToStore = true)
         {
 	        number.Domain = this;
@@ -100,7 +101,8 @@ namespace NumbersCore.Primitives
 	        if (addToStore)
 	        {
 		        NumberStore[number.Id] = number;
-	        }
+                number.StoreIndex = _nextStoreIndex++;
+            }
 	        return number;
         }
         public bool RemoveNumber(Number number)

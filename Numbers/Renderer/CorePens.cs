@@ -43,6 +43,7 @@ namespace Numbers.Renderer
         public SKPaint SegPen2 { get; set; }
         public SKPaint SegPen3 { get; set; }
         public List<SKPaint> SegPens;
+        public SKPaint SegPenHighlight { get; set; }
 
         public SKPaint TextBrush { get; set; }
         public SKPaint Seg0TextBrush { get; set; }
@@ -81,9 +82,9 @@ namespace Numbers.Renderer
         {
 	        BkgColor = SKColor.Parse("#FFFFFF");
             UnitColor = SKColor.Parse("#00FAFF");
-            UnitLineColor = SKColor.Parse("#7F9FF4");
+            UnitLineColor = SKColor.Parse("#9FBFF8");
             UnotColor = SKColor.Parse("#FF0098");
-            UnotLineColor = SKColor.Parse("#E97A7E");
+            UnotLineColor = SKColor.Parse("#ED9A9E");
             UnitStrokeColor = SKColor.Parse("#404040");
             TickColor = SKColors.Black;
             MarkerColor = SKColors.DarkGray;
@@ -114,10 +115,11 @@ namespace Numbers.Renderer
             UnitInlinePen = GetPen(UnitColor, DefaultWidth * 2f);
             UnotInlinePen = GetPen(UnotColor, DefaultWidth * 2f);
             SegPen0 = GetPen(SKColor.Parse("#106010"), DefaultWidth * 5f);
-            SegPen1 = GetPen(SKColor.Parse("#106040"), DefaultWidth * 5f);
-            SegPen2 = GetPen(SKColor.Parse("#101060"), DefaultWidth * 5f);
-            SegPen3 = GetPen(SKColor.Parse("#004000"), DefaultWidth * 5f);
+            SegPen1 = GetPen(SKColor.Parse("#101060"), DefaultWidth * 5f);
+            SegPen2 = GetPen(SKColor.Parse("#601000"), DefaultWidth * 5f);
+            SegPen3 = GetPen(SKColor.Parse("#106060"), DefaultWidth * 5f);
             SegPens = new List<SKPaint>() { SegPen0, SegPen1, SegPen2, SegPen3 };
+            SegPenHighlight = GetPen(SKColor.Parse("#101040"), DefaultWidth * 8f);
 
             TextBrush = GetText(SKColor.Parse("#A0A0F0"), 20);
             Seg0TextBrush = GetText(SegPen0.Color, 20);
@@ -188,6 +190,7 @@ namespace Numbers.Renderer
             SegPen2 = GetPen(new SKColor(50, 50, 250, 255), DefaultWidth * 4f);
             SegPen3 = GetPen(new SKColor(50, 250, 50, 255), DefaultWidth * 4f);
             SegPens = new List<SKPaint>() { SegPen0, SegPen1, SegPen2, SegPen3 };
+            SegPenHighlight = GetPen(SKColor.Parse("#B0B0FF"), DefaultWidth * 8f);
 
             TextBrush = GetText(SKColor.Parse("#A0404060"), 20);
             Seg0TextBrush = GetText(SegPen0.Color, 20);

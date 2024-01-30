@@ -101,7 +101,7 @@ namespace Numbers.Agent
 
         public void Draw()
         {
-	        var sel = SelHighlight;
+	        HighlightSet sel = SelHighlight;
 	        if (sel.HasHighlight)
 	        {
 		        var pen = sel.ActiveHighlight.Kind.IsLine() ? Renderer.Pens.HighlightPen : Renderer.Pens.HoverPen;
@@ -119,6 +119,7 @@ namespace Numbers.Agent
             var mousePoint = GetTransformedPoint(_rawMousePoint);
             WorkspaceMapper.GetSnapPoint(_highlight, SelCurrent, mousePoint);
             SelHighlight.Set(_highlight);
+            SelSelection.Clear();
 
             //Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, false, _selectableKind);
             //Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
@@ -132,7 +133,8 @@ namespace Numbers.Agent
             {
 	            if (_highlight.IsSet)
 	            {
-		            SelBegin.Set(_highlight.Clone());
+		            SelBegin.Set(_highlight.Clone()); 
+                    SelSelection.Set(_highlight.Clone());
                 }
                 //Data.GetHighlight(mousePoint, Data.Selected, _ignoreList, false, _selectableKind);
                 //Data.Selected.Position = mousePoint;
@@ -326,6 +328,13 @@ namespace Numbers.Agent
                 dm.FlipPerspective();
             }
         }
+        private void FlipSelectedPolarity()
+        {
+            if(SelSelection.ActiveHighlight?.Mapper is SKNumberMapper nm)
+            {
+                nm.Number.InvertPolarity();
+            }
+        }
 
         private void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)
         {
@@ -366,57 +375,29 @@ namespace Numbers.Agent
                 case Keys.Escape:
                     UIMode = UIMode.Any;
                     break;
+                case Keys.D:
+                    ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
+                    break;
+                case Keys.Delete:
+                    DeleteSelected();
+                    break;
                 case Keys.E:
 	                LockBasisOnDrag = true;
 	                break;
                 case Keys.F:
 	                WorkspaceMapper.ShowFractions = !WorkspaceMapper.ShowFractions;
 	                break;
-                case Keys.W:
-	                LockTicksOnDrag = true;
-	                break;
-                case Keys.T:
-                    Demos.NextTest(this);
-                    break;
                 case Keys.F5:
                     Demos.Reload(this);
+                    break;
+                case Keys.I:
+                    FlipSelectedPolarity();
                     break;
                 case Keys.N:
 	                FlipBasis();
 	                break;
                 case Keys.P:
 	                Runner.TogglePause();
-                    break;
-                case Keys.D:
-                    ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
-                    break;
-                //case Keys.B:
-                //    UIMode = UIMode.CreateBond;
-                //    break;
-                case Keys.Delete:
-                    DeleteSelected();
-                    break;
-                case Keys.U:
-                    UIMode = UIMode.SetUnit;
-                    break;
-                //case Keys.Oemplus:
-                //    UIMode = UIMode.Equal;
-                //    break;
-                case Keys.I:
-                    ToggleShowNumbers();
-                    break;
-                case Keys.Space:
-                    StartPan();
-                    break;
-                case Keys.Z:
-                    if (_isShiftDown && _isControlDown)
-                    {
-                        //_editCommands.Redo();
-                    }
-                    else if (_isControlDown)
-                    {
-                        //_editCommands.Undo();
-                    }
                     break;
                 case Keys.R:
                     if (_isControlDown)
@@ -427,6 +408,37 @@ namespace Numbers.Agent
                     {
                         //_editCommands.Repeat();
                     }
+                    break;
+                case Keys.Space:
+                    StartPan();
+                    break;
+                case Keys.T:
+                    Demos.NextTest(this);
+                    break;
+                case Keys.U:
+                    UIMode = UIMode.SetUnit;
+                    break;
+                case Keys.W:
+	                LockTicksOnDrag = true;
+	                break;
+                //case Keys.B:
+                //    UIMode = UIMode.CreateBond;
+                //    break;
+                //case Keys.Oemplus:
+                //    UIMode = UIMode.Equal;
+                //    break;
+                case Keys.Z:
+                    if (_isShiftDown && _isControlDown)
+                    {
+                        //_editCommands.Redo();
+                    }
+                    else if (_isControlDown)
+                    {
+                        //_editCommands.Undo();
+                    }
+                    break;
+                case Keys.D0:
+                    ToggleShowNumbers();
                     break;
             }
             SetSelectable(UIMode);
