@@ -87,7 +87,7 @@ namespace Numbers.Mappers
 	        {
 		        SetValueOfBasis(newPoint, kind);
 	        }
-	        else if (kind.IsMajor())
+	        else if (kind.IsMajor() == Number.IsAligned)
             {
 	            SetEndValueByPoint(newPoint);
             }
@@ -115,11 +115,13 @@ namespace Numbers.Mappers
 
         public void SetStartValueByPoint(SKPoint newPoint)
         {
-	        Number.StartValue = -TFromPoint(newPoint);
+            var dir = -Number.PolarityDirection;
+            Number.StartValue = TFromPoint(newPoint) * dir;
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {
-	        Number.EndValue = TFromPoint(newPoint);
+            var dir = Number.PolarityDirection;
+            Number.EndValue = TFromPoint(newPoint) * dir;
         }
         public void SetValueOfBasis(SKPoint newPoint, UIKind kind)
         {

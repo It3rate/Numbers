@@ -205,7 +205,8 @@ namespace Numbers.Agent
 			            else
 			            {
 				            var curT = nm.DomainMapper.BasisSegment.TFromPoint(_highlight.OrginalPoint, false).Item1;
-                            nm.MoveSegmentByT(SelBegin.OriginalSegment, curT - activeHighlight.T);
+                            var dir = nm.Number.PolarityDirection;
+                            nm.MoveSegmentByT(SelBegin.OriginalSegment, (curT * dir - activeHighlight.T));
                         }
 		            }
 		            else if (activeKind.IsBasis())
