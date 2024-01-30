@@ -274,7 +274,7 @@ namespace Numbers.Mappers
             var suffix = useStart ? "i" : "";  
 		    var unitLabel = num.IsBasis && useStart ? "0" : domainIsUnitPersp ? "1" : !domainIsUnitPersp ? "i" : "";
 
-		    var txBaseline = DrawMarkerPointer(t);
+		    var txBaseline = DrawMarkerPointer(t, num.IsBasis);
             if (!domainIsUnitPersp)
             {
                 txBaseline.Reverse();
@@ -304,7 +304,7 @@ namespace Numbers.Mappers
 				Renderer.DrawTextOnPath(txBaseline, txt, numPaint, txtBkgPen);
             }
         }
-        protected virtual SKSegment DrawMarkerPointer(float t)
+        protected virtual SKSegment DrawMarkerPointer(float t, bool isBasis)
 	    {
 			var wPos = 5f;
 		    var sign = UnitDirectionOnDomainLine;
@@ -317,13 +317,24 @@ namespace Numbers.Mappers
 		    var ptMinus = unitSeg.PointAlongLine(t - markerHW);
 		    var ptPlus = unitSeg.PointAlongLine(t + markerHW);
 			var p0 = unitSeg.OrthogonalPoint(pt, w * .8f);
-		    var p1 = unitSeg.OrthogonalPoint(ptMinus, w * 3);
-		    var p2 = unitSeg.OrthogonalPoint(ptPlus, w * 3);
-		    Renderer.FillPolyline(Pens.MarkerBrush, p0, p1, p2, p0);
-			//Renderer.DrawLine(p1, p2, Pens.Seg1TextBrush);
+            SKPoint textPoint0;
+            SKPoint textPoint1;
+            if (!isBasis)
+            {
+		        var p1 = unitSeg.OrthogonalPoint(ptMinus, w * 3);
+		        var p2 = unitSeg.OrthogonalPoint(ptPlus, w * 3);
+                Renderer.FillPolyline(Pens.MarkerBrush, p0, p1, p2, p0);
+			    //Renderer.DrawLine(p1, p2, Pens.Seg1TextBrush);
+			    textPoint0 = unitSeg.OrthogonalPoint(p1, isTop * 3f); // large pixel offset for text above marker
+			    textPoint1 = unitSeg.OrthogonalPoint(p2, isTop * 3f);
+            }
+            else
+            {
+                var offset = sign > 0 ? -10f : 4f;
+                textPoint0 = unitSeg.OrthogonalPoint(ptMinus, offset);
+                textPoint1 = unitSeg.OrthogonalPoint(ptPlus, offset);
 
-			var textPoint0 = unitSeg.OrthogonalPoint(p1, isTop * 3f); // 4 pixel offset
-			var textPoint1 = unitSeg.OrthogonalPoint(p2, isTop * 3f);
+            }
 
 			return ShowInfoOnTop ? new SKSegment(textPoint0, textPoint1) : new SKSegment(textPoint1, textPoint0);
 	    }
@@ -379,30 +390,30 @@ namespace Numbers.Mappers
             var domainIsUnitPersp = num.Domain.IsUnitPerspective;
             var isIValue = isStart == num.IsAligned;
             var suffix = isIValue ? "i" : "r";
-	        var whole = "0";
-	        var fraction = "";
+            var fraction = "";
             var val = isStart ? num.StartValue : num.EndValue;
-            if (val != 0)
+            var whole = "0";
+            if(val != 0)
             {
-	            var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
+                var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
                 //wholeNum = domainIsUnitPersp ? wholeNum : -wholeNum;
                 var sign = wholeNum >= 0 ? "" : "-";// isStart ? (num.StartValue >= 0 ? "" : "-") : (num.EndValue >= 0 ? "" : "-");
                 whole = wholeNum == 0 ? "" : wholeNum.ToString();
                 // todo:!! need to rewrite unot perspective code. hack for now.
-	            var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
+                var numerator = isStart ? num.RemainderStartValue : num.RemainderEndValue;
                 if (num.AbsBasisTicks != 0 && numerator != 0)
-	            {
-		            fraction = " " + numerator.ToString() + "/" + num.AbsBasisTicks.ToString() + suffix;
-	            }
-	            else
-	            {
-		            whole += suffix;
-	            }
+                {
+                    fraction = " " + numerator.ToString() + "/" + num.AbsBasisTicks.ToString() + suffix;
+                }
+                else
+                {
+                    whole += suffix;
+                }
 
-	            if (whole == "")
-	            {
-		            fraction = sign + fraction;
-	            }
+                if (whole == "")
+                {
+                    fraction = sign + fraction;
+                }
             }
 
             return (whole, fraction);

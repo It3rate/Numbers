@@ -97,20 +97,20 @@ namespace MathDemo
             var vDomain = CreateLowResDomain(4, .1f);// Domain.CreateDomain("test0", unitSize, 16);
             var mDomain = CreateLowResDomain(4, .3f);
 
-            var hNum2 = hDomain.CreateNumberFromFloats(1.75f, -3);
-            hNum2.Number.Polarity = Alignment.Inverted;
-            var vNum = vDomain.CreateNumberFromFloats(1.75f, -3);
-            vDomain.FlipPerspective();
-
-            //var hNum = hDomain.CreateNumberFromFloats(0, 2);
-            //var vNum = vDomain.CreateNumberFromFloats(0, 1.25f);
+            //var hNum2 = hDomain.CreateNumberFromFloats(1.75f, -3);
+            //hNum2.Number.Polarity = Alignment.Inverted;
+            //var vNum = vDomain.CreateNumberFromFloats(1.75f, -3);
             //vDomain.FlipPerspective();
 
-            //var hSel = new Selection(hNum.Number);
-            //Transform transform = Brain.AddTransform(hSel, vNum.Number, TransformKind.Blend);
-            //var tm = wm.GetOrCreateTransformMapper(transform);
-            //tm.DoRender = false;
-            //var mNum = mDomain.CreateNumber(transform.Value.Focal);
+            var hNum = hDomain.CreateNumberFromFloats(0, -1);
+            hNum.Number.Polarity = Alignment.Inverted;
+            var vNum = vDomain.CreateNumberFromFloats(0, 1.25f);
+
+            var hSel = new Selection(hNum.Number);
+            Transform transform = Brain.AddTransform(hSel, vNum.Number, TransformKind.Blend);
+            var tm = wm.GetOrCreateTransformMapper(transform);
+            tm.DoRender = false;
+            var mNum = mDomain.CreateNumber(transform.Value.Focal);
 
             wm.Workspace.AddDomains(true, hDomain.Domain, vDomain.Domain, mDomain.Domain);
 
