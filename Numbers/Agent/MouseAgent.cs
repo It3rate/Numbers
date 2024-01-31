@@ -119,7 +119,6 @@ namespace Numbers.Agent
             var mousePoint = GetTransformedPoint(_rawMousePoint);
             WorkspaceMapper.GetSnapPoint(_highlight, SelCurrent, mousePoint);
             SelHighlight.Set(_highlight);
-            SelSelection.Clear();
 
             //Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, false, _selectableKind);
             //Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
@@ -133,8 +132,16 @@ namespace Numbers.Agent
             {
 	            if (_highlight.IsSet)
 	            {
-		            SelBegin.Set(_highlight.Clone()); 
-                    SelSelection.Set(_highlight.Clone());
+		            SelBegin.Set(_highlight.Clone());
+                    if (_highlight.Mapper is SKNumberMapper nm && !nm.IsBasis)
+                    {
+                        SelSelection.Clear();
+                        SelSelection.Set(_highlight.Clone());
+                    }
+                }
+                else
+                {
+                    SelSelection.Clear();
                 }
                 //Data.GetHighlight(mousePoint, Data.Selected, _ignoreList, false, _selectableKind);
                 //Data.Selected.Position = mousePoint;
@@ -197,10 +204,13 @@ namespace Numbers.Agent
 		            {
 			            if (nm.IsBasis)
 			            {
-				            var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OrginalPoint, false).Item1;
-                            var orgT = nm.DomainMapper.Guideline.TFromPoint(activeHighlight.OrginalPoint, false).Item1;
-				            nm.MoveBasisSegmentByT(SelBegin.OriginalSegment, curT - orgT);
-				            BasisChanged(nm);
+                            if (!SelSelection.HasHighlight || CurrentKey == Keys.B)
+                            {
+                                var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OrginalPoint, false).Item1;
+                                var orgT = nm.DomainMapper.Guideline.TFromPoint(activeHighlight.OrginalPoint, false).Item1;
+                                nm.MoveBasisSegmentByT(SelBegin.OriginalSegment, curT - orgT);
+                                BasisChanged(nm);
+                            }
                         }
 			            else
 			            {
@@ -210,9 +220,12 @@ namespace Numbers.Agent
                         }
 		            }
 		            else if (activeKind.IsBasis())
-		            {
-			            nm.SetValueByKind(_highlight.SnapPoint, activeKind);
-                        BasisChanged(nm);
+                    {
+                        if (!SelSelection.HasHighlight || CurrentKey == Keys.B)
+                        {
+                            nm.SetValueByKind(_highlight.SnapPoint, activeKind);
+                            BasisChanged(nm);
+                        }
 		            }
 		            else
 		            {
@@ -373,9 +386,7 @@ namespace Numbers.Agent
             var curMode = UIMode;
             switch (CurrentKey)
             {
-                case Keys.Escape:
-                    UIMode = UIMode.Any;
-                    break;
+                // case Keys.B: Adjust Basis segment (ctrl to lock tick positions).
                 case Keys.D:
                     ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
                     break;
@@ -385,6 +396,9 @@ namespace Numbers.Agent
                 case Keys.E:
 	                LockBasisOnDrag = true;
 	                break;
+                case Keys.Escape:
+                    UIMode = UIMode.Any;
+                    break;
                 case Keys.F:
 	                WorkspaceMapper.ShowFractions = !WorkspaceMapper.ShowFractions;
 	                break;

@@ -248,7 +248,8 @@ namespace Numbers.Mappers
 		{
 			if (nm != null)
 	        {
-		        var pen = Pens.SegPens[nm.Number.StoreIndex % Pens.SegPens.Count];
+                var isSelected = Agent.SelSelection.ActiveHighlight?.Mapper == nm;
+		        var pen = isSelected ? Pens.SegPenHighlight : Pens.SegPens[nm.Number.StoreIndex % Pens.SegPens.Count];
 		        nm.DrawNumber(offset, pen); // background
 
 		        if (nm.Number.IsAligned)
