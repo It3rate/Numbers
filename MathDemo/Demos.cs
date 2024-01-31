@@ -110,7 +110,7 @@ namespace MathDemo
             Transform transform = Brain.AddTransform(hSel, vNum.Number, TransformKind.Blend);
             var tm = wm.GetOrCreateTransformMapper(transform);
             tm.DoRender = false;
-            var mNum = mDomain.CreateNumber(transform.Value.Focal);
+            var mNum = mDomain.Domain.AddNumber(transform.Value);
 
             wm.Workspace.AddDomains(true, hDomain.Domain, vDomain.Domain, mDomain.Domain);
 

@@ -423,5 +423,10 @@ namespace Numbers.Mappers
 	    {
 		    return Renderer.GetCirclePath(highlight.SnapPoint);
 	    }
-	}
+
+        public override string ToString()
+        {
+            return "dm: Count " + NumberMappers.Count;
+        }
+    }
 }

@@ -17,7 +17,7 @@ namespace Numbers.Mappers
         public SKSegment UnitSegment => DomainMapper.BasisSegment;
         public bool IsBasis => Number.IsBasis;
         public int BasisSign => Number.BasisFocal.Direction;
-
+        public Alignment Polarity { get => Number.Polarity; set => Number.Polarity = value; }
         public int UnitDirectionOnDomainLine => Guideline.DirectionOnLine(DomainMapper.Guideline);
 
         public SKNumberMapper(MouseAgent agent, Number number) : base(agent, number)
@@ -148,6 +148,10 @@ namespace Numbers.Mappers
 		        result = Renderer.GetCirclePath(highlight.SnapPoint);
             }
 	        return result;
+        }
+        public override string ToString()
+        {
+            return "nm:" + Number.ToString();
         }
     }
 }

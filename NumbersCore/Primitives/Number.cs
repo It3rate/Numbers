@@ -121,6 +121,7 @@ namespace NumbersCore.Primitives
             {
                 Value = other.Value;
             }
+            Polarity = other.Polarity;
             return other;
         }
 
@@ -347,11 +348,6 @@ namespace NumbersCore.Primitives
             return Domain.AddNumber(result, addToStore);
         }
 
-        public override string ToString()
-		{
-			var v = Value;
-			return $"[{v.Start:0.00}:>{v.End:0.00}]";
-		}
 		public override bool Equals(object obj)
 		{
 			return obj is Number other && Equals(other);
@@ -374,6 +370,13 @@ namespace NumbersCore.Primitives
                 hashCode = (hashCode * 13) ^ Focal.EndTickPosition.GetHashCode();
                 return hashCode;
 			}
+		}
+        public override string ToString()
+		{
+			var v = Value;
+            var startSuffix = IsAligned ? "i" : "r";
+            var endSuffix = IsAligned ? "r" : "i";
+            return $"[{v.Start:0.00}{startSuffix}:{v.End:0.00}{endSuffix}]";
 		}
     }
 }
