@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using Numbers.Agent;
 using Numbers.Renderer;
 using Numbers.Utils;
@@ -113,7 +114,7 @@ namespace Numbers.Mappers
 			            goto Found;
 		            }
 
-		            if (!isSameMapper && seg.DistanceTo(input, true) < maxDist)
+		            if (!isSameMapper && seg.DistanceTo(input, true) < maxDist && Agent.CurrentKey != Keys.M)
 		            {
 			            var t = nm.DomainMapper.BasisSegment.TFromPoint(input, false).Item1;
 			            highlight.Set(input, input, nm, t, kind | UIKind.Line);
@@ -165,7 +166,17 @@ namespace Numbers.Mappers
 		        {
 			        domainMapper.Draw();
 		        }
-	        }
+
+                if (Agent.DragHighlight != null)
+                {
+                    Renderer.DrawSegment(Agent.DragHighlight, Pens.ThickHighlightPen);
+                }
+                if (Agent.DragPoint != SKPoint.Empty && Agent.SelSelection.ActiveHighlight.Mapper is SKNumberMapper snm)
+                {
+                    var pen = snm.BasisSign > 0 ? Pens.UnitPenLight : Pens.UnotPenLight;
+                    Renderer.Canvas.DrawPath(Renderer.GetCirclePath(Agent.DragPoint, 4), pen);
+                }
+            }
         }
 
         public IEnumerable<SKTransformMapper> GetTransformMappers(bool reverse = false)

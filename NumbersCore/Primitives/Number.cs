@@ -90,9 +90,10 @@ namespace NumbersCore.Primitives
 
         public int StoreIndex { get; set; } // order added to domain
 
-        public Number(Focal focal)
+        public Number(Focal focal, Alignment polarity = Alignment.Aligned)
 		{
 			Focal = focal;
+            Polarity = polarity;
 		}
 
         public Range ExpansiveForce
@@ -344,7 +345,7 @@ namespace NumbersCore.Primitives
 
         public Number Clone(bool addToStore = true)
         {
-            var result = new Number(Focal.Clone());
+            var result = new Number(Focal.Clone(), Polarity);
             return Domain.AddNumber(result, addToStore);
         }
 

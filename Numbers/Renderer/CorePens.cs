@@ -35,6 +35,7 @@ namespace Numbers.Renderer
 
         public SKPaint HoverPen { get; set; }
         public SKPaint HighlightPen { get; set; }
+        public SKPaint ThickHighlightPen { get; set; }
 
         public SKPaint UnotInlinePen { get; set; }
         public SKPaint UnitInlinePen { get; set; }
@@ -111,6 +112,7 @@ namespace Numbers.Renderer
             ForeHatch = GetHatch(SKColors.Black, true);
             HoverPen = GetPen(SKColor.Parse("#80D02020"), DefaultWidth * 2);
             HighlightPen = GetPen(SKColors.LightYellow, DefaultWidth * 1f);
+            ThickHighlightPen = GetPen(SKColor.Parse("#80E0D000"), DefaultWidth * 5f);
 
             UnitInlinePen = GetPen(UnitColor, DefaultWidth * 2f);
             UnotInlinePen = GetPen(UnotColor, DefaultWidth * 2f);
@@ -182,6 +184,7 @@ namespace Numbers.Renderer
 
             HoverPen = GetPen(new SKColor(240, 220, 220), DefaultWidth * 2);
             HighlightPen = GetPen(SKColors.LightYellow, DefaultWidth * 1f);
+            ThickHighlightPen = GetPen(SKColor.Parse("#80E0D000"), DefaultWidth * 5f);
 
             UnitInlinePen = GetPen(UnitColor, DefaultWidth * 2.5f);
             UnotInlinePen = GetPen(UnotColor, DefaultWidth * 2.5f);

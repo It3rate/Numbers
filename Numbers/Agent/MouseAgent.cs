@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using Numbers.Mappers;
 using Numbers.Renderer;
+using Numbers.Utils;
 using NumbersAPI.CommandEngine;
 using NumbersAPI.Motion;
 using NumbersCore.CoreConcepts;
@@ -68,7 +70,7 @@ namespace Numbers.Agent
         private SKPoint _rawMousePoint;
         private float _minDragDistance = 4f;
         public float ScaleTickSize { get; set; } = 0.2f;
-        private Keys CurrentKey;
+        public Keys CurrentKey { get; private set; }
         private UIMode _uiMode = UIMode.Any;
         public UIMode UIMode
         {
@@ -171,6 +173,10 @@ namespace Numbers.Agent
             }
             return true;
         }
+        private Number _initialSelectionNum;
+        private Number _initialBasisNum;
+        public SKSegment DragHighlight;
+        public SKPoint DragPoint;
         public bool MouseDrag(SKPoint mousePoint)
         {
 	        if (IsPaused) {return false;}
@@ -189,6 +195,11 @@ namespace Numbers.Agent
 						if (nm.IsBasis)
 						{
 							SaveNumberValues(SavedNumbers);
+                            if(SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && !snm.Number.IsBasis)
+                            {
+                                _initialBasisNum = snm.Number.Domain.BasisNumber.Clone();
+                                _initialSelectionNum = snm.Number.Clone();
+                            }
                         }
 					}
                 }
@@ -200,7 +211,7 @@ namespace Numbers.Agent
 	            var activeKind = activeHighlight.Kind;
 	            if (activeHighlight.Mapper is SKNumberMapper nm)
 	            { 
-		            if (activeKind.IsLine())
+		            if (activeKind.IsLine() && CurrentKey != Keys.M)
 		            {
 			            if (nm.IsBasis)
 			            {
@@ -208,7 +219,7 @@ namespace Numbers.Agent
                             {
                                 var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OrginalPoint, false).Item1;
                                 var orgT = nm.DomainMapper.Guideline.TFromPoint(activeHighlight.OrginalPoint, false).Item1;
-                                nm.MoveBasisSegmentByT(SelBegin.OriginalSegment, curT - orgT);
+                                nm.MoveBasisSegmentByT(SelSelection.OriginalSegment, curT - orgT);
                                 BasisChanged(nm);
                             }
                         }
@@ -225,6 +236,23 @@ namespace Numbers.Agent
                         {
                             nm.SetValueByKind(_highlight.SnapPoint, activeKind);
                             BasisChanged(nm);
+                        }
+                        else if(SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && activeKind.IsMajor())
+                        {
+                            var g = SelCurrent.ActiveHighlight.Mapper.Guideline;
+                            var (t, pt) = g.TFromPoint(_highlight.SnapPoint, false);
+                            if (_initialBasisNum.Domain.IsBasisPositive) // todo: Need to multiply based on domain perspective and number polarity (currently just looks at aligned)
+                            {
+                                _initialBasisNum.EndValue = t;
+                            }
+                            else
+                            {
+                                _initialBasisNum.StartValue = t;
+                            }
+                            snm.Number.SetWith(_initialSelectionNum);
+                            snm.Number.Multiply(_initialBasisNum);
+                            DragPoint = pt;
+                            DragHighlight = new SKSegment(g.StartPoint, mousePoint);
                         }
 		            }
 		            else
@@ -531,6 +559,10 @@ namespace Numbers.Agent
 	            SelBegin?.Reset();
 	            SelCurrent?.Reset();
             }
+            _initialBasisNum = null;
+            _initialSelectionNum = null;
+            DragHighlight = null;
+            DragPoint = SKPoint.Empty;
         }
         public void ClearHighlights()
         {
