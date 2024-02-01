@@ -47,24 +47,24 @@ namespace NumbersCore.Primitives
             {
                 List<Focal> result = new List<Focal>();
                 // Sort the list by start tick position
-                Focals.Sort((a, b) => a.StartTickPosition.CompareTo(b.StartTickPosition));
+                Focals.Sort((a, b) => a.StartPosition.CompareTo(b.StartPosition));
 
-                long start = Focals[0].StartTickPosition;
-                long end = Focals[0].EndTickPosition;
+                long start = Focals[0].StartPosition;
+                long end = Focals[0].EndPosition;
                 for (int i = 1; i < Focals.Count; i++)
                 {
                     // Check for overlap
-                    if (Focals[i].StartTickPosition <= end)
+                    if (Focals[i].StartPosition <= end)
                     {
                         // Overlap, merge the ranges
-                        end = Math.Max(end, Focals[i].EndTickPosition);
+                        end = Math.Max(end, Focals[i].EndPosition);
                     }
                     else
                     {
                         // No overlap, add the current non-overlapping range to the result list
                         result.Add(new Focal(start, end));
-                        start = Focals[i].StartTickPosition;
-                        end = Focals[i].EndTickPosition;
+                        start = Focals[i].StartPosition;
+                        end = Focals[i].EndPosition;
                     }
                 }
                 result.Add(new Focal(start, end));

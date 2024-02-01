@@ -271,7 +271,7 @@ namespace Numbers.Mappers
 
         protected virtual void DrawMarker(Number num, bool isStart)
         {
-            var domainIsUnitPersp = num.Domain.IsUnitPerspective;
+            var domainIsUnitPersp = num.Domain.BasisFocal.IsPositiveDirection;
             var useStart = isStart == num.IsAligned;
 
             var value = useStart ? num.Value.StartF : num.Value.EndF;
@@ -392,7 +392,7 @@ namespace Numbers.Mappers
 
         protected (string, string) GetFractionText(Number num, bool isStart)
         {
-            var domainIsUnitPersp = num.Domain.IsUnitPerspective;
+            var domainIsUnitPersp = num.Domain.BasisFocal.IsPositiveDirection;
             var isIValue = isStart == num.IsAligned;
             var suffix = isIValue ? "i" : "r";
             var fraction = "";

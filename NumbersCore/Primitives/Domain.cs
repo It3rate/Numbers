@@ -42,9 +42,6 @@ namespace NumbersCore.Primitives
         public Range MinMaxRange => BasisFocal.RangeAsBasis(MinMaxFocal);
         public double TickToBasisRatio => BasisIsReciprocal ? BasisFocal.NonZeroLength : 1.0 / BasisFocal.NonZeroLength;
 
-        public bool IsUnitPerspective => BasisFocal.IsUnitPerspective;
-        public bool IsUnotPerspective => BasisFocal.IsUnotPerspective;
-
         public Domain(Trait trait, Focal basisFocal, Focal minMaxFocal = default)
         {
 	        Id = domainCounter++;
@@ -59,8 +56,8 @@ namespace NumbersCore.Primitives
         public static Domain CreateDomain(string traitName, int unitSize = 8, int rangeSize = 16)
         {
             Trait trait = Trait.GetOrCreateTrait(Brain.ActiveBrain, traitName);
-            var unit = Focal.CreateByValues(0, unitSize);
-            var range = Focal.CreateByValues(-rangeSize * unitSize, rangeSize * unitSize);
+            var unit = new Focal(0, unitSize);
+            var range = new Focal(-rangeSize * unitSize, rangeSize * unitSize);
             var domain = trait.AddDomain(unit, range);
             return domain;
         }
@@ -82,14 +79,14 @@ namespace NumbersCore.Primitives
         }
         public Number CreateNumber(long start, long end, bool addToStore = true)
         {
-	        var focal = Focal.CreateByValues(start, end);
+	        var focal = new Focal(start, end);
 	        return AddNumber(new Number(focal), addToStore);
         }
         public Number CreateNumberFromFloats(float startF, float endF, bool addToStore = true)
         {
             long start = (long)(-startF * BasisFocal.LengthInTicks);
             long end = (long)(endF * BasisFocal.LengthInTicks);
-            var focal = Focal.CreateByValues(start, end);
+            var focal = new Focal(start, end);
             return AddNumber(new Number(focal), addToStore);
         }
 
@@ -130,8 +127,8 @@ namespace NumbersCore.Primitives
 	        return NumberSetStore.Remove(numberSet.Id);
         }
 
-        public Number Zero() => CreateNumber(BasisFocal.StartTickPosition, BasisFocal.StartTickPosition);
-        public Number One() => CreateNumber(BasisFocal.StartTickPosition, BasisFocal.EndTickPosition);
+        public Number Zero() => CreateNumber(BasisFocal.StartPosition, BasisFocal.StartPosition);
+        public Number One() => CreateNumber(BasisFocal.StartPosition, BasisFocal.EndPosition);
 
         public Range GetValueOf(Focal focal, bool isAligned) => focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal, isAligned);
         public void SetValueOf(Focal focal, Range range, bool isAligned) => focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal, isAligned);
@@ -146,13 +143,13 @@ namespace NumbersCore.Primitives
         public long RoundToNearestTick(long value) => (long)(Math.Round(value / TickToBasisRatio) * TickToBasisRatio);
         public void RoundToNearestTick(Focal focal)
         {
-	        focal.StartTickPosition = RoundToNearestTick(focal.StartTickPosition);
-	        focal.EndTickPosition = RoundToNearestTick(focal.EndTickPosition);
+	        focal.StartPosition = RoundToNearestTick(focal.StartPosition);
+	        focal.EndPosition = RoundToNearestTick(focal.EndPosition);
         }
 
         public Focal CreateFocalFromRange(Range range)
         {
-	        var result = Focal.CreateByValues(0, 1);
+	        var result = new Focal(0, 1);
 	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal, true);
 	        return result;
         }

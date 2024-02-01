@@ -28,7 +28,7 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    if (CreatedFocal == null)
 		    {
-			    CreatedFocal = Focal.CreateByValues(StartPosition, EndPosition);
+			    CreatedFocal = new Focal(StartPosition, EndPosition);
 		    }
 
 		    Trait?.FocalStore.Add(CreatedFocal.Id, CreatedFocal);

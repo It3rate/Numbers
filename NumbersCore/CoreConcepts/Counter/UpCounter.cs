@@ -22,13 +22,13 @@ namespace NumbersCore.CoreConcepts.Counter
 
 	    public long AddOne()
 	    {
-		    Focal.EndTickPosition += 1;
-		    return Focal.EndTickPosition;
+		    Focal.EndPosition += 1;
+		    return Focal.EndPosition;
 	    }
 
 	    public void Reset()
 	    {
-		    Focal.EndTickPosition = 0;
+		    Focal.EndPosition = 0;
 	    }
     }
 }

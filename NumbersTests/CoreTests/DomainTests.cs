@@ -50,16 +50,16 @@ namespace NumbersTests
 
             _domain.SaveNumberValues(dict, _domain.BasisNumber.Id);
             Assert.AreEqual(4, dict.Count); // does not include unit
-            var saved = n1.Focal.EndTickPosition;
-            n1.Focal.EndTickPosition = 22;
-            Assert.AreNotEqual(n1.Focal.EndTickPosition, saved);
-            Assert.AreEqual(22, n1.Focal.EndTickPosition);
+            var saved = n1.Focal.EndPosition;
+            n1.Focal.EndPosition = 22;
+            Assert.AreNotEqual(n1.Focal.EndPosition, saved);
+            Assert.AreEqual(22, n1.Focal.EndPosition);
             _domain.RestoreNumberValues(dict);
-            Assert.AreEqual(saved, n1.Focal.EndTickPosition);
+            Assert.AreEqual(saved, n1.Focal.EndPosition);
 
-            Assert.IsTrue(_domain.IsUnitPerspective);
-            _unitFocal.StartTickPosition = 16;
-            Assert.IsFalse(_domain.IsUnitPerspective);
+            Assert.IsTrue(_domain.IsBasisPositive);
+            _unitFocal.StartPosition = 16;
+            Assert.IsFalse(_domain.IsBasisPositive);
 
         }
 
@@ -85,8 +85,8 @@ namespace NumbersTests
 	        r = num.Value;
 	        _domain.SetValueOf(testFocal, r, true);
 
-            Assert.AreEqual(num.Focal.StartTickPosition, testFocal.StartTickPosition);
-            Assert.AreEqual(num.Focal.EndTickPosition, testFocal.EndTickPosition);
+            Assert.AreEqual(num.Focal.StartPosition, testFocal.StartPosition);
+            Assert.AreEqual(num.Focal.EndPosition, testFocal.EndPosition);
             ffr = _domain.CreateFocalFromRange(r);
             Assert.AreEqual(ffr, num.Focal);
         }

@@ -40,13 +40,13 @@ namespace NumbersCore.Primitives
         public int Direction => BasisFocal.Direction * PolarityDirection;
         protected long StartTickPosition
         {
-            get => Focal.StartTickPosition;
-            set => Focal.StartTickPosition = value;
+            get => Focal.StartPosition;
+            set => Focal.StartPosition = value;
 		}
 		protected long EndTickPosition
         {
-            get => Focal.EndTickPosition;
-            set => Focal.EndTickPosition = value;
+            get => Focal.EndPosition;
+            set => Focal.EndPosition = value;
 		}
 		public long StartTicks
 		{
@@ -80,7 +80,7 @@ namespace NumbersCore.Primitives
         //public bool IsUnitPerspective => IsAligned;// Domain.IsUnitPerspective; // domains can have a pos or neg basis, numbers can conform or counter that with polarity
         //public bool IsUnotPerspective => IsInverted;// Domain.IsUnotPerspective;
         //public Alignment Direction => (Focal.Direction == BasisFocal.Direction) ? Alignment.Aligned : Alignment.Inverted;
-        public long ZeroTick => BasisFocal.StartTickPosition;
+        public long ZeroTick => BasisFocal.StartPosition;
         public long BasisTicks => BasisFocal.LengthInTicks;
         public long AbsBasisTicks => BasisFocal.AbsLengthInTicks;
 
@@ -357,8 +357,8 @@ namespace NumbersCore.Primitives
 		{
 			return StartTickPosition.Equals(value.StartTickPosition) && 
 			       EndTickPosition.Equals(value.EndTickPosition) &&
-			       Focal.StartTickPosition.Equals(value.StartTickPosition) &&
-			       Focal.EndTickPosition.Equals(value.EndTickPosition);
+			       Focal.StartPosition.Equals(value.StartTickPosition) &&
+			       Focal.EndPosition.Equals(value.EndTickPosition);
 		}
 
 		public override int GetHashCode()
@@ -367,8 +367,8 @@ namespace NumbersCore.Primitives
 			{
                 var hashCode = StartTickPosition.GetHashCode();
                 hashCode = (hashCode * 397) ^ EndTickPosition.GetHashCode();
-                hashCode = (hashCode * 17) ^ Focal.StartTickPosition.GetHashCode();
-                hashCode = (hashCode * 13) ^ Focal.EndTickPosition.GetHashCode();
+                hashCode = (hashCode * 17) ^ Focal.StartPosition.GetHashCode();
+                hashCode = (hashCode * 13) ^ Focal.EndPosition.GetHashCode();
                 return hashCode;
 			}
 		}

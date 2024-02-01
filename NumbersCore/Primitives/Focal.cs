@@ -40,38 +40,30 @@ namespace NumbersCore.Primitives
         private static int _focalCounter = 1 + (int)MathElementKind.Focal;
         public int CreationIndex => Id - (int)Kind - 1;
 
-        //private static int focalCounter = 1 + (int)MathElementKind.Focal;
-        //public int StartId { get; set; } // ref to start point position
-        //public int EndId { get; set; } // ref to end point position
+        public virtual long StartPosition { get; set; }
+        public virtual long EndPosition { get; set; }
+        public virtual long InvertedEndPosition => StartPosition - LengthInTicks;
 
-        // can be dealt with by expanding resolution (mult all) or range (add)
-        //bool startPrecisionUnderflow; 
-        //bool endPrecisionUnderflow;
-        //bool startRangeOverflow;
-        //bool endRangeOverflow;
+        public int Direction => StartPosition <= EndPosition ? 1 : -1;
+        public bool IsPositiveDirection => Direction >= 0;
 
-        public virtual long StartTickPosition { get; set; }
-        public virtual long EndTickPosition { get; set; }
-
-        public int Direction => StartTickPosition <= EndTickPosition ? 1 : -1;
-        public bool IsUnitPerspective => StartTickPosition <= EndTickPosition;
-        public bool IsUnotPerspective => StartTickPosition > EndTickPosition;
-
-        public long LengthInTicks => EndTickPosition - StartTickPosition;
+        public long LengthInTicks => EndPosition - StartPosition;
         public long AbsLengthInTicks => Math.Abs(LengthInTicks);
         public long NonZeroLength => LengthInTicks == 0 ? 1 : LengthInTicks;
 
-        // Focal values are always added as unit perspective positions, because
-        // there is no unit defined that allows the start point to be interpreted as a unot perspective.
-        // Focals are pre-number, positions, not value interpretations.
+        /// <summary>
+        /// Focals are pre-number segments, not value interpretations.
+        /// Whatever orientation they have is considered the aligned direction, and the inverted value is the 'other' direction.
+        /// Even a negative basis focal is still 'unit', and its invert (positive in this case) is unot. The basis focal decides the aligned direction.
+        /// </summary>
         private Focal()
         {
             Id = _focalCounter++;
         }
         public Focal(long startTickPosition, long endTickPosition) : this()
         {
-            StartTickPosition = startTickPosition;
-            EndTickPosition = endTickPosition;
+            StartPosition = startTickPosition;
+            EndPosition = endTickPosition;
         }
         public static Focal CreateByValues(long startPosition, long endPosition)
         {
@@ -81,15 +73,15 @@ namespace NumbersCore.Primitives
 
         public Focal Clone()
         {
-            return CreateByValues(StartTickPosition, EndTickPosition);
+            return new Focal(StartPosition, EndPosition);
         }
 
-        public static Focal CreateZeroFocal(long ticks) { return Focal.CreateByValues(0, ticks); }
-        public static Focal CreateBalancedFocal(long halfTicks) { return Focal.CreateByValues(-halfTicks, halfTicks); }
+        public static Focal CreateZeroFocal(long ticks) { return new Focal(0, ticks); }
+        public static Focal CreateBalancedFocal(long halfTicks) { return new Focal(-halfTicks, halfTicks); }
         private static Focal _minMaxFocal;
-        public static Focal MinMaxFocal => _minMaxFocal ?? (_minMaxFocal = Focal.CreateByValues(long.MinValue, long.MaxValue));
+        public static Focal MinMaxFocal => _minMaxFocal ?? (_minMaxFocal = new Focal(long.MinValue, long.MaxValue));
         private static Focal _upMaxFocal;
-        public static Focal UpMaxFocal => _upMaxFocal ?? (_upMaxFocal = Focal.CreateByValues(0, long.MaxValue));
+        public static Focal UpMaxFocal => _upMaxFocal ?? (_upMaxFocal = new Focal(0, long.MaxValue));
 
 
 
@@ -98,12 +90,12 @@ namespace NumbersCore.Primitives
 
         public void Reset(long start, long end)
         {
-            StartTickPosition = start;
-            EndTickPosition = end;
+            StartPosition = start;
+            EndPosition = end;
         }
         public void Reset(Focal focal)
         {
-            Reset(focal.StartTickPosition, focal.EndTickPosition);
+            Reset(focal.StartPosition, focal.EndPosition);
         }
 
         public FocalPositions FocalPositions
@@ -111,14 +103,14 @@ namespace NumbersCore.Primitives
             get => new FocalPositions(this);
             set
             {
-                StartTickPosition = value.StartTickPosition;
-                EndTickPosition = value.EndTickPosition;
+                StartPosition = value.StartTickPosition;
+                EndPosition = value.EndTickPosition;
             }
         }
 
         public void InvertBasis()
         {
-            EndTickPosition = StartTickPosition - LengthInTicks;
+            EndPosition = StartPosition - LengthInTicks;
             //var len = LengthInTicks;
             //var sp = StartTickPosition;
             //var ep = EndTickPosition;
@@ -136,14 +128,14 @@ namespace NumbersCore.Primitives
         public Range GetRangeWithBasis(Focal basis, bool isReciprocal, bool isAligned)
         {
             var len = (double)Math.Abs(basis.NonZeroLength);
-            var start = (StartTickPosition - basis.StartTickPosition) / len;
-            var end = (EndTickPosition - basis.StartTickPosition) / len;
+            var start = (StartPosition - basis.StartPosition) / len;
+            var end = (EndPosition - basis.StartPosition) / len;
             if (isReciprocal)
             {
                 start = Math.Round(start) * len;
                 end = Math.Round(end) * len;
             }
-            var result = basis.IsUnitPerspective ? new Range(-start, end) : new Range(end, -start);
+            var result = basis.IsPositiveDirection ? new Range(-start, end) : new Range(end, -start);
             return isAligned ? result : new Range(-result.Start, -result.End);
         }
         public void SetWithRangeAndBasis(Range range, Focal basis, bool isReciprocal, bool isAligned)
@@ -151,8 +143,8 @@ namespace NumbersCore.Primitives
             double start;
             double end;
             var len = (double)basis.NonZeroLength;
-            var zeroTick = basis.StartTickPosition;
-            if (basis.IsUnitPerspective)
+            var zeroTick = basis.StartPosition;
+            if (basis.IsPositiveDirection)
             {
                 start = zeroTick - range.Start * len;
                 end = zeroTick + range.End * len;
@@ -171,26 +163,26 @@ namespace NumbersCore.Primitives
 
             var stp = (long)Math.Round(start);
             var etp = (long)Math.Round(end);
-            StartTickPosition = isAligned ? stp : -stp;
-            EndTickPosition = isAligned ? etp : -etp;
+            StartPosition = isAligned ? stp : -stp;
+            EndPosition = isAligned ? etp : -etp;
         }
         public Range RangeAsBasis(Focal nonBasis) => nonBasis.GetRangeWithBasis(this, false, true);
         public Range UnitTRangeIn(Focal basis)
         {
             var len = (double)Math.Abs(basis.NonZeroLength);
-            var start = (StartTickPosition - basis.StartTickPosition) / len;
-            var end = (EndTickPosition - basis.StartTickPosition) / len;
+            var start = (StartPosition - basis.StartPosition) / len;
+            var end = (EndPosition - basis.StartPosition) / len;
             return new Range(start, end);
         }
-        public long Min => StartTickPosition <= EndTickPosition ? StartTickPosition : EndTickPosition;
-        public long Max => StartTickPosition >= EndTickPosition ? StartTickPosition : EndTickPosition;
+        public long Min => StartPosition <= EndPosition ? StartPosition : EndPosition;
+        public long Max => StartPosition >= EndPosition ? StartPosition : EndPosition;
 
         public static long MinPosition(Focal p, Focal q) => Math.Min(p.Min, q.Min);
         public static long MaxPosition(Focal p, Focal q) => Math.Max(p.Max, q.Max);
-        public static long MinStart(Focal p, Focal q) => Math.Min(p.StartTickPosition, q.StartTickPosition);
-        public static long MaxStart(Focal p, Focal q) => Math.Max(p.StartTickPosition, q.StartTickPosition);
-        public static long MinEnd(Focal p, Focal q) => Math.Min(p.EndTickPosition, q.EndTickPosition);
-        public static long MaxEnd(Focal p, Focal q) => Math.Max(p.EndTickPosition, q.EndTickPosition);
+        public static long MinStart(Focal p, Focal q) => Math.Min(p.StartPosition, q.StartPosition);
+        public static long MaxStart(Focal p, Focal q) => Math.Max(p.StartPosition, q.StartPosition);
+        public static long MinEnd(Focal p, Focal q) => Math.Min(p.EndPosition, q.EndPosition);
+        public static long MaxEnd(Focal p, Focal q) => Math.Max(p.EndPosition, q.EndPosition);
         public static Focal Overlap(Focal p, Focal q)
         {
 	        var start = Math.Max(p.Min, q.Min);
@@ -212,24 +204,24 @@ namespace NumbersCore.Primitives
         public static Focal[] Not(Focal p)
         {
 	        // If p starts at the beginning of the time frame and ends at the end, A is always true and the "not A" relationship is empty
-	        if (p.StartTickPosition == 0 && p.EndTickPosition == long.MaxValue)
+	        if (p.StartPosition == 0 && p.EndPosition == long.MaxValue)
 	        {
 		        return new Focal[] { };
 	        }
 	        // If p starts at the beginning of the time frame and ends before the end, the "not A" relationship consists of a single interval from p.EndTickPosition + 1 to the end of the time frame
-	        else if (p.StartTickPosition == 0)
+	        else if (p.StartPosition == 0)
 	        {
-		        return new Focal[] { new Focal(p.EndTickPosition + 1, long.MaxValue) };
+		        return new Focal[] { new Focal(p.EndPosition + 1, long.MaxValue) };
 	        }
 	        // If p starts after the beginning of the time frame and ends at the end, the "not A" relationship consists of a single interval from the beginning of the time frame to p.StartTickPosition - 1
-	        else if (p.EndTickPosition == long.MaxValue)
+	        else if (p.EndPosition == long.MaxValue)
 	        {
-		        return new Focal[] { new Focal(0, p.StartTickPosition - 1) };
+		        return new Focal[] { new Focal(0, p.StartPosition - 1) };
 	        }
 	        // If p starts and ends within the time frame, the "not A" relationship consists of two intervals: from the beginning of the time frame to p.StartTickPosition - 1, and from p.EndTickPosition + 1 to the end of the time frame
 	        else
 	        {
-		        return new Focal[] { new Focal(0, p.StartTickPosition - 1), new Focal(p.EndTickPosition + 1, long.MaxValue) };
+		        return new Focal[] { new Focal(0, p.StartPosition - 1), new Focal(p.EndPosition + 1, long.MaxValue) };
 	        }
         }
         public static Focal[] Transfer(Focal p)
@@ -252,13 +244,13 @@ namespace NumbersCore.Primitives
         }
         public static Focal[] B_Inhibits_A(Focal p, Focal q)
         {
-	        if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
+	        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
 	        {
 		        return new Focal[] { p };
 	        }
 	        else
 	        {
-		        return new Focal[] { new Focal(p.StartTickPosition, q.StartTickPosition - 1) };
+		        return new Focal[] { new Focal(p.StartPosition, q.StartPosition - 1) };
 	        }
         }
         public static Focal[] Transfer_A(Focal p, Focal q)
@@ -267,13 +259,13 @@ namespace NumbersCore.Primitives
         }
         public static Focal[] A_Inhibits_B(Focal p, Focal q)
         {
-	        if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
+	        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
 	        {
 		        return new Focal[] { q };
 	        }
 	        else
 	        {
-		        return new Focal[] { new Focal(q.StartTickPosition, p.StartTickPosition - 1) };
+		        return new Focal[] { new Focal(q.StartPosition, p.StartPosition - 1) };
 	        }
         }
         public static Focal[] Transfer_B(Focal p, Focal q)
@@ -353,7 +345,7 @@ namespace NumbersCore.Primitives
         }
         public static Focal[] B_Implies_A(Focal p, Focal q)
         {
-	        if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
+	        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
 	        {
 		        return new Focal[] { };
 	        }
@@ -368,7 +360,7 @@ namespace NumbersCore.Primitives
         }
         public static Focal[] A_Implies_B(Focal p, Focal q)
         {
-	        if (p.EndTickPosition < q.StartTickPosition - 1 || q.EndTickPosition < p.StartTickPosition - 1)
+	        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
 	        {
 		        return new Focal[] { };
 	        }
@@ -409,8 +401,8 @@ namespace NumbersCore.Primitives
             {
                 result = new Focal[]
                 { 
-                    new Focal(long.MinValue, overlap.StartTickPosition),
-                    new Focal(overlap.EndTickPosition, long.MaxValue)
+                    new Focal(long.MinValue, overlap.StartPosition),
+                    new Focal(overlap.EndPosition, long.MaxValue)
                 };
             }
             return result;
@@ -476,19 +468,19 @@ namespace NumbersCore.Primitives
         }
         public bool Equals(Focal value)
         {
-            return StartTickPosition.Equals(value.StartTickPosition) && EndTickPosition.Equals(value.EndTickPosition);
+            return StartPosition.Equals(value.StartPosition) && EndPosition.Equals(value.EndPosition);
         }
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = StartTickPosition.GetHashCode();
-                hashCode = (hashCode * 397) ^ EndTickPosition.GetHashCode();
+                var hashCode = StartPosition.GetHashCode();
+                hashCode = (hashCode * 397) ^ EndPosition.GetHashCode();
                 return hashCode;
             }
         }
 
-        public override string ToString() => $"[{StartTickPosition}->{EndTickPosition}]";
+        public override string ToString() => $"[{StartPosition}->{EndPosition}]";
     }
 
     public class FocalPositions
@@ -498,8 +490,8 @@ namespace NumbersCore.Primitives
 
         public FocalPositions(Focal focal)
         {
-            StartTickPosition = focal.StartTickPosition;
-            EndTickPosition = focal.EndTickPosition;
+            StartTickPosition = focal.StartPosition;
+            EndTickPosition = focal.EndPosition;
         }
 
         public long Length => EndTickPosition - StartTickPosition;

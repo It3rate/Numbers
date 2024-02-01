@@ -85,8 +85,8 @@ namespace NumbersTests.CommandTests
 			_stack.Do(command);
 			Assert.AreEqual(2, _stack.UndoSize);
 			Assert.AreEqual(0, _stack.RedoSize);
-			Assert.AreEqual(100, command.Number.Focal.StartTickPosition);
-			Assert.AreEqual(200, command.Number.Focal.EndTickPosition);
+			Assert.AreEqual(100, command.Number.Focal.StartPosition);
+			Assert.AreEqual(200, command.Number.Focal.EndPosition);
 			_stack.Undo();
 			Assert.AreEqual(1, _stack.UndoSize);
 			Assert.AreEqual(1, _stack.RedoSize);
