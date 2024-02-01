@@ -15,8 +15,8 @@ namespace NumbersTests
 	    private Brain _brain => Brain.ActiveBrain;
 	    private Workspace _workspace;
 	    private Trait _trait;
-        private FocalRef _unitFocal;
-	    private FocalRef _maxMin;
+        private Focal _unitFocal;
+	    private Focal _maxMin;
 	    private Domain _domain;
 
 	    [TestInitialize]
@@ -25,8 +25,8 @@ namespace NumbersTests
             _workspace = new Workspace(_brain);
 
 		    _trait = Trait.CreateIn(_brain, "workspace tests");
-            _unitFocal = FocalRef.CreateByValues(_trait, -4, 6);
-		    _maxMin = FocalRef.CreateByValues(_trait, -54, 46);
+            _unitFocal = Focal.CreateByValues(-4, 6);
+		    _maxMin = Focal.CreateByValues(-54, 46);
 		    _domain = new Domain(_trait, _unitFocal, _maxMin);
 	    }
 
@@ -36,7 +36,7 @@ namespace NumbersTests
             _workspace.AddDomains(true, _domain);
             Assert.AreEqual(_workspace.ActiveElementCount, 3); // domain, unit and range
 
-            var f5 = FocalRef.CreateByValues(_trait, 20, 90);
+            var f5 = Focal.CreateByValues(20, 90);
             var n5 = _domain.CreateNumber(f5);
             _workspace.AddElements(n5);
             Assert.AreEqual(4, _workspace.ActiveElementCount);

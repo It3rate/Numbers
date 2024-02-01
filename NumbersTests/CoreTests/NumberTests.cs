@@ -15,8 +15,8 @@ namespace NumbersTests
     {
 	    private Brain _brain;
 	    private Trait _trait;
-        private FocalRef _unitFocal;
-	    private FocalRef _maxMin;
+        private Focal _unitFocal;
+	    private Focal _maxMin;
 	    private Domain _domain;
 
 	    [TestInitialize]
@@ -24,8 +24,8 @@ namespace NumbersTests
 	    {
 		    _brain = Brain.ActiveBrain;
 		    _trait = Trait.CreateIn(_brain, "number tests");
-            _unitFocal = FocalRef.CreateByValues(_trait, 0, 10);
-		    _maxMin = FocalRef.CreateByValues(_trait, -1000, 1010);
+            _unitFocal = Focal.CreateByValues(0, 10);
+		    _maxMin = Focal.CreateByValues(-1000, 1010);
 		    _domain = new Domain(_trait, _unitFocal, _maxMin);
 	    }
 	    [TestMethod]
@@ -111,17 +111,17 @@ namespace NumbersTests
         [TestMethod]
 	    public void CoreNumberTests()
 	    {
-		    var f0 = FocalRef.CreateByValues(_trait, 0, 20);
+		    var f0 = Focal.CreateByValues(0, 20);
 		    var n0 = _domain.CreateNumber(f0);
-		    var f1 = FocalRef.CreateByValues(_trait, 0, 30);
+		    var f1 = Focal.CreateByValues(0, 30);
 		    var n1 = _domain.CreateNumber(f1);
-		    var f2 = FocalRef.CreateByValues(_trait, -32, 0);
+		    var f2 = Focal.CreateByValues(-32, 0);
 		    var n2 = _domain.CreateNumber(f2);
-		    var f3 = FocalRef.CreateByValues(_trait, -50, 45);
+		    var f3 = Focal.CreateByValues(-50, 45);
 		    var n3 = _domain.CreateNumber(f3);
-		    var f4 = FocalRef.CreateByValues(_trait, 50, -45);
+		    var f4 = Focal.CreateByValues(50, -45);
 		    var n4 = _domain.CreateNumber(f4);
-		    var f5 = FocalRef.CreateByValues(_trait, 53, 69);
+		    var f5 = Focal.CreateByValues(53, 69);
 		    var n5 = _domain.CreateNumber(f5);
 
 		    Assert.AreEqual(MathElementKind.Number, n0.Kind);
@@ -132,7 +132,7 @@ namespace NumbersTests
 
 		    Assert.AreEqual(_unitFocal.AbsLengthInTicks, n0.AbsBasisTicks);
 		    Assert.AreEqual(1, n0.Direction);
-		    Assert.AreEqual(-1, n4.Direction);
+		    Assert.AreEqual(1, n4.Direction);
 		    Assert.AreEqual(n1.DomainId, n0.Domain.Id);
 		    Assert.AreEqual(n0.StartValue, n1.StartValue, Utils.Tolerance);
 		    Assert.AreEqual(n1.EndValue, n1.Focal.LengthInTicks / (double) n1.BasisTicks);
@@ -150,10 +150,10 @@ namespace NumbersTests
 		    Assert.AreEqual(-0.3, n5.RemainderRange.Start, Utils.Tolerance);
 		    Assert.AreEqual(0.9, n5.RemainderRange.End, Utils.Tolerance);
 
-		    Assert.IsTrue(n3.IsUnitPerspective);
-		    Assert.IsTrue(_domain.BasisNumber.IsUnitPerspective);
-		    Assert.IsTrue(n4.IsUnitPerspective);
-		    Assert.IsFalse(n4.IsUnotPerspective);
+		    Assert.IsTrue(n3.IsAligned);
+		    Assert.IsTrue(_domain.BasisNumber.IsAligned);
+		    Assert.IsTrue(n4.IsAligned);
+		    Assert.IsFalse(n4.IsInverted);
 		    Assert.AreEqual(0.472636, n3.RangeInMinMax.Start, Utils.Tolerance);
 		    Assert.AreEqual(0.519900, n3.RangeInMinMax.End, Utils.Tolerance);
 

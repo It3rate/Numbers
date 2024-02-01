@@ -16,8 +16,8 @@ namespace NumbersTests
     {
 	    private Brain _brain;
 	    private Trait _trait;
-        private FocalRef _unitFocal;
-        private FocalRef _maxMin;
+        private Focal _unitFocal;
+        private Focal _maxMin;
         private Domain _domain;
 
         [TestInitialize]
@@ -25,8 +25,8 @@ namespace NumbersTests
         {
 	        _brain = Brain.ActiveBrain;
             _trait = Trait.CreateIn(_brain, "domain tests");
-            _unitFocal = FocalRef.CreateByValues(_trait, -4, 6);
-	        _maxMin = FocalRef.CreateByValues(_trait, -54, 46);
+            _unitFocal = Focal.CreateByValues(-4, 6);
+	        _maxMin = Focal.CreateByValues(-54, 46);
 	        _domain = new Domain(_trait, _unitFocal, _maxMin);
         }
 
@@ -40,7 +40,7 @@ namespace NumbersTests
             Assert.AreEqual(_domain.MinMaxFocal.Id, _maxMin.Id);
             Assert.AreEqual(_domain.MinMaxRange.Length, 10.0, Utils.Tolerance);
 
-            var f0 = FocalRef.CreateByValues(_trait, 10, 20);
+            var f0 = Focal.CreateByValues( 10, 20);
             var n0 = _domain.CreateNumber(f0);
             var n1 = _domain.CreateNumber(f0.Clone());
             var n2 = _domain.CreateNumber(f0.Clone());
@@ -68,22 +68,22 @@ namespace NumbersTests
         {
             _unitFocal.Reset(0, 10);
 
-	        var num = _domain.CreateNumber(FocalRef.CreateByValues(_trait, 30, 40));
+	        var num = _domain.CreateNumber(Focal.CreateByValues(30, 40));
 	        var r = num.Value;
 	        var ffr = _domain.CreateFocalFromRange(r);
             Assert.AreEqual(ffr, num.Focal);
 
-            num = _domain.CreateNumber(FocalRef.CreateByValues(_trait, -30, 1));
+            num = _domain.CreateNumber(Focal.CreateByValues(-30, 1));
             r = num.Value;
             ffr = _domain.CreateFocalFromRange(r);
             Assert.AreEqual(ffr, num.Focal);
 
             _unitFocal.Reset(10, -10);
-	        var testFocal = FocalRef.CreateByValues(_trait, 0, 6);
+	        var testFocal = Focal.CreateByValues(0, 6);
 
-            num = _domain.CreateNumber(FocalRef.CreateByValues(_trait, 30, 40));
+            num = _domain.CreateNumber(Focal.CreateByValues(30, 40));
 	        r = num.Value;
-	        _domain.SetValueOf(testFocal, r);
+	        _domain.SetValueOf(testFocal, r, true);
 
             Assert.AreEqual(num.Focal.StartTickPosition, testFocal.StartTickPosition);
             Assert.AreEqual(num.Focal.EndTickPosition, testFocal.EndTickPosition);
