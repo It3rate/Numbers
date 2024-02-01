@@ -171,7 +171,7 @@ namespace Numbers.Mappers
                 {
                     Renderer.DrawSegment(Agent.DragHighlight, Pens.ThickHighlightPen);
                 }
-                if (Agent.DragPoint != SKPoint.Empty && Agent.SelSelection.ActiveHighlight.Mapper is SKNumberMapper snm)
+                if (Agent.DragPoint != SKPoint.Empty && Agent.SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm)
                 {
                     var pen = snm.BasisSign > 0 ? Pens.UnitPenLight : Pens.UnotPenLight;
                     Renderer.Canvas.DrawPath(Renderer.GetCirclePath(Agent.DragPoint, 4), pen);

@@ -116,9 +116,22 @@ namespace NumbersCore.Primitives
             }
         }
 
-        public void FlipAroundStartPoint()
+        public void InvertBasis()
         {
             EndTickPosition = StartTickPosition - LengthInTicks;
+            //var len = LengthInTicks;
+            //var sp = StartTickPosition;
+            //var ep = EndTickPosition;
+            //if(orgPolarity == Alignment.Aligned)
+            //{
+            //    StartTickPosition = ep;
+            //    EndTickPosition = ep + len;
+            //}
+            //else
+            //{
+            //    StartTickPosition = sp - len;
+            //    EndTickPosition = sp;
+            //}
         }
         public Range GetRangeWithBasis(Focal basis, bool isReciprocal, bool isAligned)
         {

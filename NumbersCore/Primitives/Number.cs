@@ -375,9 +375,10 @@ namespace NumbersCore.Primitives
         public override string ToString()
 		{
 			var v = Value;
+            var prefix = IsAligned ? "" : "~";
             var startSuffix = IsAligned ? "i" : "r";
             var endSuffix = IsAligned ? "r" : "i";
-            return $"[{v.Start:0.00}{startSuffix}:{v.End:0.00}{endSuffix}]";
+            return $"{prefix}[{v.Start:0.00}{startSuffix} : {v.End:0.00}{endSuffix}]";
 		}
     }
 }

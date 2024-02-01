@@ -58,8 +58,12 @@ namespace Numbers.Mappers
 	    }
         public void FlipPerspective()
         {
-            Domain.BasisFocal.FlipAroundStartPoint();
+            Domain.BasisFocal.InvertBasis();
             BasisSegment.FlipAroundStartPoint();
+            foreach (var num in Domain.NumberStore.Values)
+            {
+                num.InvertPolarity(); // includes basis, polarity is based on basis being negative, so basis just checks itself. Use two basis and swap them?
+            }
         }
 
         public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
