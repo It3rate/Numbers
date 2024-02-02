@@ -1,4 +1,5 @@
-﻿using Numbers.Utils;
+﻿using Numbers.Mappers;
+using Numbers.Utils;
 using NumbersCore.Primitives;
 using SkiaSharp;
 
@@ -15,6 +16,16 @@ namespace Numbers.Agent
         // copied values from start of change transaction, probably need a separate class as abilities expand
 	    public SKSegment OriginalSegment { get; set; }
 	    public Focal OriginalFocal { get; set; }
+
+        public SKNumberMapper GetNumberMapper()
+        {
+            SKNumberMapper result = null;
+            if (ActiveHighlight?.Mapper is SKNumberMapper nm)
+            {
+                result = nm;
+            }
+            return result;
+        }
 
         public void Reset()
 	    {

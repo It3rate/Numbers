@@ -351,7 +351,22 @@ namespace Numbers.Agent
             }
         }
 
-
+        private void SetSelectedAsBasis()
+        {
+            var nm = SelSelection.GetNumberMapper();
+            if (nm != null && !nm.IsBasis)
+            {
+                nm.Number.Domain.SetBasisWithNumber(nm.Number);
+            }
+        }
+        private void NegateSelection()
+        {
+            var nm = SelSelection.GetNumberMapper();
+            if (nm != null)
+            {
+                nm.Number.Value = nm.Number.Value * -1;// new Range(0, -1);
+            }
+        }
         private void BasisChanged(SKNumberMapper nm)
         {
 	        LockBasisOnDrag = _isControlDown;
@@ -415,6 +430,9 @@ namespace Numbers.Agent
             switch (CurrentKey)
             {
                 // case Keys.B: Adjust Basis segment (ctrl to lock tick positions).
+                case Keys.B:
+                    SetSelectedAsBasis();
+                    break;
                 case Keys.D:
                     ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
                     break;
@@ -482,6 +500,9 @@ namespace Numbers.Agent
                     break;
                 case Keys.D0:
                     ToggleShowNumbers();
+                    break;
+                case Keys.OemMinus:
+                    NegateSelection();
                     break;
             }
             SetSelectable(UIMode);

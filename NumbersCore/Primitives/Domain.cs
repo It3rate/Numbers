@@ -55,6 +55,11 @@ namespace NumbersCore.Primitives
             Trait.DomainStore.Add(Id, this);
         }
 
+        public void SetBasisWithNumber(Number nm)
+        {
+            BasisFocal = nm.Focal;
+        }
+
         public static Domain CreateDomain(string traitName, int unitSize = 8, int rangeSize = 16)
         {
             Trait trait = Trait.GetOrCreateTrait(Brain.ActiveBrain, traitName);

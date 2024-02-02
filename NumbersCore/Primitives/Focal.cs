@@ -126,11 +126,8 @@ namespace NumbersCore.Primitives
                 start = Math.Round(start) / Math.Abs(len);
                 end = Math.Round(end) / Math.Abs(len);
             }
-
-            var stp = (long)Math.Round(start);
-            var etp = (long)Math.Round(end);
-            StartPosition = stp;// isAligned ? stp : -stp;
-            EndPosition = etp;// isAligned ? etp : -etp;
+            StartPosition = (long)Math.Round(start);
+            EndPosition = (long)Math.Round(end);
         }
         public Range RangeAsBasis(Focal nonBasis) => nonBasis.GetRangeWithBasis(this, false, true);
         public Range UnitTRangeIn(Focal basis)

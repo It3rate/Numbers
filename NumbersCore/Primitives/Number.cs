@@ -84,7 +84,7 @@ namespace NumbersCore.Primitives
         public long BasisTicks => BasisFocal.LengthInTicks;
         public long AbsBasisTicks => BasisFocal.AbsLengthInTicks;
 
-        public bool IsBasis => Domain.BasisNumber.Id == Id;
+        public bool IsBasis => Domain.BasisFocal.Id == Focal.Id;
         public bool IsMinMax => Domain.MinMaxNumber.Id == Id;
         public bool IsDomainNumber => IsBasis || IsMinMax;
 
