@@ -32,6 +32,8 @@ namespace NumbersCore.Primitives
         public readonly Dictionary<int, Number> NumberStore = new Dictionary<int, Number>();
         public readonly Dictionary<int, NumberSet> NumberSetStore = new Dictionary<int, NumberSet>();
 
+        // todo: need a tick size (defaults to 1), that can be overriden by numbers. This allows tick sizes larger than unit where
+        // a unit of 1 mile and a tick size of 10 (miles) means you must round to the nearest 10 miles.
         public bool BasisIsReciprocal { get; set; }// True when ticks are larger than the unit basis
 
         //public int BasisNumberId => BasisNumber.Id;

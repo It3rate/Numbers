@@ -70,9 +70,36 @@ namespace NumbersTests
             test.SetWithRangeAndBasis(r, bNeg, false, true);
             Assert.AreEqual(new Focal(40, -30), test);
 
+            r = new Range(0, 3, false);
+            test.SetWithRangeAndBasis(r, bPos, false, true);
+            Assert.AreEqual(new Focal(10, -20), test);
+
+            r = new Range(2, 5, false);
+            test.SetWithRangeAndBasis(r, bPos, false, true);
+            Assert.AreEqual(new Focal(30, -40), test);
+
+            r = new Range(0, 3, false);
+            test.SetWithRangeAndBasis(r, bNeg, false, true);
+            Assert.AreEqual(new Focal(20, 50), test);
+
+            r = new Range(2, 5, false);
+            test.SetWithRangeAndBasis(r, bNeg, false, true);
+            Assert.AreEqual(new Focal(0, 70), test);
+
+        }
+        [TestMethod]
+        public void InvertedBasisTests()
+        {
+            Focal bPos = new Focal(10, 20);
+            Focal bNeg = new Focal(20, 10);
+
+            Range r = new Range(0, 3, true);
+            Focal test = new Focal(0, 0);
+            test.SetWithRangeAndBasis(r, bPos, false, false);
+            Assert.AreEqual(new Focal(10, -20), test);
         }
 
-        [TestMethod]
+            [TestMethod]
 	    public void BasisSignTests()
 	    {
 		    Focal fb = new Focal(0, 10);

@@ -51,6 +51,13 @@ namespace NumbersCore.Primitives
         public long LengthInTicks => EndPosition - StartPosition;
         public long AbsLengthInTicks => Math.Abs(LengthInTicks);
         public long NonZeroLength => LengthInTicks == 0 ? 1 : LengthInTicks;
+        public virtual long AlignedEndPosition(bool isAligned) => isAligned ? EndPosition : InvertedEndPosition;
+        public virtual long AlignedLengthInTicks(bool isAligned) => AlignedEndPosition(isAligned) - StartPosition;
+        public long AlignedNonZeroLength(bool isAligned)
+        {
+            var result = AlignedLengthInTicks(isAligned);
+            return result == 0 ? (isAligned ? 1 : -1) : result;
+        }
 
         /// <summary>
         /// Focals are pre-number segments, not value interpretations.
@@ -97,7 +104,7 @@ namespace NumbersCore.Primitives
         // todo: these need to be in number (or range?) as focal doesn't have polarity. Focal can do non polarity parts maybe.
         public Range GetRangeWithBasis(Focal basis, bool isReciprocal, bool isAligned)
         {
-            var len = (double)basis.NonZeroLength;
+            var len = (double)basis.NonZeroLength * (isAligned ? 1 : -1); //AlignedNonZeroLength(isAligned);// 
             var start = (StartPosition - basis.StartPosition) / len;
             var end = (EndPosition - basis.StartPosition) / len;
             if (isReciprocal)
@@ -105,34 +112,15 @@ namespace NumbersCore.Primitives
                 start = Math.Round(start) * Math.Abs(len);
                 end = Math.Round(end) * Math.Abs(len);
             }
-            var result = new Range(-start, end, true);
-            if (!isAligned)
-            {
-                result.InvertPolarity();
-            }
+            var result = new Range(-start, end, isAligned);
             return result;
         }
         public void SetWithRangeAndBasis(Range range, Focal basis, bool isReciprocal, bool isAligned)
         {
-            //double start;
-            //double end;
-            var len = (double)basis.NonZeroLength;
-
-            var start = basis.StartPosition - (range.Start * len);
-            var end = basis.StartPosition + (range.End * len);
-            //var start = (StartPosition - basis.StartPosition) / len;
-            //var end = (EndPosition - basis.StartPosition) / len;
-            //if (basis.IsPositiveDirection)
-            //{
-            //    start = zeroTick - range.Start * len;
-            //    end = zeroTick + range.End * len;
-            //}
-            //else
-            //{
-            //    start = zeroTick + range.End * len;
-            //    end = zeroTick - range.Start * len;
-            //}
-
+            var len = (double)basis.NonZeroLength * (isAligned ? 1 : -1);
+            var z = basis.StartPosition;
+            var start = range.IsAligned ? (z - range.Start * len) : (z + range.Start * len);
+            var end = range.IsAligned ? (z + range.End * len) : (z - range.End * len);
             if (isReciprocal)
             {
                 start = Math.Round(start) / Math.Abs(len);
@@ -141,12 +129,8 @@ namespace NumbersCore.Primitives
 
             var stp = (long)Math.Round(start);
             var etp = (long)Math.Round(end);
-            StartPosition = isAligned ? stp : -stp;
-            EndPosition = isAligned ? etp : -etp;
-            if (!isAligned)
-            {
-                //InvertPolarity();
-            }
+            StartPosition = stp;// isAligned ? stp : -stp;
+            EndPosition = etp;// isAligned ? etp : -etp;
         }
         public Range RangeAsBasis(Focal nonBasis) => nonBasis.GetRangeWithBasis(this, false, true);
         public Range UnitTRangeIn(Focal basis)
