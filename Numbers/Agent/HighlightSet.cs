@@ -14,7 +14,7 @@ namespace Numbers.Agent
 
         // copied values from start of change transaction, probably need a separate class as abilities expand
 	    public SKSegment OriginalSegment { get; set; }
-	    public FocalPositions OriginalFocalPositions { get; set; }
+	    public Focal OriginalFocal { get; set; }
 
         public void Reset()
 	    {

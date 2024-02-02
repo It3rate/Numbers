@@ -47,6 +47,7 @@ namespace NumbersCore.Primitives
         public int Direction => StartPosition <= EndPosition ? 1 : -1;
         public bool IsPositiveDirection => Direction >= 0;
 
+        // todo: add a digits per tick value to disconnect tick size from underlying representation
         public long LengthInTicks => EndPosition - StartPosition;
         public long AbsLengthInTicks => Math.Abs(LengthInTicks);
         public long NonZeroLength => LengthInTicks == 0 ? 1 : LengthInTicks;
@@ -65,16 +66,7 @@ namespace NumbersCore.Primitives
             StartPosition = startTickPosition;
             EndPosition = endTickPosition;
         }
-        public static Focal CreateByValues(long startPosition, long endPosition)
-        {
-            var result = new Focal(startPosition, endPosition);
-            return result;
-        }
 
-        public Focal Clone()
-        {
-            return new Focal(StartPosition, EndPosition);
-        }
 
         public static Focal CreateZeroFocal(long ticks) { return new Focal(0, ticks); }
         public static Focal CreateBalancedFocal(long halfTicks) { return new Focal(-halfTicks, halfTicks); }
@@ -97,63 +89,49 @@ namespace NumbersCore.Primitives
         {
             Reset(focal.StartPosition, focal.EndPosition);
         }
-
-        public FocalPositions FocalPositions
-        {
-            get => new FocalPositions(this);
-            set
-            {
-                StartPosition = value.StartTickPosition;
-                EndPosition = value.EndTickPosition;
-            }
-        }
-
         public void InvertBasis()
         {
             EndPosition = StartPosition - LengthInTicks;
-            //var len = LengthInTicks;
-            //var sp = StartTickPosition;
-            //var ep = EndTickPosition;
-            //if(orgPolarity == Alignment.Aligned)
-            //{
-            //    StartTickPosition = ep;
-            //    EndTickPosition = ep + len;
-            //}
-            //else
-            //{
-            //    StartTickPosition = sp - len;
-            //    EndTickPosition = sp;
-            //}
         }
+
+        // todo: these need to be in number (or range?) as focal doesn't have polarity. Focal can do non polarity parts maybe.
         public Range GetRangeWithBasis(Focal basis, bool isReciprocal, bool isAligned)
         {
-            var len = (double)Math.Abs(basis.NonZeroLength);
+            var len = (double)basis.NonZeroLength;
             var start = (StartPosition - basis.StartPosition) / len;
             var end = (EndPosition - basis.StartPosition) / len;
             if (isReciprocal)
             {
-                start = Math.Round(start) * len;
-                end = Math.Round(end) * len;
+                start = Math.Round(start) * Math.Abs(len);
+                end = Math.Round(end) * Math.Abs(len);
             }
-            var result = basis.IsPositiveDirection ? new Range(-start, end) : new Range(end, -start);
-            return isAligned ? result : new Range(-result.Start, -result.End);
+            var result = new Range(-start, end, true);
+            if (!isAligned)
+            {
+                result.InvertPolarity();
+            }
+            return result;
         }
         public void SetWithRangeAndBasis(Range range, Focal basis, bool isReciprocal, bool isAligned)
         {
-            double start;
-            double end;
+            //double start;
+            //double end;
             var len = (double)basis.NonZeroLength;
-            var zeroTick = basis.StartPosition;
-            if (basis.IsPositiveDirection)
-            {
-                start = zeroTick - range.Start * len;
-                end = zeroTick + range.End * len;
-            }
-            else
-            {
-                start = zeroTick + range.End * len;
-                end = zeroTick - range.Start * len;
-            }
+
+            var start = basis.StartPosition - (range.Start * len);
+            var end = basis.StartPosition + (range.End * len);
+            //var start = (StartPosition - basis.StartPosition) / len;
+            //var end = (EndPosition - basis.StartPosition) / len;
+            //if (basis.IsPositiveDirection)
+            //{
+            //    start = zeroTick - range.Start * len;
+            //    end = zeroTick + range.End * len;
+            //}
+            //else
+            //{
+            //    start = zeroTick + range.End * len;
+            //    end = zeroTick - range.Start * len;
+            //}
 
             if (isReciprocal)
             {
@@ -165,6 +143,10 @@ namespace NumbersCore.Primitives
             var etp = (long)Math.Round(end);
             StartPosition = isAligned ? stp : -stp;
             EndPosition = isAligned ? etp : -etp;
+            if (!isAligned)
+            {
+                //InvertPolarity();
+            }
         }
         public Range RangeAsBasis(Focal nonBasis) => nonBasis.GetRangeWithBasis(this, false, true);
         public Range UnitTRangeIn(Focal basis)
@@ -176,6 +158,7 @@ namespace NumbersCore.Primitives
         }
         public long Min => StartPosition <= EndPosition ? StartPosition : EndPosition;
         public long Max => StartPosition >= EndPosition ? StartPosition : EndPosition;
+        public Focal Negated => new Focal(-StartPosition, -EndPosition);
 
         public static long MinPosition(Focal p, Focal q) => Math.Min(p.Min, q.Min);
         public static long MaxPosition(Focal p, Focal q) => Math.Max(p.Max, q.Max);
@@ -462,6 +445,10 @@ namespace NumbersCore.Primitives
 
 
 
+        public Focal Clone()
+        {
+            return new Focal(StartPosition, EndPosition);
+        }
         public override bool Equals(object obj)
         {
             return obj is Focal other && Equals(other);
@@ -480,20 +467,7 @@ namespace NumbersCore.Primitives
             }
         }
 
-        public override string ToString() => $"[{StartPosition}->{EndPosition}]";
+        public override string ToString() => $"[{StartPosition} : {EndPosition}]";
     }
 
-    public class FocalPositions
-    {
-        public long StartTickPosition { get; set; }
-        public long EndTickPosition { get; set; }
-
-        public FocalPositions(Focal focal)
-        {
-            StartTickPosition = focal.StartPosition;
-            EndTickPosition = focal.EndPosition;
-        }
-
-        public long Length => EndTickPosition - StartTickPosition;
-    }
 }

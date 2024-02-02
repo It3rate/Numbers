@@ -17,13 +17,13 @@ namespace Numbers.Mappers
         public SKSegment UnitSegment => DomainMapper.BasisSegment;
         public bool IsBasis => Number.IsBasis;
         public int BasisSign => Number.BasisFocal.Direction;
-        public Alignment Polarity { get => Number.Polarity; set => Number.Polarity = value; }
+        public Polarity Polarity { get => Number.Polarity; set => Number.Polarity = value; }
         public int UnitDirectionOnDomainLine => Guideline.DirectionOnLine(DomainMapper.Guideline);
 
         public SKNumberMapper(MouseAgent agent, Number number) : base(agent, number)
 	    {
 	    }
-        public Alignment InvertPolarity()
+        public Polarity InvertPolarity()
         {
             return Number.InvertPolarity();
         }
@@ -71,14 +71,14 @@ namespace Numbers.Mappers
 	        return t;
         }
 
-        public void AdjustBySegmentChange(HighlightSet beginState) => AdjustBySegmentChange(beginState.OriginalSegment, beginState.OriginalFocalPositions);
-        public void AdjustBySegmentChange(SKSegment originalSegment, FocalPositions originalFocalPositions)
+        public void AdjustBySegmentChange(HighlightSet beginState) => AdjustBySegmentChange(beginState.OriginalSegment, beginState.OriginalFocal);
+        public void AdjustBySegmentChange(SKSegment originalSegment, Focal originalFocal)
         {
 	        var change = originalSegment.RatiosAsBasis(Guideline);
-	        var ofp = originalFocalPositions;
+	        var ofp = originalFocal;
 	        Number.Focal.Reset(
-		        (long)(ofp.StartTickPosition + change.Start * ofp.Length),
-		        (long)(ofp.EndTickPosition + (change.End - 1.0) * ofp.Length));
+		        (long)(ofp.StartPosition + change.Start * ofp.LengthInTicks),
+		        (long)(ofp.EndPosition + (change.End - 1.0) * ofp.LengthInTicks));
         }
 
         public void SetValueByKind(SKPoint newPoint, UIKind kind)

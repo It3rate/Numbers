@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using Numbers;
 using Numbers.Agent;
 using Numbers.Commands;
@@ -103,7 +104,7 @@ namespace MathDemo
             //vDomain.FlipPerspective();
 
             var hNum = hDomain.CreateNumberFromFloats(0, -1);
-            hNum.Number.Polarity = Alignment.Inverted;
+            hNum.Number.Polarity = Polarity.Inverted;
             var vNum = vDomain.CreateNumberFromFloats(0, 1.25f);
 
             var hSel = new Selection(hNum.Number);
@@ -113,7 +114,6 @@ namespace MathDemo
             var mNum = mDomain.Domain.AddNumber(transform.Value);
 
             wm.Workspace.AddDomains(true, hDomain.Domain, vDomain.Domain, mDomain.Domain);
-
             //var speed = 0f;
             //var scale = 1f/1900f;
             //var l = 0f;

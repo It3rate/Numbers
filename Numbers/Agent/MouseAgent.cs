@@ -191,7 +191,7 @@ namespace Numbers.Agent
 					if (SelCurrent.ActiveHighlight.Mapper is SKNumberMapper nm)
 					{
 						SelBegin.OriginalSegment = nm.Guideline.Clone();
-						SelBegin.OriginalFocalPositions = nm.Number.Focal.FocalPositions;
+						SelBegin.OriginalFocal = nm.Number.Focal.Clone();
 						if (nm.IsBasis)
 						{
 							SaveNumberValues(SavedNumbers);

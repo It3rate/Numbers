@@ -24,8 +24,8 @@ namespace NumbersTests
 	    {
 		    _brain = Brain.ActiveBrain;
 		    _trait = Trait.CreateIn(_brain, "number tests");
-            _unitFocal = Focal.CreateByValues(0, 10);
-		    _maxMin = Focal.CreateByValues(-1000, 1010);
+            _unitFocal = new Focal(0, 10);
+		    _maxMin = new Focal(-1000, 1010);
 		    _domain = new Domain(_trait, _unitFocal, _maxMin);
 	    }
 	    [TestMethod]
@@ -53,33 +53,33 @@ namespace NumbersTests
 		    Assert.AreEqual(1, n3.StartValue);
 		    Assert.AreEqual(-1.5, n3.EndValue);
 		    _unitFocal.EndPosition = -20;
-		    Assert.AreEqual(1, n0.StartValue);
-		    Assert.AreEqual(0, n0.EndValue);
-		    Assert.AreEqual(0, n1.StartValue);
-		    Assert.AreEqual(-1, n1.EndValue);
-		    Assert.AreEqual(1, n2.StartValue);
-		    Assert.AreEqual(1.5, n2.EndValue);
-		    Assert.AreEqual(-1.5, n3.StartValue);
-		    Assert.AreEqual(1, n3.EndValue);
-		    _unitFocal.StartPosition = -10; // unot perspective
-		    Assert.AreEqual(3, n0.StartValue);
+		    Assert.AreEqual(0, n0.StartValue);
 		    Assert.AreEqual(-1, n0.EndValue);
 		    Assert.AreEqual(1, n1.StartValue);
-		    Assert.AreEqual(-3, n1.EndValue);
-		    Assert.AreEqual(3, n2.StartValue);
-		    Assert.AreEqual(2, n2.EndValue);
-		    Assert.AreEqual(-2, n3.StartValue);
-		    Assert.AreEqual(1, n3.EndValue);
+		    Assert.AreEqual(0, n1.EndValue);
+		    Assert.AreEqual(-1.5, n2.StartValue);
+		    Assert.AreEqual(-1, n2.EndValue);
+		    Assert.AreEqual(-1, n3.StartValue);
+		    Assert.AreEqual(1.5, n3.EndValue);
+		    _unitFocal.StartPosition = -10; // unot perspective
+		    Assert.AreEqual(1, n0.StartValue);
+		    Assert.AreEqual(-3, n0.EndValue);
+		    Assert.AreEqual(3, n1.StartValue);
+		    Assert.AreEqual(-1, n1.EndValue);
+		    Assert.AreEqual(-2, n2.StartValue);
+		    Assert.AreEqual(-3, n2.EndValue);
+		    Assert.AreEqual(-1, n3.StartValue);
+		    Assert.AreEqual(2, n3.EndValue);
 		    _unitFocal.StartPosition = 2000; // unot perspective
             _unitFocal.EndPosition = -2000; // forces things to about the middle
-            Assert.AreEqual(-0.495, n0.StartValue);
-            Assert.AreEqual(0.5, n0.EndValue);
-            Assert.AreEqual(-0.5, n1.StartValue);
-            Assert.AreEqual(0.495, n1.EndValue);
-            Assert.AreEqual(-0.495, n2.StartValue);
-            Assert.AreEqual(0.5075, n2.EndValue);
-            Assert.AreEqual(-0.5075, n3.StartValue);
-            Assert.AreEqual(0.505, n3.EndValue);
+            Assert.AreEqual(-0.5, n0.StartValue);
+            Assert.AreEqual(0.495, n0.EndValue);
+            Assert.AreEqual(-0.495, n1.StartValue);
+            Assert.AreEqual(0.5, n1.EndValue);
+            Assert.AreEqual(-0.5075, n2.StartValue);
+            Assert.AreEqual(0.495, n2.EndValue);
+            Assert.AreEqual(-0.505, n3.StartValue);
+            Assert.AreEqual(0.5075, n3.EndValue);
         }
 	    [TestMethod]
 	    public void UnitChangeValueTests()
@@ -98,30 +98,30 @@ namespace NumbersTests
 		    Assert.AreEqual(-30, n3.EndValue);
 		    _unitFocal.StartPosition = 100; // unot perspective
 		    _unitFocal.EndPosition = 0; 
-		    Assert.AreEqual(1, n0.StartValue);
-		    Assert.AreEqual(1, n0.EndValue);
-		    Assert.AreEqual(-1, n1.StartValue);
-		    Assert.AreEqual(3, n1.EndValue);
-		    Assert.AreEqual(1, n2.StartValue);
-		    Assert.AreEqual(-2, n2.EndValue);
-		    Assert.AreEqual(-4, n3.StartValue);
-		    Assert.AreEqual(-1, n3.EndValue);
+		    Assert.AreEqual(-1, n0.StartValue);
+		    Assert.AreEqual(-1, n0.EndValue);
+		    Assert.AreEqual(-3, n1.StartValue);
+		    Assert.AreEqual(1, n1.EndValue);
+		    Assert.AreEqual(2, n2.StartValue);
+		    Assert.AreEqual(-1, n2.EndValue);
+		    Assert.AreEqual(1, n3.StartValue);
+		    Assert.AreEqual(4, n3.EndValue);
         }
 
         [TestMethod]
 	    public void CoreNumberTests()
 	    {
-		    var f0 = Focal.CreateByValues(0, 20);
+		    var f0 = new Focal(0, 20);
 		    var n0 = _domain.CreateNumber(f0);
-		    var f1 = Focal.CreateByValues(0, 30);
+		    var f1 = new Focal(0, 30);
 		    var n1 = _domain.CreateNumber(f1);
-		    var f2 = Focal.CreateByValues(-32, 0);
+		    var f2 = new Focal(-32, 0);
 		    var n2 = _domain.CreateNumber(f2);
-		    var f3 = Focal.CreateByValues(-50, 45);
+		    var f3 = new Focal(-50, 45);
 		    var n3 = _domain.CreateNumber(f3);
-		    var f4 = Focal.CreateByValues(50, -45);
+		    var f4 = new Focal(50, -45);
 		    var n4 = _domain.CreateNumber(f4);
-		    var f5 = Focal.CreateByValues(53, 69);
+		    var f5 = new Focal(53, 69);
 		    var n5 = _domain.CreateNumber(f5);
 
 		    Assert.AreEqual(MathElementKind.Number, n0.Kind);

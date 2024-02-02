@@ -4,7 +4,7 @@ using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
-    public enum Alignment { Aligned, Inverted };//, Zero, Max }
+    public enum Polarity { Aligned, Inverted };//, Zero, Max }
     public class Number : IMathElement
     {
         public MathElementKind Kind => MathElementKind.Number;
@@ -33,10 +33,10 @@ namespace NumbersCore.Primitives
         /// <summary>
         /// Determines if this number has an aligned or inverted perspective relative to the domain basis. 
         /// </summary>
-        public Alignment Polarity { get; set; }
+        public Polarity Polarity { get; set; }
         public int PolarityDirection => IsAligned ? 1 : -1;
-        public bool IsAligned => Polarity == Alignment.Aligned;
-        public bool IsInverted => Polarity == Alignment.Inverted;
+        public bool IsAligned => Polarity == Polarity.Aligned;
+        public bool IsInverted => Polarity == Polarity.Inverted;
         public int Direction => BasisFocal.Direction * PolarityDirection;
         protected long StartTickPosition
         {
@@ -90,7 +90,7 @@ namespace NumbersCore.Primitives
 
         public int StoreIndex { get; set; } // order added to domain
 
-        public Number(Focal focal, Alignment polarity = Alignment.Aligned)
+        public Number(Focal focal, Polarity polarity = Polarity.Aligned)
 		{
 			Focal = focal;
             Polarity = polarity;
@@ -132,9 +132,9 @@ namespace NumbersCore.Primitives
             var len = val.Length;
             return (pointOnLine - val.Start) / len;
         }
-        public Alignment InvertPolarity()
+        public Polarity InvertPolarity()
         {
-            Polarity = Polarity == Alignment.Aligned ? Alignment.Inverted : Alignment.Aligned;
+            Polarity = Polarity == Polarity.Aligned ? Polarity.Inverted : Polarity.Aligned;
             return Polarity;
         }
         public Number GetInverted(bool addToStore = true)
@@ -357,8 +357,9 @@ namespace NumbersCore.Primitives
 		{
 			return StartTickPosition.Equals(value.StartTickPosition) && 
 			       EndTickPosition.Equals(value.EndTickPosition) &&
-			       Focal.StartPosition.Equals(value.StartTickPosition) &&
-			       Focal.EndPosition.Equals(value.EndTickPosition);
+			       Focal.StartPosition.Equals(value.Focal.StartPosition) &&
+			       Focal.EndPosition.Equals(value.Focal.EndPosition) && 
+                   Polarity.Equals(value.Polarity);
 		}
 
 		public override int GetHashCode()
@@ -369,6 +370,7 @@ namespace NumbersCore.Primitives
                 hashCode = (hashCode * 397) ^ EndTickPosition.GetHashCode();
                 hashCode = (hashCode * 17) ^ Focal.StartPosition.GetHashCode();
                 hashCode = (hashCode * 13) ^ Focal.EndPosition.GetHashCode();
+                hashCode = (hashCode * 27) ^ Polarity.GetHashCode();
                 return hashCode;
 			}
 		}

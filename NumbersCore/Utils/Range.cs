@@ -14,43 +14,51 @@ namespace NumbersCore.Utils
         public static readonly Range MinRange = new Range(double.MinValue, double.MinValue);
         public static readonly double Tolerance = 0.000000001;
 
+        public Polarity Polarity { get; set; }
+        public int PolarityDirection => IsAligned ? 1 : -1;
+        public bool IsAligned => Polarity == Polarity.Aligned;
+        public bool IsInverted => Polarity == Polarity.Inverted;
+
         public double Start { get; set; }
         public double End { get; set; }
         private readonly bool _hasValue;
 
         public float StartF => (float)Start;
         public float EndF => (float)End;
+        public float RenderStart => (float)(IsAligned ? Start : -Start);
+        public float RenderEnd => (float)(IsAligned ? End : -End);
 
-        public Range(int start, int end)
+        public Range(int start, int end, bool isAligned = true)
         {
             _hasValue = true;
             Start = start;
             End = end;
+            Polarity = isAligned ? Polarity.Aligned : Polarity.Inverted;
         }
-        public Range(double start, double end)
+        public Range(double start, double end, bool isAligned = true)
         {
             _hasValue = true;
             Start = start;
             End = end;
+            Polarity = isAligned ? Polarity.Aligned : Polarity.Inverted;
         }
-        public Range(Range value)
+        public Range(Range value, bool isAligned = true)
         {
             _hasValue = true;
             Start = value.Start;
             End = value.End;
+            Polarity = isAligned ? Polarity.Aligned : Polarity.Inverted;
         }
 
-        private Range(double start, double end, bool isEmpty) // empty ctor
+        private Range(double start, double end, bool isEmpty, bool isAligned = true) // empty ctor
         {
             _hasValue = !isEmpty;
             Start = start;
             End = end;
+            Polarity = isAligned ? Polarity.Aligned : Polarity.Inverted;
         }
 
         public bool IsEmpty => _hasValue;
-
-        public Range Clone() => new Range(Start, End);
-
         public double Min => Start >= End ? End : Start;
         public double Max => End >= Start ? End : Start;
         public float MinF => (float)Min;
@@ -63,6 +71,13 @@ namespace NumbersCore.Utils
             var dist = value - (-Start);
             return dist / DirectedLength();
         }
+        public void InvertPolarity()
+        {
+            Start = -Start;
+            End = -End;
+            Polarity = (Polarity == Polarity.Aligned) ? Polarity.Inverted : Polarity.Aligned;
+        }
+        public Range Negation() => Range.Negation(this);
         public Range Conjugate() => Range.Conjugate(this);
         public Range Reciprocal() => Range.Reciprocal(this);
         public Range Square() => Range.Square(this);
@@ -126,7 +141,8 @@ namespace NumbersCore.Utils
         public static double DirectedLength(Range value) => value.End + value.Start;
         public static double AbsLength(Range value) => Math.Abs(value.End + value.Start);
 
-        public static Range Conjugate(Range a) => new Range(a.End, -a.Start);
+        public static Range Negation(Range a) => new Range(-a.Start, -a.End);
+        public static Range Conjugate(Range a) => new Range(a.Start, -a.End);
         public static Range Reciprocal(Range value) => value.End == 0.0 && value.Start == 0.0 ? Range.Zero : Range.Unit / value;
         public static Range Square(Range a) => new Range(a.Start * a.Start + (a.End * a.End) * -1, 0); // value * value;
         public static Range Normalize(Range value) => value.IsZeroLength ? new Range(0.5, 0.5) : value / value;
@@ -185,7 +201,7 @@ namespace NumbersCore.Utils
 	        return result;
         }
 
-
+        public Range Clone() => new Range(Start, End, IsAligned);
 
         public static bool operator ==(Range left, Range right) => left.End == right.End && left.Start == right.Start;
         public static bool operator !=(Range left, Range right) => left.End != right.End || left.Start != right.Start;
@@ -195,7 +211,7 @@ namespace NumbersCore.Utils
         }
         public bool Equals(Range value)
         {
-            return Start.Equals(value.Start) && End.Equals(value.End);
+            return Start.Equals(value.Start) && End.Equals(value.End) && Polarity.Equals(value.Polarity);
         }
 
         public override int GetHashCode()
@@ -204,10 +220,16 @@ namespace NumbersCore.Utils
             {
                 var hashCode = Start.GetHashCode();
                 hashCode = (hashCode * 397) ^ End.GetHashCode();
+                hashCode = (hashCode * 17) ^ Polarity.GetHashCode();
                 return hashCode;
             }
         }
 
-        public override string ToString() => $"[{Start:0.00}->{End:0.00}]";
+        public override string ToString()
+        {
+            var prefix = Polarity==Polarity.Inverted ? "~" : "";
+            return $"{prefix}[{Start:0.00}->{End:0.00}]";
+        }
+
     }
 }
