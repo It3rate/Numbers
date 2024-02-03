@@ -105,6 +105,7 @@ namespace MathDemo
 
             var hNum = hDomain.CreateNumberFromFloats(0, -1);
             hNum.Number.Polarity = Polarity.Inverted;
+
             var vNum = vDomain.CreateNumberFromFloats(0, 1.25f);
 
             var hSel = new Selection(hNum.Number);

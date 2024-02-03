@@ -24,7 +24,8 @@ namespace Numbers.Mappers
         public bool DoRender { get; set; } = true;
 
         public IMathElement MathElement { get; protected set; }
-        public SKSegment Guideline { get; private set; } = new SKSegment(0,0,1,1);
+        public SKSegment Guideline { get; private set; } = new SKSegment(0, 0, 1, 1);
+        public SKSegment InvertedGuideline => new SKSegment(Guideline.StartPoint, Guideline.StartPoint - Guideline.EndPoint);
 
         public SKPoint StartPoint
         {

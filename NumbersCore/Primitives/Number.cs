@@ -63,13 +63,13 @@ namespace NumbersCore.Primitives
 		public double StartValue
 		{
 			get => Value.Start;
-			set => Value = new Range(value, Value.End);
+			set => Value = new Range(value, Value.End, IsAligned);
 
 		}
 		public double EndValue
 		{
 			get => Value.End;
-			set => Value = new Range(Value.Start, value);
+			set => Value = new Range(Value.Start, value, IsAligned);
 		}
 		public Range Value 
 		{

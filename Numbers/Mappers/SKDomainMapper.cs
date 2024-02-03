@@ -23,8 +23,9 @@ namespace Numbers.Mappers
 
         protected SKNumberMapper BasisMapper => NumberMapper(Domain.BasisNumber);
 	    public Number BasisNumber => Domain.BasisNumber;
-	    public SKSegment BasisSegment => BasisMapper.Guideline;
-	    public int BasisNumberSign => BasisNumber.Direction;
+        public SKSegment BasisSegment => BasisMapper.Guideline;
+        public SKSegment InvertedBasisSegment => BasisMapper.Guideline;
+        public int BasisNumberSign => BasisNumber.Direction;
 
         public List<SKPoint> TickPoints = new List<SKPoint>();
 	    public List<int> ValidNumberIds = new List<int>();

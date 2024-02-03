@@ -62,9 +62,9 @@ namespace Numbers.Mappers
             Renderer.DrawSegment(RenderSegment, pen);
         }
 
-        public float TFromPoint(SKPoint point)
+        public float TFromPoint(SKPoint point, bool isAligned)
         {
-	        var basisSegment = DomainMapper.BasisSegment;
+	        var basisSegment = isAligned ? DomainMapper.BasisSegment : DomainMapper.InvertedBasisSegment;
 	        var pt = basisSegment.ProjectPointOnto(point, false);
             var (t, _) = basisSegment.TFromPoint(pt, false);
 	        t = (float)(Math.Round(t * basisSegment.Length) / basisSegment.Length);
@@ -87,7 +87,7 @@ namespace Numbers.Mappers
 	        {
 		        SetValueOfBasis(newPoint, kind);
 	        }
-	        else if (kind.IsMajor() == Number.IsAligned)
+	        else if (kind.IsMajor())
             {
 	            SetEndValueByPoint(newPoint);
             }
@@ -115,13 +115,11 @@ namespace Numbers.Mappers
 
         public void SetStartValueByPoint(SKPoint newPoint)
         {
-            var dir = -Number.PolarityDirection;
-            Number.StartValue = TFromPoint(newPoint) * dir;
+            Number.StartValue = TFromPoint(newPoint, Number.IsAligned);
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {
-            var dir = Number.PolarityDirection;
-            Number.EndValue = TFromPoint(newPoint) * dir;
+            Number.EndValue = TFromPoint(newPoint, Number.IsAligned);
         }
         public void SetValueOfBasis(SKPoint newPoint, UIKind kind)
         {
