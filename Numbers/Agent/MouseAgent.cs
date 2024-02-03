@@ -364,7 +364,7 @@ namespace Numbers.Agent
             var nm = SelSelection.GetNumberMapper();
             if (nm != null)
             {
-                nm.Number.Value = nm.Number.Value * -1;// new Range(0, -1);
+                nm.Number.Negate();
             }
         }
         private void BasisChanged(SKNumberMapper nm)

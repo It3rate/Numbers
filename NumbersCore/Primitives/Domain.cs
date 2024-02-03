@@ -137,10 +137,12 @@ namespace NumbersCore.Primitives
         public Number Zero() => CreateNumber(BasisFocal.StartPosition, BasisFocal.StartPosition);
         public Number One() => CreateNumber(BasisFocal.StartPosition, BasisFocal.EndPosition);
 
-        public Range GetValueOf(Focal focal, bool isAligned) => focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal, isAligned);
-        public void SetValueOf(Focal focal, Range range, bool isAligned) => focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal, isAligned);
-        public Range GetValueOf(Number num) => GetValueOf(num.Focal, num.IsAligned);
-        public void SetValueOf(Number num, Range range) => SetValueOf(num.Focal, range, num.IsAligned);
+        public Range GetValueOf(Number num) => num.Focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal, num.IsAligned);
+        public void SetValueOf(Number num, Range range)
+        {
+            num.Focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal, num.IsAligned);
+            num.Polarity = range.Polarity;
+        }
 
         public Range ClampToInnerBasis(Range range) => range.ClampInner();
         public Range ClampToInnerTick(Range range) => (range / TickToBasisRatio).ClampInner() * TickToBasisRatio;

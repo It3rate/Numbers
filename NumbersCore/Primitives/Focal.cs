@@ -101,7 +101,7 @@ namespace NumbersCore.Primitives
             EndPosition = StartPosition - LengthInTicks;
         }
 
-        // todo: these need to be in number (or range?) as focal doesn't have polarity. Focal can do non polarity parts maybe.
+        // todo: rework reciprocal to live in a tickSize property in Numbers.
         public Range GetRangeWithBasis(Focal basis, bool isReciprocal, bool isAligned)
         {
             var len = (double)basis.NonZeroLength * (isAligned ? 1 : -1); //AlignedNonZeroLength(isAligned);// 

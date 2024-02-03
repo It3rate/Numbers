@@ -79,11 +79,11 @@ namespace NumbersTests
             Assert.AreEqual(ffr, num.Focal);
 
             _unitFocal.Reset(10, -10);
-	        var testFocal = new Focal(0, 6);
+	        var testFocal = new Focal(30, 40);
 
             num = _domain.CreateNumber(new Focal(30, 40));
 	        r = num.Value;
-	        _domain.SetValueOf(testFocal, r, true);
+	        _domain.SetValueOf(num, r);
 
             Assert.AreEqual(num.Focal.StartPosition, testFocal.StartPosition);
             Assert.AreEqual(num.Focal.EndPosition, testFocal.EndPosition);

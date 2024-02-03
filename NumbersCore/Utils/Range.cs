@@ -122,9 +122,15 @@ namespace NumbersCore.Utils
         public static Range operator -(Range value) => new Range(-value.Start, -value.End);
         public static Range operator +(Range left, Range right) => new Range(left.Start + right.Start, left.End + right.End);
         public static Range operator -(Range left, Range right) => new Range(left.Start - right.Start, left.End - right.End);
-        public static Range operator *(Range left, Range right) => new Range(left.Start * right.End + left.End * right.Start, left.End * right.End - left.Start * right.Start);
+        public static Range operator *(Range left, Range right)
+        {
+            var result = new Range(left.Start * right.End + left.End * right.Start, left.End * right.End - left.Start * right.Start);
+            result.Polarity = (left.Polarity == right.Polarity) ? Polarity.Aligned : Polarity.Inverted;
+            return result;
+        }
         public static Range operator /(Range left, Range right)
         {
+            Range result;
             double real1 = left.End;
             double imaginary1 = left.Start;
             double real2 = right.End;
@@ -132,32 +138,37 @@ namespace NumbersCore.Utils
             if (Math.Abs(imaginary2) < Math.Abs(real2))
             {
                 double num = imaginary2 / real2;
-                return new Range((imaginary1 - real1 * num) / (real2 + imaginary2 * num), (real1 + imaginary1 * num) / (real2 + imaginary2 * num));
+                result = new Range((imaginary1 - real1 * num) / (real2 + imaginary2 * num), (real1 + imaginary1 * num) / (real2 + imaginary2 * num));
             }
-            double num1 = real2 / imaginary2;
-            return new Range((-real1 + imaginary1 * num1) / (imaginary2 + real2 * num1), (imaginary1 + real1 * num1) / (imaginary2 + real2 * num1));
+            else
+            {
+                double num1 = real2 / imaginary2;
+                result = new Range((-real1 + imaginary1 * num1) / (imaginary2 + real2 * num1), (imaginary1 + real1 * num1) / (imaginary2 + real2 * num1));
+            }
+            result.Polarity = (left.Polarity == right.Polarity) ? Polarity.Aligned : Polarity.Inverted;
+            return result;
         }
 
-        public static double DirectedLength(Range value) => value.End + value.Start;
-        public static double AbsLength(Range value) => Math.Abs(value.End + value.Start);
+        public static double DirectedLength(Range a) => a.End + a.Start;
+        public static double AbsLength(Range a) => Math.Abs(a.End + a.Start);
 
         public static Range Negation(Range a) => new Range(-a.Start, -a.End);
         public static Range Conjugate(Range a) => new Range(a.Start, -a.End);
-        public static Range Reciprocal(Range value) => value.End == 0.0 && value.Start == 0.0 ? Range.Zero : Range.Unit / value;
-        public static Range Square(Range a) => new Range(a.Start * a.Start + (a.End * a.End) * -1, 0); // value * value;
-        public static Range Normalize(Range value) => value.IsZeroLength ? new Range(0.5, 0.5) : value / value;
+        public static Range Reciprocal(Range a) => a.End == 0.0 && a.Start == 0.0 ? Range.Zero : Range.Unit / a;
+        public static Range Square(Range a) => a * a;
+        public static Range Normalize(Range a) => a.IsZeroLength ? new Range(0.5, 0.5) : a / a;
         public static Range NormalizeTo(Range from, Range to) => from.Normalize() * to;
 
-        public static Range ClampInner(Range value) => new Range(Math.Floor(Math.Abs(value.Start)) * Math.Sign(value.Start), Math.Floor(Math.Abs(value.End)) * Math.Sign(value.End));
-        public static Range ClampOuter(Range value) => new Range(Math.Ceiling(Math.Abs(value.Start)) * Math.Sign(value.Start), Math.Ceiling(Math.Abs(value.End)) * Math.Sign(value.End));
-        public static Range Round(Range value) => new Range(Math.Round(value.Start), Math.Round(value.End));
+        public static Range ClampInner(Range a) => new Range(Math.Floor(Math.Abs(a.Start)) * Math.Sign(a.Start), Math.Floor(Math.Abs(a.End)) * Math.Sign(a.End));
+        public static Range ClampOuter(Range a) => new Range(Math.Ceiling(Math.Abs(a.Start)) * Math.Sign(a.Start), Math.Ceiling(Math.Abs(a.End)) * Math.Sign(a.End));
+        public static Range Round(Range a) => new Range(Math.Round(a.Start), Math.Round(a.End));
 
-        public static double Abs(Range value)
+        public static double Abs(Range a)
         {
-	        if (double.IsInfinity(value.End) || double.IsInfinity(value.Start))
+	        if (double.IsInfinity(a.End) || double.IsInfinity(a.Start))
 		        return double.PositiveInfinity;
-	        double num1 = Math.Abs(value.End);
-	        double num2 = Math.Abs(value.Start);
+	        double num1 = Math.Abs(a.End);
+	        double num2 = Math.Abs(a.Start);
 	        if (num1 > num2)
 	        {
 		        double num3 = num2 / num1;
@@ -203,8 +214,8 @@ namespace NumbersCore.Utils
 
         public Range Clone() => new Range(Start, End, IsAligned);
 
-        public static bool operator ==(Range left, Range right) => left.End == right.End && left.Start == right.Start;
-        public static bool operator !=(Range left, Range right) => left.End != right.End || left.Start != right.Start;
+        public static bool operator ==(Range left, Range right) => left.Equals(right);
+        public static bool operator !=(Range left, Range right) => !left.Equals(right);
         public override bool Equals(object obj)
         {
             return obj is Range other && Equals(other);

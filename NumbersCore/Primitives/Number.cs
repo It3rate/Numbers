@@ -73,13 +73,10 @@ namespace NumbersCore.Primitives
 		}
 		public Range Value 
 		{
-			get => Domain.GetValueOf(Focal, IsAligned); //Focal.RangeWithBasis(BasisFocal);
-			set => Domain.SetValueOf(Focal, value, IsAligned);
+			get => Domain.GetValueOf(this);
+            set => Domain.SetValueOf(this, value);
         }
 
-        //public bool IsUnitPerspective => IsAligned;// Domain.IsUnitPerspective; // domains can have a pos or neg basis, numbers can conform or counter that with polarity
-        //public bool IsUnotPerspective => IsInverted;// Domain.IsUnotPerspective;
-        //public Alignment Direction => (Focal.Direction == BasisFocal.Direction) ? Alignment.Aligned : Alignment.Inverted;
         public long ZeroTick => BasisFocal.StartPosition;
         public long BasisTicks => BasisFocal.LengthInTicks;
         public long AbsBasisTicks => BasisFocal.AbsLengthInTicks;
@@ -134,14 +131,12 @@ namespace NumbersCore.Primitives
         }
         public Polarity InvertPolarity()
         {
-            Polarity = Polarity == Polarity.Aligned ? Polarity.Inverted : Polarity.Aligned;
+            Polarity = (Polarity == Polarity.Aligned) ? Polarity.Inverted : Polarity.Aligned;
             return Polarity;
         }
-        public Number GetInverted(bool addToStore = true)
+        public void Negate()
         {
-            var result = Clone(false);
-            result.Value *= -1;
-            return result;
+            Value *= -1;
         }
 
         public long WholeStartValue => (long) StartValue;
