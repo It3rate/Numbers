@@ -44,7 +44,7 @@ namespace MathDemo
             switch (_tests[_testIndex])
             {
                 case 0:
-                    wm = test0();
+                    wm = test2DMult();
                     break;
                 case 1:
                     wm = test1();
@@ -70,10 +70,10 @@ namespace MathDemo
         {
             return NextTest(mouseAgent, true);
         }
-        private SKWorkspaceMapper test0()
+        private SKWorkspaceMapper test2DMult()
         {
-            var hDomain = Domain.CreateDomain("test0", 100, 10);
-            var vDomain = Domain.CreateDomain("test0", 100, 10);
+            var hDomain = Domain.CreateDomain("test2DMult", 100, 10);
+            var vDomain = Domain.CreateDomain("test2DMult", 100, 10);
             var hNum = hDomain.CreateNumberFromFloats(2, 9);
             var vNum = vDomain.CreateNumberFromFloats(3, 6);
 
@@ -195,7 +195,7 @@ namespace MathDemo
             var domain = trait.AddDomain(basis, range);
             domain.BasisNumber.Polarity = Polarity.Inverted;
             //var domain2 = t0.AddDomain(unit.Id, range.Id);
-            var val2 = new Focal(-15, 20);
+            var val2 = new Focal(-15, 30);
             //var val3 = new Focal(t0, -40, 60);
             //var val2 = new Focal(t0, unitSize, unitSize);
             //var val3 = new Focal(t0, unitSize, unitSize);

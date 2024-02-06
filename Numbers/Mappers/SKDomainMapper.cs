@@ -234,7 +234,7 @@ namespace Numbers.Mappers
 	        foreach (var numberId in ValidNumberIds)
 	        {
 		        offset += step;
-		        DrawNumber(NumberMapper(numberId), offset);
+		        DrawNumber(NumberMapper(numberId), offset + topDir * 2);
 	        }
         }
         protected virtual void DrawNumberSets()

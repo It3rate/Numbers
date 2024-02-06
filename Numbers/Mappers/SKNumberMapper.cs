@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO.Ports;
+using System.Windows.Forms.VisualStyles;
 using Numbers.Agent;
 using Numbers.Utils;
 using NumbersCore.Primitives;
@@ -53,14 +54,17 @@ namespace Numbers.Mappers
             // BasisNumber is a special case where we don't want it's direction set by the unit direction of the line (itself).
             // So don't call EnsureSegment here.
             var dir = Number.Focal.Direction;
-            var pen = Number.IsAligned ? Pens.UnitPenLight : Pens.UnotPenLight;
-	        var offset = Guideline.OffsetAlongLine(0,  pen.StrokeWidth / 2f * dir) - Guideline.StartPoint;
+            var unitPen = Pens.UnitPenLight; // the basis defines the unit direction, so it is always unit color
+	        var offset = Guideline.OffsetAlongLine(0,  unitPen.StrokeWidth / 2f * dir) - Guideline.StartPoint;
 	        RenderSegment = aboveLine ? Guideline + offset : Guideline - offset;
 	        if (Pens.UnitStrokePen != null)
 	        {
 		        Renderer.DrawSegment(RenderSegment, Pens.UnitStrokePen);
             }
-            Renderer.DrawSegment(RenderSegment, pen);
+            Renderer.DrawSegment(RenderSegment, unitPen);
+            var unotSeg = RenderSegment.Clone();
+            unotSeg.FlipAroundStartPoint();
+            Renderer.DrawSegment(unotSeg, Pens.UnotPenLight);
         }
 
         public float TFromPoint(SKPoint point, bool isAligned)

@@ -99,21 +99,24 @@ namespace Numbers.Mappers
 	            if (nm.RenderSegment != null)
 	            {
 		            var seg = nm.RenderSegment;
+                    // todo: selection depends on added order, but should be render order (basis last). When switching basis the order isn't the same.
 		            var isSameMapper = ignoreSet.ActiveHighlight != null && ignoreSet.ActiveHighlight.Mapper == nm;
 		            var kind = UIKind.Number | (nm.IsBasis ? UIKind.Basis : UIKind.None);
+                    if(nm.IsBasis && Agent.CurrentKey != Keys.B && Agent.CurrentKey != Keys.M)
+                    {
+                        continue; // only adjust basis when B is down
+                    }
 
 		            if (!isSameMapper && input.DistanceTo(seg.StartPoint) < maxDist)
 		            {
 			            highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point);
 			            goto Found;
 		            }
-
 		            else if (!isSameMapper && input.DistanceTo(seg.EndPoint) < maxDist)
                     {
                         highlight.Set(input, seg.EndPoint, nm, 1, kind | UIKind.Point | UIKind.Major);
 			            goto Found;
 		            }
-
 		            else if (!isSameMapper && seg.DistanceTo(input, true) < maxDist && Agent.CurrentKey != Keys.M)
 		            {
 			            var t = nm.DomainMapper.BasisSegment.TFromPoint(input, false).Item1;

@@ -243,6 +243,7 @@ namespace Numbers.Agent
                             var g = SelCurrent.ActiveHighlight.Mapper.Guideline;
                             var (t, pt) = g.TFromPoint(_highlight.SnapPoint, false);
 
+                            _initialBasisNum.EndValue = t;
                             snm.Number.SetWith(_initialSelectionNum);
                             snm.Number.Multiply(_initialBasisNum);
                             DragPoint = pt;
