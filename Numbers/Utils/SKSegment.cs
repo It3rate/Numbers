@@ -20,6 +20,7 @@ namespace Numbers.Utils
                 EndPoint = value + dif;
             }
         }
+        public SKPoint InvertedEndPoint => PointAlongLine(-1);
 
         public static readonly SKSegment Empty = new SKSegment(SKPoint.Empty, SKPoint.Empty);
 

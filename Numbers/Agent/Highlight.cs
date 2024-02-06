@@ -66,6 +66,7 @@ namespace Numbers.Agent
     {
 	    None = 0x00,
         Major = 0x01,
+        Inverted = 0x02,
 
         Label = 0x10,
         Marker = 0x20,
@@ -87,11 +88,15 @@ namespace Numbers.Agent
 	    public static bool IsMajor(this UIKind kind)
 	    {
 		    return (kind & UIKind.Major) != UIKind.None;
-	    }
-	    public static bool IsBasis(this UIKind kind)
-	    {
-		    return (kind & UIKind.Basis) != UIKind.None;
-	    }
+        }
+        public static bool IsBasis(this UIKind kind)
+        {
+            return (kind & UIKind.Basis) != UIKind.None;
+        }
+        public static bool IsAligned(this UIKind kind)
+        {
+            return (kind & UIKind.Inverted) == UIKind.None;
+        }
         public static bool IsNumber(this UIKind kind)
 	    {
 		    return (kind & UIKind.Number) != UIKind.None;

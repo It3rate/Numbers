@@ -134,6 +134,11 @@ namespace NumbersCore.Primitives
             Polarity = (Polarity == Polarity.Aligned) ? Polarity.Inverted : Polarity.Aligned;
             return Polarity;
         }
+        public Polarity FlipPolarityAndValue()
+        {
+            Focal.InvertBasis();
+            return InvertPolarity();
+        }
         public void Negate()
         {
             Value *= -1;

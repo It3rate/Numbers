@@ -144,10 +144,20 @@ namespace Numbers.Mappers
                 {
                     if (input.DistanceTo(dmTickPoint) < maxDist / 2f)
                     {
-                        var kind = UIKind.Tick | UIKind.Major;
-                        var (t, _) = dm.Guideline.TFromPoint(dmTickPoint, false);
-                        highlight.Set(input, dmTickPoint, dm, t, kind);
-                        goto Found;
+                        var invertedBasis = dm.InvertedBasisSegment;
+                        if (input.DistanceTo(invertedBasis.EndPoint) < maxDist)
+                        {
+                            var kind = UIKind.Number | UIKind.Basis | UIKind.Major | UIKind.Inverted;
+                            highlight.Set(input, invertedBasis.EndPoint, dm.BasisNumberMapper, 1, kind);
+                            goto Found;
+                        }
+                        else
+                        {
+                            var kind = UIKind.Tick | UIKind.Major;
+                            var (t, _) = dm.Guideline.TFromPoint(dmTickPoint, false);
+                            highlight.Set(input, dmTickPoint, dm, t, kind);
+                            goto Found;
+                        }
                     }
                 }
             }

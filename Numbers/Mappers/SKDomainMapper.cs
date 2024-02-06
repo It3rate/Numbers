@@ -14,10 +14,10 @@ namespace Numbers.Mappers
 	public class SKDomainMapper : SKMapper
 	{
 	    public Domain Domain => (Domain)MathElement;
-        protected SKNumberMapper BasisMapper => NumberMapper(Domain.BasisNumber);
+        public SKNumberMapper BasisNumberMapper => NumberMapper(Domain.BasisNumber);
 	    public Number BasisNumber => Domain.BasisNumber;
-        public SKSegment BasisSegment => BasisMapper.Guideline;
-        public SKSegment InvertedBasisSegment => BasisMapper.InvertedGuideline;
+        public SKSegment BasisSegment => BasisNumberMapper.Guideline;
+        public SKSegment InvertedBasisSegment => BasisNumberMapper.InvertedGuideline;
         public SKSegment BasisSegmentForNumber(Number num) => num.IsAligned ? BasisSegment : InvertedBasisSegment;
         public int BasisNumberSign => BasisNumber.Direction;
 
@@ -27,7 +27,7 @@ namespace Numbers.Mappers
 	    public Range UnitRangeOnDomainLine
 	    {
 		    get => Guideline.RatiosAsBasis(BasisSegment);
-		    set => BasisMapper.Reset(SegmentAlongGuideline(value));
+		    set => BasisNumberMapper.Reset(SegmentAlongGuideline(value));
 	    }
 	    public int UnitDirectionOnDomainLine => BasisSegment.DirectionOnLine(Guideline);
 
@@ -162,7 +162,7 @@ namespace Numbers.Mappers
 		    {
 			    StartPoint = newPoint;
 		    }
-            BasisMapper.Reset(SegmentAlongGuideline(unitRatio));
+            BasisNumberMapper.Reset(SegmentAlongGuideline(unitRatio));
         }
 
         public virtual void Draw()

@@ -195,10 +195,11 @@ namespace Numbers.Agent
 						if (nm.IsBasis)
 						{
 							SaveNumberValues(SavedNumbers);
+                            // test for drag from unit multiplication
                             if(SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && !snm.Number.IsBasis)
                             {
-                                _initialBasisNum = snm.Number.Domain.BasisNumber.Clone();
                                 _initialSelectionNum = snm.Number.Clone();
+                                _initialBasisNum = snm.Number.Domain.BasisNumber.Clone(); // always assume bias of 0-1, as we are in the render perspective
                             }
                         }
 					}
@@ -233,17 +234,19 @@ namespace Numbers.Agent
 		            }
 		            else if (activeKind.IsBasis())
                     {
+                        // set basis with new number
                         if (!SelSelection.HasHighlight || CurrentKey == Keys.B)
                         {
                             nm.SetValueByKind(_highlight.SnapPoint, activeKind);
                             BasisChanged(nm);
                         }
-                        else if(SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && activeKind.IsMajor())
+                        // drag multiply from basis tip
+                        else if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && activeKind.IsMajor() && activeKind.IsAligned() == snm.Number.IsAligned)
                         {
                             var g = SelCurrent.ActiveHighlight.Mapper.Guideline;
                             var (t, pt) = g.TFromPoint(_highlight.SnapPoint, false);
 
-                            _initialBasisNum.EndValue = t;
+                            _initialBasisNum.EndValue = snm.Number.IsAligned ? t : -t; // dragging is always in render perspective, so account for direction change
                             snm.Number.SetWith(_initialSelectionNum);
                             snm.Number.Multiply(_initialBasisNum);
                             DragPoint = pt;
