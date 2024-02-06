@@ -190,9 +190,10 @@ namespace MathDemo
         {
 	        Trait trait = Trait.CreateIn(Brain, "test1");
             var unitSize = 4;
-            var unit = new Focal(3, 3 + unitSize);
+            var basis = new Focal(3, 3 + unitSize);
             var range = new Focal(-40, 40);
-            var domain = trait.AddDomain(unit, range);
+            var domain = trait.AddDomain(basis, range);
+            domain.BasisNumber.Polarity = Polarity.Inverted;
             //var domain2 = t0.AddDomain(unit.Id, range.Id);
             var val2 = new Focal(-15, 20);
             //var val3 = new Focal(t0, -40, 60);

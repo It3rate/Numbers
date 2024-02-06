@@ -241,14 +241,7 @@ namespace Numbers.Agent
                         {
                             var g = SelCurrent.ActiveHighlight.Mapper.Guideline;
                             var (t, pt) = g.TFromPoint(_highlight.SnapPoint, false);
-                            if (_initialBasisNum.Domain.IsBasisPositive) // todo: Need to multiply based on domain perspective and number polarity (currently just looks at aligned)
-                            {
-                                _initialBasisNum.EndValue = t;
-                            }
-                            else
-                            {
-                                _initialBasisNum.StartValue = t;
-                            }
+
                             snm.Number.SetWith(_initialSelectionNum);
                             snm.Number.Multiply(_initialBasisNum);
                             DragPoint = pt;
@@ -382,7 +375,7 @@ namespace Numbers.Agent
 	        //var dm = WorkspaceMapper.DomainMapperByIndex(0);
             foreach(var dm in WorkspaceMapper.DomainMappers())
             {
-                dm.FlipPerspective();
+                dm.FlipRenderPerspective();
             }
         }
         private void FlipSelectedPolarity()

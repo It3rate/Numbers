@@ -41,7 +41,7 @@ namespace Numbers.Mappers
 			var dir = UnitDirectionOnDomainLine;
 	        var offset = Guideline.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
 	        RenderSegment = Guideline + offset;
-	        Renderer.DrawDirectedLine(RenderSegment, Number.IsAligned, paint);
+	        Renderer.DrawDirectedLine(RenderSegment, paint);
 
             //var ef = Number.ExpansiveForce;
             //Trace.WriteLine(ef);
@@ -115,7 +115,7 @@ namespace Numbers.Mappers
 
         public void SetStartValueByPoint(SKPoint newPoint)
         {
-            Number.StartValue = TFromPoint(newPoint, Number.IsAligned);
+            Number.StartValue = -TFromPoint(newPoint, Number.IsAligned);
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {

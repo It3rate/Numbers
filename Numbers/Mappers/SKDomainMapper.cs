@@ -14,17 +14,10 @@ namespace Numbers.Mappers
 	public class SKDomainMapper : SKMapper
 	{
 	    public Domain Domain => (Domain)MathElement;
-
-	    protected Dictionary<int, SKNumberMapper> NumberMappers = new Dictionary<int, SKNumberMapper>();
-	    public SKNumberMapper NumberMapper(Number number) => GetOrCreateNumberMapper(number);
-	    public SKNumberMapper NumberMapper(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
-
-	    protected Dictionary<int, SKNumberSetMapper> NumberSetMappers = new Dictionary<int, SKNumberSetMapper>();
-
         protected SKNumberMapper BasisMapper => NumberMapper(Domain.BasisNumber);
 	    public Number BasisNumber => Domain.BasisNumber;
         public SKSegment BasisSegment => BasisMapper.Guideline;
-        public SKSegment InvertedBasisSegment => BasisMapper.Guideline;
+        public SKSegment InvertedBasisSegment => BasisMapper.InvertedGuideline;
         public int BasisNumberSign => BasisNumber.Direction;
 
         public List<SKPoint> TickPoints = new List<SKPoint>();
@@ -57,15 +50,18 @@ namespace Numbers.Mappers
 		    var unitMapper = NumberMapper(unit);
 		    unitMapper.Guideline.Reset(guideline.ProjectPointOnto(unitSegment.StartPoint), guideline.ProjectPointOnto(unitSegment.EndPoint));
 	    }
-        public void FlipPerspective()
+        public void FlipRenderPerspective()
         {
-            Domain.BasisFocal.InvertBasis();
+            Guideline.Reverse();
             BasisSegment.FlipAroundStartPoint();
-            foreach (var num in Domain.NumberStore.Values)
-            {
-                num.InvertPolarity(); // includes basis, polarity is based on basis being negative, so basis just checks itself. Use two basis and swap them?
-            }
         }
+
+        #region NumberMappers
+        protected Dictionary<int, SKNumberMapper> NumberMappers = new Dictionary<int, SKNumberMapper>();
+        public SKNumberMapper NumberMapper(Number number) => GetOrCreateNumberMapper(number);
+        public SKNumberMapper NumberMapper(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
+
+        protected Dictionary<int, SKNumberSetMapper> NumberSetMappers = new Dictionary<int, SKNumberSetMapper>();
 
         public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
         {
@@ -73,7 +69,6 @@ namespace Numbers.Mappers
 	        return numberMapper;
         }
         public bool RemoveNumberMapper(SKNumberMapper numberMapper) => NumberMappers.Remove(numberMapper.Id);
-        
         public IEnumerable<SKNumberMapper> GetNumberMappers(bool reverse = false)
         {
 	        var mappers = reverse ? NumberMappers.Values.Reverse() : NumberMappers.Values;
@@ -129,6 +124,7 @@ namespace Numbers.Mappers
             var num = Domain.CreateNumberFromFloats(startF, endF, addToStore);
             return GetOrCreateNumberMapper(num);
         }
+        #endregion
 
         public override void Reset(SKPoint startPoint, SKPoint endPoint)
 	    {
@@ -184,7 +180,7 @@ namespace Numbers.Mappers
 	    }
 	    protected virtual void DrawNumberLine()
 	    {
-		    var renderDir = UnitDirectionOnDomainLine;
+            var renderDir = UnitDirectionOnDomainLine;
 		    var basisDir = BasisNumber.BasisFocal.Direction;
 		    var gsp = renderDir * basisDir == 1 ? Guideline.StartPoint : Guideline.EndPoint;
 		    var gep = renderDir * basisDir == 1 ? Guideline.EndPoint : Guideline.StartPoint;

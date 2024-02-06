@@ -25,7 +25,7 @@ namespace Numbers.Mappers
 
         public IMathElement MathElement { get; protected set; }
         public SKSegment Guideline { get; private set; } = new SKSegment(0, 0, 1, 1);
-        public SKSegment InvertedGuideline => new SKSegment(Guideline.StartPoint, Guideline.StartPoint - Guideline.EndPoint);
+        public SKSegment InvertedGuideline => new SKSegment(Guideline.StartPoint, Guideline.StartPoint - (Guideline.EndPoint - Guideline.StartPoint));
 
         public SKPoint StartPoint
         {

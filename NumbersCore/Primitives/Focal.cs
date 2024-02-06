@@ -115,12 +115,12 @@ namespace NumbersCore.Primitives
             var result = new Range(-start, end, isAligned);
             return result;
         }
-        public void SetWithRangeAndBasis(Range range, Focal basis, bool isReciprocal, bool isAligned)
+        public void SetWithRangeAndBasis(Range range, Focal basis, bool isReciprocal)
         {
-            var len = (double)basis.NonZeroLength * (isAligned ? 1 : -1);
+            var len = (double)basis.NonZeroLength * (range.IsAligned ? 1 : -1);
             var z = basis.StartPosition;
-            var start = range.IsAligned ? (z - range.Start * len) : (z + range.Start * len);
-            var end = range.IsAligned ? (z + range.End * len) : (z - range.End * len);
+            var start = z - range.Start * len;
+            var end = z + range.End * len;
             if (isReciprocal)
             {
                 start = Math.Round(start) / Math.Abs(len);

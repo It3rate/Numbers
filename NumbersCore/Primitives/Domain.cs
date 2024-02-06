@@ -23,8 +23,7 @@ namespace NumbersCore.Primitives
 
 	    //public Brain Brain => Trait.Brain;
 	    public Trait Trait { get; protected set; }
-        public Focal BasisFocal { get; protected set; }
-        public bool IsBasisPositive => BasisFocal.Direction == 1;
+        public Focal BasisFocal => BasisNumber.Focal;
         public Focal MinMaxFocal { get; protected set; }
         public Number BasisNumber { get; protected set; }
         public Number MinMaxNumber { get; protected set; }
@@ -48,16 +47,16 @@ namespace NumbersCore.Primitives
         {
 	        Id = domainCounter++;
 	        Trait = trait;
-	        BasisFocal = basisFocal;
 	        MinMaxFocal = minMaxFocal;
             BasisNumber = CreateNumber(basisFocal);
+	        //BasisFocal = basisFocal;
             MinMaxNumber = minMaxFocal == default ? CreateNumber(Focal.MinMaxFocal) : CreateNumber(minMaxFocal);
             Trait.DomainStore.Add(Id, this);
         }
 
         public void SetBasisWithNumber(Number nm)
         {
-            BasisFocal = nm.Focal;
+            BasisNumber = nm;
         }
 
         public static Domain CreateDomain(string traitName, int unitSize = 8, int rangeSize = 16)
@@ -140,7 +139,7 @@ namespace NumbersCore.Primitives
         public Range GetValueOf(Number num) => num.Focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal, num.IsAligned);
         public void SetValueOf(Number num, Range range)
         {
-            num.Focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal, num.IsAligned);
+            num.Focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
             num.Polarity = range.Polarity;
         }
 
@@ -159,7 +158,7 @@ namespace NumbersCore.Primitives
         public Focal CreateFocalFromRange(Range range)
         {
 	        var result = new Focal(0, 1);
-	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal, true);
+	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
 	        return result;
         }
 

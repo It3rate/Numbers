@@ -104,15 +104,13 @@ namespace Numbers.Mappers
 
 		            if (!isSameMapper && input.DistanceTo(seg.StartPoint) < maxDist)
 		            {
-                        var isMajor = nm.Number.IsAligned ? UIKind.None : UIKind.Major;
-			            highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point | isMajor);
+			            highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point);
 			            goto Found;
 		            }
 
 		            if (!isSameMapper && input.DistanceTo(seg.EndPoint) < maxDist)
                     {
-                        var isMajor = nm.Number.IsAligned ? UIKind.Major : UIKind.None;
-                        highlight.Set(input, seg.EndPoint, nm, 1, kind | UIKind.Point | isMajor);
+                        highlight.Set(input, seg.EndPoint, nm, 1, kind | UIKind.Point | UIKind.Major);
 			            goto Found;
 		            }
 

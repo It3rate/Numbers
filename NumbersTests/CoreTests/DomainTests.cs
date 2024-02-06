@@ -56,11 +56,6 @@ namespace NumbersTests
             Assert.AreEqual(22, n1.Focal.EndPosition);
             _domain.RestoreNumberValues(dict);
             Assert.AreEqual(saved, n1.Focal.EndPosition);
-
-            Assert.IsTrue(_domain.IsBasisPositive);
-            _unitFocal.StartPosition = 16;
-            Assert.IsFalse(_domain.IsBasisPositive);
-
         }
 
 	    [TestMethod]

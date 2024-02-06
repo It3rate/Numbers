@@ -106,7 +106,7 @@ namespace NumbersCore.Primitives
             }
         }
 
-        public Range ValueInRenderPerspective => IsAligned ? new Range(-StartValue, EndValue) : new Range(-EndValue, StartValue);
+        public Range ValueInRenderPerspective => IsAligned ? new Range(-StartValue, EndValue) : new Range(StartValue , -EndValue); //: new Range(-EndValue, StartValue);
 
         public Number SetWith(Number other)
         {

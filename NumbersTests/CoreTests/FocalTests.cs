@@ -55,35 +55,35 @@ namespace NumbersTests
 
             Range r = new Range(0, 3, true);
             Focal test = new Focal(0,0);
-            test.SetWithRangeAndBasis(r, bPos, false, true);
+            test.SetWithRangeAndBasis(r, bPos, false);
             Assert.AreEqual(new Focal(10, 40), test);
 
             r = new Range(2, 5, true);
-            test.SetWithRangeAndBasis(r, bPos, false, true);
+            test.SetWithRangeAndBasis(r, bPos, false);
             Assert.AreEqual(new Focal(-10, 60), test);
 
             r = new Range(0, 3, true);
-            test.SetWithRangeAndBasis(r, bNeg, false, true);
+            test.SetWithRangeAndBasis(r, bNeg, false);
             Assert.AreEqual(new Focal(20, -10), test);
 
             r = new Range(2, 5, true);
-            test.SetWithRangeAndBasis(r, bNeg, false, true);
+            test.SetWithRangeAndBasis(r, bNeg, false);
             Assert.AreEqual(new Focal(40, -30), test);
 
             r = new Range(0, 3, false);
-            test.SetWithRangeAndBasis(r, bPos, false, true);
+            test.SetWithRangeAndBasis(r, bPos, false);
             Assert.AreEqual(new Focal(10, -20), test);
 
             r = new Range(2, 5, false);
-            test.SetWithRangeAndBasis(r, bPos, false, true);
+            test.SetWithRangeAndBasis(r, bPos, false);
             Assert.AreEqual(new Focal(30, -40), test);
 
             r = new Range(0, 3, false);
-            test.SetWithRangeAndBasis(r, bNeg, false, true);
+            test.SetWithRangeAndBasis(r, bNeg, false);
             Assert.AreEqual(new Focal(20, 50), test);
 
             r = new Range(2, 5, false);
-            test.SetWithRangeAndBasis(r, bNeg, false, true);
+            test.SetWithRangeAndBasis(r, bNeg, false);
             Assert.AreEqual(new Focal(0, 70), test);
 
         }
@@ -93,9 +93,9 @@ namespace NumbersTests
             Focal bPos = new Focal(10, 20);
             Focal bNeg = new Focal(20, 10);
 
-            Range r = new Range(0, 3, true);
+            Range r = new Range(0, 3, false);
             Focal test = new Focal(0, 0);
-            test.SetWithRangeAndBasis(r, bPos, false, false);
+            test.SetWithRangeAndBasis(r, bPos, false);
             Assert.AreEqual(new Focal(10, -20), test);
         }
 
@@ -108,12 +108,12 @@ namespace NumbersTests
 
 		    // focal [0,10]  fn [20, 30]
             Assert.AreEqual(new Range(-2, 3), fn.GetRangeWithBasis(fb, false, true));
-            ftest.SetWithRangeAndBasis(new Range(-2, 3), fb, false, true);
+            ftest.SetWithRangeAndBasis(new Range(-2, 3), fb, false);
             Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
             Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
 
             Assert.AreEqual(new Range(-20, 30), fn.GetRangeWithBasis(fb, true, true));
-            ftest.SetWithRangeAndBasis(new Range(-20, 30), fb, true, true);
+            ftest.SetWithRangeAndBasis(new Range(-20, 30), fb, true);
             Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
             Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
 
@@ -121,12 +121,12 @@ namespace NumbersTests
             fb.EndPosition = -10; // focal [0,-10]  fn [40, 30]
 
             Assert.AreEqual(new Range(2, -3), fn.GetRangeWithBasis(fb, false, true));
-		    ftest.SetWithRangeAndBasis(new Range(2, -3), fb, false, true);
+		    ftest.SetWithRangeAndBasis(new Range(2, -3), fb, false);
 		    Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
 		    Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
 
             Assert.AreEqual(new Range(20, -30, true), fn.GetRangeWithBasis(fb, true, true));
-		    ftest.SetWithRangeAndBasis(new Range(20, -30, true), fb, true, true);
+		    ftest.SetWithRangeAndBasis(new Range(20, -30, true), fb, true);
 		    Assert.AreEqual(ftest.StartPosition , fn.StartPosition);
 		    Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
 
@@ -134,12 +134,12 @@ namespace NumbersTests
             fn.StartPosition = 40; // focal [0,-10],  fn [40, 30]
 
             Assert.AreEqual(new Range(4, -3), fn.GetRangeWithBasis(fb, false, true));
-            ftest.SetWithRangeAndBasis(new Range(4, -3), fb, false, true);
+            ftest.SetWithRangeAndBasis(new Range(4, -3), fb, false);
             Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
             Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
 
             Assert.AreEqual(new Range(40, -30), fn.GetRangeWithBasis(fb, true, true));
-            ftest.SetWithRangeAndBasis(new Range(40, -30), fb, true, true);
+            ftest.SetWithRangeAndBasis(new Range(40, -30), fb, true);
             Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
             Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
 
@@ -147,12 +147,12 @@ namespace NumbersTests
             fb.EndPosition = 10; // focal [0,10],  fn [40, 30]
 
             Assert.AreEqual(new Range(-4, 3), fn.GetRangeWithBasis(fb, false, true));
-            ftest.SetWithRangeAndBasis(new Range(-4, 3), fb, false, true);
+            ftest.SetWithRangeAndBasis(new Range(-4, 3), fb, false);
             Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
             Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
 
             Assert.AreEqual(new Range(-40, 30), fn.GetRangeWithBasis(fb, true, true));
-            ftest.SetWithRangeAndBasis(new Range(-40, 30), fb, true, true);
+            ftest.SetWithRangeAndBasis(new Range(-40, 30), fb, true);
             Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
             Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
         }
@@ -174,7 +174,7 @@ namespace NumbersTests
 		    Focal fn = new Focal(20, 30);
 		    Focal testFocal = new Focal(0, 0);
 		    var range = fn.GetRangeWithBasis(fb, false, true);
-            testFocal.SetWithRangeAndBasis(range, fb, false, true);
+            testFocal.SetWithRangeAndBasis(range, fb, false);
             Assert.AreEqual(testFocal.StartPosition, fn.StartPosition);
             Assert.AreEqual(testFocal.EndPosition, fn.EndPosition);
 

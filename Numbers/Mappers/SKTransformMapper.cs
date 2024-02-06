@@ -241,10 +241,10 @@ namespace Numbers.Mappers
 			var sh = top.InsetSegment(inset);
 			var rh = right .InsetSegment(inset);
 			var sv = bottom.InsetSegment(inset);
-            Renderer.DrawDirectedLine(rv, true, pen);
-			Renderer.DrawDirectedLine(sh, true, pen);
-			Renderer.DrawDirectedLine(rh, true, pen);
-			Renderer.DrawDirectedLine(sv, true, pen);
+            Renderer.DrawDirectedLine(rv, pen);
+			Renderer.DrawDirectedLine(sh, pen);
+			Renderer.DrawDirectedLine(rh, pen);
+			Renderer.DrawDirectedLine(sv, pen);
 		}
 		private void DrawXFormedUnitBox(SKPoint[] cwPts, SKPaint pen)
 		{
