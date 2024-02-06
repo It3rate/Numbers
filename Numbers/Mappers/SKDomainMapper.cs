@@ -274,39 +274,37 @@ namespace Numbers.Mappers
 
             var value = useStart ? num.Value.StartF : num.Value.EndF;
             var t = useStart ? num.ValueInRenderPerspective.StartF : num.ValueInRenderPerspective.EndF;
-            var suffix = useStart ? "i" : "";  
-		    var unitLabel = num.IsBasis && useStart ? "0" : domainIsUnitPersp ? "1" : !domainIsUnitPersp ? "i" : "";
 
-		    var txBaseline = DrawMarkerPointer(t, num.IsBasis);
+            var txBaseline = DrawMarkerAndGetTextBaseline(num, t);
+
+            var numPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText; // i value should always be unot color, so use isStart vs useStart
+		    if (num.IsBasis)
+		    {
+                var txt = useStart ? "0" : "1";
+                Renderer.DrawTextOnPath(txBaseline, txt, Pens.UnitMarkerText, Pens.TextBackgroundPen);
+                if (!useStart)
+                {
+                    txBaseline = DrawMarkerAndGetTextBaseline(num, -1);
+                    Renderer.DrawTextOnPath(txBaseline, "i", Pens.UnotMarkerText, Pens.TextBackgroundPen);
+                }
+            }
+            else if (ShowFractions)
+		    {
+			    var parts = GetFractionText(num, useStart);
+                Renderer.DrawFraction(parts, txBaseline, numPaint, Pens.TextBackgroundPen);
+            }
+        }
+        private SKSegment DrawMarkerAndGetTextBaseline(Number num, float t)
+        {
+            var domainIsUnitPersp = num.Domain.BasisFocal.IsPositiveDirection;
+            var txBaseline = DrawMarkerPointer(t, num.IsBasis);
             var segAlignment = txBaseline.DirectionOnLine(Guideline);
             if (!domainIsUnitPersp || segAlignment == -1)
             {
                 txBaseline.Reverse();
                 txBaseline = txBaseline.ShiftOffLine(-6);
             }
-
-            var numPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText; // i value should always be unot color, so use isStart vs useStart
-            var txtBkgPen = Pens.TextBackgroundPen;
-		    if (num.IsBasis)
-		    {
-			    var txt = useStart ? "0" : domainIsUnitPersp ? "1" : "i";
-			    var unitPaint = domainIsUnitPersp ? Pens.UnitMarkerText : Pens.UnotMarkerText;
-                if (!domainIsUnitPersp)
-                {
-                    txt = useStart ? "i" : "0";
-                }
-                Renderer.DrawTextOnPath(txBaseline, txt, unitPaint, txtBkgPen);
-            }
-            else if (ShowFractions)
-		    {
-			    var parts = GetFractionText(num, useStart);
-                Renderer.DrawFraction(parts, txBaseline, numPaint, txtBkgPen);
-            }
-		    else
-		    {
-				var txt = unitLabel != "" ? unitLabel : Math.Abs(value - (int) value) < 0.1f ? $"{value:0}{suffix}" : $"{value:0.0}{suffix}";
-				Renderer.DrawTextOnPath(txBaseline, txt, numPaint, txtBkgPen);
-            }
+            return txBaseline;
         }
         protected virtual SKSegment DrawMarkerPointer(float t, bool isBasis)
 	    {

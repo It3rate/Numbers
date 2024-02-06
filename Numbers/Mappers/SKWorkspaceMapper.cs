@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using Numbers.Agent;
@@ -96,15 +97,19 @@ namespace Numbers.Mappers
             // number segments and units
             foreach (var nm in AllNumberMappers(true))
             {
-	            if (nm.RenderSegment != null)
-	            {
-		            var seg = nm.RenderSegment;
+                if (nm.RenderSegment != null)
+                {
+                    var seg = nm.RenderSegment;
                     // todo: selection depends on added order, but should be render order (basis last). When switching basis the order isn't the same.
-		            var isSameMapper = ignoreSet.ActiveHighlight != null && ignoreSet.ActiveHighlight.Mapper == nm;
-		            var kind = UIKind.Number | (nm.IsBasis ? UIKind.Basis : UIKind.None);
-                    if(nm.IsBasis && Agent.CurrentKey != Keys.B && Agent.CurrentKey != Keys.M)
+                    var isSameMapper = ignoreSet.ActiveHighlight != null && ignoreSet.ActiveHighlight.Mapper == nm;
+                    var kind = UIKind.Number | (nm.IsBasis ? UIKind.Basis : UIKind.None);
+                    if (nm.IsBasis && Agent.CurrentKey != Keys.B && Agent.CurrentKey != Keys.M)
                     {
                         continue; // only adjust basis when B is down
+                    }
+                    if (!nm.IsBasis && Agent.CurrentKey == Keys.M)
+                    {
+                        continue; // help with selecting unit drag multiply when M pressed
                     }
 
 		            if (!isSameMapper && input.DistanceTo(seg.StartPoint) < maxDist)
@@ -145,7 +150,7 @@ namespace Numbers.Mappers
                     if (input.DistanceTo(dmTickPoint) < maxDist / 2f)
                     {
                         var invertedBasis = dm.InvertedBasisSegment;
-                        if (input.DistanceTo(invertedBasis.EndPoint) < maxDist)
+                        if (Agent.CurrentKey == Keys.M && input.DistanceTo(invertedBasis.EndPoint) < maxDist)
                         {
                             var kind = UIKind.Number | UIKind.Basis | UIKind.Major | UIKind.Inverted;
                             highlight.Set(input, invertedBasis.EndPoint, dm.BasisNumberMapper, 1, kind);
@@ -186,7 +191,7 @@ namespace Numbers.Mappers
                 }
                 if (Agent.DragPoint != SKPoint.Empty && Agent.SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm)
                 {
-                    var pen = snm.BasisSign > 0 ? Pens.UnitPenLight : Pens.UnotPenLight;
+                    var pen = snm.Number.IsAligned ? Pens.UnitPenLight : Pens.UnotPenLight;
                     Renderer.Canvas.DrawPath(Renderer.GetCirclePath(Agent.DragPoint, 4), pen);
                 }
             }

@@ -164,8 +164,11 @@ namespace Numbers.Agent
             var result = false;
             _rawMousePoint = e.Location.ToSKPoint();
             var mousePoint = GetTransformedPoint(_rawMousePoint);
-            WorkspaceMapper.GetSnapPoint(_highlight, SelCurrent, mousePoint);
-            SelHighlight.Set(_highlight);
+            if (!(IsDown && !IsDragging))
+            {
+                WorkspaceMapper.GetSnapPoint(_highlight, SelCurrent, mousePoint);
+                SelHighlight.Set(_highlight);
+            }
 
             if (IsDown)
             {
@@ -196,7 +199,7 @@ namespace Numbers.Agent
 						{
 							SaveNumberValues(SavedNumbers);
                             // test for drag from unit multiplication
-                            if(SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && !snm.Number.IsBasis)
+                            if(SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && !snm.Number.IsBasis) // must have selection
                             {
                                 _initialSelectionNum = snm.Number.Clone();
                                 _initialBasisNum = snm.Number.Domain.BasisNumber.Clone(); // always assume bias of 0-1, as we are in the render perspective
@@ -235,7 +238,7 @@ namespace Numbers.Agent
 		            else if (activeKind.IsBasis())
                     {
                         // set basis with new number
-                        if (!SelSelection.HasHighlight || CurrentKey == Keys.B)
+                        if (!SelSelection.HasHighlight && CurrentKey == Keys.B)
                         {
                             nm.SetValueByKind(_highlight.SnapPoint, activeKind);
                             BasisChanged(nm);
@@ -251,6 +254,10 @@ namespace Numbers.Agent
                             snm.Number.Multiply(_initialBasisNum);
                             DragPoint = pt;
                             DragHighlight = new SKSegment(g.StartPoint, mousePoint);
+                        }
+                        else
+                        {
+
                         }
 		            }
 		            else
