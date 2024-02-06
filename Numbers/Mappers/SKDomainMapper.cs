@@ -284,7 +284,7 @@ namespace Numbers.Mappers
                 txBaseline = txBaseline.ShiftOffLine(-6);
             }
 
-            var numPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText;
+            var numPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText; // i value should always be unot color, so use isStart vs useStart
             var txtBkgPen = Pens.TextBackgroundPen;
 		    if (num.IsBasis)
 		    {
@@ -298,7 +298,7 @@ namespace Numbers.Mappers
             }
             else if (ShowFractions)
 		    {
-			    var parts = GetFractionText(num, isStart);
+			    var parts = GetFractionText(num, useStart);
                 Renderer.DrawFraction(parts, txBaseline, numPaint, txtBkgPen);
             }
 		    else
@@ -390,7 +390,6 @@ namespace Numbers.Mappers
 
         protected (string, string) GetFractionText(Number num, bool isStart)
         {
-            var domainIsUnitPersp = num.Domain.BasisFocal.IsPositiveDirection;
             var isIValue = isStart == num.IsAligned;
             var suffix = isIValue ? "i" : "r";
             var fraction = "";

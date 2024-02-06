@@ -97,6 +97,8 @@ namespace MathDemo
             var hDomain = CreateLowResDomain(4, 0);// Domain.CreateDomain("test0", unitSize, 16);
             var vDomain = CreateLowResDomain(4, .1f);// Domain.CreateDomain("test0", unitSize, 16);
             var mDomain = CreateLowResDomain(4, .3f);
+            vDomain.BasisNumber.Focal = hDomain.BasisNumber.Focal;
+            mDomain.BasisNumber.Focal = hDomain.BasisNumber.Focal;
 
             //var hNum2 = hDomain.CreateNumberFromFloats(1.75f, -3);
             //hNum2.Number.Polarity = Alignment.Inverted;
