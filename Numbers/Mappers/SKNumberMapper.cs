@@ -17,6 +17,7 @@ namespace Numbers.Mappers
         public SKSegment UnitSegment => DomainMapper.BasisSegment;
         public bool IsBasis => Number.IsBasis;
         public int BasisSign => Number.BasisFocal.Direction;
+        public SKSegment GetBasisSegment() => DomainMapper.BasisSegmentForNumber(Number);
         public Polarity Polarity { get => Number.Polarity; set => Number.Polarity = value; }
         public int UnitDirectionOnDomainLine => Guideline.DirectionOnLine(DomainMapper.Guideline);
 
@@ -64,10 +65,10 @@ namespace Numbers.Mappers
 
         public float TFromPoint(SKPoint point, bool isAligned)
         {
-	        var basisSegment = isAligned ? DomainMapper.BasisSegment : DomainMapper.InvertedBasisSegment;
-	        var pt = basisSegment.ProjectPointOnto(point, false);
-            var (t, _) = basisSegment.TFromPoint(pt, false);
-	        t = (float)(Math.Round(t * basisSegment.Length) / basisSegment.Length);
+	        var basisSeg = GetBasisSegment();
+	        var pt = basisSeg.ProjectPointOnto(point, false);
+            var (t, _) = basisSeg.TFromPoint(pt, false);
+	        t = (float)(Math.Round(t * basisSeg.Length) / basisSeg.Length);
 	        return t;
         }
 
@@ -99,8 +100,9 @@ namespace Numbers.Mappers
 
         public void MoveSegmentByT(SKSegment orgSeg, float diffT)
         {
-	        var orgStartT = -DomainMapper.BasisSegment.TFromPoint(orgSeg.StartPoint, false).Item1;
-	        var orgEndT = DomainMapper.BasisSegment.TFromPoint(orgSeg.EndPoint, false).Item1;
+            var basisSeg = GetBasisSegment();
+	        var orgStartT = -basisSeg.TFromPoint(orgSeg.StartPoint, false).Item1;
+	        var orgEndT = basisSeg.TFromPoint(orgSeg.EndPoint, false).Item1;
 	        Number.StartValue = orgStartT - diffT;
 	        Number.EndValue = orgEndT + diffT;
         }

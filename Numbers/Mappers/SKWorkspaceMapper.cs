@@ -108,13 +108,13 @@ namespace Numbers.Mappers
 			            goto Found;
 		            }
 
-		            if (!isSameMapper && input.DistanceTo(seg.EndPoint) < maxDist)
+		            else if (!isSameMapper && input.DistanceTo(seg.EndPoint) < maxDist)
                     {
                         highlight.Set(input, seg.EndPoint, nm, 1, kind | UIKind.Point | UIKind.Major);
 			            goto Found;
 		            }
 
-		            if (!isSameMapper && seg.DistanceTo(input, true) < maxDist && Agent.CurrentKey != Keys.M)
+		            else if (!isSameMapper && seg.DistanceTo(input, true) < maxDist && Agent.CurrentKey != Keys.M)
 		            {
 			            var t = nm.DomainMapper.BasisSegment.TFromPoint(input, false).Item1;
 			            highlight.Set(input, input, nm, t, kind | UIKind.Line);

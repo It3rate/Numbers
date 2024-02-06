@@ -18,6 +18,7 @@ namespace Numbers.Mappers
 	    public Number BasisNumber => Domain.BasisNumber;
         public SKSegment BasisSegment => BasisMapper.Guideline;
         public SKSegment InvertedBasisSegment => BasisMapper.InvertedGuideline;
+        public SKSegment BasisSegmentForNumber(Number num) => num.IsAligned ? BasisSegment : InvertedBasisSegment;
         public int BasisNumberSign => BasisNumber.Direction;
 
         public List<SKPoint> TickPoints = new List<SKPoint>();

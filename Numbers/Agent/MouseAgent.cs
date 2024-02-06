@@ -219,15 +219,16 @@ namespace Numbers.Agent
                             {
                                 var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OrginalPoint, false).Item1;
                                 var orgT = nm.DomainMapper.Guideline.TFromPoint(activeHighlight.OrginalPoint, false).Item1;
-                                nm.MoveBasisSegmentByT(SelSelection.OriginalSegment, curT - orgT);
+                                nm.MoveBasisSegmentByT(SelBegin.OriginalSegment, curT - orgT);
                                 BasisChanged(nm);
                             }
                         }
 			            else
 			            {
-				            var curT = nm.DomainMapper.BasisSegment.TFromPoint(_highlight.OrginalPoint, false).Item1;
-                            var dir = nm.Number.PolarityDirection;
-                            nm.MoveSegmentByT(SelBegin.OriginalSegment, (curT * dir - activeHighlight.T));
+                            var basisSeg = nm.GetBasisSegment();
+                            var clickT = basisSeg.TFromPoint(activeHighlight.SnapPoint, false).Item1;
+                            var curT = basisSeg.TFromPoint(_highlight.OrginalPoint, false).Item1;
+                            nm.MoveSegmentByT(SelBegin.OriginalSegment, curT - clickT);
                         }
 		            }
 		            else if (activeKind.IsBasis())
