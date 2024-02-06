@@ -278,7 +278,8 @@ namespace Numbers.Mappers
 		    var unitLabel = num.IsBasis && useStart ? "0" : domainIsUnitPersp ? "1" : !domainIsUnitPersp ? "i" : "";
 
 		    var txBaseline = DrawMarkerPointer(t, num.IsBasis);
-            if (!domainIsUnitPersp)
+            var segAlignment = txBaseline.DirectionOnLine(Guideline);
+            if (!domainIsUnitPersp || segAlignment == -1)
             {
                 txBaseline.Reverse();
                 txBaseline = txBaseline.ShiftOffLine(-6);
