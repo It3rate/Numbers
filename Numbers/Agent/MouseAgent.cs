@@ -238,7 +238,7 @@ namespace Numbers.Agent
 		            else if (activeKind.IsBasis())
                     {
                         // set basis with new number
-                        if (!SelSelection.HasHighlight && CurrentKey == Keys.B)
+                        if (CurrentKey == Keys.B)
                         {
                             nm.SetValueByKind(_highlight.SnapPoint, activeKind);
                             BasisChanged(nm);
@@ -436,7 +436,10 @@ namespace Numbers.Agent
             {
                 // case Keys.B: Adjust Basis segment (ctrl to lock tick positions).
                 case Keys.B:
-                    SetSelectedAsBasis();
+                    if (_isControlDown)
+                    {
+                        SetSelectedAsBasis();
+                    }
                     break;
                 case Keys.D:
                     ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
