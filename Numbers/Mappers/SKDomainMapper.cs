@@ -35,14 +35,11 @@ namespace Numbers.Mappers
 		public bool ShowGradientNumberLine;
         public bool ShowTicks = true;
         public bool ShowMinorTicks = true;
-        public bool ShowNumberOffsets;
-	    public bool ShowKeyValues;
+        public bool OffsetNumbers;
 	    public bool ShowValueMarkers = true;
 	    public bool ShowBasis;
 	    public bool ShowBasisMarkers;
-	    public bool ShowUnotArrow;
 	    public bool ShowMaxMinValues;
-	    public bool ShowDashedValuesOutOfRange;
 	    public bool ShowFractions => WorkspaceMapper.ShowFractions;
 
         public SKDomainMapper(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
@@ -227,9 +224,9 @@ namespace Numbers.Mappers
         protected virtual void DrawNumbers()
         {
 			var topDir = ShowInfoOnTop ? 1f : -1f;
-	        var offset = ShowNumberOffsets ? 1f : 0f;
+	        var offset = OffsetNumbers ? 1f : 0f;
 			offset *= topDir;
-			var step = ShowNumberOffsets ? 1f : 0f;
+			var step = OffsetNumbers ? 1f : 0f;
 			step *= topDir;
 	        foreach (var numberId in ValidNumberIds)
 	        {

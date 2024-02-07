@@ -34,7 +34,6 @@ namespace Numbers.Agent
 
         public IDemos Demos { get; }
         public bool IsPaused { get; set; } = true;
-
         public bool IsDown { get; private set; }
         public bool IsDragging { get; private set; }
 
@@ -48,7 +47,6 @@ namespace Numbers.Agent
         public HighlightSet SelHighlight { get; } = new HighlightSet();
         public HighlightSet SelSelection { get; } = new HighlightSet();
 
-        public bool LockUnitRatio { get; set; }
         public bool DoSyncMatchingBasis { get; set; } = true;
 
         private ColorTheme _colorTheme = ColorTheme.Normal;
@@ -416,6 +414,59 @@ namespace Numbers.Agent
         //private SKMatrix _startMatrix;
         private KeyEventArgs _lastKeyUp;
 
+
+        private void DeleteSelected()
+        {
+            //if (Data.Selected.HasElement)
+            //{
+            //    var element = Data.Selected.FirstElement;
+            //    var remCommand = new RemoveElementCommand(InputPad, element);
+            //    _editCommands.Do(remCommand);
+            //}
+        }
+        private void StartPan()
+        {
+            if (UIMode != UIMode.Pan)
+            {
+                //_startMatrix = Data.Matrix;
+            }
+            UIMode = UIMode.Pan;
+        }
+        public void ToggleBasisVisible()
+        {
+            foreach (var dm in WorkspaceMapper.DomainMappers())
+            {
+                dm.ShowBasis = !dm.ShowBasis;
+                dm.ShowBasisMarkers = !dm.ShowBasisMarkers;
+            }
+        }
+        public void ToggleGradientNumberline()
+        {
+            foreach (var dm in WorkspaceMapper.DomainMappers())
+            {
+                dm.ShowGradientNumberLine = !dm.ShowGradientNumberLine;
+            }
+        }
+        public void ToggleShowNumbers()
+        {
+            foreach (var dm in WorkspaceMapper.DomainMappers())
+            {
+                dm.ShowValueMarkers = !dm.ShowValueMarkers;
+                dm.ShowTicks = !dm.ShowTicks;
+                dm.ShowMinorTicks = !dm.ShowMinorTicks;
+            }
+            //public bool ShowInfoOnTop = true;
+            //public bool ShowGradientNumberLine;
+            //public bool ShowTicks = true;
+            //public bool ShowMinorTicks = true;
+            //public bool OffsetNumbers;
+            //public bool ShowValueMarkers = true;
+            //public bool ShowBasis;
+            //public bool ShowBasisMarkers;
+            //public bool ShowMaxMinValues;
+        }
+
+
         public bool KeyDown(KeyEventArgs e)
         {
 	        if (CurrentKey == Keys.Escape)
@@ -504,6 +555,12 @@ namespace Numbers.Agent
                 case Keys.D0:
                     ToggleShowNumbers();
                     break;
+                case Keys.D9:
+                    ToggleBasisVisible();
+                    break;
+                case Keys.D8:
+                    ToggleGradientNumberline();
+                    break;
                 case Keys.OemMinus:
                     NegateSelection();
                     break;
@@ -540,36 +597,6 @@ namespace Numbers.Agent
             }
             return result;
         }
-
-        private void DeleteSelected()
-        {
-            //if (Data.Selected.HasElement)
-            //{
-            //    var element = Data.Selected.FirstElement;
-            //    var remCommand = new RemoveElementCommand(InputPad, element);
-            //    _editCommands.Do(remCommand);
-            //}
-        }
-        private void StartPan()
-        {
-            if (UIMode != UIMode.Pan)
-            {
-                //_startMatrix = Data.Matrix;
-            }
-            UIMode = UIMode.Pan;
-        }
-        public void ToggleShowNumbers()
-        {
-            //if (DisplayMode.HasFlag(DisplayMode.ShowLengths))
-            //{
-            //    DisplayMode &= ~(DisplayMode.ShowAllValues);
-            //}
-            //else
-            //{
-            //    DisplayMode |= DisplayMode.ShowAllValues;
-            //}
-        }
-
         public void ClearMouse()
         {
             IsDown = false;

@@ -211,7 +211,7 @@ namespace MathDemo
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 20, 20, 800, 800);
             var dm = wm.GetOrCreateDomainMapper(domain, wm.GetHorizontalSegment(.3f, 100));
             dm.ShowGradientNumberLine = true;
-            dm.ShowNumberOffsets = true;
+            dm.OffsetNumbers = true;
             dm.ShowBasisMarkers = true;
             dm.ShowBasis = true;
             wm.EnsureRenderers();
@@ -283,7 +283,7 @@ namespace MathDemo
 		        //var unitSeg = new SKSegment((float)unitStart, y, (float)unitStart + 20f, y);
                 var dm = wm.GetOrCreateDomainMapper(domain, displaySeg, unitSeg);
 		        dm.ShowGradientNumberLine = true;
-		        dm.ShowNumberOffsets = true;
+		        dm.OffsetNumbers = true;
 		        dm.ShowBasisMarkers = true;
 		        dm.ShowBasis = true;
 		        yt += ytStep;
