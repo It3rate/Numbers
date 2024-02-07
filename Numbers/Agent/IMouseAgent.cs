@@ -14,9 +14,6 @@ namespace Numbers.Agent
         HighlightSet SelHighlight { get; }
         HighlightSet SelSelection { get; }
 
-        bool LockBasisOnDrag { get; set; }
-	    bool LockTicksOnDrag { get; set; }
-
         bool MouseDown(MouseEventArgs e);
 	    bool MouseMove(MouseEventArgs e);
 	    bool MouseUp(MouseEventArgs e);

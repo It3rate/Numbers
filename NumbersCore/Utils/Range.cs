@@ -152,6 +152,7 @@ namespace NumbersCore.Utils
         }
         public void SolvePolarityWith(Polarity right)
         {
+            // separated for test points
             if (Polarity == Polarity.Aligned && right == Polarity.Inverted)
             {
                 InvertPolarity();

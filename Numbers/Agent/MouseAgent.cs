@@ -48,8 +48,6 @@ namespace Numbers.Agent
         public HighlightSet SelHighlight { get; } = new HighlightSet();
         public HighlightSet SelSelection { get; } = new HighlightSet();
 
-        public bool LockBasisOnDrag { get; set; }
-        public bool LockTicksOnDrag { get; set; }
         public bool LockUnitRatio { get; set; }
         public bool DoSyncMatchingBasis { get; set; } = true;
 
@@ -219,7 +217,7 @@ namespace Numbers.Agent
 		            {
 			            if (nm.IsBasis)
 			            {
-                            if (!SelSelection.HasHighlight || CurrentKey == Keys.B)
+                            if (!SelSelection.HasHighlight || CurrentKey.HasFlag(Keys.B))
                             {
                                 var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OrginalPoint, false).Item1;
                                 var orgT = nm.DomainMapper.Guideline.TFromPoint(activeHighlight.OrginalPoint, false).Item1;
@@ -238,7 +236,7 @@ namespace Numbers.Agent
 		            else if (activeKind.IsBasis())
                     {
                         // set basis with new number
-                        if (CurrentKey == Keys.B)
+                        if (CurrentKey.HasFlag(Keys.B))
                         {
                             nm.SetValueByKind(_highlight.SnapPoint, activeKind);
                             BasisChanged(nm);
@@ -374,8 +372,7 @@ namespace Numbers.Agent
         }
         private void BasisChanged(SKNumberMapper nm)
         {
-	        LockBasisOnDrag = _isControlDown;
-	        if (LockBasisOnDrag)
+	        if (_isControlDown)
 	        {
 		        nm.AdjustBySegmentChange(SelBegin);
 	        }
@@ -427,10 +424,14 @@ namespace Numbers.Agent
 	        }
 	        if (IsPaused) {return false;}
 
-            CurrentKey = e.KeyCode;
+            if(!e.Control && !e.Shift && !e.Alt)
+            {
+                CurrentKey = e.KeyData;
+            }
             _isControlDown = e.Control;
             _isShiftDown = e.Shift;
             _isAltDown = e.Alt;
+
             var curMode = UIMode;
             switch (CurrentKey)
             {
@@ -447,9 +448,6 @@ namespace Numbers.Agent
                 case Keys.Delete:
                     DeleteSelected();
                     break;
-                case Keys.E:
-	                LockBasisOnDrag = true;
-	                break;
                 case Keys.Escape:
                     UIMode = UIMode.Any;
                     break;
@@ -487,9 +485,6 @@ namespace Numbers.Agent
                 case Keys.U:
                     UIMode = UIMode.SetUnit;
                     break;
-                case Keys.W:
-	                LockTicksOnDrag = true;
-	                break;
                 //case Keys.B:
                 //    UIMode = UIMode.CreateBond;
                 //    break;
@@ -535,8 +530,6 @@ namespace Numbers.Agent
                 CurrentKey = Keys.None;
                 _isControlDown = e.Control;
                 _isShiftDown = e.Shift;
-                LockBasisOnDrag = false;
-                LockTicksOnDrag = false;
                 //_isAltDown = e.Alt;
                 //_startMatrix = Data.Matrix;
                 //if (UIMode.IsMomentary())
