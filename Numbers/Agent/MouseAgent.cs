@@ -463,7 +463,7 @@ namespace Numbers.Agent
                     FlipSelectedPolarity();
                     break;
                 case Keys.N:
-	                FlipBasis();
+                    FlipBasis();
 	                break;
                 case Keys.P:
 	                Runner.TogglePause();

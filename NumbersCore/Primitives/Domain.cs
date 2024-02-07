@@ -139,8 +139,8 @@ namespace NumbersCore.Primitives
         public Range GetValueOf(Number num) => num.Focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal, num.IsAligned);
         public void SetValueOf(Number num, Range range)
         {
-            num.Focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);//, num.IsAligned);
-            //num.Polarity = Range.SolvePolarity(range, num.Polarity);
+            num.Focal.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
+            num.Polarity = range.Polarity;
         }
 
         public Range ClampToInnerBasis(Range range) => range.ClampInner();

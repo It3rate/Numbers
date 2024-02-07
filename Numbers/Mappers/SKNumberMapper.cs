@@ -67,7 +67,7 @@ namespace Numbers.Mappers
             Renderer.DrawSegment(unotSeg, Pens.UnotPenLight);
         }
 
-        public float TFromPoint(SKPoint point, bool isAligned)
+        public float TFromPoint(SKPoint point)
         {
 	        var basisSeg = GetBasisSegment();
 	        var pt = basisSeg.ProjectPointOnto(point, false);
@@ -121,11 +121,11 @@ namespace Numbers.Mappers
 
         public void SetStartValueByPoint(SKPoint newPoint)
         {
-            Number.StartValue = -TFromPoint(newPoint, Number.IsAligned);
+            Number.StartValue = -TFromPoint(newPoint);
         }
         public void SetEndValueByPoint(SKPoint newPoint)
         {
-            Number.EndValue = TFromPoint(newPoint, Number.IsAligned);
+            Number.EndValue = TFromPoint(newPoint);
         }
         public void SetValueOfBasis(SKPoint newPoint, UIKind kind)
         {

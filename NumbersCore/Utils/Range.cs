@@ -106,10 +106,10 @@ namespace NumbersCore.Utils
         public bool IsNotTouching(Range value) => !IsTouching(value);
 
 
-        public static Range operator +(Range a, double value) => new Range(a.Start + value, a.End + value);
-        public static Range operator -(Range a, double value) => new Range(a.Start - value, a.End - value);
-        public static Range operator *(Range a, double value) => new Range(a.Start * value, a.End * value);
-        public static Range operator /(Range a, double value) => new Range(value == 0 ? double.MaxValue : a.Start / value, value == 0 ? double.MaxValue : a.End / value);
+        public static Range operator +(Range a, double value) => a + new Range(0, value);
+        public static Range operator -(Range a, double value) => a - new Range(0, value);
+        public static Range operator *(Range a, double value) => a * new Range(0, value);
+        public static Range operator /(Range a, double value) => a / new Range(0, value);
 
         public static Range PositiveDirection(Range value) => new Range(value.Min, value.Max);
         public static Range NegativeDirection(Range value) => new Range(value.Max, value.Min);
@@ -125,7 +125,8 @@ namespace NumbersCore.Utils
         public static Range operator *(Range left, Range right)
         {
             var result = new Range(left.Start * right.End + left.End * right.Start, left.End * right.End - left.Start * right.Start);
-            result.Polarity = (left.Polarity == right.Polarity) ? Polarity.Aligned : Polarity.Inverted;
+            result.Polarity = left.Polarity;
+            result.SolvePolarityWith(right.Polarity);
             return result;
         }
         public static Range operator /(Range left, Range right)
@@ -145,10 +146,21 @@ namespace NumbersCore.Utils
                 double num1 = real2 / imaginary2;
                 result = new Range((-real1 + imaginary1 * num1) / (imaginary2 + real2 * num1), (imaginary1 + real1 * num1) / (imaginary2 + real2 * num1));
             }
-            result.Polarity = (left.Polarity == right.Polarity) ? Polarity.Aligned : Polarity.Inverted;
+            result.Polarity = left.Polarity;
+            result.SolvePolarityWith(right.Polarity);
             return result;
         }
-
+        public void SolvePolarityWith(Polarity right)
+        {
+            if (Polarity == Polarity.Aligned && right == Polarity.Inverted)
+            {
+                InvertPolarity();
+            }
+            else if (Polarity == Polarity.Inverted && right == Polarity.Inverted)
+            {
+                InvertPolarity();
+            }
+        }
         public static double DirectedLength(Range a) => a.End + a.Start;
         public static double AbsLength(Range a) => Math.Abs(a.End + a.Start);
 
