@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Numbers.Agent;
@@ -159,6 +160,24 @@ namespace Numbers.Mappers
 		    {
 			    StartPoint = newPoint;
 		    }
+            BasisNumberMapper.Reset(SegmentAlongGuideline(unitRatio));
+        }
+        public void RotateGuidelineByPoint(SKPoint newPoint,  UIKind kind)
+        {
+            var unitRatio = UnitRangeOnDomainLine;
+            var center = Guideline.Midpoint;
+            var dif = newPoint - center;
+            var angle = (float)Math.Atan2(dif.Y, dif.X);
+            Guideline.SetAngleAroundMidpoint(angle, 5);
+            //UnitRangeOnDomainLine = BasisNumber.Value;
+            //if (kind.IsMajor())
+            //{
+            //    EndPoint = newPoint;
+            //}
+            //else
+            //{
+            //    StartPoint = newPoint;
+            //}
             BasisNumberMapper.Reset(SegmentAlongGuideline(unitRatio));
         }
 

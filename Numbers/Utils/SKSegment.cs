@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using Numbers.Mappers;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
@@ -172,14 +173,29 @@ namespace Numbers.Utils
             get => MathF.ToDegrees(Angle);
             set => Angle = MathF.ToRadians(value);
         }
+        public void SetAngleAroundMidpoint(float radians, int stepDegrees = 1)
+        {
+            var clampedRadians = SnapAngle(radians, stepDegrees);
+            var radius = Length / 2f;
+            var mp = Midpoint;
+            var ep = new SKPoint((float)Math.Cos(clampedRadians) * radius + mp.X, (float)Math.Sin(clampedRadians) * radius + mp.Y);
+            StartPoint = mp - (ep - mp);
+            EndPoint = ep;
+
+        }
+
+        private static float SnapAngle(float radians, int stepDegrees = 15)
+        {
+            var degrees = MathF.ToDegrees(radians) + 360;
+            var rem = degrees % stepDegrees;
+            var centerOffset = rem > stepDegrees / 2f ? stepDegrees : 0f;
+            var clamp = (int)(degrees / stepDegrees) * stepDegrees + centerOffset;
+            return MathF.ToRadians(clamp); ;
+        }
 
         public SKPoint SnapAngleToStep(int stepDegrees = 15)
         {
-            var angle = AngleDegrees + 360;
-            var rem = angle % stepDegrees;
-            var centerOffset = rem > stepDegrees / 2f ? stepDegrees : 0f;
-            var clamp = (int)(angle / stepDegrees) * stepDegrees + centerOffset;
-            Angle = MathF.ToRadians(clamp);
+            Angle = SnapAngle(AngleDegrees, stepDegrees);
             return EndPoint;
         }
 

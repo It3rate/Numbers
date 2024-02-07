@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using Numbers.Mappers;
 using Numbers.Renderer;
@@ -265,7 +266,14 @@ namespace Numbers.Agent
 	            {
 		            if (activeKind.IsDomainPoint())
 		            {
-			            dm.SetValueByKind(_highlight.SnapPoint, activeKind);
+                        if (CurrentKey.HasFlag(Keys.R))
+                        {
+                            dm.RotateGuidelineByPoint(_highlight.SnapPoint, activeKind);
+                        }
+                        else
+                        {
+                            dm.SetValueByKind(_highlight.SnapPoint, activeKind);
+                        }
 		            }
 		            else if (activeKind.IsBoldTick())
 		            {
@@ -455,15 +463,6 @@ namespace Numbers.Agent
                 dm.ShowTicks = !dm.ShowTicks;
                 dm.ShowMinorTicks = !dm.ShowMinorTicks;
             }
-            //public bool ShowInfoOnTop = true;
-            //public bool ShowGradientNumberLine;
-            //public bool ShowTicks = true;
-            //public bool ShowMinorTicks = true;
-            //public bool OffsetNumbers;
-            //public bool ShowValueMarkers = true;
-            //public bool ShowBasis;
-            //public bool ShowBasisMarkers;
-            //public bool ShowMaxMinValues;
         }
 
 
