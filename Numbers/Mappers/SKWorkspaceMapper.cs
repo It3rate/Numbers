@@ -104,6 +104,22 @@ namespace Numbers.Mappers
         {
             highlight.Reset();
             highlight.OrginalPoint = input;
+
+            // manually create number on domain line
+            if (Agent.CurrentKey == Keys.N)
+            {
+                foreach (var dm in _domainMappers.Values)
+                {
+                    if (dm.Guideline.DistanceTo(input, true) < maxDist)
+                    {
+                        var kind = UIKind.Line | UIKind.Domain;
+                        var t = dm.Guideline.TFromPoint(input, false).Item1;
+                        highlight.Set(input, input, dm, t, kind);
+                        goto Found;
+                    }
+                }
+            }
+
             // number segments and units
             foreach (var nm in AllNumberMappers(true))
             {
@@ -177,7 +193,7 @@ namespace Numbers.Mappers
                 }
             }
 
-        Found:
+            Found:
             return highlight;
         }
 
@@ -201,6 +217,11 @@ namespace Numbers.Mappers
                     {
 
                         Renderer.DrawGradientNumberLine(Agent.DragHighlight, true, 5);
+                    }
+                    if (Agent.IsCreatingNumber)
+                    {
+                        Renderer.DrawDirectedLine(Agent.DragHighlight, Renderer.Pens.SegPens[0]);
+                        Renderer.DrawDirectedLine(Agent.DragHighlight, Renderer.Pens.UnitInlinePen);
                     }
                     else
                     {

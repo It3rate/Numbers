@@ -19,6 +19,21 @@ namespace Numbers.Agent
 
 	    }
         public SKMapper Mapper { get; set; }
+
+        public SKNumberMapper GetNumberMapper() => Mapper is SKNumberMapper nm ? nm : null;
+        public SKDomainMapper GetRelatedDomainMapper() 
+        {
+            SKDomainMapper result = null;
+            if (Mapper is SKNumberMapper nm)
+            {
+                result = nm.DomainMapper;
+            }
+            else if(Mapper is SKDomainMapper dm)
+            {
+                result = dm;
+            }
+            return result;
+        }
         public float T { get; set; }
         public UIKind Kind { get; set; }
         //public Number RangeInMinMax { get; set; } // will set selection ranges with a length trait number eventually

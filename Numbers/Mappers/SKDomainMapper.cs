@@ -131,6 +131,12 @@ namespace Numbers.Mappers
             AddValidNumbers();
 	    }
 	    public SKSegment SegmentAlongGuideline(Range ratio) => Guideline.SegmentAlongLine(ratio);
+        public Range RangeFromSegment(SKSegment segment)
+        {
+            var range = BasisSegment.RatiosAsBasis(segment);
+
+            return range;
+        }
         public SKPoint PointAt(double value)
         {
             double t = Domain.MinMaxRange.TAtValue(value);
