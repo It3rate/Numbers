@@ -121,15 +121,55 @@ namespace NumbersCore.Primitives
 
         public IEnumerable<Domain> ActiveSiblingDomains(Domain domain)
         {
-	        var ds = domain.Trait.DomainStore;
-	        var domainIds = ds.Keys.Where(key => ActiveIds.Contains(key));
-	        foreach (var id in domainIds)
-	        {
-		        if (id != domain.Id)
-		        {
-			        yield return ds[id];
-		        }
-	        }
+            var ds = domain.Trait.DomainStore;
+            var domainIds = ds.Keys.Where(key => ActiveIds.Contains(key));
+            foreach (var id in domainIds)
+            {
+                if (id != domain.Id)
+                {
+                    yield return ds[id];
+                }
+            }
+        }
+
+        public IEnumerable<Domain> DomainsWithSharedBasis(Domain domain)
+        {
+            var ds = domain.Trait.DomainStore;
+            var basisId = domain.BasisFocal.Id;
+            var domainIds = ds.Keys.Where(key => ActiveIds.Contains(key) && ds[key] is Domain dm && dm.BasisFocal.Id == basisId);
+            foreach (var id in domainIds)
+            {
+                yield return ds[id];
+            }
+        }
+        public IEnumerable<Number> NumbersWithSharedBasis(Domain domain)
+        {
+            var ds = domain.Trait.DomainStore;
+            var basisId = domain.BasisFocal.Id;
+            var domainIds = ds.Keys.Where(key => ActiveIds.Contains(key) && ds[key] is Domain dm && dm.BasisFocal.Id == basisId);
+            foreach (var id in domainIds)
+            {
+                var d = ds[id];
+                foreach(var num in d.Numbers())
+                {
+                    yield return num;
+                }
+            }
+        }
+        public void AdjustFocalTickSizeBy(Domain domain, int ticks)
+        {
+            var ranges = new List<Range>();
+            foreach (var num in NumbersWithSharedBasis(domain))
+            {
+                ranges.Add(num.Value);
+            }
+            domain.BasisFocal.EndPosition += ticks;
+
+            var index = 0;
+            foreach (var num in NumbersWithSharedBasis(domain))
+            {
+                num.Value = ranges[index++];
+            }
         }
 
         public void ClearAll()

@@ -112,6 +112,7 @@ namespace Numbers.Agent
 
         public bool IsCreatingDomain = false;
         public bool IsCreatingNumber = false;
+        public SKDomainMapper _activeDomainMapper;
         public bool MouseDown(MouseEventArgs e)
         {
             if(IsPaused){return false;}
@@ -126,7 +127,7 @@ namespace Numbers.Agent
             //Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
             //Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
 
-            var dm = _highlight.GetRelatedDomainMapper();
+            _activeDomainMapper = _highlight.GetRelatedDomainMapper();
             if (e.Button == MouseButtons.Middle)
             {
                 StartPan();
@@ -137,11 +138,11 @@ namespace Numbers.Agent
                 IsCreatingDomain = true;
                 SelBegin.Set(_highlight.Clone());
             }
-            else if (CurrentKey == Keys.N && dm != null)
+            else if (CurrentKey == Keys.N && _activeDomainMapper != null)
             {
                 // create number
                 SelBegin.Set(_highlight.Clone());
-                SelBegin.ActiveHighlight.SnapPoint = dm.Guideline.ProjectPointOnto(mousePoint, true);
+                SelBegin.ActiveHighlight.SnapPoint = _activeDomainMapper.Guideline.ProjectPointOnto(mousePoint, true);
                 IsCreatingNumber = true;
             }
             else
@@ -536,6 +537,22 @@ namespace Numbers.Agent
                 dm.ShowMinorTicks = !dm.ShowMinorTicks;
             }
         }
+        public void AddTick()
+        {
+            var sz = _isShiftDown ? 4 : 1;
+            if(_activeDomainMapper != null)
+            {
+                Workspace.AdjustFocalTickSizeBy(_activeDomainMapper.Domain, sz);
+            }
+        }
+        public void SubtractTick()
+        {
+            var sz = _isShiftDown ? 4 : 1;
+            if (_activeDomainMapper != null)
+            {
+                Workspace.AdjustFocalTickSizeBy(_activeDomainMapper.Domain, -sz);
+            }
+        }
 
 
         public bool KeyDown(KeyEventArgs e)
@@ -546,15 +563,17 @@ namespace Numbers.Agent
 	        }
 	        if (IsPaused) {return false;}
 
-            if(!e.Control && !e.Shift && !e.Alt)
+            
+            if(e.KeyCode != Keys.Control && e.KeyCode != Keys.Shift && e.KeyCode != Keys.Alt)
             {
-                CurrentKey = e.KeyData;
+                CurrentKey = e.KeyCode;
             }
             _isControlDown = e.Control;
             _isShiftDown = e.Shift;
             _isAltDown = e.Alt;
 
             var curMode = UIMode;
+            Trace.WriteLine(e.KeyCode);
             switch (CurrentKey)
             {
                 // B: Adjust Basis segment (ctrl to lock tick positions).
@@ -637,6 +656,13 @@ namespace Numbers.Agent
                     break;
                 case Keys.Oemtilde:
                     FlipBasis();
+                    break;
+                case Keys.Oemcomma: // <
+                case Keys.Right: // <
+                    SubtractTick();
+                    break;
+                case Keys.OemPeriod: // >
+                    AddTick();
                     break;
             }
             SetSelectable(UIMode);

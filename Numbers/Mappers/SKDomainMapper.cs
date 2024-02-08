@@ -56,7 +56,14 @@ namespace Numbers.Mappers
         }
 
         #region NumberMappers
-        protected Dictionary<int, SKNumberMapper> NumberMappers = new Dictionary<int, SKNumberMapper>();
+        protected Dictionary<int, SKNumberMapper> _numberMappers = new Dictionary<int, SKNumberMapper>();
+        public IEnumerable<SKNumberMapper> NumberMappers()
+        {
+            foreach (var nm in _numberMappers.Values)
+            {
+                yield return nm;
+            }
+        }
         public SKNumberMapper NumberMapper(Number number) => GetOrCreateNumberMapper(number);
         public SKNumberMapper NumberMapper(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
 
@@ -64,13 +71,13 @@ namespace Numbers.Mappers
 
         public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
         {
-	        NumberMappers[numberMapper.Id] = numberMapper;
+	        _numberMappers[numberMapper.Id] = numberMapper;
 	        return numberMapper;
         }
-        public bool RemoveNumberMapper(SKNumberMapper numberMapper) => NumberMappers.Remove(numberMapper.Id);
+        public bool RemoveNumberMapper(SKNumberMapper numberMapper) => _numberMappers.Remove(numberMapper.Id);
         public IEnumerable<SKNumberMapper> GetNumberMappers(bool reverse = false)
         {
-	        var mappers = reverse ? NumberMappers.Values.Reverse() : NumberMappers.Values;
+	        var mappers = reverse ? _numberMappers.Values.Reverse() : _numberMappers.Values;
 	        foreach (var dm in mappers)
 	        {
 		        yield return dm;
@@ -78,7 +85,7 @@ namespace Numbers.Mappers
         }
         public SKNumberMapper GetNumberMapper(int id)
         {
-	        NumberMappers.TryGetValue(id, out var result);
+	        _numberMappers.TryGetValue(id, out var result);
 	        return result;
         }
         public SKNumberMapper GetOrCreateNumberMapper(int id)
@@ -87,10 +94,10 @@ namespace Numbers.Mappers
         }
         public SKNumberMapper GetOrCreateNumberMapper(Number number)
         {
-	        if (!NumberMappers.TryGetValue(number.Id, out var result))
+	        if (!_numberMappers.TryGetValue(number.Id, out var result))
 	        {
 		        result = new SKNumberMapper(Agent, number);
-		        NumberMappers[number.Id] = result;
+		        _numberMappers[number.Id] = result;
 	        }
 	        return (SKNumberMapper)result;
         }
@@ -438,7 +445,7 @@ namespace Numbers.Mappers
 
         public override string ToString()
         {
-            return "dm: Count " + NumberMappers.Count;
+            return "dm: Count " + _numberMappers.Count;
         }
     }
 }

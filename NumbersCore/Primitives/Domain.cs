@@ -167,6 +167,22 @@ namespace NumbersCore.Primitives
 	        NumberStore.Clear();
         }
 
+        public void AdjustFocalTickSizeBy(int ticks)
+        {
+            var ranges = new List<Range>();
+            foreach (var num in NumberStore.Values)
+            {
+                ranges.Add(num.Value);
+            }
+            BasisFocal.EndPosition += ticks;
+
+            var index = 0;
+            foreach (var num in NumberStore.Values)
+            {
+                num.Value = ranges[index++];
+            }
+        }
+
         public IEnumerable<Number> Numbers()
         {
 	        foreach (var number in NumberStore.Values)
