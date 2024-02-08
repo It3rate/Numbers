@@ -241,8 +241,8 @@ namespace Numbers.Agent
                         {
                             if (!SelSelection.HasHighlight || CurrentKey == Keys.B)
                             {
-                                var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OrginalPoint, false).Item1;
-                                var orgT = nm.DomainMapper.Guideline.TFromPoint(activeHighlight.OrginalPoint, false).Item1;
+                                var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OriginalPoint, false).Item1;
+                                var orgT = nm.DomainMapper.Guideline.TFromPoint(activeHighlight.OriginalPoint, false).Item1;
                                 nm.MoveBasisSegmentByT(SelBegin.OriginalSegment, curT - orgT);
                                 BasisChanged(nm);
                             }
@@ -251,8 +251,18 @@ namespace Numbers.Agent
                         {
                             var basisSeg = nm.GetBasisSegment();
                             var clickT = basisSeg.TFromPoint(activeHighlight.SnapPoint, false).Item1;
-                            var curT = basisSeg.TFromPoint(_highlight.OrginalPoint, false).Item1;
-                            nm.MoveSegmentByT(SelBegin.OriginalSegment, curT - clickT);
+                            var curT = basisSeg.TFromPoint(_highlight.OriginalPoint, false).Item1;
+                            if (_isShiftDown && SelBegin.ActiveHighlight?.OriginalValue is Range orgVal)
+                            {
+                                // expand from center
+                                var scale = (curT - clickT) / 2f;
+                                nm.Number.Value = new Range(orgVal.Start + scale, orgVal.End + scale);
+                            }
+                            else
+                            {
+                                // drag segment
+                                nm.MoveSegmentByT(SelBegin.OriginalSegment, curT - clickT);
+                            }
                         }
                     }
                     else if (activeKind.IsBasis())

@@ -1,5 +1,6 @@
 ﻿using System;
 using Numbers.Mappers;
+using NumbersCore.Utils;
 using SkiaSharp;
 
 namespace Numbers.Agent
@@ -10,11 +11,12 @@ namespace Numbers.Agent
     /// </summary>
     public class Highlight
     {
-	    public SKPoint OrginalPoint { get; set; } = SKPoint.Empty;
+	    public SKPoint OriginalPoint { get; set; } = SKPoint.Empty;
 	    public SKPoint _snapPoint = SKPoint.Empty;
-	    public SKPoint SnapPoint
+        public Range OriginalValue { get; set; }
+        public SKPoint SnapPoint
 	    {
-		    get => _snapPoint.IsEmpty ? OrginalPoint : _snapPoint;
+		    get => _snapPoint.IsEmpty ? OriginalPoint : _snapPoint;
 		    set => _snapPoint = value;
 
 	    }
@@ -44,23 +46,25 @@ namespace Numbers.Agent
         }
         private Highlight(SKPoint orgPoint, SKMapper mapper, float t, UIKind kind)
 	    {
-		    OrginalPoint = orgPoint;
+		    OriginalPoint = orgPoint;
 		    Mapper = mapper;
 		    T = t;
 		    Kind = kind;
 	    }
 
-        public void Set(SKPoint orgPoint, SKPoint snapPoint, SKMapper mapper, float t, UIKind kind)
+        public void Set(SKPoint orgPoint, SKPoint snapPoint, SKMapper mapper, float t, UIKind kind, Range orgValue = default)
         {
-	        OrginalPoint = orgPoint;
+	        OriginalPoint = orgPoint;
 	        SnapPoint = snapPoint;
             Mapper = mapper;
 		    T = t;
 		    Kind = kind;
+            OriginalValue = orgValue;
         }
 	    public void Reset()
         {
-	        OrginalPoint = SKPoint.Empty;
+	        OriginalPoint = SKPoint.Empty;
+            OriginalValue = Range.Empty;
 	        SnapPoint = SKPoint.Empty;
             Mapper = null;
             T = 0;
@@ -69,7 +73,9 @@ namespace Numbers.Agent
 
 	    public Highlight Clone()
 	    {
-            return new Highlight(new SKPoint(OrginalPoint.X, OrginalPoint.Y), Mapper, T, Kind);
+            var result = new Highlight(new SKPoint(OriginalPoint.X, OriginalPoint.Y), Mapper, T, Kind);
+            result.OriginalValue = OriginalValue;
+            return result;
 	    }
 
 	    public SKPath HighlightPath() => Mapper.GetHighlightAt(this);

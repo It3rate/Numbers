@@ -8,7 +8,7 @@ namespace Numbers.Agent
 	public class HighlightSet
     {
         public Highlight ActiveHighlight { get; set; }
-	    public SKPoint Position => ActiveHighlight?.OrginalPoint ?? SKPoint.Empty;
+	    public SKPoint Position => ActiveHighlight?.OriginalPoint ?? SKPoint.Empty;
 	    public SKPoint SnapPosition => ActiveHighlight?.SnapPoint ?? SKPoint.Empty;
 	    //public List<Highlight> Highlights { get; set; } // todo: make selections multiple sub-highlights
 	    public bool HasHighlight => ActiveHighlight?.Mapper != null;
