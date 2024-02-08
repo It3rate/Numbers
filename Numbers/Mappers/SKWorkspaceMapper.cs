@@ -80,6 +80,16 @@ namespace Numbers.Mappers
             dm.ShowBasis = false;
             return dm;
         }
+        public SKDomainMapper AddDomain(Domain domain, SKSegment seg)
+        {
+            Agent.Workspace.AddDomains(true, domain);
+            var dm = GetOrCreateDomainMapper(domain, seg);
+            dm.ShowGradientNumberLine = false;
+            dm.ShowValueMarkers = true;
+            dm.ShowBasisMarkers = false;
+            dm.ShowBasis = false;
+            return dm;
+        }
         public SKDomainMapper AddHorizontal(Domain domain, int margins = 50)
         {
             return AddDomain(domain, 0.5f, true, margins);
@@ -187,7 +197,15 @@ namespace Numbers.Mappers
 
                 if (Agent.DragHighlight != null)
                 {
-                    Renderer.DrawSegment(Agent.DragHighlight, Pens.ThickHighlightPen);
+                    if (Agent.IsCreatingDomain)
+                    {
+
+                        Renderer.DrawGradientNumberLine(Agent.DragHighlight, true, 5);
+                    }
+                    else
+                    {
+                        Renderer.DrawSegment(Agent.DragHighlight, Pens.ThickHighlightPen);
+                    }
                 }
                 if (Agent.DragPoint != SKPoint.Empty && Agent.SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm)
                 {

@@ -173,6 +173,15 @@ namespace Numbers.Utils
             get => MathF.ToDegrees(Angle);
             set => Angle = MathF.ToRadians(value);
         }
+        private static float SnapAngle(float radians, int stepDegrees = 15)
+        {
+            var degrees = MathF.ToDegrees(radians) + 360;
+            var rem = degrees % stepDegrees;
+            var centerOffset = rem > stepDegrees / 2f ? stepDegrees : 0f;
+            var clamp = (int)(degrees / stepDegrees) * stepDegrees + centerOffset;
+            return MathF.ToRadians(clamp); ;
+        }
+
         public void SetAngleAroundMidpoint(float radians, int stepDegrees = 1)
         {
             var clampedRadians = SnapAngle(radians, stepDegrees);
@@ -184,18 +193,9 @@ namespace Numbers.Utils
 
         }
 
-        private static float SnapAngle(float radians, int stepDegrees = 15)
-        {
-            var degrees = MathF.ToDegrees(radians) + 360;
-            var rem = degrees % stepDegrees;
-            var centerOffset = rem > stepDegrees / 2f ? stepDegrees : 0f;
-            var clamp = (int)(degrees / stepDegrees) * stepDegrees + centerOffset;
-            return MathF.ToRadians(clamp); ;
-        }
-
         public SKPoint SnapAngleToStep(int stepDegrees = 15)
         {
-            Angle = SnapAngle(AngleDegrees, stepDegrees);
+            Angle = SnapAngle(Angle, stepDegrees);
             return EndPoint;
         }
 

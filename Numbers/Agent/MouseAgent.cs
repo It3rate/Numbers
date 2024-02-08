@@ -108,7 +108,10 @@ namespace Numbers.Agent
 	        }
         }
 
-        public SKPoint GetTransformedPoint(SKPoint point) => point;// Data.Matrix.Invert().MapPoint(point);
+        public SKPoint GetTransformedPoint(SKPoint point) => point; // will be matrix etc
+
+        public bool IsCreatingDomain = false;
+        public bool IsCreatingNumber = false;
         public bool MouseDown(MouseEventArgs e)
         {
             if(IsPaused){return false;}
@@ -127,6 +130,12 @@ namespace Numbers.Agent
             {
                 StartPan();
             }
+            else if (CurrentKey.HasFlag(Keys.D))
+            {
+                // create domain
+                IsCreatingDomain = true;
+                SelBegin.Set(_highlight.Clone());
+            }
             else
             {
 	            if (_highlight.IsSet)
@@ -134,20 +143,22 @@ namespace Numbers.Agent
 		            SelBegin.Set(_highlight.Clone());
                     if (_highlight.Mapper is SKNumberMapper nm && !nm.IsBasis)
                     {
-                        SelSelection.Clear();
-                        SelSelection.Set(_highlight.Clone());
+                        if (CurrentKey.HasFlag(Keys.N) && SelCurrent.ActiveHighlight.Mapper is SKDomainMapper dm)
+                        {
+                            // create number
+                            IsCreatingNumber = true;
+                        }
+                        else
+                        {
+                            SelSelection.Clear();
+                            SelSelection.Set(_highlight.Clone());
+                        }
                     }
                 }
                 else
                 {
                     SelSelection.Clear();
                 }
-                //Data.GetHighlight(mousePoint, Data.Selected, _ignoreList, false, _selectableKind);
-                //Data.Selected.Position = mousePoint;
-                //if (UIMode == UIMode.SetUnit && Data.Selected.FirstElement is Focal focal)
-                //{
-                //    InputPad.SetUnit(focal);
-                //}
             }
 
             IsDown = true;
@@ -209,13 +220,13 @@ namespace Numbers.Agent
             if (IsDragging)
             {
                 var activeHighlight = SelCurrent.ActiveHighlight;
-	            var activeKind = activeHighlight.Kind;
-	            if (activeHighlight.Mapper is SKNumberMapper nm)
-	            { 
-		            if (activeKind.IsLine() && CurrentKey != Keys.M)
-		            {
-			            if (nm.IsBasis)
-			            {
+                var activeKind = activeHighlight.Kind;
+                if (activeHighlight.Mapper is SKNumberMapper nm)
+                {
+                    if (activeKind.IsLine() && CurrentKey != Keys.M)
+                    {
+                        if (nm.IsBasis)
+                        {
                             if (!SelSelection.HasHighlight || CurrentKey.HasFlag(Keys.B))
                             {
                                 var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OrginalPoint, false).Item1;
@@ -224,15 +235,15 @@ namespace Numbers.Agent
                                 BasisChanged(nm);
                             }
                         }
-			            else
-			            {
+                        else
+                        {
                             var basisSeg = nm.GetBasisSegment();
                             var clickT = basisSeg.TFromPoint(activeHighlight.SnapPoint, false).Item1;
                             var curT = basisSeg.TFromPoint(_highlight.OrginalPoint, false).Item1;
                             nm.MoveSegmentByT(SelBegin.OriginalSegment, curT - clickT);
                         }
-		            }
-		            else if (activeKind.IsBasis())
+                    }
+                    else if (activeKind.IsBasis())
                     {
                         // set basis with new number
                         if (CurrentKey.HasFlag(Keys.B))
@@ -256,16 +267,16 @@ namespace Numbers.Agent
                         {
 
                         }
-		            }
-		            else
-		            {
-			            nm.SetValueByKind(_highlight.SnapPoint, activeKind);
                     }
-	            }
+                    else
+                    {
+                        nm.SetValueByKind(_highlight.SnapPoint, activeKind);
+                    }
+                }
                 else if (activeHighlight.Mapper is SKDomainMapper dm)
-	            {
-		            if (activeKind.IsDomainPoint())
-		            {
+                {
+                    if (activeKind.IsDomainPoint())
+                    {
                         if (CurrentKey.HasFlag(Keys.R))
                         {
                             dm.RotateGuidelineByPoint(_highlight.SnapPoint, activeKind);
@@ -274,12 +285,18 @@ namespace Numbers.Agent
                         {
                             dm.SetValueByKind(_highlight.SnapPoint, activeKind);
                         }
-		            }
-		            else if (activeKind.IsBoldTick())
-		            {
-			            //dm.SetValueByHighlight(_highlight);
-		            }
+                    }
+                    else if (activeKind.IsBoldTick())
+                    {
+                        //dm.SetValueByHighlight(_highlight);
+                    }
                 }
+
+            }
+            else if (IsCreatingDomain)
+            {
+                DragPoint = SelBegin.SnapPosition;
+                DragHighlight = new SKSegment(SelBegin.SnapPosition, mousePoint);
             }
 
             return true;
@@ -303,6 +320,17 @@ namespace Numbers.Agent
                 {
                     UIMode = PreviousMode;
                 }
+            }
+            else if (IsCreatingDomain)
+            {
+                var dm = CreateDomain(new SKSegment(SelBegin.SnapPosition, mousePoint));
+                dm.Guideline.SnapAngleToStep(5);
+
+                dm.BasisNumberMapper.Reset(dm.SegmentAlongGuideline(dm.UnitRangeOnDomainLine));
+            }
+            else if (IsCreatingNumber)
+            {
+
             }
 
             OnSelectionChange?.Invoke(this, new EventArgs());
@@ -329,6 +357,22 @@ namespace Numbers.Agent
             var mousePoint = GetTransformedPoint(_rawMousePoint);
             //Data.SetPanAndZoom(Data.Matrix, mousePoint, new SKPoint(0, 0), scale);
             return true;
+        }
+
+
+        private SKDomainMapper CreateDomain(SKSegment seg, int rangeSize = 5)
+        {
+            var newDomain = Domain.CreateDomain("default", 4, rangeSize);
+            var result = WorkspaceMapper.AddDomain(newDomain, seg);
+            if(seg.StartPoint.X > seg.EndPoint.X)
+            {
+                result.FlipRenderPerspective();
+            }
+            result.ShowGradientNumberLine = true;
+            result.ShowBasis = true;
+            result.ShowBasisMarkers = true;
+            result.ShowMinorTicks = true;
+            return result;
         }
         private void SetSelectable(UIMode uiMode)
         {
@@ -485,16 +529,14 @@ namespace Numbers.Agent
             var curMode = UIMode;
             switch (CurrentKey)
             {
-                // case Keys.B: Adjust Basis segment (ctrl to lock tick positions).
+                // B: Adjust Basis segment (ctrl to lock tick positions).
                 case Keys.B:
                     if (_isControlDown)
                     {
                         SetSelectedAsBasis();
                     }
                     break;
-                case Keys.D:
-                    ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
-                    break;
+                // D: Create domain
                 case Keys.Delete:
                     DeleteSelected();
                     break;
@@ -510,12 +552,14 @@ namespace Numbers.Agent
                 case Keys.I:
                     FlipSelectedPolarity();
                     break;
-                case Keys.N:
-                    FlipBasis();
-	                break;
+                case Keys.K:
+                    ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
+                    break;
+                    // N: Create Number
                 case Keys.P:
 	                Runner.TogglePause();
                     break;
+                    // R: Rotate Domain
                 case Keys.R:
                     if (_isControlDown)
                     {
@@ -563,6 +607,9 @@ namespace Numbers.Agent
                 case Keys.OemMinus:
                     NegateSelection();
                     break;
+                case Keys.Oemtilde:
+                    FlipBasis();
+                    break;
             }
             SetSelectable(UIMode);
             if (curMode != UIMode)
@@ -609,9 +656,11 @@ namespace Numbers.Agent
             }
             _initialBasisNum = null;
             _initialSelectionNum = null;
+            IsCreatingDomain = false;
+            IsCreatingNumber = false;
             DragHighlight = null;
             DragPoint = SKPoint.Empty;
-        }
+    }
         public void ClearHighlights()
         {
 	        SelBegin.Clear();

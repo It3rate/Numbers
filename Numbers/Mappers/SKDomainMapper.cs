@@ -169,15 +169,6 @@ namespace Numbers.Mappers
             var dif = newPoint - center;
             var angle = (float)Math.Atan2(dif.Y, dif.X);
             Guideline.SetAngleAroundMidpoint(angle, 5);
-            //UnitRangeOnDomainLine = BasisNumber.Value;
-            //if (kind.IsMajor())
-            //{
-            //    EndPoint = newPoint;
-            //}
-            //else
-            //{
-            //    StartPoint = newPoint;
-            //}
             BasisNumberMapper.Reset(SegmentAlongGuideline(unitRatio));
         }
 
@@ -195,23 +186,21 @@ namespace Numbers.Mappers
 			    DrawNumberSets();
             }
 	    }
-	    protected virtual void DrawNumberLine()
+
+
+        protected virtual void DrawNumberLine()
 	    {
             var renderDir = UnitDirectionOnDomainLine;
 		    var basisDir = BasisNumber.BasisFocal.Direction;
-		    var gsp = renderDir * basisDir == 1 ? Guideline.StartPoint : Guideline.EndPoint;
-		    var gep = renderDir * basisDir == 1 ? Guideline.EndPoint : Guideline.StartPoint;
+            var startToEnd = renderDir * basisDir == 1;
             if (ShowGradientNumberLine)
 		    {
-			    var pnt = CorePens.GetGradientPen(gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 10);
-			    Renderer.DrawSegment(Guideline, pnt);
+                Renderer.DrawGradientNumberLine(Guideline, startToEnd, 10);
 		    }
 		    else if (!ShowBasis) // if not showing units at least color the line
-		    {
-			    var pnt = CorePens.GetGradientPen( gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, 3);
-			    Renderer.DrawSegment(Guideline, pnt);
+            {
+                Renderer.DrawGradientNumberLine(Guideline, startToEnd, 3);
 		    }
-
             Renderer.DrawSegment(Guideline, Renderer.Pens.NumberLinePen);
 	    }
         protected virtual void DrawUnit()

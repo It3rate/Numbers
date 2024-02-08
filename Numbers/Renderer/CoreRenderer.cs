@@ -86,7 +86,14 @@ namespace Numbers.Renderer
 	    {
 		    Canvas.DrawLine(p0, p1, paint);
 	    }
-	    public void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
+        public void DrawGradientNumberLine(SKSegment segment, bool startToEnd, float width)
+        {
+            var gsp = startToEnd ? segment.StartPoint : segment.EndPoint;
+            var gep = startToEnd ? segment.EndPoint : segment.StartPoint;
+            var pnt = CorePens.GetGradientPen(gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, width);
+            DrawSegment(segment, pnt);
+        }
+        public void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
 	    {
 		    float round = radius / 3f;
 		    var box = new SKRect(point.X - radius, point.Y - radius, point.X + radius, point.Y + radius);
