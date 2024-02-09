@@ -474,7 +474,6 @@ namespace Numbers.Agent
                 nm.Number.InvertPolarity();
             }
         }
-
         private void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)
         {
 	        if (DoSyncMatchingBasis)
@@ -554,6 +553,13 @@ namespace Numbers.Agent
                 Workspace.AdjustFocalTickSizeBy(ActiveDomainMapper.Domain, -sz);
             }
         }
+        private void ToggleDomainNumberOffsets()
+        {
+            if (ActiveDomainMapper != null)
+            {
+                ActiveDomainMapper.OffsetNumbers = !ActiveDomainMapper.OffsetNumbers;
+            }
+        }
 
 
         public bool KeyDown(KeyEventArgs e)
@@ -602,7 +608,10 @@ namespace Numbers.Agent
                 case Keys.K:
                     ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
                     break;
-                    // N: Create Number
+                case Keys.O:
+                    ToggleDomainNumberOffsets();
+                    break;
+                // N: Create Number
                 case Keys.P:
 	                Runner.TogglePause();
                     break;
