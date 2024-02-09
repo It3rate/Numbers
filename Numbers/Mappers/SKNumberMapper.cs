@@ -46,7 +46,7 @@ namespace Numbers.Mappers
 	        Renderer.DrawDirectedLine(RenderSegment, paint);
         }
 
-        public void DrawUnit(bool aboveLine)
+        public void DrawUnit(bool aboveLine, bool showPolarity)
         {
             // BasisNumber is a special case where we don't want it's direction set by the unit direction of the line (itself).
             // So don't call EnsureSegment here.
@@ -59,9 +59,12 @@ namespace Numbers.Mappers
 		        Renderer.DrawSegment(RenderSegment, Pens.UnitStrokePen);
             }
             Renderer.DrawSegment(RenderSegment, unitPen);
-            var unotSeg = RenderSegment.Clone();
-            unotSeg.FlipAroundStartPoint();
-            Renderer.DrawSegment(unotSeg, Pens.UnotPenLight);
+            if (showPolarity)
+            {
+                var unotSeg = RenderSegment.Clone();
+                unotSeg.FlipAroundStartPoint();
+                Renderer.DrawSegment(unotSeg, Pens.UnotPenLight);
+            }
         }
 
         public float TFromPoint(SKPoint point)

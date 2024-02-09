@@ -521,6 +521,13 @@ namespace Numbers.Agent
                 dm.ShowBasisMarkers = !dm.ShowBasisMarkers;
             }
         }
+        public void ToggleShowPolarity()
+        {
+            foreach (var dm in WorkspaceMapper.DomainMappers())
+            {
+                dm.ShowPolarity = !dm.ShowPolarity;
+            }
+        }
         public void ToggleGradientNumberline()
         {
             foreach (var dm in WorkspaceMapper.DomainMappers())
@@ -651,13 +658,16 @@ namespace Numbers.Agent
                         //_editCommands.Undo();
                     }
                     break;
-                case Keys.D0:
+                case Keys.D1:
                     ToggleShowNumbers();
                     break;
-                case Keys.D9:
+                case Keys.D2:
                     ToggleBasisVisible();
                     break;
-                case Keys.D8:
+                case Keys.D3:
+                    ToggleShowPolarity();
+                    break;
+                case Keys.D4:
                     ToggleGradientNumberline();
                     break;
                 case Keys.OemMinus:

@@ -38,8 +38,9 @@ namespace Numbers.Mappers
         public bool ShowMinorTicks = true;
         public bool OffsetNumbers;
 	    public bool ShowValueMarkers = true;
-	    public bool ShowBasis;
-	    public bool ShowBasisMarkers;
+        public bool ShowBasis;
+        public bool ShowPolarity = true;
+        public bool ShowBasisMarkers;
 	    public bool ShowMaxMinValues;
 	    public bool ShowFractions => WorkspaceMapper.ShowFractions;
         private int _numberOrderCounter = 0;
@@ -237,17 +238,17 @@ namespace Numbers.Mappers
 	    {
 		    if (ShowBasis)
 		    {
-			    NumberMapper(Domain.BasisNumber).DrawUnit(!ShowInfoOnTop);
+			    NumberMapper(Domain.BasisNumber).DrawUnit(!ShowInfoOnTop, ShowPolarity);
             }
         }
         protected virtual void DrawMarkers()
         {
-	        if (ShowBasisMarkers)
-	        {
-		        var num = Domain.BasisNumber;
-		        DrawMarker(num, true);
-		        DrawMarker(num, false);
-	        }
+            if (ShowBasisMarkers)
+            {
+                var num = Domain.BasisNumber;
+                DrawMarker(num, true);
+                DrawMarker(num, false);
+            }
 
 	        if (ShowValueMarkers)
 	        {
@@ -326,7 +327,7 @@ namespace Numbers.Mappers
 		    {
                 var txt = useStart ? "0" : "1";
                 Renderer.DrawTextOnPath(txBaseline, txt, Pens.UnitMarkerText, Pens.TextBackgroundPen);
-                if (!useStart)
+                if (!useStart && ShowPolarity)
                 {
                     txBaseline = DrawMarkerAndGetTextBaseline(num, -1);
                     Renderer.DrawTextOnPath(txBaseline, "i", Pens.UnotMarkerText, Pens.TextBackgroundPen);
