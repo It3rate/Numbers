@@ -206,13 +206,14 @@ namespace Numbers.Mappers
             var renderDir = UnitDirectionOnDomainLine;
 		    var basisDir = BasisNumber.BasisFocal.Direction;
             var startToEnd = renderDir * basisDir == 1;
+            var isSelected = Agent.ActiveDomainMapper?.Domain == Domain;
             if (ShowGradientNumberLine)
 		    {
-                Renderer.DrawGradientNumberLine(Guideline, startToEnd, 10);
+                Renderer.DrawGradientNumberLine(Guideline, startToEnd, 10, isSelected);
 		    }
 		    else if (!ShowBasis) // if not showing units at least color the line
             {
-                Renderer.DrawGradientNumberLine(Guideline, startToEnd, 3);
+                Renderer.DrawGradientNumberLine(Guideline, startToEnd, 3, isSelected);
 		    }
             Renderer.DrawSegment(Guideline, Renderer.Pens.NumberLinePen);
 	    }

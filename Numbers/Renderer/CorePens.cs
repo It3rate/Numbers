@@ -45,6 +45,7 @@ namespace Numbers.Renderer
         public SKPaint SegPen3 { get; set; }
         public List<SKPaint> SegPens;
         public SKPaint SegPenHighlight { get; set; }
+        public SKPaint DomainPenHighlight { get; set; }
 
         public SKPaint TextBrush { get; set; }
         public SKPaint Seg0TextBrush { get; set; }
@@ -122,6 +123,8 @@ namespace Numbers.Renderer
             SegPen3 = GetPen(SKColor.Parse("#106060"), DefaultWidth * 5f);
             SegPens = new List<SKPaint>() { SegPen0, SegPen1, SegPen2, SegPen3 };
             SegPenHighlight = GetPen(SKColor.Parse("#101040"), DefaultWidth * 8f);
+            DomainPenHighlight = GetPen(SKColor.Parse("#80EEEE22"), DefaultWidth * 8f);
+            DomainPenHighlight.StrokeCap = SKStrokeCap.Butt;
 
             TextBrush = GetText(SKColor.Parse("#A0A0F0"), 20);
             Seg0TextBrush = GetText(SegPen0.Color, 20);
@@ -194,6 +197,8 @@ namespace Numbers.Renderer
             SegPen3 = GetPen(new SKColor(50, 250, 50, 255), DefaultWidth * 4f);
             SegPens = new List<SKPaint>() { SegPen0, SegPen1, SegPen2, SegPen3 };
             SegPenHighlight = GetPen(SKColor.Parse("#B0B0FF"), DefaultWidth * 8f);
+            DomainPenHighlight = GetPen(SKColor.Parse("#80EEEE22"), DefaultWidth * 8f);
+            DomainPenHighlight.StrokeCap = SKStrokeCap.Butt;
 
             TextBrush = GetText(SKColor.Parse("#A0404060"), 20);
             Seg0TextBrush = GetText(SegPen0.Color, 20);

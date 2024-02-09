@@ -110,9 +110,14 @@ namespace Numbers.Agent
 
         public SKPoint GetTransformedPoint(SKPoint point) => point; // will be matrix etc
 
+        private Number _initialSelectionNum;
+        private Number _initialBasisNum;
+        public SKSegment DragHighlight;
+        public SKPoint DragPoint;
+
         public bool IsCreatingDomain = false;
         public bool IsCreatingNumber = false;
-        public SKDomainMapper _activeDomainMapper;
+        public SKDomainMapper ActiveDomainMapper;
         public bool MouseDown(MouseEventArgs e)
         {
             if(IsPaused){return false;}
@@ -127,7 +132,7 @@ namespace Numbers.Agent
             //Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
             //Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
 
-            _activeDomainMapper = _highlight.GetRelatedDomainMapper();
+            ActiveDomainMapper = _highlight.GetRelatedDomainMapper();
             if (e.Button == MouseButtons.Middle)
             {
                 StartPan();
@@ -138,11 +143,11 @@ namespace Numbers.Agent
                 IsCreatingDomain = true;
                 SelBegin.Set(_highlight.Clone());
             }
-            else if (CurrentKey == Keys.N && _activeDomainMapper != null)
+            else if (CurrentKey == Keys.N && ActiveDomainMapper != null)
             {
                 // create number
                 SelBegin.Set(_highlight.Clone());
-                SelBegin.ActiveHighlight.SnapPoint = _activeDomainMapper.Guideline.ProjectPointOnto(mousePoint, true);
+                SelBegin.ActiveHighlight.SnapPoint = ActiveDomainMapper.Guideline.ProjectPointOnto(mousePoint, true);
                 IsCreatingNumber = true;
             }
             else
@@ -185,10 +190,6 @@ namespace Numbers.Agent
             }
             return true;
         }
-        private Number _initialSelectionNum;
-        private Number _initialBasisNum;
-        public SKSegment DragHighlight;
-        public SKPoint DragPoint;
         public bool MouseDrag(SKPoint mousePoint)
         {
 	        if (IsPaused) {return false;}
@@ -540,17 +541,17 @@ namespace Numbers.Agent
         public void AddTick()
         {
             var sz = _isShiftDown ? 4 : 1;
-            if(_activeDomainMapper != null)
+            if(ActiveDomainMapper != null)
             {
-                Workspace.AdjustFocalTickSizeBy(_activeDomainMapper.Domain, sz);
+                Workspace.AdjustFocalTickSizeBy(ActiveDomainMapper.Domain, sz);
             }
         }
         public void SubtractTick()
         {
             var sz = _isShiftDown ? 4 : 1;
-            if (_activeDomainMapper != null)
+            if (ActiveDomainMapper != null)
             {
-                Workspace.AdjustFocalTickSizeBy(_activeDomainMapper.Domain, -sz);
+                Workspace.AdjustFocalTickSizeBy(ActiveDomainMapper.Domain, -sz);
             }
         }
 
@@ -573,7 +574,6 @@ namespace Numbers.Agent
             _isAltDown = e.Alt;
 
             var curMode = UIMode;
-            Trace.WriteLine(e.KeyCode);
             switch (CurrentKey)
             {
                 // B: Adjust Basis segment (ctrl to lock tick positions).

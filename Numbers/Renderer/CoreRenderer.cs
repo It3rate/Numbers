@@ -1,5 +1,6 @@
 ﻿	using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Windows.Forms;
 using Numbers.Agent;
 using Numbers.Mappers;
@@ -86,8 +87,13 @@ namespace Numbers.Renderer
 	    {
 		    Canvas.DrawLine(p0, p1, paint);
 	    }
-        public void DrawGradientNumberLine(SKSegment segment, bool startToEnd, float width)
+        public void DrawGradientNumberLine(SKSegment segment, bool startToEnd, float width, bool isSelected = false)
         {
+            if (isSelected)
+            {
+                Pens.DomainPenHighlight.StrokeWidth = width + 6;
+                DrawSegment(segment, Pens.DomainPenHighlight);
+            }
             var gsp = startToEnd ? segment.StartPoint : segment.EndPoint;
             var gep = startToEnd ? segment.EndPoint : segment.StartPoint;
             var pnt = CorePens.GetGradientPen(gsp, gep, Pens.UnotLineColor, Pens.UnitLineColor, width);
