@@ -42,6 +42,7 @@ namespace Numbers.Mappers
 	    public bool ShowBasisMarkers;
 	    public bool ShowMaxMinValues;
 	    public bool ShowFractions => WorkspaceMapper.ShowFractions;
+        private int _numberOrderCounter = 0;
 
         public SKDomainMapper(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
 	    {
@@ -64,6 +65,19 @@ namespace Numbers.Mappers
                 yield return nm;
             }
         }
+        public IEnumerable<SKNumberMapper> OrderedValidNumbers()
+        {
+            var numbers = new List<SKNumberMapper>();
+            foreach (var numberId in ValidNumberIds)
+            {
+                numbers.Add(NumberMapper(numberId));
+            }
+            numbers.Sort((x, y) => x.OrderIndex.CompareTo(y.OrderIndex));
+            foreach (var nm in numbers)
+            {
+                yield return nm;
+            }
+        }
         public SKNumberMapper NumberMapper(Number number) => GetOrCreateNumberMapper(number);
         public SKNumberMapper NumberMapper(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
 
@@ -72,7 +86,8 @@ namespace Numbers.Mappers
         public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
         {
 	        _numberMappers[numberMapper.Id] = numberMapper;
-	        return numberMapper;
+
+            return numberMapper;
         }
         public bool RemoveNumberMapper(SKNumberMapper numberMapper) => _numberMappers.Remove(numberMapper.Id);
         public IEnumerable<SKNumberMapper> GetNumberMappers(bool reverse = false)
@@ -97,7 +112,8 @@ namespace Numbers.Mappers
 	        if (!_numberMappers.TryGetValue(number.Id, out var result))
 	        {
 		        result = new SKNumberMapper(Agent, number);
-		        _numberMappers[number.Id] = result;
+                result.OrderIndex = _numberOrderCounter++;
+                _numberMappers[number.Id] = result;
 	        }
 	        return (SKNumberMapper)result;
         }
@@ -235,26 +251,34 @@ namespace Numbers.Mappers
 
 	        if (ShowValueMarkers)
 	        {
+                var selId = -1;
+                if(Agent.SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm)
+                {
+                    selId = snm.Number.Id;
+                }
 		        foreach (var id in ValidNumberIds)
 		        {
 			        var nm = Domain.GetNumber(id);
-			        DrawMarker(nm, true);
-			        DrawMarker(nm, false);
+                    if(ValidNumberIds.Count < 4 || selId == nm.Id)
+                    {
+			            DrawMarker(nm, true);
+			            DrawMarker(nm, false);
+                    }
 		        }
             }
         }
         protected virtual void DrawNumbers()
         {
 			var topDir = ShowInfoOnTop ? 1f : -1f;
-	        var offset = OffsetNumbers ? 1f : 0f;
+	        var offset = OffsetNumbers ? 0f : 0f;
 			offset *= topDir;
-			var step = OffsetNumbers ? 1f : 0f;
+			var step = OffsetNumbers ? 12f : 0f;
 			step *= topDir;
-	        foreach (var numberId in ValidNumberIds)
-	        {
-		        offset += step;
-		        DrawNumber(NumberMapper(numberId), offset + topDir * 2);
-	        }
+            foreach(var nm in OrderedValidNumbers())
+            {
+                DrawNumber(nm, offset + topDir * 2);
+                offset += step;
+            }
         }
         protected virtual void DrawNumberSets()
         {
@@ -271,17 +295,18 @@ namespace Numbers.Mappers
 	        {
                 var isSelected = Agent.SelSelection.ActiveHighlight?.Mapper == nm;
 		        var pen = isSelected ? Pens.SegPenHighlight : Pens.SegPens[nm.Number.StoreIndex % Pens.SegPens.Count];
-		        nm.DrawNumber(offset, pen); // background
+                //nm.DrawNumber(offset - (pen.StrokeWidth / 3f * Math.Sign(offset)), pen); // background
+                nm.DrawNumber(offset, pen); // background
 
-		        if (nm.Number.IsAligned)
+                if (nm.Number.IsAligned)
 		        {
 			        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
-			        nm.DrawNumber(offset * offsetScale, Pens.UnitInlinePen);
+			        nm.DrawNumber(offset, Pens.UnitInlinePen);
 		        }
 		        else
 		        {
 			        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
-			        nm.DrawNumber(offset * offsetScale, Pens.UnotInlinePen);
+			        nm.DrawNumber(offset, Pens.UnotInlinePen);
 		        }
 	        }
         }

@@ -22,6 +22,7 @@ namespace Numbers.Mappers
         public Polarity Polarity { get => Number.Polarity; set => Number.Polarity = value; }
         public int UnitDirectionOnDomainLine => Guideline.DirectionOnLine(DomainMapper.Guideline);
 
+        public int OrderIndex { get; set; }
         public SKNumberMapper(MouseAgent agent, Number number) : base(agent, number)
 	    {
 	    }
@@ -37,16 +38,13 @@ namespace Numbers.Mappers
 	    }
 
 
-        public void DrawNumber(float offsetScale, SKPaint paint)
+        public void DrawNumber(float offset, SKPaint paint)
         {
 			EnsureSegment();
 			var dir = UnitDirectionOnDomainLine;
-	        var offset = Guideline.RelativeOffset(paint.StrokeWidth / 2f * offsetScale * dir);
-	        RenderSegment = Guideline + offset;
+            //var offset = Guideline.RelativeOffset(paint.StrokeWidth / 2f);// + offsetScale * dir);
+	        RenderSegment = Guideline.ShiftOffLine(offset);
 	        Renderer.DrawDirectedLine(RenderSegment, paint);
-
-            //var ef = Number.ExpansiveForce;
-            //Trace.WriteLine(ef);
         }
 
         public void DrawUnit(bool aboveLine)
