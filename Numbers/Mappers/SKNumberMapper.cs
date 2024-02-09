@@ -42,8 +42,7 @@ namespace Numbers.Mappers
         {
 			EnsureSegment();
 			var dir = UnitDirectionOnDomainLine;
-            //var offset = Guideline.RelativeOffset(paint.StrokeWidth / 2f);// + offsetScale * dir);
-	        RenderSegment = Guideline.ShiftOffLine(offset);
+	        RenderSegment = Guideline.ShiftOffLine(offset * dir);
 	        Renderer.DrawDirectedLine(RenderSegment, paint);
         }
 
