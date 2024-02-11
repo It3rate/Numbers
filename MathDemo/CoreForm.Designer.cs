@@ -48,9 +48,9 @@ namespace MathDemo
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.SystemColors.Window;
-            this.label1.Location = new System.Drawing.Point(3, 1140);
+            this.label1.Location = new System.Drawing.Point(3, 1072);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(286, 240);
+            this.label1.Size = new System.Drawing.Size(286, 300);
             this.label1.TabIndex = 2;
             this.label1.Text = resources.GetString("label1.Text");
             // 
