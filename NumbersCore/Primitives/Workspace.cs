@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using NumbersCore.CoreConcepts.Time;
@@ -158,16 +159,19 @@ namespace NumbersCore.Primitives
         }
         public void AdjustFocalTickSizeBy(Domain domain, int ticks)
         {
-            // todo: for now don't allow negative ticks, this will be reciprocal once completed
-            if(domain.BasisFocal.LengthInTicks + ticks < 0)
-            {
-                ticks = (int)-domain.BasisFocal.LengthInTicks;
-            }
             var ranges = new List<Range>();
             foreach (var num in NumbersWithSharedBasis(domain))
             {
                 ranges.Add(num.Value);
             }
+
+            ticks = domain.BasisIsReciprocal ? -ticks : ticks;
+            if(domain.BasisFocal.LengthInTicks + ticks <= 0)
+            {
+                ticks = -ticks;
+                domain.BasisIsReciprocal = !domain.BasisIsReciprocal;
+            }
+
             domain.BasisFocal.EndPosition += ticks;
 
             var index = 0;

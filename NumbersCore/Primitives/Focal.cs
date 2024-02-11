@@ -41,7 +41,10 @@ namespace NumbersCore.Primitives
         public int CreationIndex => Id - (int)Kind - 1;
 
         public virtual long StartPosition { get; set; }
-        public virtual long EndPosition { get; set; }
+        public virtual long EndPosition { 
+            get;
+            set;
+        }
         public virtual long InvertedEndPosition => StartPosition - LengthInTicks;
 
         public int Direction => StartPosition <= EndPosition ? 1 : -1;
@@ -101,7 +104,6 @@ namespace NumbersCore.Primitives
             EndPosition = StartPosition - LengthInTicks;
         }
 
-        // todo: rework reciprocal to live in a tickSize property in Numbers.
         public Range GetRangeWithBasis(Focal basis, bool isReciprocal, bool isAligned)
         {
             var len = (double)basis.NonZeroLength * (isAligned ? 1 : -1); //AlignedNonZeroLength(isAligned);// 
@@ -117,17 +119,20 @@ namespace NumbersCore.Primitives
         }
         public void SetWithRangeAndBasis(Range range, Focal basis, bool isReciprocal)
         {
-            var len = (double)basis.NonZeroLength * (range.IsAligned ? 1 : -1);
-            var z = basis.StartPosition;
-            var start = z - range.Start * len;
-            var end = z + range.End * len;
-            if (isReciprocal)
+            if (basis.Id != Id) // basis knows its own focal positions by definition
             {
-                start = Math.Round(start) / Math.Abs(len);
-                end = Math.Round(end) / Math.Abs(len);
+                var len = (double)basis.NonZeroLength * (range.IsAligned ? 1 : -1);
+                var z = basis.StartPosition;
+                var start = z - range.Start * len;
+                var end = z + range.End * len;
+                if (isReciprocal)
+                {
+                    start = Math.Round(start) / Math.Abs(len);
+                    end = Math.Round(end) / Math.Abs(len);
+                }
+                StartPosition = (long)Math.Round(start);
+                EndPosition = (long)Math.Round(end);
             }
-            StartPosition = (long)Math.Round(start);
-            EndPosition = (long)Math.Round(end);
         }
         public Range RangeAsBasis(Focal nonBasis) => nonBasis.GetRangeWithBasis(this, false, true);
         public Range UnitTRangeIn(Focal basis)

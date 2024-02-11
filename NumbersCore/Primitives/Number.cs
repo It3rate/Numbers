@@ -30,13 +30,18 @@ namespace NumbersCore.Primitives
 
         public int FocalId => Focal.Id;
 
+        private Polarity _polarity = Polarity.Aligned;
         /// <summary>
         /// Determines if this number has an aligned or inverted perspective relative to the domain basis. 
         /// </summary>
-        public Polarity Polarity { get; set; }
+        public Polarity Polarity 
+        {
+            get => IsBasis ? Polarity.Aligned : _polarity;
+            set => _polarity = value; 
+        }
         public int PolarityDirection => IsAligned ? 1 : -1;
         public bool IsAligned => Polarity == Polarity.Aligned;
-        public bool IsInverted => Polarity == Polarity.Inverted;
+        public bool IsInverted => !IsAligned;
         public int Direction => BasisFocal.Direction * PolarityDirection;
         protected long StartTickPosition
         {

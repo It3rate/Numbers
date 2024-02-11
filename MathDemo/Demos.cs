@@ -47,7 +47,7 @@ namespace MathDemo
                     wm = test2DMult();
                     break;
                 case 1:
-                    wm = test1();
+                    wm = testOneLine();
                     break;
                 case 2:
                     wm = test2();
@@ -190,9 +190,9 @@ namespace MathDemo
             _currentMouseAgent.Workspace.AddElements(nn);
             return wm;
         }
-        private SKWorkspaceMapper test1()
+        private SKWorkspaceMapper testOneLine()
         {
-	        Trait trait = Trait.CreateIn(Brain, "test1");
+	        Trait trait = Trait.CreateIn(Brain, "testOneLine");
             var unitSize = 4;
             var basis = new Focal(3, 3 + unitSize);
             var range = new Focal(-40, 40);
