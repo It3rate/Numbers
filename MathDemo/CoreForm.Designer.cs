@@ -29,6 +29,7 @@ namespace MathDemo
 		/// </summary>
 		private void InitializeComponent()
 		{
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CoreForm));
             this.corePanel = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.corePanel.SuspendLayout();
@@ -46,14 +47,12 @@ namespace MathDemo
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.SystemColors.Info;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label1.Location = new System.Drawing.Point(3, 1298);
+            this.label1.BackColor = System.Drawing.SystemColors.Window;
+            this.label1.Location = new System.Drawing.Point(3, 1140);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(349, 29);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Press \'T\' for next test screen.";
+            this.label1.Size = new System.Drawing.Size(286, 240);
+            this.label1.TabIndex = 2;
+            this.label1.Text = resources.GetString("label1.Text");
             // 
             // CoreForm
             // 

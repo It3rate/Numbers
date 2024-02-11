@@ -117,4 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label1.Text" xml:space="preserve">
+    <value>T: Next Screen
+F5: Reload Screen
+Hold D: Create Domain
+Hold N: Create Number
+Ctrl B: Selected Number as Basis
+&lt;&gt;: More/Less Ticks
+Hold B: Adjust Basis
+Hold M: Drag Basis to Multiply selection
+Hold R: Rotate domain by endpoint
+I: Invert Selection
+'-' Negate Selection
+ </value>
+  </data>
 </root>

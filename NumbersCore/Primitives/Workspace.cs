@@ -158,6 +158,11 @@ namespace NumbersCore.Primitives
         }
         public void AdjustFocalTickSizeBy(Domain domain, int ticks)
         {
+            // todo: for now don't allow negative ticks, this will be reciprocal once completed
+            if(domain.BasisFocal.LengthInTicks + ticks < 0)
+            {
+                ticks = (int)-domain.BasisFocal.LengthInTicks;
+            }
             var ranges = new List<Range>();
             foreach (var num in NumbersWithSharedBasis(domain))
             {
