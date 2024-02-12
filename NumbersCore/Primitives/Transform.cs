@@ -1,34 +1,22 @@
-﻿using NumbersCore.CoreConcepts.Counter;
+﻿using System;
+using NumbersCore.CoreConcepts.Counter;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
     // **** All ops, history, sequences, equations should fit on traits as focals.
 
-    // ** All operations can be reduced to one or more proportional moves, maybe (select what point(s) move relative to what, for what lengths and repeat)
-    // **        operations can be reduced to equations using only select>move primitives where amounts are recorded in segments as well.
-    //   - fixed: elements remain at some proportional position regardless of other changes. (used in branches and joins).
-    //   - shifts: points move together (non proportionately) to a proportional unit distance (this can just be two points doing multiplication)
-    //   - addition: end proportional to beginning
-    //   - multiplication: multiple points move proportionately  (by some 'additive' unit amount)
-    //   - complex math: whole number line also moves proportionately
-    //   - powers: repeating addition (becomes form of multiplication) or multiplication proportional moves, output becomes input.
-    //   - turns: proportional move balances between two unit segments.
-
     // Operations on source(s)
-    // Select (can add segments)
+    // Select (add, can create or add to or shift selection)
+    // Unary - Invert (apply only polarity change, no multiply), Negate, Not, flip arrow direction, mirror on start point/endpoint
     // Multiply (stretch)
-    // Add (jump, shift)
-    // Repeat (can add segments if repeated op does)
-    // Turn
-    // Twist (3d)
-    // Bool ops (can split segment)
-    // Branch (splits segment) (connections are 0, 1 or 2 way links)
-    // Blend (reduces segments)
-    // Duplicate (adds segment)
-
-    // Compare
-    // Choose (can reduce unchosen segments)
+    // Steps (part of an interpolation op, can break into subsegments)
+    // Repeat (can add/duplicate segments if repeated op does)
+    // Causal directions (one time, one way, two way, result only, locks)
+    // Select partial (either unit, unot)
+    // Links (link domains, basis, focals)
+    // Bool ops (like contain, repel,interpolate until etc)
+    // Branch (bool ops can split segment, resulting in choice?)
 
     public class Transform : ITransform
     {
@@ -39,22 +27,25 @@ namespace NumbersCore.Primitives
         public Brain Brain { get; }
 
         public TransformKind TransformKind { get; set; }
-	    public Selection Source { get; set; } // the object being transformed
-	    public Number Change { get; set; } // the amount to transform (can change per repeat)
+        public bool IsUnary => TransformKind.IsUnary();
+        public int Repeats { get; set;  } = 1;
+        public int Steps { get; set; } = 1;
+	    public Number Left { get; set; } // the object being transformed
+	    public Number Right { get; set; } // the amount to transform (can change per repeat)
+        public Number Result { get; set; } // current result of transform
 
-        public Number Value { get; set; } // current result of transform
-
+        public UpCounter RepeatCounter { get; } = new UpCounter();
+        public UpCounter StepCounter { get; } = new UpCounter();
+        public Evaluation HaltCondition { get; set; } // the evaluation that decides if the transform can continue
         public bool IsActive { get; private set; }
-        public UpCounter Counter { get; } = new UpCounter(); // counts the number of repeats 
-	    public Evaluation HaltCondition { get; set; } // the evaluation that decides if the transform can continue
 
-        public Transform(Selection source, Number change, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
+        public Transform(Number left, Number right, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
         {
-	        Source = source;
-	        Change = change;
-            Value = change.Clone(false);
+	        Left = left;
+	        Right = right;
+            Result = left.Clone(false);
 	        TransformKind = kind;
-	        Brain = change.Brain;
+	        Brain = right.Brain;
 	        Id = Brain.NextTransformId();
         }
 
@@ -62,15 +53,36 @@ namespace NumbersCore.Primitives
 	    public event TransformEventHandler TickTransformEvent;
 	    public event TransformEventHandler EndTransformEvent;
 
+        public void Apply()
+        {
+            ApplyStart();
+            ApplyEnd();
+        }
 	    public void ApplyStart()
 	    {
-		    OnStartTransformEvent(this);
+            Result.SetWith(Left);
+            OnStartTransformEvent(this);
 		    IsActive = true;
-		    Counter.AddOne();
+		    RepeatCounter.AddOne();
 	    }
 	    public void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
 	    public void ApplyEnd()
 	    {
+            switch (TransformKind)
+            {
+                case TransformKind.Add:
+                    Result.Add(Right);
+                    break;
+                case TransformKind.Subtract:
+                    Result.Subtract(Right);
+                    break;
+                case TransformKind.Multiply:
+                    Result.Multiply(Right);
+                    break;
+                case TransformKind.Divide:
+                    Result.Divide(Right);
+                    break;
+            }
 		    OnEndTransformEvent(this);
 		    IsActive = false;
 	    }
@@ -97,12 +109,12 @@ namespace NumbersCore.Primitives
     public delegate void TransformEventHandler(object sender, ITransform e);
     public interface ITransform : IMathElement
     {
-	    Number Change { get; set; }
+	    Number Right { get; set; }
 	    event TransformEventHandler StartTransformEvent;
 	    event TransformEventHandler TickTransformEvent;
 	    event TransformEventHandler EndTransformEvent;
-
-	    void ApplyStart();
+        void Apply();
+        void ApplyStart();
 	    void ApplyEnd();
 	    void ApplyPartial(long tickOffset);
 	    bool IsComplete();
@@ -111,20 +123,47 @@ namespace NumbersCore.Primitives
     public enum TransformKind
     {
 	    None, // leave repeat in place
-	    AppendAll, // repeat are added together ('regular' multiplication)
+
+        Negate,
+        TogglePolarity,
+        FlipInPlace,
+        MirrorOnUnit,
+        MirrorOnUnot,
+        MirrorOnStart,
+        MirrorOnEnd,
+        FilterUnit, // always 0 to r value
+        FilterUnot, // always 0 to i value
+        FilterStart, // depends on polarity
+        FilterEnd, // depends on polarity
+        And,
+        Or,
+        Not,
+        Xor, // 16 binary truth table ops
+
+        // Binary
+        Add,
+        Subtract,
+        Multiply,
+        Divide,
+        PowerAdd,
+        PowerMultiply,
+        Reciprocal,
+
+        AppendAll, // repeat are added together ('regular' multiplication)
 	    MultiplyAll, // repeat are multiplied together (exponents)
 	    Blend, // multiply as in area, blend from unot to unit
         Average,
-        Power,
         Root,
-        Multiply,
-        Divide,
-        Add,
-        Subtract,
         Wedge,
         DotProduct,
         GeometricProduct,
-
+    }
+    public static class TransformKindExtensions
+    {
+        public static bool IsUnary(this TransformKind kind)
+        {
+            return (kind > TransformKind.None) && (kind < TransformKind.Add);
+        }
     }
 
     // todo: Evaluation of two segments are very much like the 16 bool operations, probably the same.

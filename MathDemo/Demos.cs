@@ -77,8 +77,7 @@ namespace MathDemo
             var hNum = hDomain.CreateNumberFromFloats(2, 9);
             var vNum = vDomain.CreateNumberFromFloats(3, 6);
 
-            var hSel = new Selection(hNum);
-            Transform transform = Brain.AddTransform(hSel, vNum, TransformKind.Blend);
+            Transform transform = Brain.AddTransform(hNum, vNum, TransformKind.Multiply);
 
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 300, 0, 600, 600);
             wm.AddHorizontal(hDomain);
@@ -86,7 +85,7 @@ namespace MathDemo
 
             CreateSimilarDomain(hDomain, 1f, 20, hNum.Focal);
             CreateSimilarDomain(hDomain, 1.08f, 20, vNum.Focal);
-            CreateSimilarDomain(hDomain, 1.2f, 100, transform.Value.Focal);
+            CreateSimilarDomain(hDomain, 1.2f, 100, transform.Result.Focal);
 
             return wm;
         }
@@ -112,11 +111,10 @@ namespace MathDemo
 
             var vNum = vDomain.CreateNumberFromFloats(0, 1.25f);
 
-            var hSel = new Selection(hNum.Number);
-            Transform transform = Brain.AddTransform(hSel, vNum.Number, TransformKind.Blend);
+            Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, TransformKind.Multiply);
             var tm = wm.GetOrCreateTransformMapper(transform);
             tm.DoRender = false;
-            var mNum = mDomain.Domain.AddNumber(transform.Value);
+            var mNum = mDomain.Domain.AddNumber(transform.Result);
 
             wm.Workspace.AddDomains(true, hDomain.Domain, vDomain.Domain, mDomain.Domain);
             //var speed = 0f;

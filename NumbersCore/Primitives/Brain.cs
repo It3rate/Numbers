@@ -68,9 +68,9 @@ namespace NumbersCore.Primitives
 		    trait.Brain = null;
 		    return TraitStore.Remove(trait.Id);
 	    }
-        public Transform AddTransform(Selection selection, Number repeats, TransformKind kind)
+        public Transform AddTransform(Number left, Number repeats, TransformKind kind)
 	    {
-		    var result = new Transform(selection, repeats, kind);
+		    var result = new Transform(left, repeats, kind);
 		    TransformStore.Add(result.Id, result);
 		    return result;
 	    }

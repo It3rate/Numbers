@@ -16,8 +16,8 @@ namespace Numbers.Mappers
         public Transform Transform => (Transform)MathElement;
         private List<SKPoint[]> PolyShapes { get; } = new List<SKPoint[]>();
 
-		private SKDomainMapper SelectionMapper => WorkspaceMapper.DomainMapper(Transform.Source[0].Domain);
-		private SKDomainMapper RepeatMapper => WorkspaceMapper.DomainMapper(Transform.Change.Domain);
+		private SKDomainMapper SelectionMapper => WorkspaceMapper.DomainMapper(Transform.Left.Domain);
+		private SKDomainMapper RepeatMapper => WorkspaceMapper.DomainMapper(Transform.Right.Domain);
 
         private SKPoint SKOrigin => SelectionMapper.BasisSegment.StartPoint;
 
@@ -47,16 +47,13 @@ namespace Numbers.Mappers
         }
         private void CalculateValue()
         {
-            var selNum = Transform.Source[0];
-            var repNum = Transform.Change;
-            Transform.Value.SetWith(selNum);
-            Transform.Value.Multiply(repNum);
+            Transform.Apply();
         }
         public void DrawMultiply()
         {
             PolyShapes.Clear();
-            var selNum = Transform.Source[0];
-            var repNum = Transform.Change;
+            var selNum = Transform.Left;
+            var repNum = Transform.Right;
 
             var selDr = SelectionMapper;
             var repDr = RepeatMapper;
@@ -84,7 +81,7 @@ namespace Numbers.Mappers
             DrawPolyshape(r_si >= 0, unotBA_Brush, false, r_si_shape);
 
             // draw product boxes
-            var ev = Transform.Value.EndValue;
+            var ev = Transform.Result.EndValue;
             var esv = Math.Sqrt(Math.Abs(ev));
             var ep0 = selDr.PointAt(esv);
             var ep1 = repDr.PointAt(esv);
@@ -93,7 +90,7 @@ namespace Numbers.Mappers
             var etxt = $"{ev:0.00}";
             Canvas.DrawText(etxt, ep0.X - 30, ep1.Y - 4, Pens.UnitMarkerText);
 
-            var iv = Transform.Value.StartValue;
+            var iv = Transform.Result.StartValue;
             var isv = Math.Sqrt(Math.Abs(iv));
             var ip0 = selDr.PointAt(-isv);
             var ip1 = repDr.PointAt(isv);
@@ -109,8 +106,8 @@ namespace Numbers.Mappers
         public void DrawX()
         {
             PolyShapes.Clear();
-            var selNum = Transform.Source[0];
-            var repNum = Transform.Change;
+            var selNum = Transform.Left;
+            var repNum = Transform.Right;
             var selDr = SelectionMapper;
             var repDr = RepeatMapper;
 
@@ -256,8 +253,8 @@ namespace Numbers.Mappers
 			var org = SKOrigin;
 			var unitLen = RepeatMapper.BasisSegment.Length;
 
-			var rNum = Transform.Change.Value;
-            var sNum = Transform.Source[0].Value;
+			var rNum = Transform.Right.Value;
+            var sNum = Transform.Left.Value;
             var prod = rNum * sNum;
 
             var ri = (float)rNum.Start;

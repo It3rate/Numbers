@@ -218,26 +218,29 @@ namespace Numbers.Utils
 
         public SKPoint ProjectPointOnto(SKPoint p, bool clamp = true)
         {
-            SKPoint result;
-            var e1 = Vector;
-            var e2 = p - StartPoint;
-            var dp = e1.DotProduct(e2);
-            var len2 = e1.SquaredLength();
-            if (len2 < 0.1f)
+            SKPoint result = StartPoint; // if seg is point, return point
+            if (Length != 0)
             {
-                result = p;
-            }
-            else
-            {
-                var x = StartPoint.X + (dp * e1.X) / len2;
-                var y = StartPoint.Y + (dp * e1.Y) / len2;
-                if (clamp)
+                var e1 = Vector;
+                var e2 = p - StartPoint;
+                var dp = e1.DotProduct(e2);
+                var len2 = e1.SquaredLength();
+                if (len2 < 0.1f)
                 {
-                    x = (x < StartPoint.X && x < EndPoint.X) ? (float)Math.Min(StartPoint.X, EndPoint.X) : (x > StartPoint.X && x > EndPoint.X) ? (float)Math.Max(StartPoint.X, EndPoint.X) : x;
-                    y = (y < StartPoint.Y && y < EndPoint.Y) ? (float)Math.Min(StartPoint.Y, EndPoint.Y) : (y > StartPoint.Y && y > EndPoint.Y) ? (float)Math.Max(StartPoint.Y, EndPoint.Y) : y;
+                    result = p;
                 }
+                else
+                {
+                    var x = StartPoint.X + (dp * e1.X) / len2;
+                    var y = StartPoint.Y + (dp * e1.Y) / len2;
+                    if (clamp)
+                    {
+                        x = (x < StartPoint.X && x < EndPoint.X) ? (float)Math.Min(StartPoint.X, EndPoint.X) : (x > StartPoint.X && x > EndPoint.X) ? (float)Math.Max(StartPoint.X, EndPoint.X) : x;
+                        y = (y < StartPoint.Y && y < EndPoint.Y) ? (float)Math.Min(StartPoint.Y, EndPoint.Y) : (y > StartPoint.Y && y > EndPoint.Y) ? (float)Math.Max(StartPoint.Y, EndPoint.Y) : y;
+                    }
 
-                result = new SKPoint(x, y);
+                    result = new SKPoint(x, y);
+                }
             }
 
             return result;
