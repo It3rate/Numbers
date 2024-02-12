@@ -15,7 +15,7 @@ namespace Numbers.Mappers
 	public class SKDomainMapper : SKMapper
 	{
 	    public Domain Domain => (Domain)MathElement;
-        public SKNumberMapper BasisNumberMapper => NumberMapper(Domain.BasisNumber);
+        public SKNumberMapper BasisNumberMapper => NumberMapperFor(Domain.BasisNumber);
 	    public Number BasisNumber => Domain.BasisNumber;
         public SKSegment BasisSegment => BasisNumberMapper.Guideline;
         public SKSegment InvertedBasisSegment => BasisNumberMapper.InvertedGuideline;
@@ -48,7 +48,7 @@ namespace Numbers.Mappers
         public SKDomainMapper(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
 	    {
 		    var unit = Domain.BasisNumber;
-		    var unitMapper = NumberMapper(unit);
+		    var unitMapper = NumberMapperFor(unit);
 		    unitMapper.Guideline.Reset(guideline.ProjectPointOnto(unitSegment.StartPoint), guideline.ProjectPointOnto(unitSegment.EndPoint));
 	    }
         public void FlipRenderPerspective()
@@ -71,7 +71,7 @@ namespace Numbers.Mappers
             var numbers = new List<SKNumberMapper>();
             foreach (var numberId in ValidNumberIds)
             {
-                numbers.Add(NumberMapper(numberId));
+                numbers.Add(NumberMapperFor(numberId));
             }
             numbers.Sort((x, y) => x.OrderIndex.CompareTo(y.OrderIndex));
             foreach (var nm in numbers)
@@ -79,8 +79,8 @@ namespace Numbers.Mappers
                 yield return nm;
             }
         }
-        public SKNumberMapper NumberMapper(Number number) => GetOrCreateNumberMapper(number);
-        public SKNumberMapper NumberMapper(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
+        public SKNumberMapper NumberMapperFor(Number number) => GetOrCreateNumberMapper(number);
+        public SKNumberMapper NumberMapperFor(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
 
         protected Dictionary<int, SKNumberSetMapper> NumberSetMappers = new Dictionary<int, SKNumberSetMapper>();
 
@@ -150,11 +150,17 @@ namespace Numbers.Mappers
         #endregion
 
         public override void Reset(SKPoint startPoint, SKPoint endPoint)
-	    {
+        {
             base.Reset(startPoint, endPoint);
             AddValidNumbers();
-	    }
-	    public SKSegment SegmentAlongGuideline(Range ratio) => Guideline.SegmentAlongLine(ratio);
+        }
+        public void Recalibrate()
+        {
+            var mmr = Domain.MinMaxRange;
+            var basisGuide = BasisNumberMapper.Guideline;
+            Guideline.Reset(basisGuide.PointAlongLine(-mmr.Start), basisGuide.PointAlongLine(mmr.End));
+        }
+        public SKSegment SegmentAlongGuideline(Range ratio) => Guideline.SegmentAlongLine(ratio);
         public Range RangeFromSegment(SKSegment segment)
         {
             var range = BasisSegment.RatiosAsBasis(segment);
@@ -238,7 +244,7 @@ namespace Numbers.Mappers
 	    {
 		    if (ShowBasis)
 		    {
-			    NumberMapper(Domain.BasisNumber).DrawUnit(!ShowInfoOnTop, ShowPolarity);
+			    NumberMapperFor(Domain.BasisNumber).DrawUnit(!ShowInfoOnTop, ShowPolarity);
             }
         }
         protected virtual void DrawMarkers()

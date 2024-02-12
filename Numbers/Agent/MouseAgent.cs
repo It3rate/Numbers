@@ -560,6 +560,24 @@ namespace Numbers.Agent
                 Workspace.AdjustFocalTickSizeBy(ActiveDomainMapper.Domain, -sz);
             }
         }
+        public void ExpandMinMax()
+        {
+            var sz = _isShiftDown ? 4 : 1;
+            if (ActiveDomainMapper != null)
+            {
+                Workspace.AdjustMinMaxBy(ActiveDomainMapper.Domain, sz);
+                ActiveDomainMapper.Recalibrate();
+            }
+        }
+        public void ContractMinMax()
+        {
+            var sz = _isShiftDown ? 4 : 1;
+            if (ActiveDomainMapper != null)
+            {
+                Workspace.AdjustMinMaxBy(ActiveDomainMapper.Domain, -sz);
+                ActiveDomainMapper.Recalibrate();
+            }
+        }
         private void ToggleDomainNumberOffsets()
         {
             if (ActiveDomainMapper != null)
@@ -682,6 +700,12 @@ namespace Numbers.Agent
                     break;
                 case Keys.OemPeriod: // >
                     AddTick();
+                    break;
+                case Keys.OemOpenBrackets: // [
+                    ContractMinMax();
+                    break;
+                case Keys.OemCloseBrackets: // ]
+                    ExpandMinMax();
                     break;
             }
             SetSelectable(UIMode);

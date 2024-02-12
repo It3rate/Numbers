@@ -180,7 +180,18 @@ namespace NumbersCore.Primitives
                 num.Value = ranges[index++];
             }
         }
-
+        public int AdjustMinMaxBy(Domain domain, int units)
+        {
+            var result = 0;
+            var mmVal = domain.MinMaxNumber.Value;
+            if ((mmVal.Start + units >= 1) && (mmVal.End + units >= 1))
+            {
+                mmVal += new Range(units, units);
+                domain.MinMaxNumber.Value = mmVal;
+                result = units;
+            }
+            return result;
+        }
         public void ClearAll()
         {
             ActiveIds.Clear();
