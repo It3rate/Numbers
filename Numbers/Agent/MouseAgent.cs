@@ -397,7 +397,7 @@ namespace Numbers.Agent
         }
 
 
-        private SKDomainMapper CreateDomain(SKSegment seg, int rangeSize = 5)
+        private SKDomainMapper CreateDomain(SKSegment seg, int rangeSize = 4)
         {
             var newDomain = Domain.CreateDomain("default", 4, rangeSize);
             var result = WorkspaceMapper.AddDomain(newDomain, seg);

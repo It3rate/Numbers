@@ -150,7 +150,6 @@ namespace Numbers.Mappers
                     {
                         continue; // help with selecting unit drag multiply when M pressed
                     }
-                    Trace.WriteLine(input);
 		            if (!isSameMapper && input.DistanceTo(seg.StartPoint) < maxDist)
 		            {
 			            highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point, nm.Number.Value);
