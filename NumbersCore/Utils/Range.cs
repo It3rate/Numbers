@@ -22,7 +22,16 @@ namespace NumbersCore.Utils
         public double Start { get; set; }
         public double End { get; set; }
         private readonly bool _hasValue;
-
+        public double UnitValue
+        {
+            get => IsAligned ? End : Start;
+            set { if (IsAligned) { End = value; } else { Start = value; } }
+        }
+        public double UnotValue
+        {
+            get => IsAligned ? Start : End;
+            set { if (IsAligned) { Start = value; } else { End = value; } }
+        }
         public float StartF => (float)Start;
         public float EndF => (float)End;
         public float RenderStart => (float)(IsAligned ? Start : -Start);
@@ -120,13 +129,25 @@ namespace NumbersCore.Utils
         public static Range Divide(Range dividend, Range divisor) => dividend / divisor;
 
         public static Range operator -(Range value) => new Range(-value.Start, -value.End);
-        public static Range operator +(Range left, Range right) => new Range(left.Start + right.Start, left.End + right.End);
-        public static Range operator -(Range left, Range right) => new Range(left.Start - right.Start, left.End - right.End);
+        public static Range operator +(Range left, Range right)
+        {
+            var result = right.Clone();
+            result.UnitValue += left.UnitValue;
+            result.UnotValue += left.UnotValue;
+            return result;
+        }
+        public static Range operator -(Range left, Range right)
+        {
+            var result = right.Clone();
+            result.UnitValue -= left.UnitValue;
+            result.UnotValue -= left.UnotValue;
+            return result;
+        }
         public static Range operator *(Range left, Range right)
         {
             var result = new Range(left.Start * right.End + left.End * right.Start, left.End * right.End - left.Start * right.Start);
             result.Polarity = left.Polarity;
-            result.SolvePolarityWith(right.Polarity);
+            result.SolvePolarityWith(right.Polarity); // probably can compute this properly with unit/unot values.
             return result;
         }
         public static Range operator /(Range left, Range right)

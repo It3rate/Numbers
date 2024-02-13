@@ -111,7 +111,7 @@ namespace MathDemo
 
             var vNum = vDomain.CreateNumberFromFloats(0, 1.25f);
 
-            Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, TransformKind.Multiply);
+            Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, TransformKind.Add);
             var tm = wm.GetOrCreateTransformMapper(transform);
             tm.DoRender = false;
             var mNum = mDomain.Domain.AddNumber(transform.Result);
