@@ -283,7 +283,17 @@ namespace Numbers.Mappers
 			step *= topDir;
             foreach(var nm in OrderedValidNumbers())
             {
-                DrawNumber(nm, offset + topDir * 2);
+                if(nm.Number is NumberSet numberSet)
+                {
+                    foreach(var num in numberSet.InternalNumbers())
+                    {
+                        DrawNumber(new SKNumberMapper(Agent, num), offset + topDir * 2);
+                    }
+                }
+                else
+                {
+                    DrawNumber(nm, offset + topDir * 2);
+                }
                 offset += step;
             }
         }

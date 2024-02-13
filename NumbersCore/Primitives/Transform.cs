@@ -96,6 +96,15 @@ namespace NumbersCore.Primitives
                 case TransformKind.Divide:
                     Result.Divide(Right);
                     break;
+                case TransformKind.And:
+                    Result.And(Right);
+                    break;
+                case TransformKind.Or:
+                    Result.Or(Right);
+                    break;
+                case TransformKind.Nand:
+                    Result.Nand(Right);
+                    break;
             }
 		    OnEndTransformEvent(this);
 		    IsActive = false;
@@ -157,6 +166,7 @@ namespace NumbersCore.Primitives
         And,
         Or,
         Not,
+        Nand,
         Xor, // 16 binary truth table ops
 
         // Binary
@@ -203,6 +213,18 @@ namespace NumbersCore.Primitives
                     break;
                 case TransformKind.PowerMultiply:
                     result = "^";
+                    break;
+                case TransformKind.And:
+                    result = "&";
+                    break;
+                case TransformKind.Or:
+                    result = "|";
+                    break;
+                case TransformKind.Not:
+                    result = "!";
+                    break;
+                case TransformKind.Nand:
+                    result = "^&";
                     break;
             }
             return result;

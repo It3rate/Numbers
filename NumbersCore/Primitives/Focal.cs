@@ -152,11 +152,31 @@ namespace NumbersCore.Primitives
         public static long MaxStart(Focal p, Focal q) => Math.Max(p.StartPosition, q.StartPosition);
         public static long MinEnd(Focal p, Focal q) => Math.Min(p.EndPosition, q.EndPosition);
         public static long MaxEnd(Focal p, Focal q) => Math.Max(p.EndPosition, q.EndPosition);
+        public static Focal Intersection(Focal p, Focal q)
+        {
+            Focal result = null;
+            var start = MinStart(p, q);
+            long end = MaxEnd(p, q);
+            if(end >= start)
+            {
+                result = new Focal(MinStart(p, q), MaxEnd(p, q));
+            }
+            return result;
+        }
         public static Focal Overlap(Focal p, Focal q)
         {
-	        var start = Math.Max(p.Min, q.Min);
-	        var end = Math.Min(p.Max, q.Max);
-	        return (start >= end) ? new Focal(0, 0) : new Focal(start, end);
+            var start = Math.Max(p.Min, q.Min);
+            var end = Math.Min(p.Max, q.Max);
+            return (start >= end) ? new Focal(0, 0) : new Focal(start, end);
+        }
+        public void MakeForward()
+        {
+            if(EndPosition < StartPosition)
+            {
+                var temp = StartPosition;
+                StartPosition = EndPosition;
+                EndPosition = temp;
+            }
         }
         public static Focal Extent(Focal p, Focal q)
         {
@@ -170,7 +190,7 @@ namespace NumbersCore.Primitives
         {
 	        return new Focal[0];
         }
-        public static Focal[] Not(Focal p)
+        public static Focal[] UnaryNot(Focal p)
         {
 	        // If p starts at the beginning of the time frame and ends at the end, A is always true and the "not A" relationship is empty
 	        if (p.StartPosition == 0 && p.EndPosition == long.MaxValue)
@@ -281,8 +301,8 @@ namespace NumbersCore.Primitives
             else
             {
                 // If the Focals overlap, return the complement of the union in each Focal
-                Focal[] complement1 = Nor(p, orResult[0]);
-                Focal[] complement2 = Nor(q, orResult[0]);
+                Focal[] complement1 = Nand(p, orResult[0]);
+                Focal[] complement2 = Nand(q, orResult[0]);
                 result.AddRange(complement1);
                 result.AddRange(complement2);
             }
@@ -310,7 +330,7 @@ namespace NumbersCore.Primitives
         }
         public static Focal[] Not_B(Focal p, Focal q)
         {
-	        return Not(q);
+	        return UnaryNot(q);
         }
         public static Focal[] B_Implies_A(Focal p, Focal q)
         {
@@ -325,7 +345,7 @@ namespace NumbersCore.Primitives
         }
         public static Focal[] Not_A(Focal p, Focal q)
         {
-	        return Not(p);
+	        return UnaryNot(p);
         }
         public static Focal[] A_Implies_B(Focal p, Focal q)
         {
@@ -401,7 +421,7 @@ namespace NumbersCore.Primitives
 
         public long Never(long a) { return 0; } // Null
         public long Transfer(long a) { return a; }
-        public long Not(long a) { return ~a; }
+        public long UnaryNot(long a) { return ~a; }
         public long Identity(long a) { return -1; }
 
         public long Never(long a, long b) { return 0; } // Null

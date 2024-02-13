@@ -643,8 +643,8 @@ namespace Numbers.Agent
                     UIMode = UIMode.Any;
                     break;
                 case Keys.F:
-	                WorkspaceMapper.ShowFractions = !WorkspaceMapper.ShowFractions;
-	                break;
+                    WorkspaceMapper.ShowFractions = !WorkspaceMapper.ShowFractions;
+                    break;
                 case Keys.F5:
                     Demos.Reload(this);
                     break;
@@ -659,9 +659,9 @@ namespace Numbers.Agent
                     break;
                 // N: Create Number
                 case Keys.P:
-	                Runner.TogglePause();
+                    Runner.TogglePause();
                     break;
-                    // R: Rotate Domain
+                // R: Rotate Domain
                 case Keys.R:
                     if (_isControlDown)
                     {
@@ -698,7 +698,14 @@ namespace Numbers.Agent
                     }
                     break;
                 case Keys.D1:
-                    ToggleShowNumbers();
+                    if (_isShiftDown && ActiveTransformMapper != null)
+                    {
+                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Nand;
+                    }
+                    else
+                    {
+                        ToggleShowNumbers();
+                    }
                     break;
                 case Keys.D2:
                     ToggleBasisVisible();
@@ -735,10 +742,21 @@ namespace Numbers.Agent
                     break;
                 case Keys.OemBackslash:
                 case Keys.Divide:
-                case Keys.OemPipe:
                     if (ActiveTransformMapper != null)
                     {
                         ActiveTransformMapper.Transform.TransformKind = TransformKind.Divide;
+                    }
+                    break;
+                case Keys.OemPipe:
+                    if (ActiveTransformMapper != null)
+                    {
+                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Or;
+                    }
+                    break;
+                case Keys.D7:
+                    if (_isShiftDown && ActiveTransformMapper != null)
+                    {
+                        ActiveTransformMapper.Transform.TransformKind = TransformKind.And;
                     }
                     break;
                 case Keys.Oemtilde:
