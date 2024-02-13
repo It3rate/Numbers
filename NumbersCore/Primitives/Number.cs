@@ -382,11 +382,11 @@ namespace NumbersCore.Primitives
         public override string ToString()
 		{
 			var v = Value;
-            var prefix = IsAligned ? "" : "~";
-            var startSuffix = IsAligned ? "i" : "r";
-            var endSuffix = IsAligned ? "r" : "i";
             var midSign = v.End > 0 ? " + " : " ";
-            return $"{prefix}({v.Start:0.##}{startSuffix}{midSign}{v.End:0.##}{endSuffix})";
+            var result = IsAligned ?
+                $"({v.UnotValue:0.##}i{midSign}{v.UnitValue}r)" :
+                $"~({v.UnitValue:0.##}r{midSign}{v.UnotValue:0.##}i)";
+            return result;
 		}
     }
 }

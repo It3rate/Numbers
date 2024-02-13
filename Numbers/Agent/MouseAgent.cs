@@ -177,6 +177,14 @@ namespace Numbers.Agent
             return true;
         }
 
+        private void UpdateText()
+        {
+            Text = ActiveNumberMapper?.Number.ToString() ?? "";
+            if (Runner.lbEquation != null)
+            {
+                Runner.lbEquation.Text = Text;
+            }
+        }
         public bool MouseMove(MouseEventArgs e)
         {
 	        if (IsPaused) {return false;}
@@ -194,12 +202,7 @@ namespace Numbers.Agent
             {
                 result = MouseDrag(mousePoint);
             }
-
-            Text = ActiveNumberMapper?.Number.ToString() ?? "";
-            if (Runner.lbEquation != null)
-            {
-                Runner.lbEquation.Text = Text;
-            }
+            UpdateText();
             return true;
         }
         public bool MouseDrag(SKPoint mousePoint)
@@ -755,6 +758,7 @@ namespace Numbers.Agent
                 PreviousMode = curMode;
             }
 
+            UpdateText();
             return true;
         }
         public bool KeyUp(KeyEventArgs e)

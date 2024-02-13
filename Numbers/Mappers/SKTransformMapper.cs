@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Xml.Linq;
 using Numbers.Agent;
 using Numbers.Renderer;
 using Numbers.Utils;
@@ -46,7 +47,7 @@ namespace Numbers.Mappers
             }
             else if(Agent.ActiveTransformMapper == this)
             {
-                DrawEquation(Transform.Left, Transform.Right, new SKPoint(150, 100), Pens.TextBrush);
+                DrawEquation(new SKPoint(150, 100), Pens.TextBrush);
             }
         }
         private void CalculateValue()
@@ -103,7 +104,7 @@ namespace Numbers.Mappers
             var itxt = $"{iv:0.00}i";
             Canvas.DrawText(itxt, ip0.X, ip1.Y - 4, Pens.UnotMarkerText);
 
-            DrawEquation(Transform.Left, Transform.Right, new SKPoint(150, 100), Pens.TextBrush);
+            DrawEquation(new SKPoint(150, 100), Pens.TextBrush);
             DrawAreaValues(selNum, repNum);
         }
         public void DrawX()
@@ -144,7 +145,7 @@ namespace Numbers.Mappers
             DrawPolyshape(ri_si >= 0, unitPosPen, true, s0Unot, r0Unot, org);
             DrawPolyshape(r_s >= 0, unitNegPen, true, s1Unot, r1Unot, org);
 
-            DrawEquation(selNum, repNum, new SKPoint(900, 500), Pens.TextBrush);
+            DrawEquation(new SKPoint(900, 500), Pens.TextBrush);
             DrawAreaValues(selNum, repNum);
             //DrawUnitBox(GetUnitBoxPoints(), unitRect_Pen);
             //DrawXFormedUnitBox(GetUnitBoxPoints(), unitXformRect_Pen);
@@ -163,19 +164,20 @@ namespace Numbers.Mappers
 				Renderer.FillPolyline(isUnit ? Pens.BackHatch : Pens.ForeHatch, points);
 			}
 		}
-		private void DrawEquation(Number sel, Number rep, SKPoint location, SKPaint paint)
+		private void DrawEquation(SKPoint location, SKPaint paint)
 		{
             var symbol = Transform.TransformKind.GetSymbol();
-			var selTxt = $"  ({sel.StartValue:0.00}i → {sel.EndValue:0.00})";
-			var repTxt = $"{symbol} ({rep.StartValue:0.00}i → {rep.EndValue:0.00})";
-			var result = sel.Value * rep.Value;
-			var resultTxt = $"= ({result.Start:0.00}i → {result.End:0.00})";
-			//var areaTxt = $"area:  {result.Start + result.End:0.00}";
 
-			Canvas.DrawText(selTxt, location.X, location.Y, Pens.Seg0TextBrush);
-			Canvas.DrawText(repTxt, location.X, location.Y + 30, Pens.Seg1TextBrush);
-			Canvas.DrawLine(location.X, location.Y + 38, location.X + 160, location.Y + 40, Pens.TextFractionPen);
-			Canvas.DrawText(resultTxt, location.X, location.Y + 65, Pens.TextBrush);
+            var selTxt = Transform.Left.ToString();
+			var repTxt = Transform.Right.ToString();
+			var resultTxt = Transform.Result.ToString();
+            var numOffset = 28;
+
+			Canvas.DrawText(selTxt, location.X + numOffset, location.Y, Pens.Seg0TextBrush);
+            Canvas.DrawText(symbol, location.X, location.Y + 30, Pens.Seg1TextBrush);
+            Canvas.DrawText(repTxt, location.X + numOffset, location.Y + 30, Pens.Seg1TextBrush);
+            Canvas.DrawLine(location.X, location.Y + 38, location.X + 160, location.Y + 40, Pens.TextFractionPen);
+			Canvas.DrawText(resultTxt, location.X + numOffset, location.Y + 65, Pens.TextBrush);
 			//Canvas.DrawText(areaTxt, location.X, location.Y + 95, unitText);
 		}
         public void DrawTextOnSegment(string txt, SKPoint startPt, SKPoint endPt, SKPaint paint, bool addBkg = false)
