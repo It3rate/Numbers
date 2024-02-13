@@ -278,7 +278,7 @@ namespace Numbers.Agent
                             {
                                 // expand from center
                                 var scale = (curT - clickT) / 2f;
-                                nm.Number.Value = new Range(orgVal.Start + scale, orgVal.End + scale);
+                                nm.Number.Value = new Range(orgVal.Start + scale, orgVal.End + scale, nm.Number.Polarity == Polarity.Aligned);
                             }
                             else
                             {
