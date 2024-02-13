@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NumbersCore.CoreConcepts.Counter;
 using NumbersCore.Utils;
 
@@ -39,6 +40,18 @@ namespace NumbersCore.Primitives
         public Evaluation HaltCondition { get; set; } // the evaluation that decides if the transform can continue
         public bool IsActive { get; private set; }
 
+        public IEnumerable<Number> UsedNumbers()
+        {
+            yield return Left;
+
+            if (!IsUnary)
+            {
+                yield return Right;
+            }
+
+            yield return Result;
+        }
+
         public Transform(Number left, Number right, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
         {
 	        Left = left;
@@ -60,7 +73,7 @@ namespace NumbersCore.Primitives
             ApplyEnd();
         }
 	    public void ApplyStart()
-	    {
+        {
             Result.SetWith(Left);
             OnStartTransformEvent(this);
 		    IsActive = true;

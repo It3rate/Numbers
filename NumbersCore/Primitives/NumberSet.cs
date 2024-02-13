@@ -11,10 +11,17 @@ namespace NumbersCore.Primitives
     /// <summary>
     /// Represents a boolean type evaluation of two or more numbers.
     /// This type of number can have more than one segment, but segments can never overlap.
-    /// All Numbers are probably NumberSets, with Unit being selected and Unot being unselected - may adjust.
+    /// All Numbers are probably NumberSets, with zero based Unit and Unot values cancelling on overlap.
     /// </summary>
     public class NumberSet : IMathElement
-    {
+    { 
+        // todo: subclass number, and use base focal as the total segment, then internally divided into the masked sections.'
+        // should be able to access internal focals as numbers, and there may in fact be none (A and B with no overlap)
+        // should be able to access and update proportionally, where 8 even subdivisions will remain so even when changing the base number.
+        // Q. are internal focals able to have polarity? probably not?
+        // these focals seem similar to steps when sectioning a transition (repeated adds are steps, repeated mult powers are steps), intervals
+        // seems they can be recorded as on/off/on/off along the line, preventing potential overlaps you might get in focals.
+        // seems a good way to encode repetition and even counting.
 	    public MathElementKind Kind => MathElementKind.NumberSet;
 	    public int Id { get; internal set; }
 	    public int CreationIndex => Id - (int)Kind - 1;
@@ -27,7 +34,8 @@ namespace NumbersCore.Primitives
 		    get => Domain.Id;
 		    set => Domain = Domain.Trait.DomainStore[value];
 	    }
-        private List<Focal> Focals { get; } = new List<Focal>(); // todo: Focals should have no overlap and always be sorted
+        // todo: Focals should have no overlap and always be sorted
+        private List<Focal> Focals { get; } = new List<Focal>(); 
 
         public NumberSet(Domain domain, params Focal[] focals)
         {

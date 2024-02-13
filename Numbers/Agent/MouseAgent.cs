@@ -111,6 +111,15 @@ namespace Numbers.Agent
 
         public SKPoint GetTransformedPoint(SKPoint point) => point; // will be matrix etc
 
+        private void UpdateText(Highlight highlight)
+        {
+            Text = highlight?.GetNumberMapper()?.Number.ToString() ?? "";
+            if (Runner.lbEquation != null)
+            {
+                Runner.lbEquation.Text = Text;
+            }
+        }
+
         private Number _initialSelectionNum;
         private Number _initialBasisNum;
         public SKSegment DragHighlight;
@@ -173,18 +182,11 @@ namespace Numbers.Agent
                 }
             }
 
+            UpdateText(_highlight);
             IsDown = true;
             return true;
         }
 
-        private void UpdateText()
-        {
-            Text = ActiveNumberMapper?.Number.ToString() ?? "";
-            if (Runner.lbEquation != null)
-            {
-                Runner.lbEquation.Text = Text;
-            }
-        }
         public bool MouseMove(MouseEventArgs e)
         {
 	        if (IsPaused) {return false;}
@@ -202,7 +204,10 @@ namespace Numbers.Agent
             {
                 result = MouseDrag(mousePoint);
             }
-            UpdateText();
+            else
+            {
+                UpdateText(_highlight);
+            }
             return true;
         }
         public bool MouseDrag(SKPoint mousePoint)
@@ -330,7 +335,7 @@ namespace Numbers.Agent
                         //dm.SetValueByHighlight(_highlight);
                     }
                 }
-
+                UpdateText(activeHighlight);
             }
             return true;
         }
@@ -372,6 +377,7 @@ namespace Numbers.Agent
 
             OnSelectionChange?.Invoke(this, new EventArgs());
             ClearMouse();
+            UpdateText(SelBegin.ActiveHighlight);
 
             return true;
         }
@@ -758,7 +764,7 @@ namespace Numbers.Agent
                 PreviousMode = curMode;
             }
 
-            UpdateText();
+            UpdateText(_highlight);
             return true;
         }
         public bool KeyUp(KeyEventArgs e)
