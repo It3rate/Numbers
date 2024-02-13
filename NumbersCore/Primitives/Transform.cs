@@ -33,7 +33,7 @@ namespace NumbersCore.Primitives
         public int Steps { get; set; } = 1;
 	    public Number Left { get; set; } // the object being transformed
 	    public Number Right { get; set; } // the amount to transform (can change per repeat)
-        public Number Result { get; set; } // current result of transform
+        public NumberSet Result { get; set; } // current result of transform
 
         public UpCounter RepeatCounter { get; } = new UpCounter();
         public UpCounter StepCounter { get; } = new UpCounter();
@@ -56,7 +56,7 @@ namespace NumbersCore.Primitives
         {
 	        Left = left;
 	        Right = right;
-            Result = left.Clone(false);
+            Result = new NumberSet(Right.Domain.MinMaxNumber);// left.Clone(false);
 	        TransformKind = kind;
 	        Brain = right.Brain;
 	        Id = Brain.NextTransformId();

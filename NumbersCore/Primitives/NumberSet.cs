@@ -13,7 +13,7 @@ namespace NumbersCore.Primitives
     /// This type of number can have more than one segment, but segments can never overlap.
     /// All Numbers are probably NumberSets, with zero based Unit and Unot values cancelling on overlap.
     /// </summary>
-    public class NumberSet : IMathElement
+    public class NumberSet : Number, IMathElement
     { 
         // todo: subclass number, and use base focal as the total segment, then internally divided into the masked sections.'
         // should be able to access internal focals as numbers, and there may in fact be none (A and B with no overlap)
@@ -22,29 +22,20 @@ namespace NumbersCore.Primitives
         // these focals seem similar to steps when sectioning a transition (repeated adds are steps, repeated mult powers are steps), intervals
         // seems they can be recorded as on/off/on/off along the line, preventing potential overlaps you might get in focals.
         // seems a good way to encode repetition and even counting.
-	    public MathElementKind Kind => MathElementKind.NumberSet;
-	    public int Id { get; internal set; }
-	    public int CreationIndex => Id - (int)Kind - 1;
+	    public override MathElementKind Kind => MathElementKind.NumberSet;
 
-        public Brain Brain => Trait?.Brain;
-	    public virtual Trait Trait => Domain?.Trait;
-	    public virtual Domain Domain { get; set; }
-	    public int DomainId
-	    {
-		    get => Domain.Id;
-		    set => Domain = Domain.Trait.DomainStore[value];
-	    }
         // todo: Focals should have no overlap and always be sorted
         private List<Focal> Focals { get; } = new List<Focal>(); 
 
-        public NumberSet(Domain domain, params Focal[] focals)
+        public NumberSet(Number targetNumber, params Focal[] focals) : base(targetNumber.Focal, targetNumber.Polarity)
         {
-	        Domain = domain;
+            Domain = targetNumber.Domain;
 	        Focals.AddRange(focals);
             RemoveOverlaps();
         }
 
         public Focal[] GetFocals() => Focals.ToArray();
+
         public int Count => Focals.Count;
         public void Add(Focal focal) { Focals.Add(focal); RemoveOverlaps(); }
         public void Remove(Focal focal) => Focals.Remove(focal);
@@ -81,7 +72,6 @@ namespace NumbersCore.Primitives
                 Focals.AddRange(result);
             }
         }
-
 
         public void Reset(Focal[] focals)
         {

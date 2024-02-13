@@ -53,7 +53,7 @@
 	        Source = source;
 	        Target = target;
             FilterOperator = filterOperator;
-            Result = new NumberSet(Source.Domain);
+            Result = new NumberSet(target); // result should be calculated
         }
 
         /// <summary>
