@@ -53,6 +53,7 @@ namespace NumbersCore.Primitives
 	    public event TransformEventHandler TickTransformEvent;
 	    public event TransformEventHandler EndTransformEvent;
 
+        public bool Involves(Number num) => (Left.Id == num.Id || Right.Id == num.Id || Result.Id == num.Id);
         public void Apply()
         {
             ApplyStart();
@@ -104,6 +105,11 @@ namespace NumbersCore.Primitives
 	    {
 		    EndTransformEvent?.Invoke(this, e);
 	    }
+        public override string ToString()
+        {
+            var symbol = TransformKind.GetSymbol();
+            return $"{Left} {symbol} {Right} = {Result}";
+        }
     }
 
     public delegate void TransformEventHandler(object sender, ITransform e);
@@ -163,6 +169,30 @@ namespace NumbersCore.Primitives
         public static bool IsUnary(this TransformKind kind)
         {
             return (kind > TransformKind.None) && (kind < TransformKind.Add);
+        }
+        public static string GetSymbol(this TransformKind kind)
+        {
+            var result = "☼";
+            switch (kind)
+            {
+                case TransformKind.Add:
+                    result = "+";
+                    break;
+                case TransformKind.Negate:
+                case TransformKind.Subtract:
+                    result = "-";
+                    break;
+                case TransformKind.Multiply:
+                    result = "*";
+                    break;
+                case TransformKind.Divide:
+                    result = "/";
+                    break;
+                case TransformKind.PowerMultiply:
+                    result = "^";
+                    break;
+            }
+            return result;
         }
     }
 

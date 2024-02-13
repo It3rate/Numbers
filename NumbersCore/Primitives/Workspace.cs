@@ -11,7 +11,7 @@ namespace NumbersCore.Primitives
 	public class Workspace : IMathElement
     {
 	    private static int _idCounter = 0;
-	    public MathElementKind Kind => MathElementKind.Transform;
+	    public MathElementKind Kind => MathElementKind.Workspace;
 	    public int Id { get; }
 	    public int CreationIndex => Id - (int)Kind;
 
@@ -189,6 +189,19 @@ namespace NumbersCore.Primitives
                 mmVal += new Range(units, units);
                 domain.MinMaxNumber.Value = mmVal;
                 result = units;
+            }
+            return result;
+        }
+        public Transform TransformInvolving(Number num)
+        {
+            Transform result = null;
+            foreach (var tm in Brain.Transforms())
+            {
+                if (tm.Involves(num))
+                {
+                    result = tm;
+                    break;
+                }
             }
             return result;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Numbers.Mappers;
+using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;
 
@@ -33,6 +34,15 @@ namespace Numbers.Agent
             else if(Mapper is SKDomainMapper dm)
             {
                 result = dm;
+            }
+            return result;
+        }
+        public SKTransformMapper GetRelatedTransformMapper(SKWorkspaceMapper wm)
+        {
+            SKTransformMapper result = null;
+            if (Mapper is SKNumberMapper nm)
+            {
+                result = wm.TransformMapperInvolving(nm.Number);
             }
             return result;
         }

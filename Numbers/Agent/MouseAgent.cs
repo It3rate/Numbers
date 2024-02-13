@@ -32,6 +32,7 @@ namespace Numbers.Agent
 		public Control Control;
 		public CoreRenderer Renderer { get; }
 		public Runner Runner;
+        public string Text = "";
 
         public IDemos Demos { get; }
         public bool IsPaused { get; set; } = true;
@@ -117,7 +118,9 @@ namespace Numbers.Agent
 
         public bool IsCreatingDomain = false;
         public bool IsCreatingNumber = false;
+        public SKNumberMapper ActiveNumberMapper;
         public SKDomainMapper ActiveDomainMapper;
+        public SKTransformMapper ActiveTransformMapper;
         public bool MouseDown(MouseEventArgs e)
         {
             if(IsPaused){return false;}
@@ -132,7 +135,10 @@ namespace Numbers.Agent
             //Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
             //Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
 
+            ActiveNumberMapper = _highlight.GetNumberMapper();
             ActiveDomainMapper = _highlight.GetRelatedDomainMapper();
+            ActiveTransformMapper = _highlight.GetRelatedTransformMapper(WorkspaceMapper);
+
             if (e.Button == MouseButtons.Middle)
             {
                 StartPan();
@@ -187,6 +193,12 @@ namespace Numbers.Agent
             if (IsDown)
             {
                 result = MouseDrag(mousePoint);
+            }
+
+            Text = ActiveNumberMapper?.Number.ToString() ?? "";
+            if (Runner.lbEquation != null)
+            {
+                Runner.lbEquation.Text = Text;
             }
             return true;
         }
@@ -688,8 +700,37 @@ namespace Numbers.Agent
                 case Keys.D4:
                     ToggleGradientNumberline();
                     break;
+                case Keys.Oemplus:
+                    if(ActiveTransformMapper != null)
+                    {
+                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Add;
+                    }
+                    break;
+                case Keys.Subtract:
                 case Keys.OemMinus:
-                    NegateSelection();
+                    if (ActiveTransformMapper != null)
+                    {
+                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Subtract;
+                    }
+                    else
+                    {
+                        NegateSelection();
+                    }
+                    break;
+                case Keys.D8:
+                case Keys.Multiply:
+                    if (ActiveTransformMapper != null)
+                    {
+                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Multiply;
+                    }
+                    break;
+                case Keys.OemBackslash:
+                case Keys.Divide:
+                case Keys.OemPipe:
+                    if (ActiveTransformMapper != null)
+                    {
+                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Divide;
+                    }
                     break;
                 case Keys.Oemtilde:
                     FlipBasis();
@@ -777,6 +818,10 @@ namespace Numbers.Agent
 	        WorkspaceMappers.Clear();
             Brain.ClearAll();
             Runner.Clear();
+            Text = "";
+            ActiveNumberMapper = null;
+            ActiveDomainMapper = null;
+            ActiveTransformMapper = null;
         }
 
         public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)

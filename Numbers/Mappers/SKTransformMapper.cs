@@ -44,6 +44,10 @@ namespace Numbers.Mappers
             {
                 DrawMultiply();
             }
+            else if(Agent.ActiveTransformMapper == this)
+            {
+                DrawEquation(Transform.Left, Transform.Right, new SKPoint(150, 100), Pens.TextBrush);
+            }
         }
         private void CalculateValue()
         {
@@ -97,10 +101,9 @@ namespace Numbers.Mappers
             var iPen = iv < 0 ? unotNegPen : unotPosPen;
             DrawPolyshape(true, iPen, false, org, ip0, new SKPoint(ip0.X, ip1.Y), ip1);
             var itxt = $"{iv:0.00}i";
-            Canvas.DrawText(itxt, ip0.X, ip1.Y - 4, Pens.UnotMarkerText); 
+            Canvas.DrawText(itxt, ip0.X, ip1.Y - 4, Pens.UnotMarkerText);
 
-
-            DrawEquation(selNum, repNum, new SKPoint(200, 40), Pens.TextBrush);
+            DrawEquation(Transform.Left, Transform.Right, new SKPoint(150, 100), Pens.TextBrush);
             DrawAreaValues(selNum, repNum);
         }
         public void DrawX()
@@ -162,8 +165,9 @@ namespace Numbers.Mappers
 		}
 		private void DrawEquation(Number sel, Number rep, SKPoint location, SKPaint paint)
 		{
+            var symbol = Transform.TransformKind.GetSymbol();
 			var selTxt = $"  ({sel.StartValue:0.00}i → {sel.EndValue:0.00})";
-			var repTxt = $"* ({rep.StartValue:0.00}i → {rep.EndValue:0.00})";
+			var repTxt = $"{symbol} ({rep.StartValue:0.00}i → {rep.EndValue:0.00})";
 			var result = sel.Value * rep.Value;
 			var resultTxt = $"= ({result.Start:0.00}i → {result.End:0.00})";
 			//var areaTxt = $"area:  {result.Start + result.End:0.00}";
@@ -322,5 +326,11 @@ namespace Numbers.Mappers
 
         private static readonly SKPaint unitRect_Pen = CorePens.GetPen(SKColors.Wheat, 0.5f);
 		private static readonly SKPaint unitXformRect_Pen = CorePens.GetPen(SKColors.White, 1f);
+
+
+        public override string ToString()
+        {
+            return "tm: " + Transform.ToString();
+        }
     }
 }

@@ -44,6 +44,7 @@ namespace MathDemo
             _demos = new Demos(_workspace.Brain, _renderer);
             _mouseAgent = new MouseAgent(_workspace, _control, _renderer, _demos);
             _runner = _mouseAgent.Runner;
+            _runner.lbEquation = lbText;
             _ = Execute(null, 50);
         }
 

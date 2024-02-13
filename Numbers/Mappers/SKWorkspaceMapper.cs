@@ -33,6 +33,19 @@ namespace Numbers.Mappers
                 yield return tm;
             }
         }
+        public SKTransformMapper TransformMapperInvolving(Number num)
+        {
+            SKTransformMapper result = null;
+            foreach (var tm in _transformMappers.Values)
+            {
+                if (tm.Transform.Involves(num))
+                {
+                    result = tm;
+                    break;
+                }
+            }
+            return result;
+        }
 
         public SKPoint TopLeft
 	    {

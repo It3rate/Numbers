@@ -385,7 +385,8 @@ namespace NumbersCore.Primitives
             var prefix = IsAligned ? "" : "~";
             var startSuffix = IsAligned ? "i" : "r";
             var endSuffix = IsAligned ? "r" : "i";
-            return $"{prefix}[{v.Start:0.00}{startSuffix} : {v.End:0.00}{endSuffix}]";
+            var midSign = v.End > 0 ? " + " : " ";
+            return $"{prefix}({v.Start:0.##}{startSuffix}{midSign}{v.End:0.##}{endSuffix})";
 		}
     }
 }

@@ -32,11 +32,13 @@ namespace MathDemo
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CoreForm));
             this.corePanel = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
+            this.lbText = new System.Windows.Forms.Label();
             this.corePanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // corePanel
             // 
+            this.corePanel.Controls.Add(this.lbText);
             this.corePanel.Controls.Add(this.label1);
             this.corePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.corePanel.Location = new System.Drawing.Point(0, 0);
@@ -53,6 +55,18 @@ namespace MathDemo
             this.label1.Size = new System.Drawing.Size(286, 300);
             this.label1.TabIndex = 2;
             this.label1.Text = resources.GetString("label1.Text");
+            // 
+            // lbText
+            // 
+            this.lbText.AutoSize = true;
+            this.lbText.BackColor = System.Drawing.SystemColors.Window;
+            this.lbText.Font = new System.Drawing.Font("Trebuchet MS", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbText.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
+            this.lbText.Location = new System.Drawing.Point(822, 1295);
+            this.lbText.Name = "lbText";
+            this.lbText.Size = new System.Drawing.Size(192, 36);
+            this.lbText.TabIndex = 3;
+            this.lbText.Text = "(2i+4) * (-3i-2)";
             // 
             // CoreForm
             // 
@@ -73,6 +87,7 @@ namespace MathDemo
 
 		private System.Windows.Forms.Panel corePanel;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lbText;
     }
 }
 
