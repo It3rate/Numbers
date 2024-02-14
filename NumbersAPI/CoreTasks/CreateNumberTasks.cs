@@ -93,7 +93,7 @@ namespace NumbersAPI.CoreTasks
 		    {
 			    Number = Domain.CreateNumber(StartPosition, EndPosition, false);
 		    }
-		    Domain.AddNumber(Number);
+		    Domain.AddNumber(Number, true);
 	    }
 
 	    public override void UnRunTask()

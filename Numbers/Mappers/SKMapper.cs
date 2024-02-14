@@ -42,7 +42,9 @@ namespace Numbers.Mappers
 
         protected SKMapper(MouseAgent agent, IMathElement element, SKSegment guideline = default)
         {
-            Id = idCounter++;
+            Id = element.Id; // use wrapped element id
+            idCounter++; // just to track creation count
+
             Agent = agent;
 	        MathElement = element;
 	        Guideline = guideline ?? new SKSegment(0, 0, 1, 1);

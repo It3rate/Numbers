@@ -25,6 +25,7 @@ namespace Numbers.Mappers
         public int OrderIndex { get; set; }
         public SKNumberMapper(MouseAgent agent, Number number) : base(agent, number)
 	    {
+            Id = number.Id;
 	    }
         public Polarity InvertPolarity()
         {

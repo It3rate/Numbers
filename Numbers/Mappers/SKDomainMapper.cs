@@ -86,11 +86,11 @@ namespace Numbers.Mappers
 
         public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
         {
-	        _numberMappers[numberMapper.Id] = numberMapper;
+	        _numberMappers[numberMapper.Number.Id] = numberMapper;
 
             return numberMapper;
         }
-        public bool RemoveNumberMapper(SKNumberMapper numberMapper) => _numberMappers.Remove(numberMapper.Id);
+        public bool RemoveNumberMapper(SKNumberMapper numberMapper) => _numberMappers.Remove(numberMapper.Number.Id);
         public IEnumerable<SKNumberMapper> GetNumberMappers(bool reverse = false)
         {
 	        var mappers = reverse ? _numberMappers.Values.Reverse() : _numberMappers.Values;
