@@ -23,6 +23,9 @@ namespace NumbersAPI.CommandEngine
 
         public virtual ICommandStack Stack { get; set; }
 
+        public CommandBase()
+        {
+        }
 	    public virtual bool AppendElements()
 	    {
 		    throw new NotImplementedException();
@@ -56,14 +59,16 @@ namespace NumbersAPI.CommandEngine
 
         public virtual void Execute()
         {
-	        // remember selection state
-	        // stamp times
-	        // run tasks
-	        // select new element
-	        //foreach (var task in Tasks)
-	        //{
-	        // task.RunTask();
-	        //}
+            // remember selection state
+            // stamp times
+            // run tasks
+            // select new element
+            foreach (var task in Tasks)
+            {
+                task.Agent = Agent;
+                task.RunTask();
+                _taskIndex++;
+            }
         }
         public virtual void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
         {

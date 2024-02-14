@@ -151,7 +151,7 @@ namespace MathDemo
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 20, 20, 1000, 400);
             var guideline = new SKSegment(100,100,700,100);
             var unitSeg = guideline.SegmentAlongLine(0.4f, 0.6f);
-            var dc = new AddSKDomainCommand(trait, 0, unitSize, -800, 800, guideline, unitSeg);
+            var dc = new AddSKDomainCommand(_currentMouseAgent, trait, 0, unitSize, -800, 800, guideline, unitSeg);
             _currentMouseAgent.Stack.Do(dc);
             var num = new AddSKNumberCommand(dc.DomainMapper, new Range(-1.5, 2.4));
             _currentMouseAgent.Stack.Do(num);
@@ -159,14 +159,14 @@ namespace MathDemo
             _currentMouseAgent.Stack.Do(num);
 
             var guideline2 = new SKSegment(100, 200, 700, 200);
-            var dc2 = new AddSKDomainCommand(trait, 0, unitSize, -800, 800, guideline2, unitSeg);
+            var dc2 = new AddSKDomainCommand(_currentMouseAgent, trait, 0, unitSize, -800, 800, guideline2, unitSeg);
             _currentMouseAgent.Stack.Do(dc2);
             var num2 = new AddSKNumberCommand(dc2.DomainMapper, new Range(-1.2, -1.4));
             num2.DefaultDelay = -600;
             _currentMouseAgent.Stack.Do(num2);
 
             var guideline3 = new SKSegment(100, 300, 700, 300);
-            var dc3 = new AddSKDomainCommand(trait, 0, unitSize, -800, 800, guideline3, unitSeg);
+            var dc3 = new AddSKDomainCommand(_currentMouseAgent, trait, 0, unitSize, -800, 800, guideline3, unitSeg);
             _currentMouseAgent.Stack.Do(dc3);
             var numSet = new NumberSet(dc3.Domain.MinMaxNumber, new[] { new Focal(5, 20), new Focal(-20, -10), new Focal(-40, -30) });
             dc3.CreatedDomain.AddNumberSet(numSet);

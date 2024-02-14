@@ -351,7 +351,7 @@ namespace Numbers.Mappers
 	        return (SKDomainMapper)result;
         }
 
-        public bool RemoveDomainMapper(int id) => _domainMappers.Remove(id);
+        public bool RemoveDomainMapper(SKDomainMapper domainMapper) => _domainMappers.Remove(domainMapper.Domain.Id);
 
         public SKTransformMapper GetOrCreateTransformMapper(int id)
         {

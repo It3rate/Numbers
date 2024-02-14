@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
+using Numbers.Commands;
 using Numbers.Mappers;
 using Numbers.Renderer;
 using Numbers.Utils;
 using NumbersAPI.CommandEngine;
+using NumbersAPI.CoreCommands;
 using NumbersAPI.Motion;
 using NumbersCore.CoreConcepts;
 using NumbersCore.Primitives;
@@ -363,7 +365,6 @@ namespace Numbers.Agent
             {
                 var dm = CreateDomain(new SKSegment(SelBegin.SnapPosition, mousePoint));
                 dm.Guideline.SnapAngleToStep(5);
-
                 dm.BasisNumberMapper.Reset(dm.SegmentAlongGuideline(dm.UnitRangeOnDomainLine));
             }
             else if (IsCreatingNumber)
@@ -406,16 +407,22 @@ namespace Numbers.Agent
         private SKDomainMapper CreateDomain(SKSegment seg, int rangeSize = 4)
         {
             var newDomain = Domain.CreateDomain("default", 4, rangeSize);
-            var result = WorkspaceMapper.AddDomain(newDomain, seg);
-            if(seg.StartPoint.X > seg.EndPoint.X)
-            {
-                result.FlipRenderPerspective();
-            }
-            result.ShowGradientNumberLine = true;
-            result.ShowBasis = true;
-            result.ShowBasisMarkers = true;
-            result.ShowMinorTicks = true;
-            return result;
+
+            long unitTicks = 4;
+            long rangeTicks = unitTicks * rangeSize;
+            var cdc = new AddSKDomainCommand(this, Brain.GetLastTrait(), 0, unitTicks, -rangeTicks, rangeTicks, seg, null);
+            Stack.Do(cdc);
+            return cdc.DomainMapper;
+            //var result = WorkspaceMapper.AddDomain(newDomain, seg);
+            //if(seg.StartPoint.X > seg.EndPoint.X)
+            //{
+            //    result.FlipRenderPerspective();
+            //}
+            //result.ShowGradientNumberLine = true;
+            //result.ShowBasis = true;
+            //result.ShowBasisMarkers = true;
+            //result.ShowMinorTicks = true;
+            //return result;
         }
         private SKNumberMapper CreateNumber(SKDomainMapper dm, SKSegment seg)
         {
@@ -665,7 +672,7 @@ namespace Numbers.Agent
                 case Keys.R:
                     if (_isControlDown)
                     {
-                        //_editCommands.Redo();
+                        Stack.Redo();
                     }
                     else
                     {
@@ -690,11 +697,11 @@ namespace Numbers.Agent
                 case Keys.Z:
                     if (_isShiftDown && _isControlDown)
                     {
-                        //_editCommands.Redo();
+                        Stack.Redo();
                     }
                     else if (_isControlDown)
                     {
-                        //_editCommands.Undo();
+                        Stack.Undo();
                     }
                     break;
                 case Keys.D1:
@@ -850,6 +857,8 @@ namespace Numbers.Agent
             ActiveNumberMapper = null;
             ActiveDomainMapper = null;
             ActiveTransformMapper = null;
+
+            Brain.Workspaces.Add(Workspace);
         }
 
         public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)

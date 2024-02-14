@@ -24,7 +24,7 @@ namespace NumbersAPI.CoreTasks
 
 	    public override bool IsValid => true;
 
-	    public CreateNumberByFocalIdTask(Domain domain, Focal focal) : base()
+	    public CreateNumberByFocalIdTask(Domain domain, Focal focal)
 	    {
 		    Domain = domain;
 		    Focal = focal;
@@ -52,7 +52,7 @@ namespace NumbersAPI.CoreTasks
 
 	    public override bool IsValid => true;
 
-	    public CreateNumberByRangeTask(Domain domain, Range range) : base()
+	    public CreateNumberByRangeTask(Domain domain, Range range)
 	    {
 		    Domain = domain;
 		    Range = range;
@@ -81,7 +81,7 @@ namespace NumbersAPI.CoreTasks
 
         public override bool IsValid => true;
 
-	    public CreateNumberByPositionsTask(Domain domain, long startPosition, long endPosition) : base()
+	    public CreateNumberByPositionsTask(Domain domain, long startPosition, long endPosition)
 	    {
 		    Domain = domain;
 		    StartPosition = startPosition;

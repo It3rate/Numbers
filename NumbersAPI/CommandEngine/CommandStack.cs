@@ -62,6 +62,7 @@ namespace NumbersAPI.CommandEngine
 		{
 			command.Stack = this;
 			command.Agent = Agent;
+
 			if (command.LiveTimeSpan == null)
 			{
 				command.LiveTimeSpan = MillisecondNumber.Create(-LastTime.EndTicks + command.DefaultDelay, command.DefaultDuration);

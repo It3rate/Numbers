@@ -19,7 +19,7 @@ namespace NumbersAPI.CoreTasks
 
         public override bool IsValid => true;
 
-	    public CreateDomainTask(Trait trait, Focal basisFocal, Focal minMax) 
+	    public CreateDomainTask(Trait trait, Focal basisFocal, Focal minMax)
 	    {
 		    Trait = trait;
 		    BasisFocal = basisFocal;

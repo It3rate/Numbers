@@ -9,7 +9,9 @@ namespace NumbersCore.Primitives
     /// </summary>
     public class Trait : IMathElement
 	{
-		public Brain Brain { get; internal set; }
+        public Brain Brain {
+            get;
+            internal set; }
         public MathElementKind Kind => MathElementKind.Trait;
         public int Id { get; internal set; }
         public int CreationIndex => Id - (int)Kind - 1;

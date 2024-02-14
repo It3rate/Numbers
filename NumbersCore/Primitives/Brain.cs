@@ -12,7 +12,7 @@ namespace NumbersCore.Primitives
 	    public static List<Brain> Brains { get; } = new List<Brain>();
 	    public static Brain ActiveBrain => BrainA;
 	    public static Brain BrainA = new Brain();
-	    public static Brain BrainB = new Brain();
+	    //public static Brain BrainB = new Brain();
 	    public Brain()
 	    {
             Knowledge = new Knowledge(this);
@@ -39,6 +39,8 @@ namespace NumbersCore.Primitives
         public int NextTraitId() => _traitCounter++;
 	    public int NextTransformId() => _transformCounter++;
 
+        public Trait GetLastTrait() => (_lastTrait == null) ? GetOrCreateTrait("trait") : _lastTrait;
+        private Trait _lastTrait = null;
         public Trait GetOrCreateTrait(string traitName)
         {
             Trait trait = null;
@@ -53,7 +55,8 @@ namespace NumbersCore.Primitives
             if(trait == null)
             {
                 trait = Trait.CreateIn(this, traitName);
-            }    
+            }
+            _lastTrait = trait;
             return trait;
         }
         public Trait AddTrait(Trait trait)

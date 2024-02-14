@@ -42,7 +42,8 @@ namespace Numbers.Mappers
 
         protected SKMapper(MouseAgent agent, IMathElement element, SKSegment guideline = default)
         {
-	        Agent = agent;
+            Id = idCounter++;
+            Agent = agent;
 	        MathElement = element;
 	        Guideline = guideline ?? new SKSegment(0, 0, 1, 1);
         }
