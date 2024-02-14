@@ -21,7 +21,8 @@ namespace Numbers.Agent
 {
 	public class MouseAgent : CommandAgent, IMouseAgent
 	{
-		public static Dictionary<int, SKWorkspaceMapper> WorkspaceMappers = new Dictionary<int, SKWorkspaceMapper>();
+        #region Properties
+        public static Dictionary<int, SKWorkspaceMapper> WorkspaceMappers = new Dictionary<int, SKWorkspaceMapper>();
 		public SKWorkspaceMapper WorkspaceMapper
 		{
 			get
@@ -87,6 +88,7 @@ namespace Numbers.Agent
         }
 
         private Dictionary<int, Range> SavedNumbers { get; } = new Dictionary<int, Range>();
+        #endregion
 
         public MouseAgent(Workspace workspace, Control control, CoreRenderer renderer, IDemos demos) : base(workspace)
         {
@@ -101,27 +103,39 @@ namespace Numbers.Agent
             ClearMouse();
         }
 
-        public void Draw()
+        #region Mode
+        private void SetSelectable(UIMode uiMode)
         {
-	        HighlightSet sel = SelHighlight;
-	        if (sel.HasHighlight)
-	        {
-		        var pen = sel.ActiveHighlight.Kind.IsLine() ? Renderer.Pens.HighlightPen : Renderer.Pens.HoverPen;
-		        Renderer.Canvas.DrawPath(sel.ActiveHighlight.HighlightPath(), pen);
-	        }
-        }
-
-        public SKPoint GetTransformedPoint(SKPoint point) => point; // will be matrix etc
-
-        private void UpdateText(Highlight highlight)
-        {
-            Text = highlight?.GetNumberMapper()?.Number.ToString() ?? "";
-            if (Runner.lbEquation != null)
+            switch (uiMode)
             {
-                Runner.lbEquation.Text = Text;
+                case UIMode.None:
+                case UIMode.Any:
+                    //_selectableKind = ElementKind.Any;
+                    break;
+                //case UIMode.CreateEntity:
+                //    _selectableKind = ElementKind.Any;
+                //    break;
+                //case UIMode.CreateTrait:
+                //    _selectableKind = ElementKind.TraitPart;
+                //    break;
+                //case UIMode.CreateFocal:
+                //    _selectableKind = _isControlDown ? ElementKind.TraitPart : ElementKind.FocalPart;
+                //    break;
+                //case UIMode.CreateBond:
+                //    _selectableKind = _isControlDown ? ElementKind.FocalPart : ElementKind.BondPart;
+                //    break;
+                case UIMode.SetUnit:
+                    //_selectableKind = ElementKind.Focal;
+                    break;
+                //case UIMode.Equal:
+                //    _selectableKind = ElementKind.Focal;
+                //    Data.Selected.Clear();
+                //    break;
             }
         }
+        #endregion
 
+        #region Mouse
         private Number _initialSelectionNum;
         private Number _initialBasisNum;
         public SKSegment DragHighlight;
@@ -268,7 +282,7 @@ namespace Numbers.Agent
                                 var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OriginalPoint, false).Item1;
                                 var orgT = nm.DomainMapper.Guideline.TFromPoint(activeHighlight.OriginalPoint, false).Item1;
                                 nm.MoveBasisSegmentByT(SelBegin.OriginalSegment, curT - orgT);
-                                BasisChanged(nm);
+                                AdjustBasis(nm);
                             }
                         }
                         else
@@ -295,7 +309,7 @@ namespace Numbers.Agent
                         if (CurrentKey == Keys.B)
                         {
                             nm.SetValueByKind(_highlight.SnapPoint, activeKind);
-                            BasisChanged(nm);
+                            AdjustBasis(nm);
                         }
                         // drag multiply from basis tip
                         else if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && activeKind.IsMajor() && activeKind.IsAligned() == snm.Number.IsAligned)
@@ -402,8 +416,34 @@ namespace Numbers.Agent
             //Data.SetPanAndZoom(Data.Matrix, mousePoint, new SKPoint(0, 0), scale);
             return true;
         }
+        public void ClearMouse()
+        {
+            IsDown = false;
+            IsDragging = false;
+            SavedNumbers.Clear();
+            SetSelectable(UIMode);
+            if (Workspace != null)
+            {
+                SelBegin?.Reset();
+                SelCurrent?.Reset();
+            }
+            _initialBasisNum = null;
+            _initialSelectionNum = null;
+            IsCreatingDomain = false;
+            IsCreatingNumber = false;
+            DragHighlight = null;
+            DragPoint = SKPoint.Empty;
+        }
+        public void ClearHighlights()
+        {
+            SelBegin.Clear();
+            SelCurrent.Clear();
+            SelHighlight.Clear();
+            SelSelection.Clear();
+        }
+        #endregion
 
-
+        #region Commands
         private SKDomainMapper CreateDomain(SKSegment seg, int rangeSize = 4)
         {
             long unitTicks = 4;
@@ -419,41 +459,19 @@ namespace Numbers.Agent
             var anc = new AddSKNumberCommand(dm, range);
             Stack.Do(anc);
             return anc.NumberMapper;
-
-            //var result = dm.CreateNumber(range);
-            //Workspace.AddElements(result.Number);
-            //return result;
         }
-        private void SetSelectable(UIMode uiMode)
+        private void AdjustBasis(SKNumberMapper nm)
         {
-            switch (uiMode)
+            if (_isControlDown)
             {
-                case UIMode.None:
-                case UIMode.Any:
-                    //_selectableKind = ElementKind.Any;
-                    break;
-                //case UIMode.CreateEntity:
-                //    _selectableKind = ElementKind.Any;
-                //    break;
-                //case UIMode.CreateTrait:
-                //    _selectableKind = ElementKind.TraitPart;
-                //    break;
-                //case UIMode.CreateFocal:
-                //    _selectableKind = _isControlDown ? ElementKind.TraitPart : ElementKind.FocalPart;
-                //    break;
-                //case UIMode.CreateBond:
-                //    _selectableKind = _isControlDown ? ElementKind.FocalPart : ElementKind.BondPart;
-                //    break;
-                case UIMode.SetUnit:
-                    //_selectableKind = ElementKind.Focal;
-                    break;
-                //case UIMode.Equal:
-                //    _selectableKind = ElementKind.Focal;
-                //    Data.Selected.Clear();
-                //    break;
+                nm.AdjustBySegmentChange(SelBegin);
+            }
+
+            if (DoSyncMatchingBasis)
+            {
+                WorkspaceMapper.SyncMatchingBasis(nm.DomainMapper, nm.Number.BasisFocal);
             }
         }
-
         private void SetSelectedAsBasis()
         {
             var nm = SelSelection.GetNumberMapper();
@@ -470,18 +488,8 @@ namespace Numbers.Agent
                 nm.Number.Negate();
             }
         }
-        private void BasisChanged(SKNumberMapper nm)
+        private void FlipBasis() // todo: do this domain flip differently, or delete
         {
-	        if (_isControlDown)
-	        {
-		        nm.AdjustBySegmentChange(SelBegin);
-	        }
-
-	        SyncMatchingBasis(nm.DomainMapper, nm.Number.BasisFocal);
-        }
-        private void FlipBasis()
-        {
-	        //var dm = WorkspaceMapper.DomainMapperByIndex(0);
             foreach(var dm in WorkspaceMapper.DomainMappers())
             {
                 dm.FlipRenderPerspective();
@@ -494,28 +502,6 @@ namespace Numbers.Agent
                 nm.Number.InvertPolarity();
             }
         }
-        private void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)
-        {
-	        if (DoSyncMatchingBasis)
-	        {
-		        var nbRange = domainMapper.UnitRangeOnDomainLine;
-		        foreach (var sibDomain in Workspace.ActiveSiblingDomains(domainMapper.Domain))
-                {
-                    if (sibDomain.BasisFocal.Id == focal.Id)
-                    {
-				        WorkspaceMapper.DomainMapper(sibDomain).UnitRangeOnDomainLine = nbRange;
-			        }
-		        }
-	        }
-        }
-        private bool _isControlDown;
-        private bool _isShiftDown;
-        private bool _isAltDown;
-        private UIMode PreviousMode = UIMode.Any;
-        //private SKMatrix _startMatrix;
-        private KeyEventArgs _lastKeyUp;
-
-
         private void DeleteSelected()
         {
             //if (Data.Selected.HasElement)
@@ -524,45 +510,6 @@ namespace Numbers.Agent
             //    var remCommand = new RemoveElementCommand(InputPad, element);
             //    _editCommands.Do(remCommand);
             //}
-        }
-        private void StartPan()
-        {
-            if (UIMode != UIMode.Pan)
-            {
-                //_startMatrix = Data.Matrix;
-            }
-            UIMode = UIMode.Pan;
-        }
-        public void ToggleBasisVisible()
-        {
-            foreach (var dm in WorkspaceMapper.DomainMappers())
-            {
-                dm.ShowBasis = !dm.ShowBasis;
-                dm.ShowBasisMarkers = !dm.ShowBasisMarkers;
-            }
-        }
-        public void ToggleShowPolarity()
-        {
-            foreach (var dm in WorkspaceMapper.DomainMappers())
-            {
-                dm.ShowPolarity = !dm.ShowPolarity;
-            }
-        }
-        public void ToggleGradientNumberline()
-        {
-            foreach (var dm in WorkspaceMapper.DomainMappers())
-            {
-                dm.ShowGradientNumberLine = !dm.ShowGradientNumberLine;
-            }
-        }
-        public void ToggleShowNumbers()
-        {
-            foreach (var dm in WorkspaceMapper.DomainMappers())
-            {
-                dm.ShowValueMarkers = !dm.ShowValueMarkers;
-                dm.ShowTicks = !dm.ShowTicks;
-                dm.ShowMinorTicks = !dm.ShowMinorTicks;
-            }
         }
         public void AddTick()
         {
@@ -598,15 +545,15 @@ namespace Numbers.Agent
                 ActiveDomainMapper.Recalibrate();
             }
         }
-        private void ToggleDomainNumberOffsets()
-        {
-            if (ActiveDomainMapper != null)
-            {
-                ActiveDomainMapper.OffsetNumbers = !ActiveDomainMapper.OffsetNumbers;
-            }
-        }
+        #endregion
 
-
+        #region Keyboard
+        private bool _isControlDown;
+        private bool _isShiftDown;
+        private bool _isAltDown;
+        private UIMode PreviousMode = UIMode.Any;
+        //private SKMatrix _startMatrix;
+        private KeyEventArgs _lastKeyUp;
         public bool KeyDown(KeyEventArgs e)
         {
 	        if (CurrentKey == Keys.Escape)
@@ -808,51 +755,76 @@ namespace Numbers.Agent
             }
             return result;
         }
-        public void ClearMouse()
+        #endregion
+
+        #region Render
+        private void UpdateText(Highlight highlight)
         {
-            IsDown = false;
-            IsDragging = false;
-            SavedNumbers.Clear();
-            SetSelectable(UIMode);
-            if (Workspace != null)
+            Text = highlight?.GetNumberMapper()?.Number.ToString() ?? "";
+            if (Runner.lbEquation != null)
             {
-	            SelBegin?.Reset();
-	            SelCurrent?.Reset();
+                Runner.lbEquation.Text = Text;
             }
-            _initialBasisNum = null;
-            _initialSelectionNum = null;
-            IsCreatingDomain = false;
-            IsCreatingNumber = false;
-            DragHighlight = null;
-            DragPoint = SKPoint.Empty;
-    }
-        public void ClearHighlights()
-        {
-	        SelBegin.Clear();
-	        SelCurrent.Clear();
-	        SelHighlight.Clear();
-	        SelSelection.Clear();
         }
-        public override void ClearAll()
+        public void ToggleBasisVisible()
         {
-            base.ClearAll();
-	        ClearMouse();
-	        ClearHighlights();
-	        foreach (var workspaceMapper in WorkspaceMappers.Values)
+            foreach (var dm in WorkspaceMapper.DomainMappers())
+            {
+                dm.ShowBasis = !dm.ShowBasis;
+                dm.ShowBasisMarkers = !dm.ShowBasisMarkers;
+            }
+        }
+        public void ToggleShowPolarity()
+        {
+            foreach (var dm in WorkspaceMapper.DomainMappers())
+            {
+                dm.ShowPolarity = !dm.ShowPolarity;
+            }
+        }
+        public void ToggleGradientNumberline()
+        {
+            foreach (var dm in WorkspaceMapper.DomainMappers())
+            {
+                dm.ShowGradientNumberLine = !dm.ShowGradientNumberLine;
+            }
+        }
+        public void ToggleShowNumbers()
+        {
+            foreach (var dm in WorkspaceMapper.DomainMappers())
+            {
+                dm.ShowValueMarkers = !dm.ShowValueMarkers;
+                dm.ShowTicks = !dm.ShowTicks;
+                dm.ShowMinorTicks = !dm.ShowMinorTicks;
+            }
+        }
+        private void ToggleDomainNumberOffsets()
+        {
+            if (ActiveDomainMapper != null)
+            {
+                ActiveDomainMapper.OffsetNumbers = !ActiveDomainMapper.OffsetNumbers;
+            }
+        }
+        private void StartPan()
+        {
+            if (UIMode != UIMode.Pan)
+            {
+                //_startMatrix = Data.Matrix;
+            }
+            UIMode = UIMode.Pan;
+        }
+        public void Draw()
+        {
+	        HighlightSet sel = SelHighlight;
+	        if (sel.HasHighlight)
 	        {
-		        workspaceMapper.ClearAll();
+		        var pen = sel.ActiveHighlight.Kind.IsLine() ? Renderer.Pens.HighlightPen : Renderer.Pens.HoverPen;
+		        Renderer.Canvas.DrawPath(sel.ActiveHighlight.HighlightPath(), pen);
 	        }
-	        WorkspaceMappers.Clear();
-            Brain.ClearAll();
-            Runner.Clear();
-            Text = "";
-            ActiveNumberMapper = null;
-            ActiveDomainMapper = null;
-            ActiveTransformMapper = null;
-
-            Brain.Workspaces.Add(Workspace);
         }
+        public SKPoint GetTransformedPoint(SKPoint point) => point; // will be matrix etc
+        #endregion
 
+        #region Serialize
         public void SaveNumberValues(Dictionary<int, Range> numValues, params int[] ignoreIds)
         {
 	        numValues.Clear();
@@ -876,31 +848,26 @@ namespace Numbers.Agent
 		       // }
 	        //}
         }
-    }
+        #endregion
 
-    [Flags]
-    public enum UIMode
-    {
-	    None = 0,
-	    //CreateEntity = 0x1,
-	    //CreateTrait = 0x2,
-	    //CreateFocal = 0x4,
-	    //CreateDoubleBond = 0x8,
-	    //CreateBond = 0x10,
-	    SetUnit = 0x20,
-	    //Equal = 0x40,
-	    Perpendicular = 0x80,
-	    Pan = 0x100,
+        public override void ClearAll()
+        {
+            base.ClearAll();
+            ClearMouse();
+            ClearHighlights();
+            foreach (var workspaceMapper in WorkspaceMappers.Values)
+            {
+                workspaceMapper.ClearAll();
+            }
+            WorkspaceMappers.Clear();
+            Brain.ClearAll();
+            Runner.Clear();
+            Text = "";
+            ActiveNumberMapper = null;
+            ActiveDomainMapper = null;
+            ActiveTransformMapper = null;
 
-	    //Inspect = 0x10,
-	    //Edit = 0x20,
-	    //Interact = 0x40,
-	    //Animate = 0x80,
-	    //XXX = 0x100,
-	    //XXX = 0x200,
-
-	    Any = 0xFFFF,
-
-	    //Create = CreateEntity | CreateTrait | CreateFocal | CreateBond,
+            Brain.Workspaces.Add(Workspace);
+        }
     }
 }

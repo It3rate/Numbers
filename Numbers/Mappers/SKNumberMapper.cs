@@ -14,7 +14,7 @@ namespace Numbers.Mappers
 	    public Number Number => (Number) MathElement;
         public SKSegment RenderSegment { get; private set; }
 
-        public SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(Number.Domain);
+        public SKDomainMapper DomainMapper => WorkspaceMapper.GetDomainMapper(Number.Domain);
         public SKSegment UnitSegment => DomainMapper.BasisSegment;
         public bool IsBasis => Number.IsBasis;
         public int BasisSign => Number.BasisFocal.Direction;

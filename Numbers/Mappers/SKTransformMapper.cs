@@ -17,8 +17,8 @@ namespace Numbers.Mappers
         public Transform Transform => (Transform)MathElement;
         private List<SKPoint[]> PolyShapes { get; } = new List<SKPoint[]>();
 
-		private SKDomainMapper SelectionMapper => WorkspaceMapper.DomainMapper(Transform.Left.Domain);
-		private SKDomainMapper RepeatMapper => WorkspaceMapper.DomainMapper(Transform.Right.Domain);
+		private SKDomainMapper SelectionMapper => WorkspaceMapper.GetDomainMapper(Transform.Left.Domain);
+		private SKDomainMapper RepeatMapper => WorkspaceMapper.GetDomainMapper(Transform.Right.Domain);
 
         private SKPoint SKOrigin => SelectionMapper.BasisSegment.StartPoint;
 

@@ -19,7 +19,7 @@ namespace Numbers.Commands
 	    public SKNumberMapper NumberMapper => (SKNumberMapper)Mapper;
 	    public SKDomainMapper DomainMapper { get; }
 
-	    public override bool IsContinuous => true;
+        public override bool IsContinuous => false;//true;
 
 	    public CreateNumberCommand CreateNumberCommand { get; private set; }
 	    public Number Number => ExistingNumber ?? CreatedNumber;
@@ -30,8 +30,8 @@ namespace Numbers.Commands
         {
 	        DomainMapper = domainMapper;
             CreateNumberCommand = new CreateNumberCommand(domainMapper.Domain, range);
-            DefaultDuration = 2100;
-            DefaultDelay = -900;
+            //DefaultDuration = 2100;
+            //DefaultDelay = -900;
         }
 	    public AddSKNumberCommand(SKDomainMapper domainMapper, Number existingNumber) : base(domainMapper.SegmentAlongGuideline(existingNumber.Value))
 	    {
@@ -49,9 +49,9 @@ namespace Numbers.Commands
 
 		    if (Mapper == null)
 		    {
-			    _targetNumber = CreateNumberCommand.Number.Clone();
-			    CreateNumberCommand.Number.Value = new Range(0.0, 1.0);
-                HaltCondition = new Evaluation(CreateNumberCommand.Number, _targetNumber, FilterOperator.B_Implies_A);
+			    //_targetNumber = CreateNumberCommand.Number.Clone();
+			    //CreateNumberCommand.Number.Value = new Range(0.0, 1.0);
+                // HaltCondition = new Evaluation(CreateNumberCommand.Number, _targetNumber, FilterOperator.B_Implies_A);
                 Mapper = new SKNumberMapper(MouseAgent, CreateNumberCommand.Number);
 
             }
@@ -77,7 +77,7 @@ namespace Numbers.Commands
 	    {
 		   base.Update(currentTime, deltaTime);
 		   _t = Math.Sin(LiveTimeSpan.RatioFromStart(currentTime.EndValue));
-		   CreateNumberCommand.Number.InterpolateFromOne(_targetNumber.Value, _t);
+		  // CreateNumberCommand.Number.InterpolateFromOne(_targetNumber.Value, _t);
         }
 
 	    public override void Completed()

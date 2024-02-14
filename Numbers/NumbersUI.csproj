@@ -101,6 +101,7 @@
     <Compile Include="Agent\IMouseAgent.cs" />
     <Compile Include="Commands\AddSKDomainCommand.cs" />
     <Compile Include="Commands\AddSKNumberCommand.cs" />
+    <Compile Include="Commands\AdjustDomainLineCommand.cs" />
     <Compile Include="Commands\ISKCommand.cs" />
     <Compile Include="Commands\SKCommandBase.cs" />
     <Compile Include="IDemos.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Mappers\SKNumberMapper.cs" />
     <Compile Include="Mappers\SKTransformMapper.cs" />
     <Compile Include="Mappers\SKWorkspaceMapper.cs" />
+    <Compile Include="Utils\UIMode.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

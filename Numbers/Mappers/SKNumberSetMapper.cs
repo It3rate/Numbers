@@ -15,7 +15,7 @@ namespace Numbers.Mappers
     public class SKNumberSetMapper : SKMapper
     {
 	    public NumberSet NumberSet => (NumberSet)MathElement;
-	    public SKDomainMapper DomainMapper => WorkspaceMapper.DomainMapper(NumberSet.Domain);
+	    public SKDomainMapper DomainMapper => WorkspaceMapper.GetDomainMapper(NumberSet.Domain);
         public List<SKNumberMapper> NumberMappers { get; } = new List<SKNumberMapper>();
 
         public SKNumberSetMapper(MouseAgent agent, NumberSet numberSet, SKSegment guideline = default) : base(agent, numberSet, guideline)

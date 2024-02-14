@@ -16,7 +16,7 @@ namespace Numbers.Mappers
     {
         private readonly Dictionary<int, SKDomainMapper> _domainMappers = new Dictionary<int, SKDomainMapper>();
         private readonly Dictionary<int, SKTransformMapper> _transformMappers = new Dictionary<int, SKTransformMapper>();
-        public SKDomainMapper DomainMapper(Domain domain) => GetOrCreateDomainMapper(domain);
+        public SKDomainMapper GetDomainMapper(Domain domain) => GetOrCreateDomainMapper(domain);
 	    public SKTransformMapper TransformMapper(Transform transform) => GetOrCreateTransformMapper(transform);
 
         public IEnumerable<SKDomainMapper> DomainMappers()
@@ -353,6 +353,17 @@ namespace Numbers.Mappers
 
         public bool RemoveDomainMapper(SKDomainMapper domainMapper) => _domainMappers.Remove(domainMapper.Domain.Id);
 
+        public void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)
+        {
+            var nbRange = domainMapper.UnitRangeOnDomainLine;
+            foreach (var sibDomain in Workspace.ActiveSiblingDomains(domainMapper.Domain))
+            {
+                if (sibDomain.BasisFocal.Id == focal.Id)
+                {
+                    GetDomainMapper(sibDomain).UnitRangeOnDomainLine = nbRange;
+                }
+            }
+        }
         public SKTransformMapper GetOrCreateTransformMapper(int id)
         {
 	        return GetOrCreateTransformMapper(Brain.TransformStore[id]);

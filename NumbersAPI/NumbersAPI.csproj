@@ -51,6 +51,14 @@
     <Compile Include="CoreCommands\CreateDomainCommand.cs" />
     <Compile Include="CoreCommands\CreateNumberCommand.cs" />
     <Compile Include="CoreCommands\CreateWorkspaceCommand.cs" />
+    <Compile Include="CoreTasks\CreateTransformTask.cs" />
+    <Compile Include="CoreTasks\DomainAdjustBasisTask.cs" />
+    <Compile Include="CoreTasks\DomainAdjustTicksTask.cs" />
+    <Compile Include="CoreTasks\DomainAdjustMinMaxTask.cs" />
+    <Compile Include="CoreTasks\SelectionAdjustValueTask.cs" />
+    <Compile Include="CoreTasks\SelectionDeleteTask.cs" />
+    <Compile Include="CoreTasks\SelectionFlipPolarityTask.cs" />
+    <Compile Include="CoreTasks\SelectionToBasisTask.cs" />
     <Compile Include="CoreTasks\CreateBrainTask.cs" />
     <Compile Include="CoreTasks\CreateDomainTask.cs" />
     <Compile Include="CoreTasks\CreateFocalTask.cs" />
@@ -58,6 +66,7 @@
     <Compile Include="CoreCommands\CreateTraitCommand.cs" />
     <Compile Include="CoreTasks\CreateTraitTask.cs" />
     <Compile Include="CoreTasks\CreateWorkspaceTask.cs" />
+    <Compile Include="CoreTasks\SelectionNegateTask.cs" />
     <Compile Include="Motion\Runner.cs" />
     <Compile Include="Motion\ITimeable.cs" />
     <Compile Include="Motion\TaskTimer.cs" />
