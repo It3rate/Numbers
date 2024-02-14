@@ -406,13 +406,13 @@ namespace Numbers.Agent
 
         private SKDomainMapper CreateDomain(SKSegment seg, int rangeSize = 4)
         {
-            var newDomain = Domain.CreateDomain("default", 4, rangeSize);
 
             long unitTicks = 4;
             long rangeTicks = unitTicks * rangeSize;
             var cdc = new AddSKDomainCommand(this, Brain.GetLastTrait(), 0, unitTicks, -rangeTicks, rangeTicks, seg, null);
             Stack.Do(cdc);
             return cdc.DomainMapper;
+            //var newDomain = Domain.CreateDomain("default", 4, rangeSize);
             //var result = WorkspaceMapper.AddDomain(newDomain, seg);
             //if(seg.StartPoint.X > seg.EndPoint.X)
             //{
