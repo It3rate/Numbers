@@ -99,19 +99,13 @@ namespace NumbersCore.Primitives
                     Result.Divide(Right);
                     break;
                 case TransformKind.And:
-                    Result.OperationKind = OperationKind.AND;
-                    Result.AddItem(Right);
-                    //Result.And(Right);
+                    Result.AddItem(Right, OperationKind.AND);
                     break;
                 case TransformKind.Or:
-                    Result.OperationKind = OperationKind.OR;
-                    Result.AddItem(Right);
-                    //Result.Or(Right);
+                    Result.AddItem(Right, OperationKind.OR);
                     break;
                 case TransformKind.Nand:
-                    Result.OperationKind = OperationKind.NAND;
-                    Result.AddItem(Right);
-                    //Result.Nand(Right);
+                    Result.AddItem(Right, OperationKind.NAND);
                     break;
             }
 		    OnEndTransformEvent(this);

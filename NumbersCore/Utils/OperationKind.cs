@@ -7,6 +7,47 @@
     using System.Threading.Tasks;
     using NumbersCore.Primitives;
 
+    public enum OperationKind
+    {
+        None,
+
+        UNARY_NOT, // this is Flip In Place
+
+        FALSE,
+        AND,
+        AND_NOT,
+        FIRST_INPUT,
+        NOT_AND,
+        SECOND_INPUT,
+        XOR,
+        OR,
+        NOR,
+        XNOR,
+        NOT_SECOND_INPUT,
+        IF_THEN,
+        NOT_FIRST_INPUT,
+        THEN_IF,
+        NAND,
+        TRUE,
+
+        Add,
+        Subtract,
+        Multiply,
+        Divide,
+
+        PowerAdd,
+        PowerMultiply,
+
+        AppendAll, // repeat are added together ('regular' multiplication)
+        MultiplyAll, // repeat are multiplied together (exponents)
+        Blend, // multiply as in area, blend from unot to unit
+        Average,
+        Root,
+        Wedge,
+        DotProduct,
+        GeometricProduct,
+    }
+
     public static class OperationKindExtension
     {
         // FALSE (output is always false)

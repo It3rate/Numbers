@@ -89,12 +89,12 @@ namespace NumbersCore.Primitives
 
 
 
-        public void Reset(long start, long end)
+        public virtual void Reset(long start, long end)
         {
             StartPosition = start;
             EndPosition = end;
         }
-        public void Reset(Focal focal)
+        public virtual void Reset(Focal focal)
         {
             Reset(focal.StartPosition, focal.EndPosition);
         }
