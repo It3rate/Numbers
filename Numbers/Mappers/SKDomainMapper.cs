@@ -87,7 +87,7 @@ namespace Numbers.Mappers
         public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
         {
 	        _numberMappers[numberMapper.Number.Id] = numberMapper;
-
+            numberMapper.OrderIndex = _numberOrderCounter++;
             return numberMapper;
         }
         public bool RemoveNumberMapper(SKNumberMapper numberMapper) => _numberMappers.Remove(numberMapper.Number.Id);

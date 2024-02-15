@@ -55,6 +55,7 @@
     <Compile Include="CoreTasks\DomainAdjustBasisTask.cs" />
     <Compile Include="CoreTasks\DomainAdjustTicksTask.cs" />
     <Compile Include="CoreTasks\DomainAdjustMinMaxTask.cs" />
+    <Compile Include="CoreTasks\RemoveNumberTask.cs" />
     <Compile Include="CoreTasks\SelectionAdjustValueTask.cs" />
     <Compile Include="CoreTasks\SelectionDeleteTask.cs" />
     <Compile Include="CoreTasks\SelectionFlipPolarityTask.cs" />

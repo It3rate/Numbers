@@ -39,6 +39,8 @@ namespace Numbers.Agent
 	    public void Clear()
 	    {
 		    ActiveHighlight = null;
+            OriginalSegment = null;
+            OriginalFocal = null;
 	    }
     }
 }

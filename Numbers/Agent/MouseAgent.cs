@@ -434,13 +434,6 @@ namespace Numbers.Agent
             DragHighlight = null;
             DragPoint = SKPoint.Empty;
         }
-        public void ClearHighlights()
-        {
-            SelBegin.Clear();
-            SelCurrent.Clear();
-            SelHighlight.Clear();
-            SelSelection.Clear();
-        }
         #endregion
 
         #region Commands
@@ -504,12 +497,12 @@ namespace Numbers.Agent
         }
         private void DeleteSelected()
         {
-            //if (Data.Selected.HasElement)
-            //{
-            //    var element = Data.Selected.FirstElement;
-            //    var remCommand = new RemoveElementCommand(InputPad, element);
-            //    _editCommands.Do(remCommand);
-            //}
+            if(ActiveNumberMapper != null)
+            {
+                var delCommand = new RemoveSKNumberCommand(ActiveNumberMapper);
+                ActiveNumberMapper = null;
+                Stack.Do(delCommand);
+            }
         }
         public void AddTick()
         {
@@ -850,6 +843,18 @@ namespace Numbers.Agent
         }
         #endregion
 
+        public void ClearHighlights()
+        {
+            Text = "";
+            _highlight.Reset();
+            SelBegin.Clear();
+            SelCurrent.Clear();
+            SelHighlight.Clear();
+            SelSelection.Clear();
+            ActiveNumberMapper = null;
+            ActiveDomainMapper = null;
+            ActiveTransformMapper = null;
+        }
         public override void ClearAll()
         {
             base.ClearAll();
@@ -862,10 +867,6 @@ namespace Numbers.Agent
             WorkspaceMappers.Clear();
             Brain.ClearAll();
             Runner.Clear();
-            Text = "";
-            ActiveNumberMapper = null;
-            ActiveDomainMapper = null;
-            ActiveTransformMapper = null;
 
             Brain.Workspaces.Add(Workspace);
         }

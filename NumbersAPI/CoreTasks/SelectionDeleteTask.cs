@@ -6,7 +6,7 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    internal class SelectionDeleteTask
+    public class SelectionDeleteTask
     {
     }
 }
