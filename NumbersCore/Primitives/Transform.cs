@@ -56,6 +56,7 @@ namespace NumbersCore.Primitives
         {
 	        Left = left;
 	        Right = right;
+
             Result = new NumberChain(Right.Domain.MinMaxNumber);// left.Clone(false);
 	        TransformKind = kind;
 	        Brain = right.Brain;
@@ -74,7 +75,8 @@ namespace NumbersCore.Primitives
         }
 	    public void ApplyStart()
         {
-            Result.SetWith(Left);
+            Result.Reset(Left, OperationKind.None);
+            //Result.SetWith(Left);
             OnStartTransformEvent(this);
 		    IsActive = true;
 		    RepeatCounter.AddOne();
@@ -97,13 +99,19 @@ namespace NumbersCore.Primitives
                     Result.Divide(Right);
                     break;
                 case TransformKind.And:
-                    Result.And(Right);
+                    Result.OperationKind = OperationKind.AND;
+                    Result.AddItem(Right);
+                    //Result.And(Right);
                     break;
                 case TransformKind.Or:
-                    Result.Or(Right);
+                    Result.OperationKind = OperationKind.OR;
+                    Result.AddItem(Right);
+                    //Result.Or(Right);
                     break;
                 case TransformKind.Nand:
-                    Result.Nand(Right);
+                    Result.OperationKind = OperationKind.NAND;
+                    Result.AddItem(Right);
+                    //Result.Nand(Right);
                     break;
             }
 		    OnEndTransformEvent(this);

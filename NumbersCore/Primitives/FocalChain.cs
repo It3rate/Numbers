@@ -2,6 +2,7 @@
 {
     using NumbersCore.Utils;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -15,54 +16,69 @@
     /// </summary>
     public class FocalChain : Focal
     {
+        // todo: account for direction of focal line?
         public virtual MathElementKind Kind => MathElementKind.FocalChain;
-        public bool AutoSort { get; set; } = true;
-        public bool AutoMerge { get; set; } = true;
-        public override long StartPosition
-        {
-            get => Count > 0 ? _focals[0].StartPosition : 0;
-            set { } // can't set values, they are calculated 
-        }
-        public override long EndPosition
-        {
-            get => Count > 0 ? _focals[Count - 1].EndPosition : 0;
-            set { } // can't set values, they are calculated 
-        }
-        public int Count { get; private set; }
+        public int Count { get; 
+            private set; }
 
         private OperationKind _operationKind = OperationKind.None;
         public OperationKind OperationKind
         {
             get => _operationKind;
-            set { _operationKind = value; Regenerate(); }
+            set { _operationKind = value; }// SelfGenerate(); }
         }
-        private Focal _left;
-        public Focal Left
-        {
-            get => _left;
-            set { _left = value; Regenerate();}
-        }
-        private Focal _right;
-        public Focal Right
-        {
-            get => _right;
-            set { _right = value; Regenerate(); }
-        }
-        private long[] _positions;
-        public override long[] Positions => _positions;
-
-
         protected List<Focal> _focals = new List<Focal>();
 
-        public FocalChain(Focal left, Focal right, OperationKind operationKind = OperationKind.None)
+        private List<long> _positions = new List<long>();
+        public override long[] Positions => _positions.ToArray();
+        public override long StartPosition
         {
-            _left = left;
-            _right = right;
-            _operationKind = operationKind;
-            Regenerate();
-
+            get => Count > 0 ? _focals[0].StartPosition : 0;
+            set { if (Count > 0) { _focals[Count - 1].StartPosition = value; } }
         }
-        public IEnumerable<Focal> Focals()
+        public override long EndPosition
+        {
+            get => Count > 0 ? _focals[Count - 1].EndPosition : 0;
+            set { if (Count > 0) { _focals[Count - 1].EndPosition = value; } } 
+        }
+        public Focal this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < Count) // test for count, not _focals length
+                {
+                    return _focals[index];
+                }
+                else
+                {
+                    throw new IndexOutOfRangeException("Index is out of range.");
+                }
+            }
+            set
+            {
+                if (index >= 0 && index < Count)
+                {
+                    _focals[index] = value;
+                }
+                else
+                {
+                    throw new IndexOutOfRangeException("Index is out of range.");
+                }
+            }
+        }
+
+
+
+        public FocalChain(IEnumerable<Focal> focals = null, OperationKind operationKind = OperationKind.None)
+        {
+            _operationKind = operationKind;
+            if (focals != null)
+            {
+                var positions = GetPositions(focals);
+                RegenFocals(positions);
+            }
+        }
+        public IEnumerable<Focal> UnmaskedFocals()
         {
             for (int i = 0; i < Count; i++)
             {
@@ -98,6 +114,21 @@
         public FocalChain(long startTickPosition, long endTickPosition) : base(startTickPosition, endTickPosition)
         {
         }
+        public void Reset(Focal left, Focal right, OperationKind operationKind)
+        {
+            Clear();
+            OperationKind = OperationKind.None;
+            Add(left);
+            OperationKind = operationKind;
+            Add(right);
+        }
+        public void Reset(Focal left, OperationKind operationKind)
+        {
+            Clear();
+            OperationKind = OperationKind.None;
+            Add(left);
+            OperationKind = operationKind;
+        }
         public Focal GetFocalByIndex(int index)
         {
             Focal result = null;
@@ -107,45 +138,84 @@
             }
             return result;
         }
-        public long[] GetPositions()
+        public static long[] GetPositions(IEnumerable<Focal> focals)
         {
-            var result = new long[Count * 2];
+            var result = new long[focals.Count() * 2];
             int i = 0;
-            foreach (var focal in _focals)
+            foreach (var focal in focals)
             {
                 result[i++] = focal.StartPosition;
                 result[i++] = focal.EndPosition;
             }
             return result;
         }
-        private void ClearFocals()
-        {
-            Count = 0;
-        }
 
-
-        private void Regenerate()
+        private void RegenFocals(long[] positions)
         {
-            if (OperationKind != OperationKind.None)
-            {
-                var op = OperationKind.GetFunc();
-                var tt = BuildTruthTable(Left.Positions, Right.Positions);
-                _positions = ApplyOpToTruthTable(tt, op);
-                RegenFocals();
-            }
-        }
-
-        private void RegenFocals()
-        {
-            ClearFocals();
-            for (int i = 0; i < _positions.Length; i += 2)
+            Clear();
+            _positions.AddRange(positions);
+            for (int i = 0; i < _positions.Count; i += 2)
             {
                 var p0 = _positions[i];
                 // odd number of positions creates a point at end. Anything depending odd stores on this should use positions directly.
-                var p1 = i + 1 < _positions.Length ? _positions[i + 1] : p0; 
+                var p1 = i + 1 < _positions.Count ? _positions[i + 1] : p0; 
                 var f = FillNextPosition(p0, p1);
             }
         }
+        private void SelfGenerate()
+        {
+            var focals = new List<Focal>(UnmaskedFocals()); // these are overwritten in process, but internally works on positions, not focals.
+            Clear();
+            AddRange(focals);
+        }
+
+        /// <summary>
+        /// Merge existing focals to each other by iterating over each one using the internal operation.
+        /// </summary>
+        public void AddRange(IEnumerable<Focal> focals)
+        {
+            var orgPositions = GetPositions(focals);
+            for (int i = 0; i < orgPositions.Length; i += 2)
+            {
+                Add(orgPositions[i + 0], orgPositions[i + 1]);
+            }
+            //if (OperationKind != OperationKind.None && focals.Count > 1)
+            //{
+            //    var op = OperationKind.GetFunc();
+            //    var leftPositions = new long[] { orgPositions[0], orgPositions[1] };
+            //    for (int i = 2; i < orgPositions.Length; i += 2)
+            //    {
+            //        Add(orgPositions[i + 0], orgPositions[i + 1]);
+            //        //var rightPositions = new long[] { orgPositions[i + 0], orgPositions[i + 1] };
+            //        //var tt = BuildTruthTable(leftPositions, rightPositions);
+            //        //leftPositions = ApplyOpToTruthTable(tt, op);
+            //    }
+            //    RegenFocals();
+            //}
+            //else
+            //{
+            //}
+        }
+        public void Add(Focal focal)
+        {
+            Add(focal.StartPosition, focal.EndPosition);
+        }
+        public void Add(long start, long end)
+        {
+            if (OperationKind != OperationKind.None)
+            {
+                var tt = BuildTruthTable(Positions, new long[] {start, end});
+                var positions = ApplyOpToTruthTable(tt, OperationKind.GetFunc());
+                RegenFocals(positions);
+            }
+            else
+            {
+                FillNextPosition(start, end);
+                _positions.Add(start);
+                _positions.Add(end);
+            }
+        }
+
         private long[] ApplyOpToTruthTable(List<(long, bool, bool)> data, Func<bool, bool, bool> operation)
         {
             var result = new List<long>();
@@ -158,15 +228,24 @@
                 {
                     result.Add(item.Item1);
                     hadFirstTrue = true;
+                    lastResult = opResult;
 
                 }
                 else if (lastResult != opResult)
                 {
                     result.Add(item.Item1);
+                    lastResult = opResult;
                 }
+            }
+
+            if(lastResult == true) // always close
+            {
+                result.Add(data.Last().Item1);
             }
             return result.ToArray();
         }
+
+        // truth table only acts on valid parts of segments. Remember a -10i+5 has two parts, 0 to -10i and 0 to 5. This is the area bools apply to.
         private List<(long, bool, bool)> BuildTruthTable(long[] leftPositions, long[] rightPositions)
         {
             var result = new List<(long, bool, bool)>();
@@ -182,31 +261,33 @@
             }
             return result;
         }
-        private void AddSection(long startPosition, long endPosition)
-        {
-            FillNextPosition(startPosition, endPosition);
-            RemoveOverlaps();
-        }
 
         private Focal FillNextPosition(long startPosition, long endPosition)
         {
             Focal result;
             if (_focals.Count > Count + 1)
             {
-                result = _focals[Count++];
+                result = _focals[Count];
                 result.Reset(startPosition, endPosition);
             }
             else
             {
                 result = new Focal(startPosition, endPosition);
-                Count++;
+                _focals.Add(result);
             }
+            Count++;
             return result;
         }
         private void RemoveOverlaps()
         {
 
         }
+        public void Clear()
+        {
+            _positions.Clear();
+            Count = 0;
+        }
+
         //public void AddPositions(long[] positions)
         //{
         //    _positions.AddRange(positions);
@@ -306,5 +387,23 @@
         THEN_IF,
         NAND,
         TRUE,
+
+        FlipInPlace,
+        Add,
+        Subtract,
+        Multiply,
+        Divide,
+
+        PowerAdd,
+        PowerMultiply,
+
+        AppendAll, // repeat are added together ('regular' multiplication)
+        MultiplyAll, // repeat are multiplied together (exponents)
+        Blend, // multiply as in area, blend from unot to unit
+        Average,
+        Root,
+        Wedge,
+        DotProduct,
+        GeometricProduct,
     }
 }

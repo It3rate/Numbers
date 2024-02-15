@@ -20,7 +20,8 @@ namespace NumbersCore.Utils
         public bool IsInverted => Polarity == Polarity.Inverted;
 
         public double Start { get; set; }
-        public double End { get; set; }
+        public double End { get;
+            set; }
         private readonly bool _hasValue;
         public double UnitValue
         {
