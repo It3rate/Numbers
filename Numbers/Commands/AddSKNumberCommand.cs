@@ -32,7 +32,6 @@ namespace Numbers.Commands
         {
 	        DomainMapper = domainMapper;
             NumberByRangeTask = new CreateNumberByRangeTask(domainMapper.Domain, range);
-            Tasks.Add(NumberByRangeTask);
             //DefaultDuration = 2100;
             //DefaultDelay = -900;
         }
@@ -44,6 +43,7 @@ namespace Numbers.Commands
 
         public override void Execute()
 	    {
+            Tasks.Add(NumberByRangeTask);
 		    base.Execute();
 
 		    if (Mapper == null)

@@ -27,20 +27,23 @@ namespace Numbers.Commands
 
 	    public SKSegment UnitSegment { get; }
 
-        public AddSKDomainCommand(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment = null) : base(guideline)
-        {
-	        ExistingDomain = domain;
-            UnitSegment = unitSegment;
-        }
+        //public AddSKDomainCommand(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment = null) : base(guideline)
+        //{
+	       // ExistingDomain = domain;
+        //    UnitSegment = unitSegment;
+        //}
 	    public AddSKDomainCommand(MouseAgent agent, Trait trait, long basisStart, long basisEnd, long minMaxStart, long minMaxEnd, SKSegment guideline, SKSegment unitSegment) : base(guideline)
 	    {
             CreateDomainTask = new CreateDomainTask(trait, new Focal(basisStart, basisEnd), new Focal(minMaxStart, minMaxEnd));
-            Tasks.Add(CreateDomainTask);
 		    UnitSegment = unitSegment;
         }
 
 	    public override void Execute()
 	    {
+            if(CreateDomainTask != null)
+            {
+                Tasks.Add(CreateDomainTask);
+            }
 		    base.Execute();
 
             Mapper = MouseAgent.WorkspaceMapper.GetOrCreateDomainMapper(Domain, Guideline, UnitSegment);

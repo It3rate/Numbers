@@ -87,7 +87,11 @@ namespace Numbers.Mappers
         public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
         {
 	        _numberMappers[numberMapper.Number.Id] = numberMapper;
-            numberMapper.OrderIndex = _numberOrderCounter++;
+            numberMapper.Number.Domain = Domain;
+            if (numberMapper.OrderIndex <= 0)
+            {
+                numberMapper.OrderIndex = _numberOrderCounter++;
+            }
             return numberMapper;
         }
         public bool RemoveNumberMapper(SKNumberMapper numberMapper) => _numberMappers.Remove(numberMapper.Number.Id);
@@ -113,8 +117,7 @@ namespace Numbers.Mappers
 	        if (!_numberMappers.TryGetValue(number.Id, out var result))
 	        {
 		        result = new SKNumberMapper(Agent, number);
-                result.OrderIndex = _numberOrderCounter++;
-                _numberMappers[number.Id] = result;
+                AddNumberMapper(result);
 	        }
 	        return (SKNumberMapper)result;
         }

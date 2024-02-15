@@ -97,7 +97,6 @@ namespace NumbersAPI.CommandEngine
             // add new commands and clear toAdd
 
             AddNewCommands(currentTime);
-            RemoveRedoCommands();
             UpdateLiveCommands(currentTime, deltaTime);
             PerformCommits();
             RemoveCompletedCommands();
@@ -114,8 +113,8 @@ namespace NumbersAPI.CommandEngine
 		        if (currentTime.EndValue >= -command.LiveTimeSpan.StartValue)
 		        {
 			        if (command.CanUndo)
-			        {
-				        AddStackCommand(command);
+                    {
+                        AddStackCommand(command);
 			        }
 			        else
 			        {

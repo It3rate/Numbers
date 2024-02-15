@@ -23,7 +23,7 @@ namespace Numbers.Mappers
         public Polarity Polarity { get => Number.Polarity; set => Number.Polarity = value; }
         public int UnitDirectionOnDomainLine => Guideline.DirectionOnLine(DomainMapper.Guideline);
 
-        public int OrderIndex { get; set; }
+        public int OrderIndex { get; set; } = -1;
         public SKNumberMapper(MouseAgent agent, Number number) : base(agent, number)
 	    {
             Id = number.Id;
