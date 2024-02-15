@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Net;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
@@ -143,6 +144,17 @@ namespace NumbersCore.Primitives
         public long Min => StartPosition <= EndPosition ? StartPosition : EndPosition;
         public long Max => StartPosition >= EndPosition ? StartPosition : EndPosition;
         public Focal Negated => new Focal(-StartPosition, -EndPosition);
+        public void MakeForward()
+        {
+            if(EndPosition < StartPosition)
+            {
+                var temp = StartPosition;
+                StartPosition = EndPosition;
+                EndPosition = temp;
+            }
+        }
+        public bool Touches(Focal q) => Touches(this, q);
+
 
         public static long MinPosition(Focal p, Focal q) => Math.Min(p.Min, q.Min);
         public static long MaxPosition(Focal p, Focal q) => Math.Max(p.Max, q.Max);
@@ -150,6 +162,11 @@ namespace NumbersCore.Primitives
         public static long MaxStart(Focal p, Focal q) => Math.Max(p.StartPosition, q.StartPosition);
         public static long MinEnd(Focal p, Focal q) => Math.Min(p.EndPosition, q.EndPosition);
         public static long MaxEnd(Focal p, Focal q) => Math.Max(p.EndPosition, q.EndPosition);
+
+        /// <summary>
+        /// Shares an endpoint, but no overlap (meaning can only share one endpoint).
+        /// </summary>
+        public static bool Touches(Focal p, Focal q) => p.EndPosition == q.StartPosition || p.StartPosition == q.EndPosition;
         public static Focal Intersection(Focal p, Focal q)
         {
             Focal result = null;
@@ -166,15 +183,6 @@ namespace NumbersCore.Primitives
             var start = Math.Max(p.Min, q.Min);
             var end = Math.Min(p.Max, q.Max);
             return (start >= end) ? new Focal(0, 0) : new Focal(start, end);
-        }
-        public void MakeForward()
-        {
-            if(EndPosition < StartPosition)
-            {
-                var temp = StartPosition;
-                StartPosition = EndPosition;
-                EndPosition = temp;
-            }
         }
         public static Focal Extent(Focal p, Focal q)
         {
@@ -398,7 +406,6 @@ namespace NumbersCore.Primitives
         {
             return new Focal[] { Focal.MinMaxFocal.Clone() };
         }
-
 
         //  0000	Never			0			FALSE
         //  0001	Both            A ^ B       AND

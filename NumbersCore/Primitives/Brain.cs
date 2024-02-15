@@ -28,12 +28,12 @@ namespace NumbersCore.Primitives
         public readonly Dictionary<int, Trait> TraitStore = new Dictionary<int, Trait>();
 	    public readonly Dictionary<int, Transform> TransformStore = new Dictionary<int, Transform>();
 
-        private int _networkCounter = 1 + (int)MathElementKind.Network;
+        private int _brainCounter = 1 + (int)MathElementKind.Brain;
 	    private int _formulaCounter = 1 + (int)MathElementKind.Formula;
 	    private int _definitionCounter = 1 + (int)MathElementKind.Definition;
         private int _traitCounter = 1 + (int)MathElementKind.Trait;
 	    private int _transformCounter = 1 + (int)MathElementKind.Transform;
-        public int NextNetworkId() => _networkCounter++;
+        public int NextNetworkId() => _brainCounter++;
         public int NextFormulaId() => _formulaCounter++;
         public int NextDefinitionId() => _definitionCounter++;
         public int NextTraitId() => _traitCounter++;

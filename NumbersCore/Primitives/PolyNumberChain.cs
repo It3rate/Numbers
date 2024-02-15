@@ -7,15 +7,18 @@ using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
-    // A contiguous sequence of numbers in the same domain, an end value is the next numbers start value.
-    public class PolyNumber : IMathElement
+
+    /// <summary>
+    /// Multiple Number Chains, one for each dimension.
+    /// </summary>
+    public class PolyNumberChain : IMathElement
     {
-        public virtual MathElementKind Kind => MathElementKind.PolyNumber;
+        public virtual MathElementKind Kind => MathElementKind.PolyNumberChain;
         public int Id { get; internal set; }
         public int CreationIndex => Id - (int)Kind - 1;
 
-        public Domain Domain { get; set; }
-        public FocalSet PolyFocal { get; set; }
+        public List<NumberChain> NumberChains { get; set; }
+
         //public int Count => PolyFocal.Count;
 
         //public PolyNumber(Domain domain, FocalSet focals)

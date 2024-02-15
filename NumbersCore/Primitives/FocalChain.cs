@@ -8,27 +8,27 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    // todo: adapt this to be solution for bool intersection arrays and repeated add/mults 
-    // needs base focal, and internal focals that are reused (as they may be link targets)
-    // can be empty. Can not have overlaps. Can not exceed base focal length.
-    // Focals are in order from start to end of line, and share its polarity.
-
     /// <summary>
-    /// A series of ordered positions on a single line, the end point of one focal is the start point of the next one.
+    /// A series of ordered positions. These can be merged with other Focals using bool operations of OperationKind is not None.
+    /// Perhaps these two abilities should be separated - Q. Are non overlapping ordered elements a core type of value, or just a special bool case?
+    /// Can be empty (e.g result of bool AND with no overlap)
     /// </summary>
-    public class FocalSet : Focal
+    public class FocalChain : Focal
     {
-        public virtual MathElementKind Kind => MathElementKind.FocalSet;
+        public virtual MathElementKind Kind => MathElementKind.FocalChain;
+        public bool AutoSort { get; set; } = true;
+        public bool AutoMerge { get; set; } = true;
         public override long StartPosition
         {
-            get => _focals.Count > 0 ? _focals[0].StartPosition : 0;
+            get => Count > 0 ? _focals[0].StartPosition : 0;
             set { } // can't set values, they are calculated 
         }
         public override long EndPosition
         {
-            get => _focals.Count > 0 ? _focals[_focals.Count - 1].EndPosition : 0;
+            get => Count > 0 ? _focals[Count - 1].EndPosition : 0;
             set { } // can't set values, they are calculated 
         }
+        public int Count { get; private set; }
 
         private OperationKind _operationKind = OperationKind.None;
         public OperationKind OperationKind
@@ -51,11 +51,10 @@
         private long[] _positions;
         public override long[] Positions => _positions;
 
-        public int SubFocalCount { get; private set; }
 
         protected List<Focal> _focals = new List<Focal>();
 
-        public FocalSet(Focal left, Focal right, OperationKind operationKind)
+        public FocalChain(Focal left, Focal right, OperationKind operationKind = OperationKind.None)
         {
             _left = left;
             _right = right;
@@ -65,7 +64,7 @@
         }
         public IEnumerable<Focal> Focals()
         {
-            for (int i = 0; i < SubFocalCount; i++)
+            for (int i = 0; i < Count; i++)
             {
                 yield return _focals[i];
             }
@@ -77,7 +76,7 @@
         /// <returns>Returns cloned Focals that are not preserved.</returns>
         public IEnumerable<Focal> MaskedFocals(Focal mask)
         {
-            for (int i = 0; i < SubFocalCount; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (_focals[i].EndPosition < mask.StartPosition || _focals[i].StartPosition > mask.EndPosition)
                 {
@@ -96,13 +95,13 @@
             }
         }
 
-        public FocalSet(long startTickPosition, long endTickPosition) : base(startTickPosition, endTickPosition)
+        public FocalChain(long startTickPosition, long endTickPosition) : base(startTickPosition, endTickPosition)
         {
         }
         public Focal GetFocalByIndex(int index)
         {
             Focal result = null;
-            if (index >= 0 && index < SubFocalCount)
+            if (index >= 0 && index < Count)
             {
                 result = _focals[index];
             }
@@ -110,7 +109,7 @@
         }
         public long[] GetPositions()
         {
-            var result = new long[SubFocalCount * 2];
+            var result = new long[Count * 2];
             int i = 0;
             foreach (var focal in _focals)
             {
@@ -121,16 +120,19 @@
         }
         private void ClearFocals()
         {
-            SubFocalCount = 0;
+            Count = 0;
         }
 
 
         private void Regenerate()
         {
-            var op = OperationKind.GetFunc();
-            var tt = BuildTruthTable(Left.Positions, Right.Positions);
-            _positions = ApplyOpToTruthTable(tt, op);
-            RegenFocals();
+            if (OperationKind != OperationKind.None)
+            {
+                var op = OperationKind.GetFunc();
+                var tt = BuildTruthTable(Left.Positions, Right.Positions);
+                _positions = ApplyOpToTruthTable(tt, op);
+                RegenFocals();
+            }
         }
 
         private void RegenFocals()
@@ -138,7 +140,10 @@
             ClearFocals();
             for (int i = 0; i < _positions.Length; i += 2)
             {
-                var f = FillNextPosition(_positions[i], _positions[i + 1]);
+                var p0 = _positions[i];
+                // odd number of positions creates a point at end. Anything depending odd stores on this should use positions directly.
+                var p1 = i + 1 < _positions.Length ? _positions[i + 1] : p0; 
+                var f = FillNextPosition(p0, p1);
             }
         }
         private long[] ApplyOpToTruthTable(List<(long, bool, bool)> data, Func<bool, bool, bool> operation)
@@ -186,15 +191,15 @@
         private Focal FillNextPosition(long startPosition, long endPosition)
         {
             Focal result;
-            if (_focals.Count > SubFocalCount + 1)
+            if (_focals.Count > Count + 1)
             {
-                result = _focals[SubFocalCount++];
+                result = _focals[Count++];
                 result.Reset(startPosition, endPosition);
             }
             else
             {
                 result = new Focal(startPosition, endPosition);
-                SubFocalCount++;
+                Count++;
             }
             return result;
         }

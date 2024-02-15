@@ -14,11 +14,11 @@ namespace Numbers.Mappers
 
     public class SKNumberSetMapper : SKMapper
     {
-	    public NumberSet NumberSet => (NumberSet)MathElement;
+	    public NumberChain NumberSet => (NumberChain)MathElement;
 	    public SKDomainMapper DomainMapper => WorkspaceMapper.GetDomainMapper(NumberSet.Domain);
         public List<SKNumberMapper> NumberMappers { get; } = new List<SKNumberMapper>();
 
-        public SKNumberSetMapper(MouseAgent agent, NumberSet numberSet, SKSegment guideline = default) : base(agent, numberSet, guideline)
+        public SKNumberSetMapper(MouseAgent agent, NumberChain numberSet, SKSegment guideline = default) : base(agent, numberSet, guideline)
 	    {
 	    }
 

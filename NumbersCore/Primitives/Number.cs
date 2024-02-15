@@ -312,53 +312,53 @@ namespace NumbersCore.Primitives
         // use segments rather than ints
         // convert values to first param's domain's context
         // result in first params's domain
-        public virtual NumberSet Never(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Never(Focal, q.Focal));
-		public virtual void Never(Number q, NumberSet result) => result.Reset(Focal.Never(Focal, q.Focal));
+        public virtual NumberChain Never(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Never(Focal, q.Focal));
+		public virtual void Never(Number q, NumberChain result) => result.Reset(Focal.Never(Focal, q.Focal));
 
-		public virtual NumberSet And(Number q) => new NumberSet(GetMaxRange(this, q), Focal.And(Focal, q.Focal));
-		public virtual void And(Number q, NumberSet result) => result.Reset(Focal.And(Focal, q.Focal));
+		public virtual NumberChain And(Number q) => new NumberChain(GetMaxRange(this, q), Focal.And(Focal, q.Focal));
+		public virtual void And(Number q, NumberChain result) => result.Reset(Focal.And(Focal, q.Focal));
 
-		public virtual NumberSet B_Inhibits_A(Number q) => new NumberSet(GetMaxRange(this, q), Focal.B_Inhibits_A(Focal, q.Focal));
-		public virtual void B_Inhibits_A(Number q, NumberSet result) => result.Reset(Focal.B_Inhibits_A(Focal, q.Focal));
+		public virtual NumberChain B_Inhibits_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.B_Inhibits_A(Focal, q.Focal));
+		public virtual void B_Inhibits_A(Number q, NumberChain result) => result.Reset(Focal.B_Inhibits_A(Focal, q.Focal));
 
-		public virtual NumberSet Transfer_A(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Transfer_A(Focal, q.Focal));
-		public virtual void Transfer_A(Number q, NumberSet result) => result.Reset(Focal.Transfer_A(Focal, q.Focal));
+		public virtual NumberChain Transfer_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Transfer_A(Focal, q.Focal));
+		public virtual void Transfer_A(Number q, NumberChain result) => result.Reset(Focal.Transfer_A(Focal, q.Focal));
 
-		public virtual NumberSet A_Inhibits_B(Number q) => new NumberSet(GetMaxRange(this, q), Focal.A_Inhibits_B(Focal, q.Focal));
-		public virtual void A_Inhibits_B(Number q, NumberSet result) => result.Reset(Focal.A_Inhibits_B(Focal, q.Focal));
+		public virtual NumberChain A_Inhibits_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.A_Inhibits_B(Focal, q.Focal));
+		public virtual void A_Inhibits_B(Number q, NumberChain result) => result.Reset(Focal.A_Inhibits_B(Focal, q.Focal));
 
-		public virtual NumberSet Transfer_B(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Transfer_B(Focal, q.Focal));
-		public virtual void Transfer_B(Number q, NumberSet result) => result.Reset(Focal.Transfer_B(Focal, q.Focal));
+		public virtual NumberChain Transfer_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Transfer_B(Focal, q.Focal));
+		public virtual void Transfer_B(Number q, NumberChain result) => result.Reset(Focal.Transfer_B(Focal, q.Focal));
 
-		public virtual NumberSet Xor(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Xor(Focal, q.Focal));
-		public virtual void Xor(Number q, NumberSet result) => result.Reset(Focal.Xor(Focal, q.Focal));
+		public virtual NumberChain Xor(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Xor(Focal, q.Focal));
+		public virtual void Xor(Number q, NumberChain result) => result.Reset(Focal.Xor(Focal, q.Focal));
 
-		public virtual NumberSet Or(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Or(Focal, q.Focal));
-		public virtual void Or(Number q, NumberSet result) => result.Reset(Focal.Or(Focal, q.Focal));
+		public virtual NumberChain Or(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Or(Focal, q.Focal));
+		public virtual void Or(Number q, NumberChain result) => result.Reset(Focal.Or(Focal, q.Focal));
 
-		public virtual NumberSet Nor(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Nor(Focal, q.Focal));
-		public virtual void Nor(Number q, NumberSet result) => result.Reset(Focal.Nor(Focal, q.Focal));
+		public virtual NumberChain Nor(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Nor(Focal, q.Focal));
+		public virtual void Nor(Number q, NumberChain result) => result.Reset(Focal.Nor(Focal, q.Focal));
 
-		public virtual NumberSet Xnor(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Xnor(Focal, q.Focal));
-		public virtual void Xnor(Number q, NumberSet result) => result.Reset(Focal.Xnor(Focal, q.Focal));
+		public virtual NumberChain Xnor(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Xnor(Focal, q.Focal));
+		public virtual void Xnor(Number q, NumberChain result) => result.Reset(Focal.Xnor(Focal, q.Focal));
 
-		public virtual NumberSet Not_B(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Not_B(Focal, q.Focal));
-		public virtual void Not_B(Number q, NumberSet result) => result.Reset(Focal.Not_B(Focal, q.Focal));
+		public virtual NumberChain Not_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Not_B(Focal, q.Focal));
+		public virtual void Not_B(Number q, NumberChain result) => result.Reset(Focal.Not_B(Focal, q.Focal));
 
-		public virtual NumberSet B_Implies_A(Number q) => new NumberSet(GetMaxRange(this, q), Focal.B_Implies_A(Focal, q.Focal));
-		public virtual void B_Implies_A(Number q, NumberSet result) => result.Reset(Focal.B_Implies_A(Focal, q.Focal));
+		public virtual NumberChain B_Implies_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.B_Implies_A(Focal, q.Focal));
+		public virtual void B_Implies_A(Number q, NumberChain result) => result.Reset(Focal.B_Implies_A(Focal, q.Focal));
 
-		public virtual NumberSet Not_A(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Not_A(Focal, q.Focal));
-		public virtual void Not_A(Number q, NumberSet result) => result.Reset(Focal.Not_A(Focal, q.Focal));
+		public virtual NumberChain Not_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Not_A(Focal, q.Focal));
+		public virtual void Not_A(Number q, NumberChain result) => result.Reset(Focal.Not_A(Focal, q.Focal));
 
-		public virtual NumberSet A_Implies_B(Number q) => new NumberSet(GetMaxRange(this, q), Focal.A_Implies_B(Focal, q.Focal));
-		public virtual void A_Implies_B(Number q, NumberSet result) => result.Reset(Focal.A_Implies_B(Focal, q.Focal));
+		public virtual NumberChain A_Implies_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.A_Implies_B(Focal, q.Focal));
+		public virtual void A_Implies_B(Number q, NumberChain result) => result.Reset(Focal.A_Implies_B(Focal, q.Focal));
 
-		public virtual NumberSet Nand(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Nand(Focal, q.Focal));
-		public virtual void Nand(Number q, NumberSet result) => result.Reset(Focal.Nand(Focal, q.Focal));
+		public virtual NumberChain Nand(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Nand(Focal, q.Focal));
+		public virtual void Nand(Number q, NumberChain result) => result.Reset(Focal.Nand(Focal, q.Focal));
 
-		public virtual NumberSet Always(Number q) => new NumberSet(GetMaxRange(this, q), Focal.Always(Focal, q.Focal));
-		public virtual void Always(Number q, NumberSet result) => result.Reset(Focal.Always(Focal, q.Focal));
+		public virtual NumberChain Always(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Always(Focal, q.Focal));
+		public virtual void Always(Number q, NumberChain result) => result.Reset(Focal.Always(Focal, q.Focal));
 
 
         public Number Clone(bool addToStore = true)

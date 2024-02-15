@@ -110,6 +110,7 @@
     <Compile Include="Drawing\SkPolyline.cs" />
     <Compile Include="IDemos.cs" />
     <Compile Include="Mappers\SKNumberSetMapper.cs" />
+    <Compile Include="Mappers\SKPathMapper.cs" />
     <Compile Include="Mappers\SKTraitMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />

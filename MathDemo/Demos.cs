@@ -169,7 +169,7 @@ namespace MathDemo
             var guideline3 = new SKSegment(100, 300, 700, 300);
             var dc3 = new AddSKDomainCommand(_currentMouseAgent, trait, 0, unitSize, -800, 800, guideline3, unitSeg);
             _currentMouseAgent.Stack.Do(dc3);
-            var numSet = new NumberSet(dc3.Domain.MinMaxNumber, new[] { new Focal(5, 20), new Focal(-20, -10), new Focal(-40, -30) });
+            var numSet = new NumberChain(dc3.Domain.MinMaxNumber, new[] { new Focal(5, 20), new Focal(-20, -10), new Focal(-40, -30) });
             dc3.CreatedDomain.AddNumberSet(numSet);
 
             return wm;

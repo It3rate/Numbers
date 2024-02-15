@@ -121,7 +121,7 @@ namespace Numbers.Mappers
 	        }
 	        return (SKNumberMapper)result;
         }
-        public SKNumberSetMapper GetOrCreateNumberSetMapper(NumberSet numberSet)
+        public SKNumberSetMapper GetOrCreateNumberSetMapper(NumberChain numberSet)
         {
 	        if (!NumberSetMappers.TryGetValue(numberSet.Id, out SKNumberSetMapper result))
 	        {
@@ -286,7 +286,7 @@ namespace Numbers.Mappers
 			step *= topDir;
             foreach(var nm in OrderedValidNumbers())
             {
-                if(nm.Number is NumberSet numberSet)
+                if(nm.Number is NumberChain numberSet)
                 {
                     foreach(var num in numberSet.InternalNumbers())
                     {

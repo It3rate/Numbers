@@ -29,7 +29,7 @@ namespace NumbersCore.Primitives
         public Number MinMaxNumber { get; protected set; }
 
         public readonly Dictionary<int, Number> NumberStore = new Dictionary<int, Number>();
-        public readonly Dictionary<int, NumberSet> NumberSetStore = new Dictionary<int, NumberSet>();
+        public readonly Dictionary<int, NumberChain> NumberSetStore = new Dictionary<int, NumberChain>();
 
         // todo: need a tick size (defaults to 1), that can be overriden by numbers. This allows tick sizes larger than unit where
         // a unit of 1 mile and a tick size of 10 (miles) means you must round to the nearest 10 miles.
@@ -115,9 +115,9 @@ namespace NumbersCore.Primitives
         }
 
 
-        private int _numberSetCounter = 1 + (int)MathElementKind.NumberSet;
+        private int _numberSetCounter = 1 + (int)MathElementKind.NumberChain;
         public int NextNumberSetId() => _numberSetCounter++ + Id;
-        public NumberSet AddNumberSet(NumberSet numberSet, bool addToStore = true)
+        public NumberChain AddNumberSet(NumberChain numberSet, bool addToStore = true)
         {
 	        numberSet.Domain = this;
 	        numberSet.Id = numberSet.Id == 0 ? NextNumberSetId() : numberSet.Id;
@@ -127,7 +127,7 @@ namespace NumbersCore.Primitives
 	        }
 	        return numberSet;
         }
-        public bool RemoveNumberSet(NumberSet numberSet)
+        public bool RemoveNumberSet(NumberChain numberSet)
         {
 	        numberSet.Domain = null;
 	        return NumberSetStore.Remove(numberSet.Id);

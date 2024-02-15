@@ -9,22 +9,18 @@ namespace NumbersCore.Primitives
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Represents a boolean type evaluation of two or more numbers.
-    /// This type of number can have more than one segment, but segments can never overlap.
-    /// All Numbers are probably NumberSets, with zero based Unit and Unot values cancelling on overlap.
+    /// Ordered numbers, array style, clamped to base Number size. Optionally can be merged and ordered with bool Operations.
+    /// All Numbers are probably NumberChain, with zero based Unit and Unot values cancelling on overlap.
+    /// Can represent a boolean evaluation of two numbers that result in non overlapping ordered segments, which share polarity and domain.
+    /// Can also represent the start/endpoints of mergable repeats, like 3+3+3 or 3*3*3. 
     /// </summary>
-    public class NumberSet : Number, IMathElement
+    public class NumberChain : Number, IMathElement
     { 
-        // subclass number, and use base focal as the total segment, then internally divided into the masked sections.'
-        // should be able to access internal focals as numbers, and there may in fact be none (A and B with no overlap)
         // should be able to access and update proportionally, where 8 even subdivisions will remain so even when changing the base number.
-        // Q. are internal focals able to have polarity? probably not?
-        // these focals seem similar to steps when sectioning a transition (repeated adds are steps, repeated mult powers are steps), intervals
-        // seems they can be recorded as on/off/on/off along the line, preventing potential overlaps you might get in focals.
-        // seems a good way to encode repetition and even counting. Also need to have const ref to focals, so need to deal with create/delete.
-        // knowing if focals are touching (contiguous) matters. There can be no overlap, but two segments can touch or not touch.
+        // they can be recorded as on/off/on/off along the line, allowing construction of 2D continuous paths (though this would just be an optimization).
+        // knowing if focals are touching (contiguous) matters.
         // all clamping, overlap removal and repears should be done in the focalSet
-	    public override MathElementKind Kind => MathElementKind.NumberSet;
+	    public override MathElementKind Kind => MathElementKind.NumberChain;
 
         // todo: Focals should have no overlap and always be sorted
         private List<Focal> Focals { get; } = new List<Focal>(); // todo: use growing list that never exceeds max size, reuse focals
@@ -39,7 +35,7 @@ namespace NumbersCore.Primitives
             }
         }
 
-        public NumberSet(Number targetNumber, params Focal[] focals) : base(targetNumber.Focal, targetNumber.Polarity)
+        public NumberChain(Number targetNumber, params Focal[] focals) : base(targetNumber.Focal, targetNumber.Polarity)
         {
             Domain = targetNumber.Domain;
 	        Focals.AddRange(focals);
@@ -150,16 +146,16 @@ namespace NumbersCore.Primitives
         public void Not(Number q) { Reset(Focal.UnaryNot(q.Focal)); RemoveOverlaps(); }
 
 
-        public override NumberSet And(Number q) { Reset(Focal.And(Focal, q.Focal)); RemoveOverlaps(); return this; }
-        public override NumberSet Or(Number q) { Reset(Focal.Or(Focal, q.Focal)); RemoveOverlaps(); return this; }
-        public override NumberSet Not_A(Number q) { Reset(Focal.Not_A(Focal, q.Focal)); RemoveOverlaps(); return this; }
-        public override NumberSet Not_B(Number q) { Reset(Focal.Not_B(Focal, q.Focal)); RemoveOverlaps(); return this; }
-        public override NumberSet Nand(Number q) { Reset(Focal.Nand(Focal, q.Focal)); RemoveOverlaps(); return this; }
-        public override NumberSet Nor(Number q) { Reset(Focal.Nor(Focal, q.Focal)); RemoveOverlaps(); return this; }
+        public override NumberChain And(Number q) { Reset(Focal.And(Focal, q.Focal)); RemoveOverlaps(); return this; }
+        public override NumberChain Or(Number q) { Reset(Focal.Or(Focal, q.Focal)); RemoveOverlaps(); return this; }
+        public override NumberChain Not_A(Number q) { Reset(Focal.Not_A(Focal, q.Focal)); RemoveOverlaps(); return this; }
+        public override NumberChain Not_B(Number q) { Reset(Focal.Not_B(Focal, q.Focal)); RemoveOverlaps(); return this; }
+        public override NumberChain Nand(Number q) { Reset(Focal.Nand(Focal, q.Focal)); RemoveOverlaps(); return this; }
+        public override NumberChain Nor(Number q) { Reset(Focal.Nor(Focal, q.Focal)); RemoveOverlaps(); return this; }
 
-        public override NumberSet Xnor(Number q) { Reset(Focal.Xnor(Focal, q.Focal)); RemoveOverlaps(); return this; }
-        public override NumberSet Xor(Number q) { Reset(Focal.Xor(Focal, q.Focal)); RemoveOverlaps();  return this; }
-        public override NumberSet B_Inhibits_A(Number q) { Reset(Focal.B_Inhibits_A(Focal, q.Focal)); RemoveOverlaps(); return this; }
-        public override NumberSet A_Inhibits_B(Number q) { Reset(Focal.A_Inhibits_B(Focal, q.Focal)); RemoveOverlaps(); return this; }
+        public override NumberChain Xnor(Number q) { Reset(Focal.Xnor(Focal, q.Focal)); RemoveOverlaps(); return this; }
+        public override NumberChain Xor(Number q) { Reset(Focal.Xor(Focal, q.Focal)); RemoveOverlaps();  return this; }
+        public override NumberChain B_Inhibits_A(Number q) { Reset(Focal.B_Inhibits_A(Focal, q.Focal)); RemoveOverlaps(); return this; }
+        public override NumberChain A_Inhibits_B(Number q) { Reset(Focal.A_Inhibits_B(Focal, q.Focal)); RemoveOverlaps(); return this; }
     }
 }

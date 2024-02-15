@@ -8,11 +8,11 @@ namespace NumbersCore.Primitives
     using System.Text;
     using System.Threading.Tasks;
 
-    public class Relation : IMathElement
+    public class Relation// : IMathElement
     {
-	    public MathElementKind Kind => MathElementKind.Relation;
+	    //public MathElementKind Kind => MathElementKind.Relation;
 	    public int Id { get; set; }
-	    public int CreationIndex => Id - (int)Kind - 1;
+	    //public int CreationIndex => Id - (int)Kind - 1;
 
 	    public Brain Brain { get; }
 

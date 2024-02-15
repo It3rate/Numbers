@@ -55,9 +55,9 @@
     <Compile Include="Primitives\FilterOperator.cs" />
     <Compile Include="Primitives\Focal.cs" />
     <Compile Include="Primitives\Formula.cs" />
-    <Compile Include="Primitives\NumberSet.cs" />
-    <Compile Include="Primitives\FocalSet.cs" />
-    <Compile Include="Primitives\PolyNumber.cs" />
+    <Compile Include="Primitives\NumberChain.cs" />
+    <Compile Include="Primitives\FocalChain.cs" />
+    <Compile Include="Primitives\PolyNumberChain.cs" />
     <Compile Include="Primitives\Relation.cs" />
     <Compile Include="Primitives\Repeat.cs" />
     <Compile Include="Utils\IAgent.cs" />
