@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Xml.Linq;
 using Numbers.Agent;
+using Numbers.Drawing;
 using Numbers.Renderer;
 using Numbers.Utils;
 using NumbersCore.Primitives;

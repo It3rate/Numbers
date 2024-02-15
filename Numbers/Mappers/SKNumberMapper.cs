@@ -3,13 +3,13 @@ using System.Diagnostics;
 using System.IO.Ports;
 using System.Windows.Forms.VisualStyles;
 using Numbers.Agent;
-using Numbers.Utils;
+using Numbers.Drawing;
 using NumbersCore.Primitives;
 using SkiaSharp;
 
 namespace Numbers.Mappers
 {
-	public class SKNumberMapper : SKMapper
+    public class SKNumberMapper : SKMapper
     {
 	    public Number Number => (Number) MathElement;
         public MouseAgent MouseAgent => (MouseAgent)Agent;

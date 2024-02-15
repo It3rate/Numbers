@@ -15,7 +15,7 @@ namespace NumbersCore.Primitives
     /// </summary>
     public class NumberSet : Number, IMathElement
     { 
-        // todo: subclass number, and use base focal as the total segment, then internally divided into the masked sections.'
+        // subclass number, and use base focal as the total segment, then internally divided into the masked sections.'
         // should be able to access internal focals as numbers, and there may in fact be none (A and B with no overlap)
         // should be able to access and update proportionally, where 8 even subdivisions will remain so even when changing the base number.
         // Q. are internal focals able to have polarity? probably not?
@@ -23,6 +23,7 @@ namespace NumbersCore.Primitives
         // seems they can be recorded as on/off/on/off along the line, preventing potential overlaps you might get in focals.
         // seems a good way to encode repetition and even counting. Also need to have const ref to focals, so need to deal with create/delete.
         // knowing if focals are touching (contiguous) matters. There can be no overlap, but two segments can touch or not touch.
+        // all clamping, overlap removal and repears should be done in the focalSet
 	    public override MathElementKind Kind => MathElementKind.NumberSet;
 
         // todo: Focals should have no overlap and always be sorted

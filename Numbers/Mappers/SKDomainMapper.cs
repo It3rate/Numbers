@@ -4,15 +4,15 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Numbers.Agent;
+using Numbers.Drawing;
 using Numbers.Renderer;
-using Numbers.Utils;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;
 
 namespace Numbers.Mappers
 {
-	public class SKDomainMapper : SKMapper
+    public class SKDomainMapper : SKMapper
 	{
 	    public Domain Domain => (Domain)MathElement;
         public SKNumberMapper BasisNumberMapper => NumberMapperFor(Domain.BasisNumber);

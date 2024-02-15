@@ -1,11 +1,11 @@
-﻿using Numbers.Mappers;
-using Numbers.Utils;
+﻿using Numbers.Drawing;
+using Numbers.Mappers;
 using NumbersCore.Primitives;
 using SkiaSharp;
 
 namespace Numbers.Agent
 {
-	public class HighlightSet
+    public class HighlightSet
     {
         public Highlight ActiveHighlight { get; set; }
 	    public SKPoint Position => ActiveHighlight?.OriginalPoint ?? SKPoint.Empty;

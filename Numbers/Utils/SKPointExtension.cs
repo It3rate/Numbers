@@ -1,4 +1,5 @@
 ﻿using System;
+using Numbers.Drawing;
 using SkiaSharp;
 
 namespace Numbers.Utils

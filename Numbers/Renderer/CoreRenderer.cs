@@ -1,10 +1,10 @@
-﻿	using System;
+﻿using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Numbers.Agent;
+using Numbers.Drawing;
 using Numbers.Mappers;
-using Numbers.Utils;
 using NumbersCore.Primitives;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;

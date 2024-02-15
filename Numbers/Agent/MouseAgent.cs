@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using Numbers.Commands;
+using Numbers.Drawing;
 using Numbers.Mappers;
 using Numbers.Renderer;
 using Numbers.Utils;
@@ -19,7 +20,7 @@ using SkiaSharp.Views.Desktop;
 
 namespace Numbers.Agent
 {
-	public class MouseAgent : CommandAgent, IMouseAgent
+    public class MouseAgent : CommandAgent, IMouseAgent
 	{
         #region Properties
         public static Dictionary<int, SKWorkspaceMapper> WorkspaceMappers = new Dictionary<int, SKWorkspaceMapper>();

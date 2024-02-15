@@ -56,12 +56,15 @@
     <Compile Include="Primitives\Focal.cs" />
     <Compile Include="Primitives\Formula.cs" />
     <Compile Include="Primitives\NumberSet.cs" />
+    <Compile Include="Primitives\FocalSet.cs" />
+    <Compile Include="Primitives\PolyNumber.cs" />
     <Compile Include="Primitives\Relation.cs" />
     <Compile Include="Primitives\Repeat.cs" />
     <Compile Include="Utils\IAgent.cs" />
     <Compile Include="Utils\IMathElement.cs" />
     <Compile Include="Primitives\Network.cs" />
     <Compile Include="Primitives\Number.cs" />
+    <Compile Include="Utils\OperationKind.cs" />
     <Compile Include="Utils\Range.cs" />
     <Compile Include="Primitives\Selection.cs" />
     <Compile Include="Primitives\Trait.cs" />

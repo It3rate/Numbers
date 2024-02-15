@@ -6,8 +6,8 @@
     using System.Text;
     using System.Threading.Tasks;
     using Numbers.Agent;
+    using Numbers.Drawing;
     using Numbers.Mappers;
-    using Numbers.Utils;
     using NumbersAPI.CoreTasks;
     using NumbersCore.CoreConcepts.Time;
     using NumbersCore.Primitives;

@@ -105,6 +105,9 @@
     <Compile Include="Commands\RemoveSKNumberCommand.cs" />
     <Compile Include="Commands\ISKCommand.cs" />
     <Compile Include="Commands\SKCommandBase.cs" />
+    <Compile Include="Drawing\SkiaShapeAdapter.cs" />
+    <Compile Include="Drawing\BrushData.cs" />
+    <Compile Include="Drawing\SkPolyline.cs" />
     <Compile Include="IDemos.cs" />
     <Compile Include="Mappers\SKNumberSetMapper.cs" />
     <Compile Include="Mappers\SKTraitMapper.cs" />
@@ -117,7 +120,7 @@
     <Compile Include="Utils\MathF.cs" />
     <Compile Include="Utils\SKPointExtension.cs" />
     <Compile Include="Utils\SkRectExtension.cs" />
-    <Compile Include="Utils\SKSegment.cs" />
+    <Compile Include="Drawing\SKSegment.cs" />
     <Compile Include="Agent\MouseAgent.cs" />
     <Compile Include="Mappers\SKDomainMapper.cs" />
     <Compile Include="Mappers\SKMapper.cs" />

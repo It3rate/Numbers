@@ -41,11 +41,9 @@ namespace NumbersCore.Primitives
         public int CreationIndex => Id - (int)Kind - 1;
 
         public virtual long StartPosition { get; set; }
-        public virtual long EndPosition { 
-            get;
-            set;
-        }
+        public virtual long EndPosition { get; set; }
         public virtual long InvertedEndPosition => StartPosition - LengthInTicks;
+        public virtual long[] Positions => new long[] { StartPosition, EndPosition };
 
         public int Direction => StartPosition <= EndPosition ? 1 : -1;
         public bool IsPositiveDirection => Direction >= 0;
@@ -67,7 +65,7 @@ namespace NumbersCore.Primitives
         /// Whatever orientation they have is considered the aligned direction, and the inverted value is the 'other' direction.
         /// Even a negative basis focal is still 'unit', and its invert (positive in this case) is unot. The basis focal decides the aligned direction.
         /// </summary>
-        private Focal()
+        protected Focal()
         {
             Id = _focalCounter++;
         }

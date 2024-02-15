@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using Numbers.Drawing;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Numbers.Utils
 {
-	public static class SkRectExtension
+    public static class SkRectExtension
 	{
 		public static SKRect SKRect(this RectangleF rectF) =>
 			new SKRect(rectF.Left, rectF.Top, rectF.Right, rectF.Bottom);

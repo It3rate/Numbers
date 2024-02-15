@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using Numbers.Agent;
+using Numbers.Drawing;
 using Numbers.Renderer;
 using Numbers.Utils;
 using NumbersCore.Primitives;
@@ -12,7 +13,7 @@ using SkiaSharp;
 
 namespace Numbers.Mappers
 {
-	public class SKWorkspaceMapper : SKMapper
+    public class SKWorkspaceMapper : SKMapper
     {
         private readonly Dictionary<int, SKDomainMapper> _domainMappers = new Dictionary<int, SKDomainMapper>();
         private readonly Dictionary<int, SKTransformMapper> _transformMappers = new Dictionary<int, SKTransformMapper>();

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Security.Claims;
 using Numbers.Mappers;
+using Numbers.Utils;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;
 
-namespace Numbers.Utils
+namespace Numbers.Drawing
 {
     public class SKSegment
     {
@@ -39,21 +40,21 @@ namespace Numbers.Utils
 
         public SKSegment Clone() => new SKSegment(StartPoint, EndPoint);
 
-        public SKSegment InsetSegment(float pixels) => new SKSegment(PointAlongLine(pixels/Length), PointAlongLine(1f - (pixels / Length)));
+        public SKSegment InsetSegment(float pixels) => new SKSegment(PointAlongLine(pixels / Length), PointAlongLine(1f - pixels / Length));
 
         public static SKSegment operator +(SKSegment a, SKPoint value)
         {
-	        var result = a.Clone();
-	        result.StartPoint += value;
-	        result.EndPoint += value;
-	        return result;
+            var result = a.Clone();
+            result.StartPoint += value;
+            result.EndPoint += value;
+            return result;
         }
         public static SKSegment operator -(SKSegment a, SKPoint value)
         {
-	        var result = a.Clone();
-	        result.StartPoint -= value;
-	        result.EndPoint -= value;
-	        return result;
+            var result = a.Clone();
+            result.StartPoint -= value;
+            result.EndPoint -= value;
+            return result;
         }
 
         public static SKSegment operator +(SKSegment a, float value)
@@ -92,24 +93,24 @@ namespace Numbers.Utils
                 (EndPoint.Y - StartPoint.Y) * ((float)t + offsetT) + StartPoint.Y);
         }
         public (SKPoint, SKPoint) PerpendicularLine(float t, float offset) => (PointAlongLine(t), OrthogonalPoint(PointAlongLine(t), offset));
-        public SKPoint RelativeOffset (float offset) => OrthogonalPoint(SKPoint.Empty, offset);
+        public SKPoint RelativeOffset(float offset) => OrthogonalPoint(SKPoint.Empty, offset);
         public SKPoint OffsetAlongLine(float t, float offset) => OrthogonalPoint(PointAlongLine(t), offset);
         public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Math.Max(MathF.tolerance, Length));
         public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(MathF.tolerance, Length));
         public SKPoint Vector => EndPoint - StartPoint;
         public SKSegment ShiftOffLine(float shift)
-		{
-			var p0 = OrthogonalPoint(StartPoint, shift);
-			var p1 = OrthogonalPoint(EndPoint, shift);
+        {
+            var p0 = OrthogonalPoint(StartPoint, shift);
+            var p1 = OrthogonalPoint(EndPoint, shift);
             return new SKSegment(p0, p1);
 
-		}
+        }
 
-		public SKSegment SegmentAlongLine(Range ratios, float offsetT = 0) => SegmentAlongLine(ratios.StartF, ratios.EndF, offsetT);
+        public SKSegment SegmentAlongLine(Range ratios, float offsetT = 0) => SegmentAlongLine(ratios.StartF, ratios.EndF, offsetT);
         public SKSegment SegmentAlongLine(float startT, float endT, float offsetT = 0)
         {
             var startPoint = PointAlongLine(startT, offsetT);
-	        var endPoint = PointAlongLine(endT, offsetT);
+            var endPoint = PointAlongLine(endT, offsetT);
             return new SKSegment(startPoint, endPoint);
         }
         public void FlipAroundStartPoint()
@@ -125,7 +126,7 @@ namespace Numbers.Utils
 
         public SKSegment GetMeasuredSegmentByMidpoint(float length)
         {
-            var ratio = (length / Length) / 2f;
+            var ratio = length / Length / 2f;
             var p0 = PointAlongLine(-ratio, 0.5f);
             var p1 = PointAlongLine(ratio, 0.5f);
             return new SKSegment(p0, p1);
@@ -144,14 +145,14 @@ namespace Numbers.Utils
             var angleA = Angle;
             var angleB = segment.Angle;
             var rem = Math.IEEERemainder(angleA - angleB, MathF.PI);
-            return (Math.Abs(rem)) < MathF.tolerance;
+            return Math.Abs(rem) < MathF.tolerance;
         }
         public bool IsPerpendicularTo(SKSegment segment)
         {
             var angleA = Angle;
             var angleB = segment.Angle;
             var rem = Math.IEEERemainder(angleA - angleB, MathF.PI);
-            return (Math.Abs(Math.Abs(rem) - MathF.HalfPI)) < MathF.tolerance;
+            return Math.Abs(Math.Abs(rem) - MathF.HalfPI) < MathF.tolerance;
         }
         public float Angle
         {
@@ -231,12 +232,12 @@ namespace Numbers.Utils
                 }
                 else
                 {
-                    var x = StartPoint.X + (dp * e1.X) / len2;
-                    var y = StartPoint.Y + (dp * e1.Y) / len2;
+                    var x = StartPoint.X + dp * e1.X / len2;
+                    var y = StartPoint.Y + dp * e1.Y / len2;
                     if (clamp)
                     {
-                        x = (x < StartPoint.X && x < EndPoint.X) ? (float)Math.Min(StartPoint.X, EndPoint.X) : (x > StartPoint.X && x > EndPoint.X) ? (float)Math.Max(StartPoint.X, EndPoint.X) : x;
-                        y = (y < StartPoint.Y && y < EndPoint.Y) ? (float)Math.Min(StartPoint.Y, EndPoint.Y) : (y > StartPoint.Y && y > EndPoint.Y) ? (float)Math.Max(StartPoint.Y, EndPoint.Y) : y;
+                        x = x < StartPoint.X && x < EndPoint.X ? (float)Math.Min(StartPoint.X, EndPoint.X) : x > StartPoint.X && x > EndPoint.X ? (float)Math.Max(StartPoint.X, EndPoint.X) : x;
+                        y = y < StartPoint.Y && y < EndPoint.Y ? (float)Math.Min(StartPoint.Y, EndPoint.Y) : y > StartPoint.Y && y > EndPoint.Y ? (float)Math.Max(StartPoint.Y, EndPoint.Y) : y;
                     }
 
                     result = new SKPoint(x, y);
@@ -249,23 +250,23 @@ namespace Numbers.Utils
         // positive if same direction (1 is collinear), negative is opposite direction (-1 is collinear), 0 if orthogonal.
         public double CosineSimilarity(SKSegment seg)
         {
-	        var e1 = Vector;
-	        var e2 = seg.Vector;
-	        var dp = e1.DotProduct(e2);
-	        var norm = Math.Sqrt((e1.X * e1.X + e1.Y * e1.Y) * (e2.X * e2.X + e2.Y * e2.Y));
-	        return dp / norm;
+            var e1 = Vector;
+            var e2 = seg.Vector;
+            var dp = e1.DotProduct(e2);
+            var norm = Math.Sqrt((e1.X * e1.X + e1.Y * e1.Y) * (e2.X * e2.X + e2.Y * e2.Y));
+            return dp / norm;
         }
 
         public int DirectionOnLine(SKSegment seg)
         {
-	        return LengthSquared == 0 || CosineSimilarity(seg) >= 0 ? 1 : -1;
+            return LengthSquared == 0 || CosineSimilarity(seg) >= 0 ? 1 : -1;
         }
         public (float, SKPoint) TFromPoint(SKPoint point, bool clamp)
         {
             var pp = ProjectPointOnto(point, clamp);
             var segLen = Vector;
             var ptOffset = pp - StartPoint;
-            var sign = (segLen.X * ptOffset.X >= 0) && (segLen.Y * ptOffset.Y >= 0) ? 1f : -1f;
+            var sign = segLen.X * ptOffset.X >= 0 && segLen.Y * ptOffset.Y >= 0 ? 1f : -1f;
             var totalLen = segLen.LengthSquared;
             var ptLen = ptOffset.LengthSquared;
             var t = ptLen / totalLen;
@@ -276,43 +277,43 @@ namespace Numbers.Utils
         // Note: Skia segments work in skia space, so they are not complex number segments (thus start is not negated).
         public Range RatiosWithBasis(SKSegment basis)
         {
-	        var sp = basis.TFromPoint(StartPoint, false).Item1;
-	        var ep = basis.TFromPoint(EndPoint, false).Item1;
-	        return new Range(sp, ep);
+            var sp = basis.TFromPoint(StartPoint, false).Item1;
+            var ep = basis.TFromPoint(EndPoint, false).Item1;
+            return new Range(sp, ep);
         }
         public Range RatiosAsBasis(SKSegment nonBasis) => RatiosAsBasis(nonBasis.StartPoint, nonBasis.EndPoint);
         public Range RatiosAsBasis(SKPoint startPoint, SKPoint endPoint)
         {
             var sp = TFromPoint(startPoint, false).Item1;
-	        var ep = TFromPoint(endPoint, false).Item1;
-	        return new Range(sp, ep);
+            var ep = TFromPoint(endPoint, false).Item1;
+            return new Range(sp, ep);
         }
 
         public SKPoint[] EndArrow(float dist = 8f)
         {
-	        var result = new SKPoint[3];
-	        var p0 = SKPointFromEnd(dist);
-	        result[0] = OrthogonalPoint(p0, -dist / 2f);
-	        result[1] = EndPoint;
-	        result[2] = OrthogonalPoint(p0, dist / 2f);
+            var result = new SKPoint[3];
+            var p0 = SKPointFromEnd(dist);
+            result[0] = OrthogonalPoint(p0, -dist / 2f);
+            result[1] = EndPoint;
+            result[2] = OrthogonalPoint(p0, dist / 2f);
 
-	        return result;
+            return result;
         }
         //public SKPoint[] EndArrow(bool unitPerspective, float dist = 8f)
         //{
-	       // var result = new SKPoint[4];
-	       // var p0 = unitPerspective ? SKPointFromEnd(dist) : EndPoint;
-	       // result[0] = OrthogonalPoint(p0, -dist / 2f);
-	       // result[1] = unitPerspective ? EndPoint : SKPointFromEnd(dist);
-	       // result[2] = OrthogonalPoint(p0, dist / 2f);
-	       // result[3] = result[0];
+        // var result = new SKPoint[4];
+        // var p0 = unitPerspective ? SKPointFromEnd(dist) : EndPoint;
+        // result[0] = OrthogonalPoint(p0, -dist / 2f);
+        // result[1] = unitPerspective ? EndPoint : SKPointFromEnd(dist);
+        // result[2] = OrthogonalPoint(p0, dist / 2f);
+        // result[3] = result[0];
 
-	       // return result;
+        // return result;
         //}
 
         public override string ToString()
         {
-	        return $"[{StartPoint},{EndPoint}]";
+            return $"[{StartPoint},{EndPoint}]";
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Numbers.Agent;
+using Numbers.Drawing;
 using Numbers.Renderer;
-using Numbers.Utils;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;
@@ -8,7 +8,7 @@ using SkiaSharp;
 
 namespace Numbers.Mappers
 {
-	public abstract class SKMapper
+    public abstract class SKMapper
 	{
 		public int Id;
         protected static int idCounter = 0;

@@ -1,5 +1,4 @@
 ﻿using Numbers.Agent;
-using Numbers.Utils;
 using NumbersCore.Utils;
 using SkiaSharp;
 
@@ -10,6 +9,7 @@ namespace Numbers.Mappers
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Numbers.Drawing;
 
     public class SKTraitMapper : SKMapper
     {
