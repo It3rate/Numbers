@@ -320,7 +320,7 @@ namespace Numbers.Agent
 
                             _initialBasisNum.EndValue = snm.Number.IsAligned ? t : -t; // dragging is always in render perspective, so account for direction change
                             snm.Number.SetWith(_initialSelectionNum);
-                            snm.Number.Multiply(_initialBasisNum);
+                            snm.Number.MultiplyValue(_initialBasisNum);
                             DragPoint = pt;
                             DragHighlight = new SKSegment(g.StartPoint, mousePoint);
                         }

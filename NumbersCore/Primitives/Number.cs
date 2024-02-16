@@ -173,20 +173,20 @@ namespace NumbersCore.Primitives
         // you can shift a segment by aligning the unit with start or end,
         // and scale in place by moving the unit to left, right or center (equivalent to affine scale, where you move to zero, scale, then move back)
         // need to have overloads that allow shifting the unit temporarily
-        public virtual void Add(Number other)
+        public virtual void AddValue(Number other)
         {
             // todo: eventually all math on Numbers will be in ticks, allowing preservation of precision etc. Requires syncing of basis, domains.
 	        Value += other.Value;
         }
-        public virtual void Subtract(Number other)
+        public virtual void SubtractValue(Number other)
 		{
 			Value -= other.Value;
         }
-        public virtual void Multiply(Number other)
+        public virtual void MultiplyValue(Number other)
 		{
 			Value *= other.Value;
         }
-        public virtual void Divide(Number other)
+        public virtual void DivideValue(Number other)
 		{
 			Value /= other.Value;
         }

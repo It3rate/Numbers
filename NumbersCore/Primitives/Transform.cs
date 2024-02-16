@@ -87,16 +87,16 @@ namespace NumbersCore.Primitives
             switch (TransformKind)
             {
                 case TransformKind.Add:
-                    Result.Add(Right);
+                    Result.AddValue(Right);
                     break;
                 case TransformKind.Subtract:
-                    Result.Subtract(Right);
+                    Result.SubtractValue(Right);
                     break;
                 case TransformKind.Multiply:
-                    Result.Multiply(Right);
+                    Result.MultiplyValue(Right);
                     break;
                 case TransformKind.Divide:
-                    Result.Divide(Right);
+                    Result.DivideValue(Right);
                     break;
                 case TransformKind.And:
                     Result.AddItem(Right, OperationKind.AND);

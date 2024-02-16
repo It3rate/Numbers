@@ -21,6 +21,7 @@
         // - Q.Are non overlapping ordered elements a core type of value, or just a special bool case?
         //     the main difference is the bool case only allows forward direction for segments, while a path can meander. Both must be tip to tail.
         //     relative encoding may make more sense as this enforces tip to tail (2,4,3,1 vs 2,6,9,10)
+        // todo: Maybe bool results need to be segments of alternating polarity? Currently there is a confusion between 'not considered' and 'false'.
         public virtual MathElementKind Kind => MathElementKind.FocalChain;
 
 
@@ -70,6 +71,7 @@
                 yield return _focals[i];
             }
         }
+        public long[] GetPositions() => _positions.ToArray();
         public override void Reset(long start, long end)
         {
             Clear();
@@ -132,7 +134,14 @@
                 _positions.Add(end);
             }
         }
-
+        public Focal Last() => Count > 0 ? _focals[Count - 1] : null;
+        public void RemoveLastPosition()
+        {
+            if(Count > 0)
+            {
+                Count--;
+            }
+        }
         private static long[] GetPositions(IEnumerable<Focal> focals)
         {
             var result = new long[focals.Count() * 2];

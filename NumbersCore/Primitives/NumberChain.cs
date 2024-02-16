@@ -48,32 +48,36 @@ namespace NumbersCore.Primitives
             Polarity = left.Polarity;
         }
 
+        public Focal Last() => _focalChain.Last();
         // todo: account for polarity
-        public void AddItem(Number num, OperationKind operationKind = OperationKind.None) { _focalChain.Add(num.Focal, operationKind); }
-        public void AddItem(Focal focal, OperationKind operationKind = OperationKind.None) { _focalChain.Add(focal, operationKind); }
+        public void AddItem(Number num, OperationKind operationKind = OperationKind.None) => _focalChain.Add(num.Focal, operationKind); 
+        public void AddItem(Focal focal, OperationKind operationKind = OperationKind.None) => _focalChain.Add(focal, operationKind); 
+        public void AddItem(long start, long end, OperationKind operationKind = OperationKind.None) => _focalChain.Add(start, end, operationKind); 
+        public void RemoveLastPosition() => _focalChain.RemoveLastPosition();
 
         public void Reset(params Focal[] focals)
         {
             _focalChain.Clear();
             _focalChain.AddRange(focals);
         }
-        public Number this[int index] => index < _focalChain.Count ? Domain.CreateNumber(_focalChain[index], false) : null;
+        public Number this[int index] => index < Count ? Domain.CreateNumber(_focalChain[index], false) : null;
+        public Focal FocalAt(int index) => index < Count ? _focalChain[index] : null;
 
         public Number SumAll()
         {
             var result = Domain.CreateNumber(new Focal(0,0));
             foreach (var number in InternalNumbers())
             {
-                result.Add(number);
+                result.AddValue(number);
             }
             return result;
         }
     
         // todo: Add/Multiply all the internal segments as well. Adding may be ok as is, multiply needs to interpolate stretches
-        public override void Add(Number q) { base.Add(q); }
-        public override void Subtract(Number q) { base.Subtract(q); }
-        public override void Multiply(Number q) { base.Multiply(q); } 
-        public override void Divide(Number q) { base.Divide(q);}
+        public override void AddValue(Number q) { base.AddValue(q); }
+        public override void SubtractValue(Number q) { base.SubtractValue(q); }
+        public override void MultiplyValue(Number q) { base.MultiplyValue(q); } 
+        public override void DivideValue(Number q) { base.DivideValue(q);}
 
         public void Not(Number q) { Reset(Focal.UnaryNot(q.Focal)); }
         public override string ToString()
