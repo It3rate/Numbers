@@ -9,7 +9,7 @@
 
     public class TactileTrait : Trait
     {
-        public override string Name => "Tactile";
+        private TactileTrait() : base("Tactile") { }
 
         public static TactileTrait CreateIn(Knowledge knowledge) => (TactileTrait)knowledge.Brain.AddTrait(new TactileTrait());
     }

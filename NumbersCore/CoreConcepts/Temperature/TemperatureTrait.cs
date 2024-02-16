@@ -5,13 +5,14 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using NumbersCore.CoreConcepts.Time;
     using NumbersCore.Primitives;
 
     public class TemperatureTrait : Trait
     {
-        public override string Name => "Temperature";
+        private TemperatureTrait() : base("Temperature") { }
 
-        public static TemperatureTrait CreateIn(Knowledge knowledge) => (TemperatureTrait)knowledge.Brain.AddTrait(new TemperatureTrait());
+        //public static TemperatureTrait CreateIn(Knowledge knowledge) => (TemperatureTrait)knowledge.Brain.AddTrait(new TemperatureTrait("Temperature"));
+        public new TemperatureTrait Clone() => (TemperatureTrait)CopyPropertiesTo(new TemperatureTrait());
     }
-}
 }

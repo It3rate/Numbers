@@ -9,7 +9,7 @@
 
     public class SpatialTrait : Trait
     {
-        public override string Name => "Spatial";
+        private SpatialTrait() : base("Spatial") { }
 
         public static SpatialTrait CreateIn(Knowledge knowledge) => (SpatialTrait)knowledge.Brain.AddTrait(new SpatialTrait());
     }

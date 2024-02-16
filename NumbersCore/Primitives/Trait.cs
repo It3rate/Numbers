@@ -9,24 +9,25 @@ namespace NumbersCore.Primitives
     /// </summary>
     public class Trait : IMathElement
 	{
-        public Brain Brain {
-            get;
-            internal set; }
+        public Brain MyBrain { get; internal set; }
         public MathElementKind Kind => MathElementKind.Trait;
+
+        private static int _traitCounter = 1 + (int)MathElementKind.Trait;
         public int Id { get; internal set; }
         public int CreationIndex => Id - (int)Kind - 1;
         
-        public virtual string Name { get; }
+        public virtual string Name { get; private set; }
 
         public readonly Dictionary<int, long> PositionStore = new Dictionary<int, long>(4096);
         public readonly Dictionary<int, Focal> FocalStore = new Dictionary<int, Focal>();
         public readonly Dictionary<int, Domain> DomainStore = new Dictionary<int, Domain>();
 
-        protected internal Trait()
+        private Trait()
         {
         }
-        private Trait(string name)
+        protected Trait(string name) : this()
         {
+            Id = _traitCounter++;
 	        Name = name;
         }
 
@@ -64,5 +65,14 @@ namespace NumbersCore.Primitives
 		    FocalStore.TryGetValue(id, out var result);
 		    return result;
 	    }
+        protected Trait CopyPropertiesTo(Trait trait)
+        {
+            // don't clone the contents for now, need to work on multiple brains later.
+            trait.Id = Id;
+            trait.MyBrain = MyBrain;
+            trait.Name = Name;
+            return trait;
+        }
+        public virtual Trait Clone() => CopyPropertiesTo(new Trait());
 	}
 }

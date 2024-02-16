@@ -25,6 +25,7 @@ namespace NumbersCore.Primitives
         public Workspace(Brain brain)
         {
 	        Brain = brain;
+            brain.EnsureKnowledge();
 	        Id = _idCounter++;
             Brain.Workspaces.Add(this);
         }

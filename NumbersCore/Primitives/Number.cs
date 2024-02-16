@@ -14,7 +14,7 @@ namespace NumbersCore.Primitives
         public static int NextNumberId() => _numberCounter++;
         public int CreationIndex => Id - (int)Kind - 1;
 
-        public Brain Brain => Trait?.Brain;
+        public Brain Brain => Trait?.MyBrain;
         public Trait Trait => Domain.Trait;
         public virtual Domain Domain { get; set; }
         public int DomainId

@@ -4,8 +4,14 @@ namespace NumbersCore.CoreConcepts.Time
 {
 	public class TimeTrait : Trait
     {
-	    public override string Name => "Time";
+        private static readonly TimeTrait _instance = new TimeTrait();
+        public static TimeTrait Instance => (TimeTrait)(Brain.ActiveBrain.GetBrainsVersionOf(_instance));
+        public static TimeTrait InstanceFrom(Knowledge knowledge) => (TimeTrait)knowledge.Brain.GetBrainsVersionOf(_instance);
 
-	    public static TimeTrait CreateIn(Knowledge knowledge) => (TimeTrait)knowledge.Brain.AddTrait(new TimeTrait());
+        private TimeTrait() : base("Time") { }
+
+        public override Trait Clone() => CopyPropertiesTo(new TimeTrait());
+
+
     }
 }

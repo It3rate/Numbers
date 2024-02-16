@@ -9,7 +9,7 @@
 
     public class OpticalTrait : Trait
     {
-        public override string Name => "Optical";
+        private OpticalTrait() : base("Optical") { }
 
         public static OpticalTrait CreateIn(Knowledge knowledge) => (OpticalTrait)knowledge.Brain.AddTrait(new OpticalTrait());
     }

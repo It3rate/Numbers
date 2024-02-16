@@ -6,13 +6,19 @@ namespace NumbersCore.CoreConcepts.Counter
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
     using System.Text;
     using System.Threading.Tasks;
+    using NumbersCore.CoreConcepts.Temperature;
 
     public class CounterTrait : Trait
     {
-	    public override string Name => "Counter";
+        private static readonly CounterTrait _instance = new CounterTrait();
+        public static CounterTrait Instance => (CounterTrait)Brain.ActiveBrain.GetBrainsVersionOf(_instance);
+        public static CounterTrait InstanceFrom(Knowledge knowledge) => (CounterTrait)knowledge.Brain.GetBrainsVersionOf(_instance);
 
-	    public static CounterTrait CreateIn(Knowledge knowledge) => (CounterTrait)knowledge.Brain.AddTrait(new CounterTrait());
+        private CounterTrait() : base("Counter") { }
+        public new CounterTrait Clone() => (CounterTrait)CopyPropertiesTo(new CounterTrait());
+
     }
 }

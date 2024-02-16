@@ -10,7 +10,7 @@ namespace NumbersCore.CoreConcepts.Counter
 
     public class CounterDomain : Domain
     {
-	    private CounterDomain(Focal basisFocal, Focal maxFocal) : base(new CounterTrait(), basisFocal, maxFocal) { }
+	    private CounterDomain(Focal basisFocal, Focal maxFocal) : base(CounterTrait.Instance, basisFocal, maxFocal) { }
 
 	    public static CounterDomain UpDomain { get; } = new CounterDomain(Focal.CreateZeroFocal(1), new Focal(0, long.MaxValue));
 
