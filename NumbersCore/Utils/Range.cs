@@ -139,9 +139,9 @@ namespace NumbersCore.Utils
         }
         public static Range operator -(Range left, Range right)
         {
-            var result = right.Clone();
-            result.UnitValue -= left.UnitValue;
-            result.UnotValue -= left.UnotValue;
+            var result = left.Clone(); 
+            result.UnitValue -= right.UnitValue; 
+            result.UnotValue -= right.UnotValue;
             return result;
         }
         public static Range operator *(Range left, Range right)

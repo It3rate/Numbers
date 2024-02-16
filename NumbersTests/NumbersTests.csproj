@@ -54,7 +54,7 @@
     <Compile Include="CoreTests\FocalBoolTests\FocalNandTests.cs" />
     <Compile Include="CoreTests\FocalBoolTests\FocalOrTests.cs" />
     <Compile Include="CoreTests\FocalTests.cs" />
-    <Compile Include="CoreTests\NumberSetTests.cs" />
+    <Compile Include="CoreTests\NumberChainTests.cs" />
     <Compile Include="MathF.cs" />
     <Compile Include="CoreTests\NumberTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

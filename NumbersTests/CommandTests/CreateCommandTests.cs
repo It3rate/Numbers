@@ -61,7 +61,7 @@ namespace NumbersTests.CommandTests
         [TestMethod]
 		public void DomainCommandTests()
 		{
-			var command = new CreateDomainCommand(_trait, 0, 10, -1000, 1000);
+			var command = new CreateDomainCommand(_trait, 0, 10, -1000, 1000, "DomainCommandTests");
 			_stack.Do(command);
 			Assert.AreEqual(1, _stack.UndoSize);
 			Assert.AreEqual(0, _stack.RedoSize);
@@ -78,7 +78,7 @@ namespace NumbersTests.CommandTests
 		[TestMethod]
 		public void NumberCommandTests()
 		{
-			var domainCommand = new CreateDomainCommand(_trait, 0, 10, -1000, 1000);
+			var domainCommand = new CreateDomainCommand(_trait, 0, 10, -1000, 1000, "NumberCommandTests");
 			_stack.Do(domainCommand);
 
 			var command = new CreateNumberCommand(domainCommand.Domain, 100, 200);
@@ -99,7 +99,7 @@ namespace NumbersTests.CommandTests
 		[TestMethod]
 		public void DelayCommandTests()
 		{
-			var domainCommand = new CreateDomainCommand(_trait, 0, 10, -1000, 1000);
+			var domainCommand = new CreateDomainCommand(_trait, 0, 10, -1000, 1000, "DelayCommandTests");
 			_stack.Do(domainCommand);
 			var command = new CreateNumberCommand(domainCommand.Domain, 100, 200) {DefaultDelay = -500};
 			_stack.Do(command);

@@ -27,7 +27,7 @@ namespace NumbersTests
 		    _trait = Trait.CreateIn(_brain, "workspace tests");
             _unitFocal = new Focal(-4, 6);
 		    _maxMin = new Focal(-54, 46);
-		    _domain = new Domain(_trait, _unitFocal, _maxMin);
+		    _domain = new Domain(_trait, _unitFocal, _maxMin, "WorkspaceTests");
 	    }
 
 	    [TestMethod]
