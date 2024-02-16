@@ -322,15 +322,16 @@ namespace Numbers.Mappers
         {
             foreach (var trait in Brain.TraitStore.Values)
 	        {
-		        int index = 0;
 		        foreach (var domain in trait.DomainStore.Values)
 		        {
-			        var dm = GetOrCreateDomainMapper(domain);
-			        foreach (var number in domain.Numbers())
-			        {
-				        var nm = dm.GetOrCreateNumberMapper(number);
-			        }
-			        index++;
+                    if (domain.IsVisible)
+                    {
+			            var dm = GetOrCreateDomainMapper(domain);
+			            foreach (var number in domain.Numbers())
+			            {
+				            var nm = dm.GetOrCreateNumberMapper(number);
+			            }
+                    }
 		        }
 		        foreach (var transform in Brain.TransformStore.Values)
 		        {

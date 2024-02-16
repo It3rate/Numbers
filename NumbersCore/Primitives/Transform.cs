@@ -79,7 +79,7 @@ namespace NumbersCore.Primitives
             //Result.SetWith(Left);
             OnStartTransformEvent(this);
 		    IsActive = true;
-		    RepeatCounter.AddOne();
+		    RepeatCounter.Increment();
 	    }
 	    public void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
 	    public void ApplyEnd()

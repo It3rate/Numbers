@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NumbersCore.Utils;
@@ -28,6 +29,7 @@ namespace NumbersCore.Primitives
         public Number BasisNumber { get; protected set; }
         public Number MinMaxNumber { get; protected set; }
         public string Name { get; protected set; }
+        public bool IsVisible { get; set; } = true;
 
         public readonly Dictionary<int, Number> NumberStore = new Dictionary<int, Number>();
         public readonly Dictionary<int, NumberChain> NumberSetStore = new Dictionary<int, NumberChain>();
@@ -77,6 +79,11 @@ namespace NumbersCore.Primitives
         {
 	        NumberStore.TryGetValue(numberId, out var result);
 	        return result;
+        }
+        public virtual Number CreateDefaultNumber(bool addToStore = true)
+        {
+            var num = new Number(new Focal(0, 1));
+            return AddNumber(num, addToStore);
         }
         public Number CreateNumber(Focal focal, bool addToStore = true)
         {

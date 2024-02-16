@@ -29,7 +29,12 @@ namespace NumbersCore.Primitives
         public NumberChain(Number targetNumber, params Focal[] focals) : base(new FocalChain(), targetNumber.Polarity)
         {
             Domain = targetNumber.Domain;
-	        _focalChain.AddRange(focals);
+            _focalChain.AddRange(focals);
+        }
+        public NumberChain(Domain domain, Polarity polarity, params Focal[] focals) : base(new FocalChain(), polarity)
+        {
+            Domain = domain;
+            _focalChain.AddRange(focals);
         }
 
         public IEnumerable<Number> InternalNumbers()

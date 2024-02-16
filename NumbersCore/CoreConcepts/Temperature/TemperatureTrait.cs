@@ -13,6 +13,6 @@
         private TemperatureTrait() : base("Temperature") { }
 
         //public static TemperatureTrait CreateIn(Knowledge knowledge) => (TemperatureTrait)knowledge.Brain.AddTrait(new TemperatureTrait("Temperature"));
-        public new TemperatureTrait Clone() => (TemperatureTrait)CopyPropertiesTo(new TemperatureTrait());
+        public override Trait Clone() => CopyPropertiesTo(new TemperatureTrait());
     }
 }

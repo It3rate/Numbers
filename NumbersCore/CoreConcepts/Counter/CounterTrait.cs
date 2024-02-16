@@ -9,6 +9,7 @@ namespace NumbersCore.CoreConcepts.Counter
     using System.Security.Cryptography.X509Certificates;
     using System.Text;
     using System.Threading.Tasks;
+    using NumbersCore.CoreConcepts.Optical;
     using NumbersCore.CoreConcepts.Temperature;
 
     public class CounterTrait : Trait
@@ -18,7 +19,7 @@ namespace NumbersCore.CoreConcepts.Counter
         public static CounterTrait InstanceFrom(Knowledge knowledge) => (CounterTrait)knowledge.Brain.GetBrainsVersionOf(_instance);
 
         private CounterTrait() : base("Counter") { }
-        public new CounterTrait Clone() => (CounterTrait)CopyPropertiesTo(new CounterTrait());
+        public override Trait Clone() => CopyPropertiesTo(new CounterTrait());
 
     }
 }

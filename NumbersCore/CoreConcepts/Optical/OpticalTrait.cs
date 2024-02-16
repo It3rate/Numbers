@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using NumbersCore.CoreConcepts.Spatial;
     using NumbersCore.Primitives;
 
     public class OpticalTrait : Trait
@@ -12,5 +13,6 @@
         private OpticalTrait() : base("Optical") { }
 
         public static OpticalTrait CreateIn(Knowledge knowledge) => (OpticalTrait)knowledge.Brain.AddTrait(new OpticalTrait());
+        public override Trait Clone() => CopyPropertiesTo(new OpticalTrait());
     }
 }

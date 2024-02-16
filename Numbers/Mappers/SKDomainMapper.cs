@@ -213,7 +213,7 @@ namespace Numbers.Mappers
 
         public virtual void Draw()
 	    {
-            if (Domain != null)
+            if (Domain != null && Domain.IsVisible)
             {
 	            AddValidNumbers();
 

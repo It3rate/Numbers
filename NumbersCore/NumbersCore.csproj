@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreConcepts\Counter\CounterDomain.cs" />
+    <Compile Include="CoreConcepts\Counter\CounterDomains.cs" />
     <Compile Include="CoreConcepts\Counter\CounterTrait.cs" />
     <Compile Include="CoreConcepts\Counter\UpCounter.cs" />
     <Compile Include="CoreConcepts\Knowledge.cs" />
