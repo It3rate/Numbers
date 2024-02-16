@@ -15,21 +15,23 @@ namespace NumbersAPI.CoreTasks
 
 	    public Trait Trait { get; }
 	    public Focal BasisFocal { get; }
-	    public Focal MinMax { get; }
+        public Focal MinMax { get; }
+        public string Name { get; }
 
         public override bool IsValid => true;
 
-	    public CreateDomainTask(Trait trait, Focal basisFocal, Focal minMax)
+	    public CreateDomainTask(Trait trait, Focal basisFocal, Focal minMax, string name)
 	    {
 		    Trait = trait;
 		    BasisFocal = basisFocal;
 		    MinMax = minMax;
+            Name = name;
 	    }
 	    public override void RunTask()
 	    {
 		    if (Domain == null)
 		    {
-			    Domain = new Domain(Trait, BasisFocal, MinMax);
+			    Domain = new Domain(Trait, BasisFocal, MinMax, Name);
 		    }
 		    else
 		    {

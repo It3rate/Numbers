@@ -442,7 +442,7 @@ namespace Numbers.Agent
         {
             long unitTicks = 4;
             long rangeTicks = unitTicks * rangeSize;
-            var cdc = new AddSKDomainCommand(this, Brain.GetLastTrait(), 0, unitTicks, -rangeTicks, rangeTicks, seg, null);
+            var cdc = new AddSKDomainCommand(this, Brain.GetLastTrait(), 0, unitTicks, -rangeTicks, rangeTicks, seg, null, "userCreated");
             Stack.Do(cdc);
             return cdc.DomainMapper;
         }

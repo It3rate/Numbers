@@ -5,6 +5,7 @@
 	    MathElementKind Kind { get; }
 	    int Id { get; }
 	    int CreationIndex { get; }
+        //string Name { get; }
     }
 
     public enum MathElementKind

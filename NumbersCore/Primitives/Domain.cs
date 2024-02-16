@@ -27,6 +27,7 @@ namespace NumbersCore.Primitives
         public Focal MinMaxFocal { get; protected set; }
         public Number BasisNumber { get; protected set; }
         public Number MinMaxNumber { get; protected set; }
+        public string Name { get; protected set; }
 
         public readonly Dictionary<int, Number> NumberStore = new Dictionary<int, Number>();
         public readonly Dictionary<int, NumberChain> NumberSetStore = new Dictionary<int, NumberChain>();
@@ -43,7 +44,7 @@ namespace NumbersCore.Primitives
         public Range MinMaxRange => BasisFocal.RangeAsBasis(MinMaxFocal);
         public double TickToBasisRatio => BasisIsReciprocal ? BasisFocal.NonZeroLength : 1.0 / BasisFocal.NonZeroLength;
 
-        public Domain(Trait trait, Focal basisFocal, Focal minMaxFocal = default)
+        public Domain(Trait trait, Focal basisFocal, Focal minMaxFocal, string name)
         {
 	        Id = domainCounter++;
 	        Trait = trait;
@@ -53,18 +54,21 @@ namespace NumbersCore.Primitives
             MinMaxNumber = minMaxFocal == default ? CreateNumber(Focal.MinMaxFocal) : CreateNumber(minMaxFocal);
             Trait.DomainStore.Add(Id, this);
         }
-
+        public void ChangeDomainName(string newDomainName)
+        {
+            Name = newDomainName;
+        }
         public void SetBasisWithNumber(Number nm)
         {
             BasisNumber = nm;
         }
 
-        public static Domain CreateDomain(string traitName, int unitSize = 8, int rangeSize = 16)
+        public static Domain CreateDomain(string traitName, int unitSize = 8, int rangeSize = 16, string name = "default")
         {
             Trait trait = Trait.GetOrCreateTrait(Brain.ActiveBrain, traitName);
             var unit = new Focal(0, unitSize);
             var range = new Focal(-rangeSize * unitSize, rangeSize * unitSize);
-            var domain = trait.AddDomain(unit, range);
+            var domain = trait.AddDomain(unit, range, name);
             return domain;
         }
 

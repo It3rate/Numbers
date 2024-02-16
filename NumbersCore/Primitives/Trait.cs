@@ -37,13 +37,13 @@ namespace NumbersCore.Primitives
             return brain.GetOrCreateTrait(name);
         }
 
-        public Domain AddDomain(Focal basis, Focal minMax)
+        public Domain AddDomain(Focal basis, Focal minMax, string name)
 	    {
-		    return new Domain(this, basis, minMax);
+		    return new Domain(this, basis, minMax, name);
 	    }
-	    public Domain AddDomain(long basisTicks)
+	    public Domain AddDomain(long basisTicks, string name)
 	    {
-		    return AddDomain(Focal.CreateZeroFocal(basisTicks), Focal.MinMaxFocal);
+		    return AddDomain(Focal.CreateZeroFocal(basisTicks), Focal.MinMaxFocal, name);
 	    }
         public IEnumerable<Domain> Domains()
 	    {

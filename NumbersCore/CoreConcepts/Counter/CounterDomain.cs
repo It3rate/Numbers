@@ -10,10 +10,10 @@ namespace NumbersCore.CoreConcepts.Counter
 
     public class CounterDomain : Domain
     {
-	    private CounterDomain(Focal basisFocal, Focal maxFocal) : base(CounterTrait.Instance, basisFocal, maxFocal) { }
+	    private CounterDomain(Focal basisFocal, Focal maxFocal, string name) : base(CounterTrait.Instance, basisFocal, maxFocal, name) { }
 
-	    public static CounterDomain UpDomain { get; } = new CounterDomain(Focal.CreateZeroFocal(1), new Focal(0, long.MaxValue));
+	    public static CounterDomain UpDomain { get; } = new CounterDomain(Focal.CreateZeroFocal(1), new Focal(0, long.MaxValue), "CounterUp");
 
-        public static CounterDomain UpDownDomain { get; } = new CounterDomain(Focal.CreateZeroFocal(1), Focal.MinMaxFocal);
+        public static CounterDomain UpDownDomain { get; } = new CounterDomain(Focal.CreateZeroFocal(1), Focal.MinMaxFocal, "CounterUpDown");
     }
 }
