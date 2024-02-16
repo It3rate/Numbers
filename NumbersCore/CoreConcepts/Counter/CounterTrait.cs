@@ -11,7 +11,7 @@ namespace NumbersCore.CoreConcepts.Counter
 
     public class CounterTrait : Trait
     {
-	    public override string Name => "Repeats";
+	    public override string Name => "Counter";
 
 	    public static CounterTrait CreateIn(Knowledge knowledge) => (CounterTrait)knowledge.Brain.AddTrait(new CounterTrait());
     }
