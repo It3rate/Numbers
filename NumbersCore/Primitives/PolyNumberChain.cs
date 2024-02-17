@@ -8,7 +8,6 @@ using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
-
     /// <summary>
     /// Multiple Number Chains, one for each dimension.
     /// </summary>
@@ -180,6 +179,61 @@ namespace NumbersCore.Primitives
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Helper method to get polyline version of number vales, for rendering etc.
+        /// </summary>
+        public float[] GetContiguousValues()
+        {
+            var len = Count * PolyCount;
+            var result = new List<float>(len);
+            if(len > 0)
+            {
+                var nums = GetInterleavedNumbers();
+                // add all start values for first number set, then all end points.
+                for (int i = 0; i < PolyCount; i++)
+                {
+                    result.Add((float)nums[i].StartValue);
+                }
+
+                for (int i = 0; i < nums.Count; i++)
+                {
+                    result.Add((float)nums[i].EndValue);
+                }
+            }
+
+            return result.ToArray();
+        }
+        public void ResetWithContiguousPositions(float[] positions)
+        {
+        }
+        /// <summary>
+        /// Helper method to get polyline version of focal positions, for rendering etc.
+        /// </summary>
+        public long[] GetContiguousPositions()
+        {
+            var len = Count * PolyCount;
+            var result = new List<long>(len);
+            if (len > 0)
+            {
+                var focals = GetInterleavedFocals();
+                // add all start values for first number set, then all end points.
+                for (int i = 0; i < PolyCount; i++)
+                {
+                    result.Add(focals[i].StartPosition);
+                }
+
+                for (int i = 0; i < focals.Count; i++)
+                {
+                    result.Add(focals[i].EndPosition);
+                }
+            }
+
+            return result.ToArray();
+        }
+        public void ResetWithContiguousPositions(long[] positions)
+        {
         }
         public void Reset()
         {

@@ -51,8 +51,10 @@
     <Compile Include="CoreConcepts\Spatial\Distance.cs" />
     <Compile Include="CoreConcepts\Spatial\Polyline2D.cs" />
     <Compile Include="CoreConcepts\Spatial\Line2D.cs" />
+    <Compile Include="CoreConcepts\Spatial\Polyline2DDomain.cs" />
     <Compile Include="CoreConcepts\Spatial\Roundness.cs" />
     <Compile Include="CoreConcepts\Spatial\Size.cs" />
+    <Compile Include="CoreConcepts\Spatial\SpatialDomain.cs" />
     <Compile Include="CoreConcepts\Spatial\SpatialTrait.cs" />
     <Compile Include="CoreConcepts\Tactile\BluntSharp.cs" />
     <Compile Include="CoreConcepts\Tactile\SmoothRough.cs" />

@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using NumbersCore.CoreConcepts.Counter;
     using NumbersCore.CoreConcepts.Tactile;
     using NumbersCore.Primitives;
 

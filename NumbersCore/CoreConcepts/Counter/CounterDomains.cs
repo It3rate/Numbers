@@ -18,18 +18,22 @@ namespace NumbersCore.CoreConcepts.Counter
         public static CounterDomain UpCounterDomain { get; } = new CounterDomain(Focal.CreateZeroFocal(1), new Focal(0, long.MaxValue), "CounterUp");
         public static CounterDomain UpDownDomain { get; } = new CounterDomain(Focal.CreateZeroFocal(1), Focal.MinMaxFocal, "CounterUpDown");
 
-        public long Start { get; set; } = 0;
+        public long Start { get; set; } = 0; // Start/End should be conditions, a bool intersection e.g. like AND, true if there are positive segments.
         public long End { get; set; } = long.MaxValue;
-        public long Step { get; set; } = 1;
+        public long Step { get; set; } = 1; // step could be ticks of basis focal? Or initial number value, which is held separately internally. Should be focal at least.
         public CounterDomain(Focal basisFocal, Focal maxFocal, string name) : base(CounterTrait.Instance, basisFocal, maxFocal, name)
         {
             IsVisible = false;
         }
 
-        public long[] Increment()
+        /// <summary>
+        /// Increment specific numbers, or all if none specified
+        /// </summary>
+        public long[] Increment(params Number[] numbers)
         {
+            numbers = (numbers.Length == 0) ? NumberStore.Values.ToArray() : numbers;
             var result = new List<long>();
-            foreach(var num in NumberStore.Values)
+            foreach(var num in numbers)
             {
                 var ep = num.Focal.EndPosition;
                 if(ep < End && ep + Step > End)

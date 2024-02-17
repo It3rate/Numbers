@@ -8,6 +8,7 @@ namespace NumbersCore.CoreConcepts.Counter
     using System.Text;
     using System.Threading.Tasks;
 
+    // Q: Do typed numbers have to exist, as the domains are typed?
     public class UpCounter : Number
     {
 	    public UpCounter() : base(new Focal(0, 0))
