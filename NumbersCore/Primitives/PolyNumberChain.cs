@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using NumbersCore.Utils;
@@ -90,6 +92,17 @@ namespace NumbersCore.Primitives
                 foreach (var chain in _numberChains)
                 {
                     chain.AddItem(values[i++], values[i++]);
+                }
+            }
+        }
+        public void AddPosition(params Range[] values)
+        {
+            if (values.Length == PolyCount)
+            {
+                int i = 0;
+                foreach (var chain in _numberChains)
+                {
+                    chain.AddItem(values[i++]);
                 }
             }
         }
@@ -184,29 +197,75 @@ namespace NumbersCore.Primitives
         /// <summary>
         /// Helper method to get polyline version of number vales, for rendering etc.
         /// </summary>
-        public float[] GetContiguousValues()
+        public float[][] GetContiguousValues()
         {
             var len = Count * PolyCount;
-            var result = new List<float>(len);
+            var result = new List<float[]>(len);
             if(len > 0)
             {
                 var nums = GetInterleavedNumbers();
                 // add all start values for first number set, then all end points.
+                var item = new float[PolyCount];
                 for (int i = 0; i < PolyCount; i++)
                 {
-                    result.Add((float)nums[i].StartValue);
+                    item[i] = (float)nums[i].StartValue;
                 }
+                result.Add(item);
 
-                for (int i = 0; i < nums.Count; i++)
+                for (int i = 0; i < nums.Count; i += PolyCount)
                 {
-                    result.Add((float)nums[i].EndValue);
+                    item = new float[PolyCount];
+                    for (int j = 0; j < PolyCount; j++)
+                    {
+                        item[j] = (float)nums[i + j].EndValue;
+                    }
+                    result.Add(item);
                 }
             }
 
             return result.ToArray();
         }
-        public void ResetWithContiguousPositions(float[] positions)
+        public void ResetWithContiguousValues(IEnumerable<float> values)
         {
+            _numberChains.Clear();
+            var nextStarts = new double[PolyCount];
+            var ranges = new Range[PolyCount];
+            int polyCounter = 0;
+            int index = 0;
+            double firstVal = 0;
+            foreach (var value in values) 
+            {
+                if(index <= 1 && polyCounter < PolyCount * 2) // first set uses both points
+                {
+                    if(polyCounter % 2 == 0)
+                    {
+                        firstVal = value;
+                    }
+                    else
+                    {
+                        var idx = (polyCounter - 1) / 2;
+                        nextStarts[idx] = value;
+                        ranges[idx] = new Range(firstVal, value);
+                    }
+                }
+                else // rest of numbers, last tail with this tail, creating segments from polylines
+                {
+                    ranges[polyCounter] = new Range(nextStarts[polyCounter], value);
+                    nextStarts[polyCounter] = value;
+                }
+
+                polyCounter++;
+                if(polyCounter == PolyCount)
+                {
+                    if(index > 0)
+                    {
+                        AddPosition(ranges);
+                        // no need to clear ranges as they will overwrite
+                    }
+                    polyCounter = 0;
+                    index++;
+                }
+            }
         }
         /// <summary>
         /// Helper method to get polyline version of focal positions, for rendering etc.
@@ -232,7 +291,7 @@ namespace NumbersCore.Primitives
 
             return result.ToArray();
         }
-        public void ResetWithContiguousPositions(long[] positions)
+        public void ResetWithContiguousPositions(IEnumerable<long> positions)
         {
         }
         public void Reset()

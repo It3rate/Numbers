@@ -55,9 +55,16 @@ namespace NumbersCore.Primitives
 
         public Focal Last() => _focalChain.Last();
         // todo: account for polarity
+        public Focal CreateFocalFromRange(Range value) => Domain.CreateFocalFromRange(value);
+
         public void AddItem(Number num, OperationKind operationKind = OperationKind.None) => _focalChain.Add(num.Focal, operationKind); 
         public void AddItem(Focal focal, OperationKind operationKind = OperationKind.None) => _focalChain.Add(focal, operationKind); 
         public void AddItem(long start, long end, OperationKind operationKind = OperationKind.None) => _focalChain.Add(start, end, operationKind); 
+        public void AddItem(Range value, OperationKind operationKind = OperationKind.None)
+        {
+            var focal = Domain.CreateFocalFromRange(value);
+            _focalChain.Add(focal, operationKind);
+        }
         public void RemoveLastPosition() => _focalChain.RemoveLastPosition();
 
         public void Reset(params Focal[] focals)
