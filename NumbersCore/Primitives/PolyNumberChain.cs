@@ -293,6 +293,45 @@ namespace NumbersCore.Primitives
         }
         public void ResetWithContiguousPositions(IEnumerable<long> positions)
         {
+            _numberChains.Clear();
+            var nextStarts = new double[PolyCount];
+            var ranges = new Range[PolyCount];
+            int polyCounter = 0;
+            int index = 0;
+            double firstVal = 0;
+            foreach (var value in positions)
+            {
+                if (index <= 1 && polyCounter < PolyCount * 2) // first set uses both points
+                {
+                    if (polyCounter % 2 == 0)
+                    {
+                        firstVal = value;
+                    }
+                    else
+                    {
+                        var idx = (polyCounter - 1) / 2;
+                        nextStarts[idx] = value;
+                        ranges[idx] = new Range(firstVal, value);
+                    }
+                }
+                else // rest of numbers, last tail with this tail, creating segments from polylines
+                {
+                    ranges[polyCounter] = new Range(nextStarts[polyCounter], value);
+                    nextStarts[polyCounter] = value;
+                }
+
+                polyCounter++;
+                if (polyCounter == PolyCount)
+                {
+                    if (index > 0)
+                    {
+                        AddPosition(ranges);
+                        // no need to clear ranges as they will overwrite
+                    }
+                    polyCounter = 0;
+                    index++;
+                }
+            }
         }
         public void Reset()
         {
