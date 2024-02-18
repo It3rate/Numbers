@@ -16,7 +16,7 @@
     public class SKPathMapper : SKMapper
     {
         public Polyline2DDomain PolylineDomain => (Polyline2DDomain)MathElement;
-        public SKPathMapper(MouseAgent agent) : base(agent, new Polyline2DDomain(500))
+        public SKPathMapper(MouseAgent agent, SKSegment guideline = null) : base(agent, new Polyline2DDomain(500), guideline)
         {
         }
         //public SKPathMapper(MouseAgent agent, PolyNumberChain numberSet, SKSegment xBasis) : base(agent, numberSet, xBasis)
@@ -50,7 +50,6 @@
                 _lastPoint = point;
             }
             _points.Add(point);
-            Trace.WriteLine(point);
         }
         // maybe smoothing should be in skia world as it happens on points not segments?
         public void SmoothPositions()
@@ -125,5 +124,10 @@
             }
         }
 
+        public void Draw()
+        {
+            var pen = Pens.NumberLinePen;
+            Renderer.DrawPolyline(pen, _points.ToArray());
+        }
     }
 }

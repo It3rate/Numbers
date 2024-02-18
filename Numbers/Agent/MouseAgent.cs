@@ -186,7 +186,7 @@ namespace Numbers.Agent
             {
                 // Drawing
                 _isDrawing = true;
-                _pathMapper = new SKPathMapper(this);
+                _pathMapper = WorkspaceMapper.CreatePathMapper();
                 _pathMapper.AddPosition(_rawMousePoint);
             }
             else

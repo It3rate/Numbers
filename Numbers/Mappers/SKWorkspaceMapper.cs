@@ -17,8 +17,9 @@ namespace Numbers.Mappers
     {
         private readonly Dictionary<int, SKDomainMapper> _domainMappers = new Dictionary<int, SKDomainMapper>();
         private readonly Dictionary<int, SKTransformMapper> _transformMappers = new Dictionary<int, SKTransformMapper>();
+        private readonly Dictionary<int, SKPathMapper> _pathMappers = new Dictionary<int, SKPathMapper>();
         public SKDomainMapper GetDomainMapper(Domain domain) => GetOrCreateDomainMapper(domain);
-	    public SKTransformMapper TransformMapper(Transform transform) => GetOrCreateTransformMapper(transform);
+        public SKTransformMapper TransformMapper(Transform transform) => GetOrCreateTransformMapper(transform);
 
         public IEnumerable<SKDomainMapper> DomainMappers()
         {
@@ -32,6 +33,13 @@ namespace Numbers.Mappers
             foreach (var tm in _transformMappers.Values)
             {
                 yield return tm;
+            }
+        }
+        public IEnumerable<SKPathMapper> PathMappers()
+        {
+            foreach (var pm in _pathMappers.Values)
+            {
+                yield return pm;
             }
         }
         public SKTransformMapper TransformMapperInvolving(Number num)
@@ -218,11 +226,17 @@ namespace Numbers.Mappers
 	            foreach (var transformMapper in _transformMappers.Values)
 		        {
 			        transformMapper.Draw();
-		        }
-		        foreach (var domainMapper in _domainMappers.Values)
-		        {
-			        domainMapper.Draw();
-		        }
+                }
+
+                foreach (var domainMapper in _domainMappers.Values)
+                {
+                    domainMapper.Draw();
+                }
+
+                foreach (var pathMapper in _pathMappers.Values)
+                {
+                    pathMapper.Draw();
+                }
 
                 if (Agent.DragHighlight != null)
                 {
@@ -340,6 +354,12 @@ namespace Numbers.Mappers
 	        }
         }
 
+        public SKPathMapper CreatePathMapper(SKSegment line = null)
+        {
+            var pathMapper = new SKPathMapper(Agent, line);
+            _pathMappers.Add(pathMapper.Id, pathMapper);
+            return pathMapper;
+        }
         public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
         {
 	        if (!_domainMappers.TryGetValue(domain.Id, out var result))
