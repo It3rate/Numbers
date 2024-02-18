@@ -360,6 +360,14 @@ namespace Numbers.Mappers
             _pathMappers.Add(pathMapper.Id, pathMapper);
             return pathMapper;
         }
+        public void AddPathMapper(SKPathMapper pathMapper)
+        {
+            _pathMappers.Add(pathMapper.Id, pathMapper);
+        }
+        public void RemovePathMapper(SKPathMapper pathMapper)
+        {
+            _pathMappers.Remove(pathMapper.Id);
+        }
         public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
         {
 	        if (!_domainMappers.TryGetValue(domain.Id, out var result))

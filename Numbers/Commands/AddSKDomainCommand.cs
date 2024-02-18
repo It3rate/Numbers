@@ -32,7 +32,7 @@ namespace Numbers.Commands
 	       // ExistingDomain = domain;
         //    UnitSegment = unitSegment;
         //}
-	    public AddSKDomainCommand(MouseAgent agent, Trait trait, long basisStart, long basisEnd, long minMaxStart, long minMaxEnd, SKSegment guideline, SKSegment unitSegment, string name) : base(guideline)
+	    public AddSKDomainCommand(Trait trait, long basisStart, long basisEnd, long minMaxStart, long minMaxEnd, SKSegment guideline, SKSegment unitSegment, string name) : base(guideline)
 	    {
             CreateDomainTask = new CreateDomainTask(trait, new Focal(basisStart, basisEnd), new Focal(minMaxStart, minMaxEnd), name);
 		    UnitSegment = unitSegment;

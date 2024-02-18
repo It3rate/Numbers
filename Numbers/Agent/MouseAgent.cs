@@ -147,6 +147,7 @@ namespace Numbers.Agent
         public SKNumberMapper ActiveNumberMapper;
         public SKDomainMapper ActiveDomainMapper;
         public SKTransformMapper ActiveTransformMapper;
+        public SKPathMapper ActivePathMapper;
         public bool MouseDown(MouseEventArgs e)
         {
             if(IsPaused){return false;}
@@ -186,9 +187,11 @@ namespace Numbers.Agent
             {
                 // Drawing
                 _isDrawing = true;
-                _pathMapper = WorkspaceMapper.CreatePathMapper();
-                _pathMapper.BeginRecord();
-                _pathMapper.AddPosition(_rawMousePoint);
+                var cmd = new AddSKPathCommand(this);
+                Stack.Do(cmd);
+                ActivePathMapper = cmd.PathMapper;
+                ActivePathMapper.BeginRecord();
+                ActivePathMapper.AddPosition(_rawMousePoint);
             }
             else
             {
@@ -237,14 +240,13 @@ namespace Numbers.Agent
         }
 
         private bool _isDrawing = false;
-        private SKPathMapper _pathMapper;
         public bool MouseDrag(SKPoint mousePoint)
         {
 	        if (IsPaused) {return false;}
 
             if (_isDrawing)
             {
-                _pathMapper.AddPosition(_rawMousePoint);
+                ActivePathMapper.AddPosition(_rawMousePoint);
             }
             else if (IsCreatingDomain)
             {
@@ -396,8 +398,8 @@ namespace Numbers.Agent
             }
             else if (_isDrawing)
             {
-                _pathMapper.AddPosition(_rawMousePoint);
-                _pathMapper.EndRecord();
+                ActivePathMapper.AddPosition(_rawMousePoint);
+                ActivePathMapper.EndRecord();
             }
             else if (IsCreatingDomain)
             {
@@ -466,7 +468,7 @@ namespace Numbers.Agent
         {
             long unitTicks = 4;
             long rangeTicks = unitTicks * rangeSize;
-            var cdc = new AddSKDomainCommand(this, Brain.GetLastTrait(), 0, unitTicks, -rangeTicks, rangeTicks, seg, null, "userCreated");
+            var cdc = new AddSKDomainCommand(Brain.GetLastTrait(), 0, unitTicks, -rangeTicks, rangeTicks, seg, null, "userCreated");
             Stack.Do(cdc);
             return cdc.DomainMapper;
         }
@@ -886,6 +888,7 @@ namespace Numbers.Agent
             ActiveNumberMapper = null;
             ActiveDomainMapper = null;
             ActiveTransformMapper = null;
+            ActivePathMapper = null;
         }
         public override void ClearAll()
         {
