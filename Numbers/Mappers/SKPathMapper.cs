@@ -2,34 +2,64 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using Numbers.Agent;
     using Numbers.Drawing;
     using Numbers.Utils;
+    using NumbersCore.CoreConcepts.Spatial;
     using NumbersCore.Primitives;
     using SkiaSharp;
 
     public class SKPathMapper : SKMapper
     {
-        public PolyNumberChain PolyNumberChain => (PolyNumberChain)MathElement;
-        public SKPathMapper(MouseAgent agent, PolyNumberChain numberSet, SKSegment xBasis) : base(agent, numberSet, xBasis)
+        public Polyline2DDomain PolylineDomain => (Polyline2DDomain)MathElement;
+        public SKPathMapper(MouseAgent agent) : base(agent, new Polyline2DDomain(500))
         {
         }
+        //public SKPathMapper(MouseAgent agent, PolyNumberChain numberSet, SKSegment xBasis) : base(agent, numberSet, xBasis)
+        //{
+        //}
 
         public override SKPath GetHighlightAt(Highlight highlight)
         {
             throw new NotImplementedException();
         }
+        private List<SKPoint> _points = new List<SKPoint>();
+        private SKPoint _lastPoint;
+
+        public void BeginRecord()
+        {
+            _points.Clear();
+        }
+        public void EndRecord()
+        {
+            SmoothPositions();
+        }
+        public void AddPosition(SKPoint point)
+        {
+            if(_points.Count == 0)
+            {
+                _lastPoint = point;
+            }
+            else
+            {
+                PolylineDomain.AddPosition((long)_lastPoint.X, (long)_lastPoint.Y, (long)point.X, (long)point.Y);
+                _lastPoint = point;
+            }
+            _points.Add(point);
+            Trace.WriteLine(point);
+        }
         // maybe smoothing should be in skia world as it happens on points not segments?
         public void SmoothPositions()
         {
-            var positions = PolyNumberChain.GetContiguousPositions();
+            var positions = PolylineDomain.GetContiguousPositions();
             var points = PositionsToPoints(positions);
             points = DouglasPeuckerReduction(points);
             positions = PointsToPositions(points);
-            PolyNumberChain.ResetWithContiguousPositions(positions);
+            PolylineDomain.ResetWithContiguousPositions(positions);
         }
         private SKPoint[] PositionsToPoints(long[] positions)
         {

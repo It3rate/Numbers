@@ -182,6 +182,13 @@ namespace Numbers.Agent
                 SelBegin.ActiveHighlight.SnapPoint = ActiveDomainMapper.Guideline.ProjectPointOnto(mousePoint, true);
                 IsCreatingNumber = true;
             }
+            else if (CurrentKey == Keys.Q)
+            {
+                // Drawing
+                _isDrawing = true;
+                _pathMapper = new SKPathMapper(this);
+                _pathMapper.AddPosition(_rawMousePoint);
+            }
             else
             {
 	            if (_highlight.IsSet)
@@ -227,11 +234,18 @@ namespace Numbers.Agent
             }
             return true;
         }
+
+        private bool _isDrawing = false;
+        private SKPathMapper _pathMapper;
         public bool MouseDrag(SKPoint mousePoint)
         {
 	        if (IsPaused) {return false;}
 
-            if (IsCreatingDomain)
+            if (_isDrawing)
+            {
+                _pathMapper.AddPosition(_rawMousePoint);
+            }
+            else if (IsCreatingDomain)
             {
                 DragPoint = SelBegin.SnapPosition;
                 DragHighlight = new SKSegment(SelBegin.SnapPosition, mousePoint);
@@ -250,7 +264,7 @@ namespace Numbers.Agent
                 {
                     IsDragging = true;
 					SelCurrent.Set(_highlight.Clone());
-					if (SelCurrent.ActiveHighlight?.Mapper is SKNumberMapper nm)
+                    if (SelCurrent.ActiveHighlight?.Mapper is SKNumberMapper nm)
 					{
 						SelBegin.OriginalSegment = nm.Guideline.Clone();
 						SelBegin.OriginalFocal = nm.Number.Focal.Clone();
@@ -272,7 +286,10 @@ namespace Numbers.Agent
             {
                 var activeHighlight = SelCurrent.ActiveHighlight;
                 var activeKind = activeHighlight.Kind;
-                if (activeHighlight.Mapper is SKNumberMapper nm)
+                if (activeHighlight.Mapper is SKPathMapper pm)
+                {
+                }
+                else if (activeHighlight.Mapper is SKNumberMapper nm)
                 {
                     if (activeKind.IsLine() && CurrentKey != Keys.M)
                     {
@@ -421,6 +438,7 @@ namespace Numbers.Agent
         {
             IsDown = false;
             IsDragging = false;
+            _isDrawing = false;
             SavedNumbers.Clear();
             SetSelectable(UIMode);
             if (Workspace != null)
@@ -570,10 +588,14 @@ namespace Numbers.Agent
             {
                 // B: Adjust Basis segment (ctrl to lock tick positions).
                 case Keys.B:
+                    // Adjust Basis
                     if (_isControlDown)
                     {
                         SetSelectedAsBasis();
                     }
+                    break;
+                case Keys.D:
+                    // Create Domain
                     break;
                 // D: Create domain
                 case Keys.Delete:
@@ -594,12 +616,18 @@ namespace Numbers.Agent
                 case Keys.K:
                     ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
                     break;
+                case Keys.M:
+                    // Drag Multiply
+                    break;
                 case Keys.O:
                     ToggleDomainNumberOffsets();
                     break;
                 // N: Create Number
                 case Keys.P:
                     Runner.TogglePause();
+                    break;
+                case Keys.Q:
+                    // Drawing
                     break;
                 // R: Rotate Domain
                 case Keys.R:
@@ -621,9 +649,6 @@ namespace Numbers.Agent
                 case Keys.U:
                     UIMode = UIMode.SetUnit;
                     break;
-                //case Keys.B:
-                //    UIMode = UIMode.CreateBond;
-                //    break;
                 //case Keys.Oemplus:
                 //    UIMode = UIMode.Equal;
                 //    break;

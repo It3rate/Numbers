@@ -20,7 +20,7 @@ namespace NumbersCore.Primitives
         public int CreationIndex => Id - (int)Kind - 1;
         public int PolyCount => _numberChains.Count;
         public int Count => _numberChains[0].Count;
-        private List<NumberChain> _numberChains { get; }
+        private List<NumberChain> _numberChains { get; } = new List<NumberChain>();
 
         public PolyNumberChain(params NumberChain[] numberChains)
         {

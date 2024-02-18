@@ -14,8 +14,12 @@
         private NumberChain _x;
         private NumberChain _y;
         public PolyNumberChain XYValues { get; }
+        public Polyline2DDomain(int size) : this(Focal.CreateZeroFocal(1), Focal.CreateBalancedFocal(size)) { }
         public Polyline2DDomain(Focal basisFocal, Focal maxFocal) : base(basisFocal, maxFocal, "Polyline2D")
         {
+            _x = new NumberChain(this, Polarity.Aligned);
+            _y = new NumberChain(this, Polarity.Aligned);
+            XYValues = new PolyNumberChain(_x, _y);
         }
         public void AddPosition(Number x, Number y)
         {
