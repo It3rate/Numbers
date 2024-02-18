@@ -30,13 +30,14 @@
         private List<SKPoint> _points = new List<SKPoint>();
         private SKPoint _lastPoint;
 
+        public int Count => PolylineDomain.XYValues.Count;
         public void BeginRecord()
         {
             _points.Clear();
         }
         public void EndRecord()
         {
-            SmoothPositions();
+            FinalSmoothing();
         }
         public void AddPosition(SKPoint point)
         {
@@ -50,19 +51,25 @@
                 _lastPoint = point;
             }
             _points.Add(point);
-            SmoothPositions();
+
+            if ((_points.Count > 0) && (_points.Count % 32 == 0))
+            {
+                SmoothPositions();
+            }
         }
         private SKPoint[] _smoothPoints;
         // maybe smoothing should be in skia world as it happens on points not segments?
         public void SmoothPositions()
         {
             var positions = PolylineDomain.GetContiguousPositions();
-            _smoothPoints = PositionsToPoints(positions);
-            //var positions = PolylineDomain.GetContiguousPositions();
-            //var points = PositionsToPoints(positions);
-            //_smoothPoints = DouglasPeuckerReduction(points);
-            //positions = PointsToPositions(_smoothPoints);
-            //PolylineDomain.ResetWithContiguousPositions(positions);
+            var pts = PositionsToPoints(positions);
+            _smoothPoints = DouglasPeuckerReduction(pts);
+        }
+        public void FinalSmoothing()
+        {
+            SmoothPositions();
+            var positions = PointsToPositions(_smoothPoints);
+            PolylineDomain.ResetWithContiguousPositions(positions);
         }
         private SKPoint[] PositionsToPoints(long[] positions)
         {
@@ -85,24 +92,24 @@
             }
             return result;
         }
-        public SKPoint[] DouglasPeuckerReduction(SKPoint[] points, double tolerance = 0.5)
+        public SKPoint[] DouglasPeuckerReduction(SKPoint[] points, double tolerance = 1.2)
         {
             var result = points;
             if (points.Length > 3)
             {
                 int firstPoint = 0;
                 int lastPoint = points.Length - 1;
-                var pointIndexsToKeep = new List<int>() { firstPoint, lastPoint };
+                var pointIndexesToKeep = new List<int>() { firstPoint, lastPoint };
 
                 while (points[firstPoint].Equals(points[lastPoint]) && lastPoint > firstPoint)
                 {
                     lastPoint--;
                 }
 
-                DPReduction(points, firstPoint, lastPoint, tolerance, ref pointIndexsToKeep);
+                DPReduction(points, firstPoint, lastPoint, tolerance, ref pointIndexesToKeep);
 
-                pointIndexsToKeep.Sort();
-                points = pointIndexsToKeep.Select(index => points[index]).ToArray();
+                pointIndexesToKeep.Sort();
+                points = pointIndexesToKeep.Select(index => points[index]).ToArray();
             }
             return points;
         }

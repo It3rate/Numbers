@@ -187,6 +187,7 @@ namespace Numbers.Agent
                 // Drawing
                 _isDrawing = true;
                 _pathMapper = WorkspaceMapper.CreatePathMapper();
+                _pathMapper.BeginRecord();
                 _pathMapper.AddPosition(_rawMousePoint);
             }
             else
@@ -392,6 +393,11 @@ namespace Numbers.Agent
                 {
                     UIMode = PreviousMode;
                 }
+            }
+            else if (_isDrawing)
+            {
+                _pathMapper.AddPosition(_rawMousePoint);
+                _pathMapper.EndRecord();
             }
             else if (IsCreatingDomain)
             {

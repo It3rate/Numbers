@@ -292,8 +292,8 @@ namespace NumbersCore.Primitives
         }
         public void ResetWithContiguousPositions(long[] positions)
         {
-            // comes in as x0,y0,x1,y1,x2,x2
-            // postions are (x0,x1,y0,y1)(x1,x2,y1,y2)(x2,x3,y2,y3)
+            // comes in as x0,y0,x1,y1,x2,y2
+            // postions are (x0,y0,x1,y1)(x1,y1,x2,y2)(x2,y2,x3,y3)
             var posLen = PolyCount * 2;
             if (positions.Length >= posLen)
             {
@@ -308,51 +308,16 @@ namespace NumbersCore.Primitives
                 {
                     for (int j = 0; j < PolyCount; j++)
                     {
-                        positionSet[j * 2] = nextStarts[j];
-                        positionSet[j * 2 + 1] = positions[i + j];
+                        positionSet[j] = nextStarts[j];
+                    }
+                    for (int j = 0; j < PolyCount; j++)
+                    {
+                        positionSet[j + PolyCount] = positions[i + j];
                         nextStarts[j] = positions[i + j];
                     }
                     AddPosition(positionSet);
                 }
             }
-
-            //int polyCounter = 0;
-            //int index = 0;
-            //double firstVal = 0;
-            //foreach (var value in positions)
-            //{
-            //    if (index <= 1 && polyCounter < PolyCount * 2) // first set uses both points
-            //    {
-            //        if (polyCounter % 2 == 0)
-            //        {
-            //            firstVal = value;
-            //        }
-            //        else
-            //        {
-            //            var idx = (polyCounter - 1) / 2;
-            //            nextStarts[idx] = value;
-            //            positionSet[0] = new Range(firstVal, value);
-            //            polyCounter++;
-            //        }
-            //    }
-            //    else // rest of numbers, last tail with this tail, creating segments from polylines
-            //    {
-            //        positionSet[polyCounter] = new Range(nextStarts[polyCounter], value);
-            //        nextStarts[polyCounter] = value;
-            //        polyCounter++;
-            //    }
-
-            //    if (polyCounter == PolyCount)
-            //    {
-            //        if (index > 0)
-            //        {
-            //            AddPosition(positionSet);
-            //            // no need to clear ranges as they will overwrite
-            //        }
-            //        polyCounter = 0;
-            //    }
-            //    index++;
-            //}
         }
         public void Reset()
         {
