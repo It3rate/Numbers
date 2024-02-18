@@ -314,19 +314,21 @@ namespace Numbers.Mappers
 			if (nm != null)
 	        {
                 var isSelected = Agent.SelSelection.ActiveHighlight?.Mapper == nm;
-		        var pen = isSelected ? Pens.SegPenHighlight : Pens.SegPens[nm.Number.StoreIndex % Pens.SegPens.Count];
+                var pen = isSelected ? Pens.SegPenHighlight : Pens.SegPens[nm.Number.StoreIndex % Pens.SegPens.Count];
                 //nm.DrawNumber(offset - (pen.StrokeWidth / 3f * Math.Sign(offset)), pen); // background
                 nm.DrawNumber(offset, pen); // background
 
                 if (nm.Number.IsAligned)
 		        {
-			        var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
-			        nm.DrawNumber(offset, Pens.UnitInlinePen);
+                    var invPen = ShowPolarity ? Pens.UnotInlinePen : Pens.UnitInlinePen;
+                    var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
+			        nm.DrawNumber(offset, Pens.UnitInlinePen, invPen);
 		        }
 		        else
-		        {
-			        var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
-			        nm.DrawNumber(offset, Pens.UnotInlinePen);
+                {
+                    var invPen = ShowPolarity ? Pens.UnitInlinePen : Pens.UnotInlinePen;
+                    var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
+			        nm.DrawNumber(offset, Pens.UnotInlinePen, invPen);
 		        }
 	        }
         }

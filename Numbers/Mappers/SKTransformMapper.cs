@@ -234,7 +234,7 @@ namespace Numbers.Mappers
             result[3] = ss.EndPoint; // BR
             return result;
 		}
-		private void DrawUnitBox(SKPoint[] cwPts, SKPaint pen)
+		private void DrawUnitBox(SKPoint[] cwPts, SKPaint pen, SKPaint invertPaint)
 		{
 			var left = new SKSegment(cwPts[0], cwPts[1]);
 			var top = new SKSegment(cwPts[1], cwPts[2]);
@@ -245,15 +245,15 @@ namespace Numbers.Mappers
 			var sh = top.InsetSegment(inset);
 			var rh = right .InsetSegment(inset);
 			var sv = bottom.InsetSegment(inset);
-            Renderer.DrawDirectedLine(rv, pen);
-			Renderer.DrawDirectedLine(sh, pen);
-			Renderer.DrawDirectedLine(rh, pen);
-			Renderer.DrawDirectedLine(sv, pen);
+            Renderer.DrawDirectedLine(rv, pen, invertPaint);
+			Renderer.DrawDirectedLine(sh, pen, invertPaint);
+			Renderer.DrawDirectedLine(rh, pen, invertPaint);
+			Renderer.DrawDirectedLine(sv, pen, invertPaint);
 		}
-		private void DrawXFormedUnitBox(SKPoint[] cwPts, SKPaint pen)
+		private void DrawXFormedUnitBox(SKPoint[] cwPts, SKPaint pen, SKPaint invertPaint)
 		{
 			TransformPoints(cwPts);
-			DrawUnitBox(cwPts, pen);
+			DrawUnitBox(cwPts, pen, invertPaint);
 		}
 		private void TransformPoints(SKPoint[] pts)
 		{

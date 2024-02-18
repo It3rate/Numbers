@@ -119,11 +119,13 @@ namespace Numbers.Renderer
 		    path.AddPoly(polyline, true);
 		    Canvas.DrawPath(path, paint);
 	    }
-	    public void DrawDirectedLine(SKSegment segIn, SKPaint paint)
+	    public void DrawDirectedLine(SKSegment segIn, SKPaint paint, SKPaint invertPaint = null)
 	    {
+            invertPaint = invertPaint ?? paint;
             var seg = segIn.Clone();
             DrawPolyline(paint, seg.Points);
-            Canvas.DrawCircle(seg.StartPoint, 2, paint);
+            Canvas.DrawCircle(seg.StartPoint, 3, paint);
+            Canvas.DrawCircle(seg.StartPoint, 1.5f, invertPaint);
             var triPts = seg.EndArrow(8);
             Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
 		}

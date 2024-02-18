@@ -40,12 +40,13 @@ namespace Numbers.Mappers
 	    }
 
 
-        public void DrawNumber(float offset, SKPaint paint)
+        public void DrawNumber(float offset, SKPaint paint, SKPaint invertPaint = null)
         {
 			EnsureSegment();
+            invertPaint = invertPaint ?? paint;
 			var dir = UnitDirectionOnDomainLine;
 	        RenderSegment = Guideline.ShiftOffLine(offset * dir);
-	        Renderer.DrawDirectedLine(RenderSegment, paint);
+	        Renderer.DrawDirectedLine(RenderSegment, paint, invertPaint);
         }
 
         public void DrawUnit(bool aboveLine, bool showPolarity)
