@@ -50,22 +50,27 @@
                 _lastPoint = point;
             }
             _points.Add(point);
+            SmoothPositions();
         }
+        private SKPoint[] _smoothPoints;
         // maybe smoothing should be in skia world as it happens on points not segments?
         public void SmoothPositions()
         {
             var positions = PolylineDomain.GetContiguousPositions();
-            var points = PositionsToPoints(positions);
-            points = DouglasPeuckerReduction(points);
-            positions = PointsToPositions(points);
-            PolylineDomain.ResetWithContiguousPositions(positions);
+            _smoothPoints = PositionsToPoints(positions);
+            //var positions = PolylineDomain.GetContiguousPositions();
+            //var points = PositionsToPoints(positions);
+            //_smoothPoints = DouglasPeuckerReduction(points);
+            //positions = PointsToPositions(_smoothPoints);
+            //PolylineDomain.ResetWithContiguousPositions(positions);
         }
         private SKPoint[] PositionsToPoints(long[] positions)
         {
             var result = new SKPoint[positions.Length / 2];
+            var j = 0;
             for (int i = 0; i < positions.Length; i += 2)
             {
-                result[i] = new SKPoint(positions[i], positions[i + 1]);
+                result[j++] = new SKPoint(positions[i], positions[i + 1]);
             }
             return result;
         }
@@ -126,8 +131,9 @@
 
         public void Draw()
         {
-            var pen = Pens.NumberLinePen;
-            Renderer.DrawPolyline(pen, _points.ToArray());
+            var pen = Pens.DrawPen;
+            SKPoint[] pts = _smoothPoints != null ? _smoothPoints : _points.ToArray();
+            Renderer.DrawPolyline(pen, pts);
         }
     }
 }

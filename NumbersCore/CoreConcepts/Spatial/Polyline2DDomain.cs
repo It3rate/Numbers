@@ -55,7 +55,7 @@
         public float[][] GetContiguousValues() => XYValues.GetContiguousValues();
         public void ResetWithContiguousValues(IEnumerable<float> positions) => XYValues.ResetWithContiguousValues(positions);
         public long[] GetContiguousPositions() => XYValues.GetContiguousPositions();
-        public void ResetWithContiguousPositions(IEnumerable<long> positions) => XYValues.ResetWithContiguousPositions(positions);
+        public void ResetWithContiguousPositions(IEnumerable<long> positions) => XYValues.ResetWithContiguousPositions(positions.ToArray());
 
         public void Reset()
         {

@@ -227,7 +227,7 @@ namespace NumbersCore.Primitives
         }
         public void ResetWithContiguousValues(IEnumerable<float> values)
         {
-            _numberChains.Clear();
+            Reset();
             var nextStarts = new double[PolyCount];
             var ranges = new Range[PolyCount];
             int polyCounter = 0;
@@ -272,66 +272,87 @@ namespace NumbersCore.Primitives
         /// </summary>
         public long[] GetContiguousPositions()
         {
+            // focals are p0,p1, p1,p2, p2,p3...
+            // need: p0,p1,p2,p3...
             var len = Count * PolyCount;
             var result = new List<long>(len);
             if (len > 0)
             {
                 var focals = GetInterleavedFocals();
-                // add all start values for first number set, then all end points.
-                for (int i = 0; i < PolyCount; i++)
+                result.Add(focals[0].StartPosition);
+                result.Add(focals[0].EndPosition);
+                for (int i = 1; i < focals.Count; i += 2)
                 {
                     result.Add(focals[i].StartPosition);
-                }
-
-                for (int i = 0; i < focals.Count; i++)
-                {
                     result.Add(focals[i].EndPosition);
                 }
             }
 
             return result.ToArray();
         }
-        public void ResetWithContiguousPositions(IEnumerable<long> positions)
+        public void ResetWithContiguousPositions(long[] positions)
         {
-            _numberChains.Clear();
-            var nextStarts = new double[PolyCount];
-            var ranges = new Range[PolyCount];
-            int polyCounter = 0;
-            int index = 0;
-            double firstVal = 0;
-            foreach (var value in positions)
+            // comes in as x0,y0,x1,y1,x2,x2
+            // postions are (x0,x1,y0,y1)(x1,x2,y1,y2)(x2,x3,y2,y3)
+            var posLen = PolyCount * 2;
+            if (positions.Length >= posLen)
             {
-                if (index <= 1 && polyCounter < PolyCount * 2) // first set uses both points
+                Reset();
+                var nextStarts = new long[PolyCount];
+                for (int i = 0; i < PolyCount; i++)
                 {
-                    if (polyCounter % 2 == 0)
-                    {
-                        firstVal = value;
-                    }
-                    else
-                    {
-                        var idx = (polyCounter - 1) / 2;
-                        nextStarts[idx] = value;
-                        ranges[idx] = new Range(firstVal, value);
-                    }
+                    nextStarts[i] = positions[i];
                 }
-                else // rest of numbers, last tail with this tail, creating segments from polylines
+                var positionSet = new long[posLen];
+                for (int i = PolyCount; i < positions.Length; i += PolyCount)
                 {
-                    ranges[polyCounter] = new Range(nextStarts[polyCounter], value);
-                    nextStarts[polyCounter] = value;
-                }
-
-                polyCounter++;
-                if (polyCounter == PolyCount)
-                {
-                    if (index > 0)
+                    for (int j = 0; j < PolyCount; j++)
                     {
-                        AddPosition(ranges);
-                        // no need to clear ranges as they will overwrite
+                        positionSet[j * 2] = nextStarts[j];
+                        positionSet[j * 2 + 1] = positions[i + j];
+                        nextStarts[j] = positions[i + j];
                     }
-                    polyCounter = 0;
-                    index++;
+                    AddPosition(positionSet);
                 }
             }
+
+            //int polyCounter = 0;
+            //int index = 0;
+            //double firstVal = 0;
+            //foreach (var value in positions)
+            //{
+            //    if (index <= 1 && polyCounter < PolyCount * 2) // first set uses both points
+            //    {
+            //        if (polyCounter % 2 == 0)
+            //        {
+            //            firstVal = value;
+            //        }
+            //        else
+            //        {
+            //            var idx = (polyCounter - 1) / 2;
+            //            nextStarts[idx] = value;
+            //            positionSet[0] = new Range(firstVal, value);
+            //            polyCounter++;
+            //        }
+            //    }
+            //    else // rest of numbers, last tail with this tail, creating segments from polylines
+            //    {
+            //        positionSet[polyCounter] = new Range(nextStarts[polyCounter], value);
+            //        nextStarts[polyCounter] = value;
+            //        polyCounter++;
+            //    }
+
+            //    if (polyCounter == PolyCount)
+            //    {
+            //        if (index > 0)
+            //        {
+            //            AddPosition(positionSet);
+            //            // no need to clear ranges as they will overwrite
+            //        }
+            //        polyCounter = 0;
+            //    }
+            //    index++;
+            //}
         }
         public void Reset()
         {
