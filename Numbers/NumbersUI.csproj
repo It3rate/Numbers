@@ -110,9 +110,12 @@
     <Compile Include="Drawing\BrushData.cs" />
     <Compile Include="Drawing\SkPolyline.cs" />
     <Compile Include="IDemos.cs" />
+    <Compile Include="Mappers\ISelectableElement.cs" />
     <Compile Include="Mappers\SKNumberSetMapper.cs" />
     <Compile Include="Mappers\SKPathMapper.cs" />
+    <Compile Include="Mappers\SKTextMapper.cs" />
     <Compile Include="Mappers\SKTraitMapper.cs" />
+    <Compile Include="Primitives\TextElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Renderer\CorePens.cs" />

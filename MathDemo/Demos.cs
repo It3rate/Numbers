@@ -94,6 +94,9 @@ namespace MathDemo
         private SKWorkspaceMapper testMult()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+
+            wm.CreateTextMapper("Transforms", new SKSegment(50, 50, 100, 50));
+
             var hDomain = CreateLowResDomain(4, 0);// Domain.CreateDomain("test0", unitSize, 16);
             var vDomain = CreateLowResDomain(4, .1f);// Domain.CreateDomain("test0", unitSize, 16);
             var mDomain = CreateLowResDomain(4, .3f);

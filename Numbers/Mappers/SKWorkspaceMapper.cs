@@ -18,6 +18,7 @@ namespace Numbers.Mappers
         private readonly Dictionary<int, SKDomainMapper> _domainMappers = new Dictionary<int, SKDomainMapper>();
         private readonly Dictionary<int, SKTransformMapper> _transformMappers = new Dictionary<int, SKTransformMapper>();
         private readonly Dictionary<int, SKPathMapper> _pathMappers = new Dictionary<int, SKPathMapper>();
+        private readonly Dictionary<int, SKTextMapper> _textMappers = new Dictionary<int, SKTextMapper>();
         public SKDomainMapper GetDomainMapper(Domain domain) => GetOrCreateDomainMapper(domain);
         public SKTransformMapper TransformMapper(Transform transform) => GetOrCreateTransformMapper(transform);
 
@@ -40,6 +41,13 @@ namespace Numbers.Mappers
             foreach (var pm in _pathMappers.Values)
             {
                 yield return pm;
+            }
+        }
+        public IEnumerable<SKTextMapper> TextMappers()
+        {
+            foreach (var tm in _textMappers.Values)
+            {
+                yield return tm;
             }
         }
         public SKTransformMapper TransformMapperInvolving(Number num)
@@ -71,7 +79,7 @@ namespace Numbers.Mappers
 		    return Renderer.GetRectPath(TopLeft, BottomRight);
 	    }
 
-        public SKPoint Center => TopLeft.MidpointTo(BottomRight);
+        public SKPoint Center => TopLeft.Midpoint(BottomRight);
 	    public float Width => BottomRight.X - TopLeft.X;
 	    public float Height => BottomRight.Y - TopLeft.Y;
         // these are pointing clockwise 
@@ -223,6 +231,10 @@ namespace Numbers.Mappers
 	        EnsureRenderers();
 	        if (Workspace.IsActive)
 	        {
+	            foreach (var textMapper in _textMappers.Values)
+		        {
+                    textMapper.Draw();
+                }
 	            foreach (var transformMapper in _transformMappers.Values)
 		        {
 			        transformMapper.Draw();
@@ -367,6 +379,20 @@ namespace Numbers.Mappers
         public void RemovePathMapper(SKPathMapper pathMapper)
         {
             _pathMappers.Remove(pathMapper.Id);
+        }
+        public SKTextMapper CreateTextMapper(string text, SKSegment line = null)
+        {
+            var textMapper = new SKTextMapper(Agent, text, line);
+            _textMappers.Add(textMapper.Id, textMapper);
+            return textMapper;
+        }
+        public void AddTextMapper(SKTextMapper textMapper)
+        {
+            _textMappers.Add(textMapper.Id, textMapper);
+        }
+        public void RemoveTextMapper(SKTextMapper textMapper)
+        {
+            _textMappers.Remove(textMapper.Id);
         }
         public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
         {

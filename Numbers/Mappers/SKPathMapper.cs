@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Drawing;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -16,6 +17,14 @@
     public class SKPathMapper : SKMapper
     {
         public Polyline2DDomain PolylineDomain => (Polyline2DDomain)MathElement;
+
+        private List<SKPoint> _points = new List<SKPoint>();
+        private SKPoint _lastPoint;
+        private SKPoint[] _smoothPoints;
+        private bool _isShape = false;
+        private bool _pathDirty = false;
+        public int Count => PolylineDomain.XYValues.Count;
+
         public SKPathMapper(MouseAgent agent, SKSegment guideline = null) : base(agent, new Polyline2DDomain(500), guideline)
         {
         }
@@ -27,21 +36,26 @@
         {
             throw new NotImplementedException();
         }
-        private List<SKPoint> _points = new List<SKPoint>();
-        private SKPoint _lastPoint;
 
-        public int Count => PolylineDomain.XYValues.Count;
         public void BeginRecord()
         {
-            _points.Clear();
+            Reset();
         }
         public void EndRecord()
         {
-            FinalSmoothing();
+            FinalizePath();
+        }
+        public void AddPosition(float x, float y)
+        {
+            AddPosition(new SKPoint(x, y));
+        }
+        public void AddPosition(double x, double y)
+        {
+            AddPosition(new SKPoint((float)x, (float)y));
         }
         public void AddPosition(SKPoint point)
-        {
-            if(_points.Count == 0)
+            {
+                if (_points.Count == 0)
             {
                 _lastPoint = point;
             }
@@ -57,15 +71,64 @@
                 SmoothPositions();
             }
         }
-        private SKPoint[] _smoothPoints;
+
+        public void SetRect(SKPoint p0, SKPoint p1)
+        {
+            Reset();
+            AddPosition(p0.X, p0.Y);
+            AddPosition(p1.X, p0.Y);
+            AddPosition(p1.X, p1.Y);
+            AddPosition(p0.X, p1.Y);
+            AddPosition(p0.X, p0.Y);
+            _isShape = true;
+            _pathDirty = true;
+        }
+
+        public void SetOval(SKPoint p0, SKPoint p1)
+        {
+            Reset();
+            var center = p0.Midpoint(p1);
+            var xr = center.X - p0.X;
+            var yr = center.Y - p0.Y;
+            var num = (int)(p0.UnsignedDistanceTo(p1) * .3); // steps in polyline
+            var step = MathF.PI * 2 / num;
+            for (int i = 0; i < num + 1; i++)
+            {
+                AddPosition(center.X + Math.Sin(i * step) * xr, center.Y + Math.Cos(i * step) * yr);
+            }
+            _isShape = true;
+            _pathDirty = true;
+        }
+        public void SetStar(SKPoint p0, SKPoint p1)
+        {
+            Reset();
+            var center = p0.Midpoint(p1);
+            var xr = center.X - p0.X;
+            var yr = center.Y - p0.Y;
+            var innerRatio = 0.5f;
+            var num = 5 * 2; // star points
+            var step = MathF.PI * 2 / num;
+            for (int i = 0; i < num + 1; i++)
+            {
+                var curXr = i % 2 == 1 ? xr : xr * innerRatio;
+                var curYr = i % 2 == 1 ? yr : yr * innerRatio;
+                AddPosition(center.X + Math.Sin(i * step) * curXr, center.Y + Math.Cos(i * step) * curYr);
+            }
+            _isShape = true;
+            _pathDirty = true;
+        }
+
         // maybe smoothing should be in skia world as it happens on points not segments?
         public void SmoothPositions()
         {
-            var positions = PolylineDomain.GetContiguousPositions();
-            var pts = PositionsToPoints(positions);
-            _smoothPoints = DouglasPeuckerReduction(pts);
+            if (!_isShape)
+            {
+                var positions = PolylineDomain.GetContiguousPositions();
+                var pts = PositionsToPoints(positions);
+                _smoothPoints = DouglasPeuckerReduction(pts);
+            }
         }
-        public void FinalSmoothing()
+        public void FinalizePath()
         {
             SmoothPositions();
             var positions = PointsToPositions(_smoothPoints);
@@ -141,6 +204,13 @@
             var pen = Pens.DrawPen;
             SKPoint[] pts = _smoothPoints != null ? _smoothPoints : _points.ToArray();
             Renderer.DrawPolyline(pen, pts);
+        }
+
+        public void Reset()
+        {
+            _points.Clear();
+            _smoothPoints = null;
+            _isShape = false;
         }
     }
 }

@@ -55,30 +55,30 @@ namespace Numbers.Drawing
         }
 
 
-        //public SkPolyline(int width, int height, float? brushSize = null, uint? currentColor = null, float? feather = null) : base(width, height)
-        //{
-        //    Id = ISelectableElement.EntityCounter++;
+        public SkPolyline(int width, int height, float? brushSize = null, uint? currentColor = null, float? feather = null) : base(width, height)
+        {
+            Id = 0;// ISelectableElement.EntityCounter++;
 
-        //    if (brushSize != null)
-        //    {
-        //        BrushSize = brushSize.Value;
-        //    }
-        //    if (currentColor != null)
-        //    {
-        //        ColorValue = currentColor.Value;
-        //    }
-        //    if (feather != null)
-        //    {
-        //        Feather = feather.Value;
-        //    }
-        //}
-        //public void SetWithBrushData(BrushData brushData)
-        //{
-        //    BrushSize = brushData.BrushSize;
-        //    Feather = brushData.Feather;
-        //    Transparency = brushData.Transparency;
-        //    ColorValue = brushData.ColorValue;
-        //}
+            if (brushSize != null)
+            {
+                BrushSize = brushSize.Value;
+            }
+            if (currentColor != null)
+            {
+                ColorValue = currentColor.Value;
+            }
+            if (feather != null)
+            {
+                Feather = feather.Value;
+            }
+        }
+        public void SetWithBrushData(BrushData brushData)
+        {
+            BrushSize = brushData.BrushSize;
+            Feather = brushData.Feather;
+            Transparency = brushData.Transparency;
+            ColorValue = brushData.ColorValue;
+        }
         //protected override PolyNumberSet CreatePolyset(int width, int height)
         //{
         //    var trait = PositionTrait.Instance;
