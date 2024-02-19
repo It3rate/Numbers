@@ -55,7 +55,7 @@ namespace Numbers.Drawing
         }
 
 
-        public SkPolyline(int width, int height, float? brushSize = null, uint? currentColor = null, float? feather = null) : base(width, height)
+        public SkPolyline(int width, int height, float? brushSize = null, uint? currentColor = null, float? feather = null)// : base(width, height)
         {
             Id = 0;// ISelectableElement.EntityCounter++;
 
