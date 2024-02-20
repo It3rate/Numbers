@@ -1,29 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Numbers.Mappers;
 using Numbers.Agent;
 using Numbers.Renderer;
 using NumbersAPI.Motion;
 using NumbersCore.Primitives;
+using Numbers;
 
 namespace MathDemo
 {
     public partial class CoreForm : Form
 	{
-		private readonly Demos _demos;
+		private readonly IDemos _demos;
 		private readonly CoreRenderer _renderer;
 		private readonly Control _control;
 	    private readonly MouseAgent _mouseAgent;
 	    private Runner _runner;
 	    private Workspace _workspace;
-
+        
         public CoreForm()
         {
 	        DoubleBuffered = true;
@@ -41,7 +35,8 @@ namespace MathDemo
             KeyPreview = true;
 
             _workspace = new Workspace(Brain.ActiveBrain);
-            _demos = new Demos(_workspace.Brain, _renderer);
+            //_demos = new Demos(_workspace.Brain);
+            _demos = new Slides(_workspace.Brain);
             _mouseAgent = new MouseAgent(_workspace, _control, _renderer, _demos);
             _runner = _mouseAgent.Runner;
             _runner.lbEquation = lbText;

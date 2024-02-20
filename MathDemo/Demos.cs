@@ -19,13 +19,11 @@ namespace MathDemo
 	public class Demos : IDemos
     {
 	    private Brain Brain { get; }
-        private CoreRenderer Renderer { get; }
         private MouseAgent _currentMouseAgent;
 
-        public Demos(Brain brain, CoreRenderer renderer)
+        public Demos(Brain brain)
         {
 	        Brain = brain;
-	        Renderer = renderer;
         }
 
         private int _testIndex = 4;
