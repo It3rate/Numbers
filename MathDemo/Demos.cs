@@ -111,13 +111,15 @@ namespace MathDemo
             var vNum = hDomain.CreateNumberFromFloats(0, 1.25f);
 
             Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, TransformKind.Multiply);
-            wm.GetOrCreateTransformMapper(transform, false);
+            var tm = wm.GetOrCreateTransformMapper(transform, false);
+            tm.Guideline = wm.TopSegment;
             hDomain.Domain.AddNumber(transform.Result);
 
             for (int i = 0; i < 15; i++)
             {
                 transform = Brain.AddTransform(hNum.Number, transform.Result, TransformKind.Multiply);
-                wm.GetOrCreateTransformMapper(transform, false);
+                tm = wm.GetOrCreateTransformMapper(transform, false);
+                tm.Guideline = wm.TopSegment;
                 hDomain.Domain.AddNumber(transform.Result);
             }
             wm.Workspace.AddDomains(true, hDomain.Domain);

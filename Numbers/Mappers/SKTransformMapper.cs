@@ -49,12 +49,28 @@ namespace Numbers.Mappers
             }
             else if(Agent.ActiveTransformMapper == this)
             {
-                DrawEquation(new SKPoint(150, 100), Pens.TextBrush);
+                DrawEquation(Guideline.EndPoint.Subtract(200,150), Pens.TextBrush);
             }
         }
         private void CalculateValue()
         {
             Transform.Apply();
+        }
+        private void DrawEquation(SKPoint location, SKPaint paint)
+        {
+            var symbol = Transform.TransformKind.GetSymbol();
+
+            var selTxt = Transform.Left.ToString();
+            var repTxt = Transform.Right.ToString();
+            var resultTxt = Transform.Result.ToString();
+            var numOffset = 28;
+
+            Canvas.DrawText(selTxt, location.X + numOffset, location.Y, Pens.Seg0TextBrush);
+            Canvas.DrawText(symbol, location.X, location.Y + 30, Pens.Seg1TextBrush);
+            Canvas.DrawText(repTxt, location.X + numOffset, location.Y + 30, Pens.Seg1TextBrush);
+            Canvas.DrawLine(location.X, location.Y + 38, location.X + 160, location.Y + 40, Pens.TextFractionPen);
+            Canvas.DrawText(resultTxt, location.X + numOffset, location.Y + 65, Pens.TextBrush);
+            //Canvas.DrawText(areaTxt, location.X, location.Y + 95, unitText);
         }
         public void DrawMultiply()
         {
@@ -165,22 +181,6 @@ namespace Numbers.Mappers
 			{
 				Renderer.FillPolyline(isUnit ? Pens.BackHatch : Pens.ForeHatch, points);
 			}
-		}
-		private void DrawEquation(SKPoint location, SKPaint paint)
-		{
-            var symbol = Transform.TransformKind.GetSymbol();
-
-            var selTxt = Transform.Left.ToString();
-			var repTxt = Transform.Right.ToString();
-			var resultTxt = Transform.Result.ToString();
-            var numOffset = 28;
-
-			Canvas.DrawText(selTxt, location.X + numOffset, location.Y, Pens.Seg0TextBrush);
-            Canvas.DrawText(symbol, location.X, location.Y + 30, Pens.Seg1TextBrush);
-            Canvas.DrawText(repTxt, location.X + numOffset, location.Y + 30, Pens.Seg1TextBrush);
-            Canvas.DrawLine(location.X, location.Y + 38, location.X + 160, location.Y + 40, Pens.TextFractionPen);
-			Canvas.DrawText(resultTxt, location.X + numOffset, location.Y + 65, Pens.TextBrush);
-			//Canvas.DrawText(areaTxt, location.X, location.Y + 95, unitText);
 		}
         public void DrawTextOnSegment(string txt, SKPoint startPt, SKPoint endPt, SKPaint paint, bool addBkg = false)
 		{
