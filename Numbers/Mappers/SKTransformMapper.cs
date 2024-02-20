@@ -16,6 +16,7 @@ namespace Numbers.Mappers
     {
         CoreRenderer _renderer = CoreRenderer.Instance;
         public Transform Transform => (Transform)MathElement;
+
         private List<SKPoint[]> PolyShapes { get; } = new List<SKPoint[]>();
 
 		private SKDomainMapper SelectionMapper => WorkspaceMapper.GetDomainMapper(Transform.Left.Domain);

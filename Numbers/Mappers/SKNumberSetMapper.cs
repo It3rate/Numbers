@@ -47,7 +47,7 @@ namespace Numbers.Mappers
 		    EnsureNumberMappers();
 		    foreach (var skNumberMapper in NumberMappers)
 		    {
-			    DomainMapper.DrawNumber(skNumberMapper, 0f);
+			    DomainMapper.DrawNumber(skNumberMapper, 0f, false);
 		    }
 	    }
         public override SKPath GetHighlightAt(Highlight highlight)

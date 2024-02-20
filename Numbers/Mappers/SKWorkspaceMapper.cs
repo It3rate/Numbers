@@ -316,7 +316,11 @@ namespace Numbers.Mappers
 
         public IEnumerable<SKNumberMapper> AllNumberMappers(bool reverse = false)
         {
-	        foreach (var dm in GetDomainMappers(reverse))
+            //foreach (var tm in GetTransformMappers(reverse))
+            //{
+            //    yield return tm.Transform.Result;
+            //}
+            foreach (var dm in GetDomainMappers(reverse))
 	        {
 		        foreach (var nm in dm.GetNumberMappers(reverse))
 		        {

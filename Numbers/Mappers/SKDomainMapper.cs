@@ -286,16 +286,31 @@ namespace Numbers.Mappers
 			step *= topDir;
             foreach(var nm in OrderedValidNumbers())
             {
-                if(nm.Number is NumberChain numberSet)
+                var isSelected = Agent.SelSelection.ActiveHighlight?.Mapper == nm;
+                // todo: give numberChains their own number mappers.
+                if (nm.Number is NumberChain numberSet)
                 {
+                   var pts = new SKPoint[2];
+                    int index = 0;
                     foreach(var num in numberSet.InternalNumbers())
                     {
-                        DrawNumber(new SKNumberMapper(Agent, num), offset + topDir * 2);
+                        var numMap = new SKNumberMapper(Agent, num);
+                        DrawNumber(numMap, offset + topDir * 2, isSelected);
+                        if(index == 0)
+                        {
+                            pts[0] = numMap.RenderSegment.StartPoint;
+                            index++;
+                        }
+                        pts[1] = numMap.RenderSegment.EndPoint;
+                    }
+                    if(index > 0)
+                    {
+                        nm.RenderSegment = new SKSegment(pts[0], pts[1]);
                     }
                 }
                 else
                 {
-                    DrawNumber(nm, offset + topDir * 2);
+                    DrawNumber(nm, offset + topDir * 2, isSelected);
                 }
                 offset += step;
             }
@@ -309,11 +324,10 @@ namespace Numbers.Mappers
 	        }
         }
 
-        public virtual void DrawNumber(SKNumberMapper nm, float offset)
+        public virtual void DrawNumber(SKNumberMapper nm, float offset, bool isSelected = false)
 		{
 			if (nm != null)
 	        {
-                var isSelected = Agent.SelSelection.ActiveHighlight?.Mapper == nm;
                 var pen = isSelected ? Pens.SegPenHighlight : Pens.SegPens[nm.Number.StoreIndex % Pens.SegPens.Count];
                 //nm.DrawNumber(offset - (pen.StrokeWidth / 3f * Math.Sign(offset)), pen); // background
                 nm.DrawNumber(offset, pen); // background

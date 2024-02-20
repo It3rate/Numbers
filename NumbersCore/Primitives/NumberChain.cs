@@ -97,8 +97,8 @@ namespace NumbersCore.Primitives
             var v = Value;
             var midSign = v.End > 0 ? " + " : " ";
             var result = IsAligned ?
-                $"nc:({v.UnotValue:0.##}i ... {midSign}{v.UnitValue}r)" :
-                $"nc:~({v.UnitValue:0.##}r ... {midSign}{v.UnotValue:0.##}i)";
+                $"nc:({v.UnotValue:0.##}i {midSign}{v.UnitValue}r)" :
+                $"nc:~({v.UnitValue:0.##}r {midSign}{v.UnotValue:0.##}i)";
             return result;
         }
     }

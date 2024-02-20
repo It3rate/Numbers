@@ -13,7 +13,7 @@ namespace Numbers.Mappers
     {
 	    public Number Number => (Number) MathElement;
         public MouseAgent MouseAgent => (MouseAgent)Agent;
-        public SKSegment RenderSegment { get; private set; }
+        public virtual SKSegment RenderSegment { get; set; }
 
         public SKDomainMapper DomainMapper => WorkspaceMapper.GetDomainMapper(Number.Domain);
         public SKSegment UnitSegment => DomainMapper.BasisSegment;
