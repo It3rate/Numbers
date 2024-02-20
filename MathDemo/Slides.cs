@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -9,15 +10,17 @@
     using Numbers.Agent;
     using Numbers.Drawing;
     using Numbers.Mappers;
+    using Numbers.Renderer;
     using NumbersCore.Primitives;
+    using SkiaSharp;
 
-    public class Slides : IDemos
+    public class Slides : DemoBase
     {
         private Brain Brain { get; }
-        private MouseAgent _currentMouseAgent;
         public Slides(Brain brain)
         {
-            Brain = brain;
+            Brain = brain; 
+            _tests.AddRange( new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 });
         }
         private SKWorkspaceMapper RandomVsOrder()
         {
@@ -30,28 +33,49 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var hDomain = CreateLowResDomain(8, 0);
-            hDomain.OffsetNumbers = true;
+            var rnd = new Random();
 
-            var hNum = hDomain.CreateNumberFromFloats(0, -1);
-            hNum.Number.Polarity = Polarity.Inverted;
-
-            var vNum = hDomain.CreateNumberFromFloats(0, 1.25f);
-
-            Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, TransformKind.Multiply);
-            var tm = wm.GetOrCreateTransformMapper(transform, false);
-            tm.Guideline = wm.TopSegment;
-            hDomain.Domain.AddNumber(transform.Result);
-
-            for (int i = 0; i < 15; i++)
+            var paint = CorePens.GetPen(SKColors.Red, 12);
+            for (int i = 0; i < 1; i++)
             {
-                transform = Brain.AddTransform(hNum.Number, transform.Result, TransformKind.Multiply);
-                tm = wm.GetOrCreateTransformMapper(transform, false);
-                tm.Guideline = wm.TopSegment;
-                hDomain.Domain.AddNumber(transform.Result);
+                var path = wm.CreatePathMapper();
+                path.Pen = paint;
+                var x = 900;
+                var y = 450;
+                path.SetOval(new SKPoint(x, y), new SKPoint(x + 60, y + 60));
             }
-            wm.Workspace.AddDomains(true, hDomain.Domain);
-            return wm;
+            var w = 20;
+            for (int i = 0; i < 40; i++)
+            {
+                var path = wm.CreatePathMapper();
+                path.Pen = CorePens.GetPen(SKColor.FromHsl((rnd.Next(100) + 150), 100, 50), 8);
+                var x = rnd.Next(500) + 200;
+                var y = rnd.Next(300) + 300;
+                path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
+            }
+
+                //var hDomain = CreateLowResDomain(8, 0);
+                //hDomain.OffsetNumbers = true;
+
+                //var hNum = hDomain.CreateNumberFromFloats(0, -1);
+                //hNum.Number.Polarity = Polarity.Inverted;
+
+                //var vNum = hDomain.CreateNumberFromFloats(0, 1.25f);
+
+                //Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, TransformKind.Multiply);
+                //var tm = wm.GetOrCreateTransformMapper(transform, false);
+                //tm.Guideline = wm.TopSegment;
+                //hDomain.Domain.AddNumber(transform.Result);
+
+                //for (int i = 0; i < 15; i++)
+                //{
+                //    transform = Brain.AddTransform(hNum.Number, transform.Result, TransformKind.Multiply);
+                //    tm = wm.GetOrCreateTransformMapper(transform, false);
+                //    tm.Guideline = wm.TopSegment;
+                //    hDomain.Domain.AddNumber(transform.Result);
+                //}
+                //wm.Workspace.AddDomains(true, hDomain.Domain);
+                return wm;
         }
         private SKWorkspaceMapper Page1()
         {
@@ -61,6 +85,20 @@
 "Temperature, brightness, path home, points on a star. These are traits.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+            var w = 80;
+            var hue = 100;
+            var x = 100;
+                var y = 200;
+            var pts = 3;
+            var count = 10;
+            for (int i = 0; i < count; i++)
+            {
+                var path = wm.CreatePathMapper();
+                path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 40), 7);
+                path.SetStar(new SKPoint(x, y), new SKPoint(x + w, y + w), pts++);
+                x += 90;
+                hue += 150 / count;
+            }
             return wm;
         }
         private SKWorkspaceMapper Page2()
@@ -227,21 +265,10 @@
         }
 
         #region Page Controller
-        private int _testIndex = 0;
-        private int _prevIndex = -1;
-        private readonly int[] _tests = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-        public SKWorkspaceMapper NextTest(MouseAgent mouseAgent, bool isReload = false)
+        protected override SKWorkspaceMapper GetPage(int index)
         {
-            if (isReload && _prevIndex != -1)
-            {
-                _testIndex = _prevIndex;
-            }
-            _currentMouseAgent = mouseAgent;
-            _currentMouseAgent.IsPaused = true;
-            _currentMouseAgent.ClearAll();
-
             SKWorkspaceMapper wm;
-            switch (_tests[_testIndex])
+            switch (index)
             {
                 case 0:
                     wm = RandomVsOrder();
@@ -308,17 +335,9 @@
                     wm = RandomVsOrder();
                     break;
             }
-            _prevIndex = _testIndex;
-            _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
-
-            wm.EnsureRenderers();
-            _currentMouseAgent.IsPaused = false;
             return wm;
         }
-        public SKWorkspaceMapper Reload(MouseAgent mouseAgent)
-        {
-            return NextTest(mouseAgent, true);
-        }
+
         #endregion
         #region Utils
         private SKDomainMapper CreateLowResDomain(int rangeSize, float offset, params Focal[] focals)

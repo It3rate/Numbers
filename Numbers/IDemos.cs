@@ -10,7 +10,10 @@ namespace Numbers
 {
 	public interface IDemos
     {
-        SKWorkspaceMapper NextTest(MouseAgent agent, bool isReload = false);
+        SKWorkspaceMapper NextTest(MouseAgent agent);
+        SKWorkspaceMapper PreviousTest(MouseAgent agent);
         SKWorkspaceMapper Reload(MouseAgent agent);
+
+        SKWorkspaceMapper LoadTest(int index, MouseAgent mouseAgent);
     }
 }

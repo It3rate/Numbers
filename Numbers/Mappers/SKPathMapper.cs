@@ -24,9 +24,11 @@
         private bool _isShape = false;
         private bool _pathDirty = false;
         public int Count => PolylineDomain.XYValues.Count;
+        public SKPaint Pen { get; set; }
 
         public SKPathMapper(MouseAgent agent, SKSegment guideline = null) : base(agent, new Polyline2DDomain(500), guideline)
         {
+            Pen = Pens.DrawPen;
         }
         //public SKPathMapper(MouseAgent agent, PolyNumberChain numberSet, SKSegment xBasis) : base(agent, numberSet, xBasis)
         //{
@@ -75,38 +77,39 @@
         public void SetRect(SKPoint p0, SKPoint p1)
         {
             Reset();
+            _isShape = true;
             AddPosition(p0.X, p0.Y);
             AddPosition(p1.X, p0.Y);
             AddPosition(p1.X, p1.Y);
             AddPosition(p0.X, p1.Y);
             AddPosition(p0.X, p0.Y);
-            _isShape = true;
             _pathDirty = true;
         }
 
         public void SetOval(SKPoint p0, SKPoint p1)
         {
             Reset();
+            _isShape = true;
             var center = p0.Midpoint(p1);
             var xr = center.X - p0.X;
             var yr = center.Y - p0.Y;
-            var num = (int)(p0.UnsignedDistanceTo(p1) * .3); // steps in polyline
+            var num = (int)(p0.UnsignedDistanceTo(p1) * .8); // steps in polyline
             var step = MathF.PI * 2 / num;
             for (int i = 0; i < num + 1; i++)
             {
                 AddPosition(center.X + Math.Sin(i * step) * xr, center.Y + Math.Cos(i * step) * yr);
             }
-            _isShape = true;
             _pathDirty = true;
         }
-        public void SetStar(SKPoint p0, SKPoint p1)
+        public void SetStar(SKPoint p0, SKPoint p1, int points = -1)
         {
             Reset();
+            _isShape = true;
             var center = p0.Midpoint(p1);
             var xr = center.X - p0.X;
             var yr = center.Y - p0.Y;
             var innerRatio = 0.5f;
-            var num = 5 * 2; // star points
+            var num = points == -1 ? 5 * 2 : points * 2; // star points
             var step = MathF.PI * 2 / num;
             for (int i = 0; i < num + 1; i++)
             {
@@ -114,7 +117,6 @@
                 var curYr = i % 2 == 1 ? yr : yr * innerRatio;
                 AddPosition(center.X + Math.Sin(i * step) * curXr, center.Y + Math.Cos(i * step) * curYr);
             }
-            _isShape = true;
             _pathDirty = true;
         }
 
@@ -201,9 +203,8 @@
 
         public void Draw()
         {
-            var pen = Pens.DrawPen;
             SKPoint[] pts = _smoothPoints != null ? _smoothPoints : _points.ToArray();
-            Renderer.DrawPolyline(pen, pts);
+            Renderer.DrawPolyline(Pen, pts);
         }
 
         public void Reset()

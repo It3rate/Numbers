@@ -68,6 +68,7 @@ namespace Numbers.Agent
 		        }
 	        }
         }
+        public SKPaint CurrentPen { get; set; }
 
         private SKPoint _rawMousePoint;
         private float _minDragDistance = 4f;
@@ -187,7 +188,7 @@ namespace Numbers.Agent
             {
                 // Drawing
                 _isDrawing = true;
-                var cmd = new AddSKPathCommand(this);
+                var cmd = new AddSKPathCommand(this, CurrentPen);
                 Stack.Do(cmd);
                 ActivePathMapper = cmd.PathMapper;
                 ActivePathMapper.BeginRecord();
@@ -624,6 +625,9 @@ namespace Numbers.Agent
                 case Keys.K:
                     ColorTheme = ColorTheme == ColorTheme.Normal ? ColorTheme.Dark : ColorTheme.Normal;
                     break;
+                case Keys.Left:
+                    Demos.PreviousTest(this);
+                    break;
                 case Keys.M:
                     // Drag Multiply
                     break;
@@ -636,6 +640,9 @@ namespace Numbers.Agent
                     break;
                 case Keys.Q:
                     // Drawing
+                    break;
+                case Keys.Right:
+                    Demos.NextTest(this);
                     break;
                 // R: Rotate Domain
                 case Keys.R:
@@ -650,9 +657,6 @@ namespace Numbers.Agent
                     break;
                 case Keys.Space:
                     StartPan();
-                    break;
-                case Keys.T:
-                    Demos.NextTest(this);
                     break;
                 case Keys.U:
                     UIMode = UIMode.SetUnit;
@@ -736,7 +740,6 @@ namespace Numbers.Agent
                     FlipBasis();
                     break;
                 case Keys.Oemcomma: // <
-                case Keys.Right: // <
                     SubtractTick();
                     break;
                 case Keys.OemPeriod: // >

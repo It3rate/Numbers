@@ -235,6 +235,12 @@ namespace Numbers.Mappers
 		        {
                     textMapper.Draw();
                 }
+
+                foreach (var pathMapper in _pathMappers.Values)
+                {
+                    pathMapper.Draw();
+                }
+
 	            foreach (var transformMapper in _transformMappers.Values)
 		        {
 			        transformMapper.Draw();
@@ -243,11 +249,6 @@ namespace Numbers.Mappers
                 foreach (var domainMapper in _domainMappers.Values)
                 {
                     domainMapper.Draw();
-                }
-
-                foreach (var pathMapper in _pathMappers.Values)
-                {
-                    pathMapper.Draw();
                 }
 
                 if (Agent.DragHighlight != null)

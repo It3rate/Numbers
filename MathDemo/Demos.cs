@@ -16,59 +16,40 @@ using NumbersCore.Utils;
 
 namespace MathDemo
 {
-	public class Demos : IDemos
+	public class Demos : DemoBase
     {
 	    private Brain Brain { get; }
-        private MouseAgent _currentMouseAgent;
 
         public Demos(Brain brain)
         {
 	        Brain = brain;
+            _tests.AddRange(new int[] { 0, 1, 2, 3, 4 });
         }
 
-        private int _testIndex = 4;
-        private int _prevIndex = -1;
-        private readonly int[] _tests = new int[] { 0, 1, 2, 3, 4 };
-        public SKWorkspaceMapper NextTest(MouseAgent mouseAgent, bool isReload = false)
+        protected override SKWorkspaceMapper GetPage(int index)
         {
-            if(isReload && _prevIndex != -1)
-            {
-                _testIndex = _prevIndex;
-            }
-            _currentMouseAgent = mouseAgent;
-            _currentMouseAgent.IsPaused = true;
-            _currentMouseAgent.ClearAll();
-
             SKWorkspaceMapper wm;
-            switch (_tests[_testIndex])
+            switch (index)
             {
                 case 0:
                     wm = test2DMult();
-                    break;
+                break;
                 case 1:
                     wm = testOneLine();
-                    break;
+                break;
                 case 2:
                     wm = test2();
-                    break;
+                break;
                 case 3:
                     wm = test3();
-                    break;
+                break;
                 default:
                     wm = testMult();
-                    break;
+                break;
             }
-            _prevIndex = _testIndex;
-            _testIndex = _testIndex >= _tests.Length - 1 ? 0 : _testIndex + 1;
-
-            wm.EnsureRenderers();
-            _currentMouseAgent.IsPaused = false;
             return wm;
         }
-        public SKWorkspaceMapper Reload(MouseAgent mouseAgent)
-        {
-            return NextTest(mouseAgent, true);
-        }
+
         private SKWorkspaceMapper test2DMult()
         {
             var hDomain = Domain.CreateDomain("test2DMult", 100, 10);
