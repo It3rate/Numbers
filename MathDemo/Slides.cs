@@ -21,13 +21,15 @@
         public Slides(Brain brain)
         {
             Brain = brain;
+            _testIndex = 4;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
                 RandomVsOrder_B,
                 GradientLine_A,
                 GradientLine_B,
-                Page2,
+                ValidMath_A,
+                ValidMath_B,
                 Page3,
                 Page4,
                 Page5,
@@ -114,16 +116,36 @@
             }
             return wm;
         }
-        private SKWorkspaceMapper Page2()
+        private SKWorkspaceMapper ValidMath_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"Everything that can happen on these gradient lines is valid math. ",
-"Any non random thing is predictable to the extent of its precision.",
-"Gradients can be any shape, including circles, but if they have branches they are no longer 1D.",
+                "Everything that can happen on these gradient lines is valid math.",
+                "Every non random operation is encodable, and predictable to its level of precision.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var guideline = new SKSegment(100, 200, 1100, 200);
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("validMath", 10, 10), guideline);
+            hd.ShowTicks = true;
+            hd.ShowPolarity = false;
+            hd.CreateNumber(new Focal(20, 90));
+
+
             return wm;
+        }
+        private SKWorkspaceMapper ValidMath_B()
+        {
+            var wm = ValidMath_A();
+            wm.AppendText(
+                "Gradients can be any shape, including circles, but if they have branches they are no longer 1D."
+               );
+            //var guideline = new SKSegment(hd.MidPoint, hd.MidPoint + new SKPoint(0, 300));
+            var guideline = new SKSegment(600, 200, 600, 800);
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("validMath", 10, 10), guideline);
+            hd.ShowTicks = true;
+            hd.ShowPolarity = false;
+
             return wm;
         }
         private SKWorkspaceMapper Page3()

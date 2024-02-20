@@ -182,7 +182,7 @@ namespace Numbers.Mappers
 		    ValidNumberIds.Clear();
 		    foreach (var num in Domain.Numbers())
 		    {
-			    if (Workspace.IsElementActive(num.Id) && num.Id != Domain.BasisNumber.Id && num.Id != Domain.MinMaxNumber.Id)
+			    if (num.Id != Domain.BasisNumber.Id && num.Id != Domain.MinMaxNumber.Id)
 			    {
 				    ValidNumberIds.Add(num.Id);
 			    }
@@ -269,7 +269,7 @@ namespace Numbers.Mappers
 		        foreach (var id in ValidNumberIds)
 		        {
 			        var nm = Domain.GetNumber(id);
-                    if(ValidNumberIds.Count < 4 || selId == nm.Id)
+                    if(ValidNumberIds.Count < 5 || selId == nm.Id)
                     {
 			            DrawMarker(nm, true);
 			            DrawMarker(nm, false);

@@ -323,6 +323,20 @@ namespace Numbers.Mappers
 	        }
 	        return result;
         }
+        public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
+        {
+	        if (!_domainMappers.TryGetValue(domain.Id, out var result))
+	        {
+                Workspace.AddDomains(true, domain);
+		        line = line ?? NextDefaultLine();
+                var half_mmr = (float)(1.0 / domain.MinMaxRange.AbsLength());
+		        var uSeg = unitLine ?? line.SegmentAlongLine(0.5f, 0.5f + half_mmr);
+		        result = new SKDomainMapper(Agent, domain, line, uSeg);
+		        _domainMappers[domain.Id] = result;
+            }
+	        return (SKDomainMapper)result;
+        }
+        public bool RemoveDomainMapper(SKDomainMapper domainMapper) => _domainMappers.Remove(domainMapper.Domain.Id);
 
         public IEnumerable<SKNumberMapper> AllNumberMappers(bool reverse = false)
         {
@@ -353,7 +367,7 @@ namespace Numbers.Mappers
         }
         private SKSegment NextDefaultLine()
         {
-	        var result = GetHorizontalSegment(defaultLineT, (int)(Width * .9f));
+	        var result = GetHorizontalSegment(defaultLineT, (int)(Width * .05f));
 	        defaultLineT += 0.1f;
 	        return result;
         }
@@ -408,20 +422,6 @@ namespace Numbers.Mappers
         {
             _textMappers.Remove(textMapper.Id);
         }
-        public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
-        {
-	        if (!_domainMappers.TryGetValue(domain.Id, out var result))
-	        {
-		        line = line ?? NextDefaultLine();
-                var half_mmr = (float)(1.0 / domain.MinMaxRange.AbsLength());
-		        var uSeg = unitLine ?? line.SegmentAlongLine(0.5f, 0.5f + half_mmr);
-		        result = new SKDomainMapper(Agent, domain, line, uSeg);
-		        _domainMappers[domain.Id] = result;
-	        }
-	        return (SKDomainMapper)result;
-        }
-
-        public bool RemoveDomainMapper(SKDomainMapper domainMapper) => _domainMappers.Remove(domainMapper.Domain.Id);
 
         public void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)
         {
