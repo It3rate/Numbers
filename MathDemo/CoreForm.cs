@@ -79,7 +79,7 @@ namespace MathDemo
 
         private void OnPreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if(e.KeyData == Keys.Right || e.KeyData == Keys.Left) // todo: can't figure out why arrow keys aren't passed, passing manually for now but may lead to double invoke.
+            if(e.KeyData == Keys.Right || e.KeyData == Keys.Left || e.KeyData == Keys.Down || e.KeyData == Keys.Up) // todo: can't figure out why arrow keys aren't passed, passing manually for now but may lead to double invoke.
             {
                 var ea = new KeyEventArgs(e.KeyData);
                 if (_mouseAgent.KeyDown(ea)) { NeedsUpdate(); }

@@ -617,6 +617,7 @@ namespace Numbers.Agent
                     WorkspaceMapper.ShowFractions = !WorkspaceMapper.ShowFractions;
                     break;
                 case Keys.F5:
+                case Keys.Down:
                     Demos.Reload(this);
                     break;
                 case Keys.I:

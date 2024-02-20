@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace Numbers
 {
-	public interface IDemos
+    public delegate SKWorkspaceMapper PageCreator();
+    public interface IDemos
     {
+        List<PageCreator> Pages { get; }
         SKWorkspaceMapper NextTest(MouseAgent agent);
         SKWorkspaceMapper PreviousTest(MouseAgent agent);
         SKWorkspaceMapper Reload(MouseAgent agent);

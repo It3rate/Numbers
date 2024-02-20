@@ -17,10 +17,30 @@
     public class Slides : DemoBase
     {
         private Brain Brain { get; }
+        Random rnd = new Random();
         public Slides(Brain brain)
         {
-            Brain = brain; 
-            _tests.AddRange( new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 });
+            Brain = brain;
+            Pages.AddRange(new PageCreator[]
+            {
+                RandomVsOrder,
+                RandomVsOrderB,
+                Page1,
+                Page2,
+                Page3,
+                Page4,
+                Page5,
+                Page6,
+                Page7,
+                Page8,
+                Page9,
+                Page10,
+                Page11,
+                Page12,
+                Page13,
+                Page14,
+                Page15,
+            });
         }
         private SKWorkspaceMapper RandomVsOrder()
         {
@@ -28,22 +48,9 @@
 
             string[] txt = new string[] {
              "All things are random, ordered or a combination.",
-            "Many things have order we can't distinguish: unseen patterns, or differences to small or large to measure.",
-            "Random is simple, ordered is math. Distinguishing is precision."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var rnd = new Random();
-
-            var paint = CorePens.GetPen(SKColors.Red, 12);
-            for (int i = 0; i < 1; i++)
-            {
-                var path = wm.CreatePathMapper();
-                path.Pen = paint;
-                var x = 900;
-                var y = 450;
-                path.SetOval(new SKPoint(x, y), new SKPoint(x + 60, y + 60));
-            }
             var w = 20;
             for (int i = 0; i < 40; i++)
             {
@@ -54,28 +61,26 @@
                 path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
             }
 
-                //var hDomain = CreateLowResDomain(8, 0);
-                //hDomain.OffsetNumbers = true;
+            return wm;
+        }
+        private SKWorkspaceMapper RandomVsOrderB()
+        {
+            var wm = RandomVsOrder();
+            wm.AppendText(
+            "Many things have order we can't distinguish: unseen patterns, or differences to small or large to measure.",
+            "Random is simple, ordered is math. Distinguishing is precision."
+            );
 
-                //var hNum = hDomain.CreateNumberFromFloats(0, -1);
-                //hNum.Number.Polarity = Polarity.Inverted;
-
-                //var vNum = hDomain.CreateNumberFromFloats(0, 1.25f);
-
-                //Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, TransformKind.Multiply);
-                //var tm = wm.GetOrCreateTransformMapper(transform, false);
-                //tm.Guideline = wm.TopSegment;
-                //hDomain.Domain.AddNumber(transform.Result);
-
-                //for (int i = 0; i < 15; i++)
-                //{
-                //    transform = Brain.AddTransform(hNum.Number, transform.Result, TransformKind.Multiply);
-                //    tm = wm.GetOrCreateTransformMapper(transform, false);
-                //    tm.Guideline = wm.TopSegment;
-                //    hDomain.Domain.AddNumber(transform.Result);
-                //}
-                //wm.Workspace.AddDomains(true, hDomain.Domain);
-                return wm;
+            var paint = CorePens.GetPen(SKColors.Red, 12);
+            for (int i = 0; i < 1; i++)
+            {
+                var path = wm.CreatePathMapper();
+                path.Pen = paint;
+                var x = 900;
+                var y = 450;
+                path.SetOval(new SKPoint(x, y), new SKPoint(x + 60, y + 60));
+            }
+            return wm;
         }
         private SKWorkspaceMapper Page1()
         {
@@ -264,81 +269,6 @@
             return wm;
         }
 
-        #region Page Controller
-        protected override SKWorkspaceMapper GetPage(int index)
-        {
-            SKWorkspaceMapper wm;
-            switch (index)
-            {
-                case 0:
-                    wm = RandomVsOrder();
-                    break;
-                case 1:
-                    wm = Page1();
-                    break;
-                case 2:
-                    wm = Page2();
-                    break;
-                case 3:
-                    wm = Page3();
-                    break;
-                case 4:
-                    wm = Page4();
-                    break;
-                case 5:
-                    wm = Page5();
-                    break;
-                case 6:
-                    wm = Page6();
-                    break;
-                case 7:
-                    wm = Page7();
-                    break;
-                case 8:
-                    wm = Page8();
-                    break;
-                case 9:
-                    wm = Page9();
-                    break;
-                case 10:
-                    wm = Page10();
-                    break;
-                case 11:
-                    wm = Page11();
-                    break;
-                case 12:
-                    wm = Page12();
-                    break;
-                case 13:
-                    wm = Page13();
-                    break;
-                case 14:
-                    wm = Page14();
-                    break;
-                case 15:
-                    wm = Page15();
-                    break;
-                //case 16:
-                //    wm = Page16();
-                //    break;
-                //case 17:
-                //    wm = Page17();
-                //    break;
-                //case 18:
-                //    wm = Page18();
-                //    break;
-                //case 19:
-                //    wm = Page19();
-                //    break;
-                default:
-                    _testIndex = 0;
-                    wm = RandomVsOrder();
-                    break;
-            }
-            return wm;
-        }
-
-        #endregion
         #region Utils
         private SKDomainMapper CreateLowResDomain(int rangeSize, float offset, params Focal[] focals)
         {

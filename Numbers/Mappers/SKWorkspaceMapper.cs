@@ -43,6 +43,15 @@ namespace Numbers.Mappers
                 yield return pm;
             }
         }
+        public void AppendText(params string[] lines)
+        {
+            LastTextMapper()?.TextElement.Lines.AddRange(lines);
+        }
+        public SKTextMapper LastTextMapper() => TextMapperAt(_textMappers.Count - 1);
+        public SKTextMapper TextMapperAt(int index)
+        {
+            return (index >= 0 && index < _textMappers.Count) ? _textMappers.Values.ElementAtOrDefault(index) : null;
+        }
         public IEnumerable<SKTextMapper> TextMappers()
         {
             foreach (var tm in _textMappers.Values)

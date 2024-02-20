@@ -23,31 +23,14 @@ namespace MathDemo
         public Demos(Brain brain)
         {
 	        Brain = brain;
-            _tests.AddRange(new int[] { 0, 1, 2, 3, 4 });
-        }
-
-        protected override SKWorkspaceMapper GetPage(int index)
-        {
-            SKWorkspaceMapper wm;
-            switch (index)
+            Pages.AddRange(new PageCreator[]
             {
-                case 0:
-                    wm = test2DMult();
-                break;
-                case 1:
-                    wm = testOneLine();
-                break;
-                case 2:
-                    wm = test2();
-                break;
-                case 3:
-                    wm = test3();
-                break;
-                default:
-                    wm = testMult();
-                break;
-            }
-            return wm;
+                test2DMult,
+                testOneLine,
+                test2,
+                test3,
+                testMult,
+            });
         }
 
         private SKWorkspaceMapper test2DMult()

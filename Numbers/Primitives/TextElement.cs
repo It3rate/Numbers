@@ -15,12 +15,12 @@
         public int Id { get; }
         public int CreationIndex => Id - (int)Kind;
 
-        public string[] Lines { get; set; }
+        public List<string> Lines { get; set; } = new List<string>();
         // font, color etc
         public TextElement(params string[] lines)
         {
             Id = _idCounter++;
-            Lines = lines;
+            Lines.AddRange(lines);
         }
     }
 }

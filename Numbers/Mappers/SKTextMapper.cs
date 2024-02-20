@@ -14,7 +14,7 @@
     public class SKTextMapper : SKMapper
     {
         public TextElement TextElement => (TextElement)MathElement;
-        public string[] Lines { get => TextElement.Lines; set => TextElement.Lines = value; }
+        public List<string> Lines { get => TextElement.Lines; set => TextElement.Lines = value; }
 
         public SKTextMapper(MouseAgent agent, string[] lines, SKSegment guideline) : base(agent, new TextElement(lines), guideline)
         {
