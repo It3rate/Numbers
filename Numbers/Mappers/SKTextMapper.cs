@@ -14,9 +14,9 @@
     public class SKTextMapper : SKMapper
     {
         public TextElement TextElement => (TextElement)MathElement;
-        public string Text { get => TextElement.Text; set => TextElement.Text = value; }
+        public string[] Lines { get => TextElement.Lines; set => TextElement.Lines = value; }
 
-        public SKTextMapper(MouseAgent agent, string text, SKSegment guideline) : base(agent, new TextElement(text), guideline)
+        public SKTextMapper(MouseAgent agent, string[] lines, SKSegment guideline) : base(agent, new TextElement(lines), guideline)
         {
         }
 
@@ -26,7 +26,12 @@
         }
         public void Draw()
         {
-            Renderer.DrawTextAt(Guideline.StartPoint, Text, Pens.TextBrush);
+            var sp = Guideline.StartPoint;
+            foreach (var line in Lines)
+            {
+                Renderer.DrawTextAt(sp, line, Pens.TextBrush);
+                sp.Y += 30;
+            }
         }
     }
 }

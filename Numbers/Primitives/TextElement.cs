@@ -15,12 +15,12 @@
         public int Id { get; }
         public int CreationIndex => Id - (int)Kind;
 
-        public string Text { get; set; }
+        public string[] Lines { get; set; }
         // font, color etc
-        public TextElement(string text)
+        public TextElement(params string[] lines)
         {
             Id = _idCounter++;
-            Text = text;
+            Lines = lines;
         }
     }
 }

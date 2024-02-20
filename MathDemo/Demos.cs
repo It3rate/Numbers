@@ -95,7 +95,44 @@ namespace MathDemo
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
 
-            wm.CreateTextMapper("Transforms", new SKSegment(50, 50, 100, 50));
+            string[] txt = new string[] {
+             "All things are random, ordered or a combination.",
+            "Many things have order we can't distinguish, unseen patterns, or differences to small or large to measure.",
+            "Random is simple, ordered is math. Distinguishing is precision."
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var hDomain = CreateLowResDomain(8, 0);
+            hDomain.OffsetNumbers = true;
+
+            var hNum = hDomain.CreateNumberFromFloats(0, -1);
+            hNum.Number.Polarity = Polarity.Inverted;
+
+            var vNum = hDomain.CreateNumberFromFloats(0, 1.25f);
+
+            Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, TransformKind.Multiply);
+            wm.GetOrCreateTransformMapper(transform, false);
+            hDomain.Domain.AddNumber(transform.Result);
+
+            for (int i = 0; i < 15; i++)
+            {
+                transform = Brain.AddTransform(hNum.Number, transform.Result, TransformKind.Multiply);
+                wm.GetOrCreateTransformMapper(transform, false);
+                hDomain.Domain.AddNumber(transform.Result);
+            }
+            wm.Workspace.AddDomains(true, hDomain.Domain);
+            return wm;
+        }
+        private SKWorkspaceMapper testMultX()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+
+            string[] txt = new string[] {
+             "All things are random, ordered or a combination.",
+            "Many things have order we can't distinguish, unseen patterns, or differences to small or large to measure.",
+            "Random is simple, ordered is math. Distinguishing is precision."
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
             var hDomain = CreateLowResDomain(4, 0);// Domain.CreateDomain("test0", unitSize, 16);
             var vDomain = CreateLowResDomain(4, .1f);// Domain.CreateDomain("test0", unitSize, 16);
@@ -104,12 +141,6 @@ namespace MathDemo
 
             vDomain.BasisNumber.Focal = hDomain.BasisNumber.Focal;
             mDomain.BasisNumber.Focal = hDomain.BasisNumber.Focal;
-
-            //var hNum2 = hDomain.CreateNumberFromFloats(1.75f, -3);
-            //hNum2.Number.Polarity = Alignment.Inverted;
-            //var vNum = vDomain.CreateNumberFromFloats(1.75f, -3);
-            //vDomain.FlipPerspective();
-
             var hNum = hDomain.CreateNumberFromFloats(0, -1);
             hNum.Number.Polarity = Polarity.Inverted;
 
@@ -121,30 +152,6 @@ namespace MathDemo
             var mNum = mDomain.Domain.AddNumber(transform.Result);
 
             wm.Workspace.AddDomains(true, hDomain.Domain, vDomain.Domain, mDomain.Domain);
-            //var speed = 0f;
-            //var scale = 1f/1900f;
-            //var l = 0f;
-            //var r = 1f;
-            //for (int i = 0; i < unitSize; i++)
-            //{
-            //    var len = (float)Math.Sqrt(l * l + r * r);
-
-            //    var rr = Math.Abs(r) / Math.Abs(r - l);
-            //    var lr = Math.Abs(l) / Math.Abs(r - l);
-            //    //var lr = ratio <= 0 ? Math.Abs(ratio) : (1f - ratio);
-            //    //var rr = ratio <= 0 ? Math.Abs(ratio + 1f) : (ratio);
-            //    var dl = len * lr;
-            //    var dr = len * rr;
-            //    speed += (dr - dl);
-
-            //    //Trace.WriteLine(speed);
-            //    r -= speed * scale;
-            //    l -= speed * scale;
-            //    //speed += (float)Math.Sqrt(r * r) * scale;// (dr - dl);
-            //    //r -= 0.01f;//speed * scale;// len * scale;// 
-            //    //l -= 0.01f;//speed * scale;// len * scale;//
-            //}
-
             return wm;
         }
 

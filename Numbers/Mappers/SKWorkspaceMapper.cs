@@ -384,9 +384,9 @@ namespace Numbers.Mappers
         {
             _pathMappers.Remove(pathMapper.Id);
         }
-        public SKTextMapper CreateTextMapper(string text, SKSegment line = null)
+        public SKTextMapper CreateTextMapper(string[] lines, SKSegment line = null)
         {
-            var textMapper = new SKTextMapper(Agent, text, line);
+            var textMapper = new SKTextMapper(Agent, lines, line);
             _textMappers.Add(textMapper.Id, textMapper);
             return textMapper;
         }
@@ -428,12 +428,13 @@ namespace Numbers.Mappers
         {
 	        return GetOrCreateTransformMapper(Brain.TransformStore[id]);
         }
-        public SKTransformMapper GetOrCreateTransformMapper(Transform transform)
+        public SKTransformMapper GetOrCreateTransformMapper(Transform transform, bool doRender = true)
         {
 	        if (!_transformMappers.TryGetValue(transform.Id, out var result))
 	        {
 		        result = new SKTransformMapper(Agent, transform);
 		        _transformMappers[transform.Id] = result;
+                result.DoRender = doRender;
 	        }
 	        return (SKTransformMapper)result;
         }
