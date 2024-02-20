@@ -23,9 +23,10 @@
             Brain = brain;
             Pages.AddRange(new PageCreator[]
             {
-                RandomVsOrder,
-                RandomVsOrderB,
-                Page1,
+                RandomVsOrder_A,
+                RandomVsOrder_B,
+                GradientLine_A,
+                GradientLine_B,
                 Page2,
                 Page3,
                 Page4,
@@ -42,7 +43,7 @@
                 Page15,
             });
         }
-        private SKWorkspaceMapper RandomVsOrder()
+        private SKWorkspaceMapper RandomVsOrder_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
 
@@ -63,9 +64,9 @@
 
             return wm;
         }
-        private SKWorkspaceMapper RandomVsOrderB()
+        private SKWorkspaceMapper RandomVsOrder_B()
         {
-            var wm = RandomVsOrder();
+            var wm = RandomVsOrder_A();
             wm.AppendText(
             "Many things have order we can't distinguish: unseen patterns, or differences to small or large to measure.",
             "Random is simple, ordered is math. Distinguishing is precision."
@@ -82,18 +83,25 @@
             }
             return wm;
         }
-        private SKWorkspaceMapper Page1()
+        private SKWorkspaceMapper GradientLine_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"Order can be represented by a gradient line - this is a proxy. ",
-"Temperature, brightness, path home, points on a star. These are traits.",
+                "Order can be represented by a gradient line - this is a proxy. ",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+            return wm;
+        }
+        private SKWorkspaceMapper GradientLine_B()
+        {
+            var wm = GradientLine_A();
+            wm.AppendText(
+                "Temperature, brightness, path home, points on a star. These are traits."
+               );
             var w = 80;
             var hue = 100;
             var x = 100;
-                var y = 200;
+            var y = 200;
             var pts = 3;
             var count = 10;
             for (int i = 0; i < count; i++)
