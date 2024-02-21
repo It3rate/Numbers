@@ -42,7 +42,7 @@ namespace Numbers.Mappers
         public bool ShowPolarity = true;
         public bool ShowBasisMarkers;
 	    public bool ShowMaxMinValues;
-	    public bool ShowFractions => WorkspaceMapper.ShowFractions;
+	    public bool ShowFractions = true;
         private int _numberOrderCounter = 0;
 
         public SKDomainMapper(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
@@ -380,10 +380,11 @@ namespace Numbers.Mappers
                     Renderer.DrawTextOnPath(txBaseline, "i", Pens.UnotMarkerText, Pens.TextBackgroundPen);
                 }
             }
-            else if (ShowFractions)
+            else 
 		    {
-			    var parts = GetFractionText(num, useStart);
-                Renderer.DrawFraction(parts, txBaseline, numPaint, Pens.TextBackgroundPen);
+			    var (whole, frac) = GetFractionText(num, useStart);
+                frac = ShowFractions ? frac : "";
+                Renderer.DrawFraction((whole, frac), txBaseline, numPaint, Pens.TextBackgroundPen);
             }
         }
         private SKSegment DrawMarkerAndGetTextBaseline(Number num, float t)

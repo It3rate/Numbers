@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using System.Windows.Forms;
     using Numbers;
     using Numbers.Agent;
     using Numbers.Drawing;
@@ -13,6 +14,7 @@
     using Numbers.Renderer;
     using NumbersCore.Primitives;
     using SkiaSharp;
+    using static System.Net.Mime.MediaTypeNames;
 
     public class Slides : DemoBase
     {
@@ -21,7 +23,7 @@
         public Slides(Brain brain)
         {
             Brain = brain;
-            _testIndex = 8;
+            _testIndex = 9;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -184,11 +186,8 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 5)).ShowAll();
-            var hd1 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 5)).ShowAll();
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 3)).ShowAll();
             var nm0 = hd0.CreateNumberFromFloats(0, 2f);
-            //hd1.CreateNumberFromFloats(2f, -4f);
-            hd1.CreateNumber(nm0.Number.Focal);
             return wm;
         }
         private SKWorkspaceMapper ComparisonsBasis_B()
@@ -197,7 +196,24 @@
             wm.AppendText(
                 "Switching basis is the reciprocal, shorter, to the right of, half as long.",
                 "Basis denotes zero, one, and dominant (positive) direction."
-               );
+            );
+
+            wm.OffsetNextLine(.3f);
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("TempF", 5, 2, 100, -32 * 5)).ShowAll();
+            var hd1 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("TempC", 9, 19, 38, 0)).ShowAll();
+            var nm0 = hd0.CreateNumberFromFloats(0, 10f);
+            hd0.ShowPolarity = false;
+            hd0.ShowFractions = false;
+            hd0.ShowMinorTicks = false;
+
+            hd1.ShowPolarity = false;
+            hd1.ShowFractions = false;
+            hd1.ShowMinorTicks = false;
+            //hd1.CreateNumberFromFloats(2f, -4f);
+            hd1.CreateNumber(nm0.Number.Focal);
+
+            var tf = wm.CreateTextMapper(new string[] { "Fahrenheit" }, new SKSegment(hd0.Guideline.StartPoint + new SKPoint(0, -30), hd0.Guideline.EndPoint));
+            var tc = wm.CreateTextMapper(new string[] { "Celsius" }, new SKSegment(hd1.Guideline.StartPoint + new SKPoint(0, 30), hd1.Guideline.EndPoint));
 
             return wm;
         }

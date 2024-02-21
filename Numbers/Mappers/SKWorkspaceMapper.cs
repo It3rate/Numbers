@@ -104,7 +104,20 @@ namespace Numbers.Mappers
 
 	    private static float defaultLineT = 0.1f;
         public const float SnapDistance = 5.0f;
-        public bool ShowFractions { get; set; } = true;
+
+        private bool _showFractions = true;
+        public bool ShowFractions
+        {
+            get => _showFractions;
+            set
+            {
+                _showFractions = value;
+                foreach(var dm in DomainMappers())
+                {
+                    dm.ShowFractions = _showFractions;
+                }
+            }
+        }
 
         public SKWorkspaceMapper(MouseAgent agent, float left, float top, float width, float height) : base(agent, agent.Workspace)
         {
@@ -334,8 +347,10 @@ namespace Numbers.Mappers
 	        {
                 Workspace.AddDomains(true, domain);
 		        line = line ?? NextDefaultLine();
-                var half_mmr = (float)(1.0 / domain.MinMaxRange.AbsLength());
-		        var uSeg = unitLine ?? line.SegmentAlongLine(0.5f, 0.5f + half_mmr);
+                var len = (float)domain.MinMaxFocal.AbsLengthInTicks;
+                var tickSize = 1.0f / len;
+                var zeroPt = (domain.BasisFocal.StartPosition - domain.MinMaxFocal.StartPosition) / len;
+		        var uSeg = unitLine ?? line.SegmentAlongLine(zeroPt, zeroPt + (tickSize * domain.BasisFocal.LengthInTicks));
 		        result = new SKDomainMapper(Agent, domain, line, uSeg);
 		        _domainMappers[domain.Id] = result;
             }
@@ -369,6 +384,11 @@ namespace Numbers.Mappers
 	        var offset = Width * t;
 	        var result = LeftSegment + new SKPoint(offset, 0);
 	        return result.InsetSegment(margins);
+        }
+
+        public void OffsetNextLine(float offsetPercent)
+        {
+            defaultLineT += offsetPercent;
         }
         private SKSegment NextDefaultLine()
         {
