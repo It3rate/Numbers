@@ -65,7 +65,7 @@ namespace MathDemo
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
             var hDomain = CreateLowResDomain(8, 0);
-            hDomain.OffsetNumbers = true;
+            hDomain.ShowNumbersOffset = true;
 
             var hNum = hDomain.CreateNumberFromFloats(0, -1);
             hNum.Number.Polarity = Polarity.Inverted;
@@ -101,7 +101,7 @@ namespace MathDemo
             var hDomain = CreateLowResDomain(4, 0);// Domain.CreateDomain("test0", unitSize, 16);
             var vDomain = CreateLowResDomain(4, .1f);// Domain.CreateDomain("test0", unitSize, 16);
             var mDomain = CreateLowResDomain(4, .3f);
-            mDomain.OffsetNumbers = true;
+            mDomain.ShowNumbersOffset = true;
 
             vDomain.BasisNumber.Focal = hDomain.BasisNumber.Focal;
             mDomain.BasisNumber.Focal = hDomain.BasisNumber.Focal;
@@ -186,7 +186,7 @@ namespace MathDemo
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 20, 20, 800, 800);
             var dm = wm.GetOrCreateDomainMapper(domain, wm.GetHorizontalSegment(.3f, 100));
             dm.ShowGradientNumberLine = true;
-            dm.OffsetNumbers = true;
+            dm.ShowNumbersOffset = true;
             dm.ShowBasisMarkers = true;
             dm.ShowBasis = true;
             wm.EnsureRenderers();
@@ -258,7 +258,7 @@ namespace MathDemo
 		        //var unitSeg = new SKSegment((float)unitStart, y, (float)unitStart + 20f, y);
                 var dm = wm.GetOrCreateDomainMapper(domain, displaySeg, unitSeg);
 		        dm.ShowGradientNumberLine = true;
-		        dm.OffsetNumbers = true;
+		        dm.ShowNumbersOffset = true;
 		        dm.ShowBasisMarkers = true;
 		        dm.ShowBasis = true;
 		        yt += ytStep;

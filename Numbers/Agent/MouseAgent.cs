@@ -843,7 +843,7 @@ namespace Numbers.Agent
         {
             if (ActiveDomainMapper != null)
             {
-                ActiveDomainMapper.OffsetNumbers = !ActiveDomainMapper.OffsetNumbers;
+                ActiveDomainMapper.ShowNumbersOffset = !ActiveDomainMapper.ShowNumbersOffset;
             }
         }
         private void StartPan()

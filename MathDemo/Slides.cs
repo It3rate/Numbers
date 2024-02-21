@@ -52,8 +52,9 @@
         private SKWorkspaceMapper RandomVsOrder_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
-
+            wm.ShowNone();
             string[] txt = new string[] {
+             "Derive math from first principles.",
              "All things are random, ordered or a combination.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
@@ -79,23 +80,31 @@
             );
 
             var paint = CorePens.GetPen(SKColors.Red, 12);
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 5; i++)
             {
                 var path = wm.CreatePathMapper();
                 path.Pen = paint;
                 var x = 900;
                 var y = 450;
-                path.SetOval(new SKPoint(x, y), new SKPoint(x + 60, y + 60));
+                path.SetOval(new SKPoint(x, y), new SKPoint(x + 60 + (float)rnd.NextDouble(), y + 60 + (float)rnd.NextDouble()));
             }
             return wm;
         }
         private SKWorkspaceMapper GradientLine_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            wm.ShowNone();
             string[] txt = new string[] {
                 "Order can be represented by a gradient line - this is a proxy. ",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+            var path = wm.CreatePathMapper();
+            var paint = CorePens.GetPen(SKColors.Teal, 40);
+            path.Pen = paint;
+            var x = 200;
+            var y = 200;
+            var d = 200;
+            path.SetOval(new SKPoint(x, y), new SKPoint(x + d, y + d));
             return wm;
         }
         private SKWorkspaceMapper GradientLine_B()
@@ -107,7 +116,7 @@
             var w = 80;
             var hue = 100;
             var x = 100;
-            var y = 200;
+            var y = 500;
             var pts = 3;
             var count = 10;
             for (int i = 0; i < count; i++)
@@ -123,6 +132,8 @@
         private SKWorkspaceMapper ValidMath_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            wm.ShowNone();
+            wm.DefaultShowTicks = true;
             string[] txt = new string[] {
                 "Everything that can happen on these gradient lines is valid math.",
                 "Every non random operation is encodable, and predictable to its level of precision.",
@@ -131,9 +142,7 @@
 
             var guideline = new SKSegment(100, 200, 1100, 200);
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("validMath", 10, 10), guideline);
-            hd.ShowTicks = true;
-            hd.ShowPolarity = false;
-            hd.CreateNumber(new Focal(20, 90));
+            hd.CreateNumber(new Focal(0, 50));
 
             return wm;
         }
@@ -154,6 +163,10 @@
         private SKWorkspaceMapper Selection_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            wm.ShowAll();
+            wm.DefaultShowPolarity = false;
+            wm.DefaultShowFractions = false;
+            wm.DefaultShowMinorTicks = false;
             string[] txt = new string[] {
             "You can select any section of a line.",
             "Selections can have one of two directions, the increasing direction or the decreasing direction. "
@@ -167,6 +180,7 @@
         private SKWorkspaceMapper Selection_B()
         {
             var wm = Selection_A();
+            wm.ShowAll();
             wm.AppendText(
             "These gradient lines also have two directions, positive red or positive blue. This is the polarity.",
             "You can make multiple selections on a gradient line, and they can have different polarities."
@@ -180,13 +194,15 @@
         private SKWorkspaceMapper ComparisonsBasis_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 250, 1000, 400);
+            wm.ShowAll();
+            wm.DefaultShowPolarity = false;
             string[] txt = new string[] {
             "With multiple selections, you can compare lengths. The first is the basis of the comparison.",
             "You can say things like longer, to the left of, twice as long, overlapping."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 3)).ShowAll();
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 3));
             var nm0 = hd0.CreateNumberFromFloats(0, 2f);
             return wm;
         }
@@ -198,22 +214,19 @@
                 "Basis denotes zero, one, and dominant (positive) direction."
             );
 
+            wm.ShowAll();
+            wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowPolarity = false;
+            wm.DefaultShowFractions = false;
             wm.OffsetNextLine(.3f);
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("TempF", 5, 2, 100, -32 * 5)).ShowAll();
-            var hd1 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("TempC", 9, 19, 38, 0)).ShowAll();
-            var nm0 = hd0.CreateNumberFromFloats(0, 10f);
-            hd0.ShowPolarity = false;
-            hd0.ShowFractions = false;
-            hd0.ShowMinorTicks = false;
-
-            hd1.ShowPolarity = false;
-            hd1.ShowFractions = false;
-            hd1.ShowMinorTicks = false;
+            var dmC = wm.GetOrCreateDomainMapper(Domain.CreateDomain("TempC", 9, 22, 38, 0));
+            var dmF = wm.GetOrCreateDomainMapper(Domain.CreateDomain("TempF", 5, 8, 100, -32 * 5));
+            var nm0 = dmF.CreateNumberFromFloats(35f, 8f);
             //hd1.CreateNumberFromFloats(2f, -4f);
-            hd1.CreateNumber(nm0.Number.Focal);
+            dmC.CreateNumber(nm0.Number.Focal);
 
-            var tf = wm.CreateTextMapper(new string[] { "Fahrenheit" }, new SKSegment(hd0.Guideline.StartPoint + new SKPoint(0, -30), hd0.Guideline.EndPoint));
-            var tc = wm.CreateTextMapper(new string[] { "Celsius" }, new SKSegment(hd1.Guideline.StartPoint + new SKPoint(0, 30), hd1.Guideline.EndPoint));
+            var tf = wm.CreateTextMapper(new string[] { "Celsius" }, new SKSegment(dmC.Guideline.StartPoint + new SKPoint(0, -32), dmF.Guideline.EndPoint));
+            var tc = wm.CreateTextMapper(new string[] { "Fahrenheit" }, new SKSegment(dmF.Guideline.StartPoint + new SKPoint(0, 30), dmC.Guideline.EndPoint));
 
             return wm;
         }
@@ -221,6 +234,7 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
+"On a gradient, all motion must be linear. ",
 "You can add, subtract, select by starting with 'smallest imaginable' and growing. ",
 "This stretches the tiny selection, addition.",
 "If you don't do it 'zero wards', it stretches the start point off zero.",
@@ -410,7 +424,7 @@
                 //var unitSeg = new SKSegment((float)unitStart, y, (float)unitStart + 20f, y);
                 var dm = wm.GetOrCreateDomainMapper(domain, displaySeg, unitSeg);
                 dm.ShowGradientNumberLine = true;
-                dm.OffsetNumbers = true;
+                dm.ShowNumbersOffset = true;
                 dm.ShowBasisMarkers = true;
                 dm.ShowBasis = true;
                 yt += ytStep;

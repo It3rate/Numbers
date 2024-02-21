@@ -105,20 +105,6 @@ namespace Numbers.Mappers
 	    private static float defaultLineT = 0.1f;
         public const float SnapDistance = 5.0f;
 
-        private bool _showFractions = true;
-        public bool ShowFractions
-        {
-            get => _showFractions;
-            set
-            {
-                _showFractions = value;
-                foreach(var dm in DomainMappers())
-                {
-                    dm.ShowFractions = _showFractions;
-                }
-            }
-        }
-
         public SKWorkspaceMapper(MouseAgent agent, float left, float top, float width, float height) : base(agent, agent.Workspace)
         {
             //Id = idCounter++;
@@ -126,26 +112,42 @@ namespace Numbers.Mappers
             Reset(new SKPoint(left, top), new SKPoint(left + width, top + height));
 	    }
 
+        #region Domains
+
+        public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
+        {
+            if (!_domainMappers.TryGetValue(domain.Id, out var result))
+            {
+                Workspace.AddDomains(true, domain);
+                line = line ?? NextDefaultLine();
+                var len = (float)domain.MinMaxFocal.AbsLengthInTicks;
+                var tickSize = 1.0f / len;
+                var zeroPt = (domain.BasisFocal.StartPosition - domain.MinMaxFocal.StartPosition) / len;
+                var uSeg = unitLine ?? line.SegmentAlongLine(zeroPt, zeroPt + (tickSize * domain.BasisFocal.LengthInTicks));
+                result = new SKDomainMapper(Agent, domain, line, uSeg);
+                SetDomainToDefaults(result);
+                _domainMappers[domain.Id] = result;
+            }
+            return (SKDomainMapper)result;
+        }
         public SKDomainMapper AddDomain(Domain domain, float offset, bool isHorizontal = true, int margins = 50)
         {
             Agent.Workspace.AddDomains(true, domain);
             var seg = isHorizontal ? GetHorizontalSegment(offset, margins) : GetVerticalSegment(offset, margins);
             var dm = GetOrCreateDomainMapper(domain, seg);
-            dm.ShowGradientNumberLine = false;
-            dm.ShowValueMarkers = true;
-            dm.ShowBasisMarkers = false;
-            dm.ShowBasis = false;
+            SetDomainToDefaults(dm);
             return dm;
         }
         public SKDomainMapper AddDomain(Domain domain, SKSegment seg)
         {
             Agent.Workspace.AddDomains(true, domain);
             var dm = GetOrCreateDomainMapper(domain, seg);
-            dm.ShowGradientNumberLine = false;
-            dm.ShowValueMarkers = true;
-            dm.ShowBasisMarkers = false;
-            dm.ShowBasis = false;
+            SetDomainToDefaults(dm);
             return dm;
+        }
+        private void SetDomainToDefaults()
+        {
+
         }
         public SKDomainMapper AddHorizontal(Domain domain, int margins = 50)
         {
@@ -155,7 +157,109 @@ namespace Numbers.Mappers
         {
             return AddDomain(domain, 0.5f, false, margins);
         }
+        public IEnumerable<SKDomainMapper> GetDomainMappers(bool reverse = false)
+        {
+            var vals = reverse ? _domainMappers.Values.Reverse() : _domainMappers.Values;
+            foreach (var mapper in vals)
+            {
+                if (mapper is SKDomainMapper dm)
+                {
+                    yield return dm;
+                }
+            }
+        }
+        public SKDomainMapper DomainMapperByIndex(int index)
+        {
+            SKDomainMapper result = null;
+            if (index < _domainMappers.Count)
+            {
+                foreach (var dm in _domainMappers.Values)
+                {
+                    if (--index < 0)
+                    {
+                        result = dm;
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+        public bool RemoveDomainMapper(SKDomainMapper domainMapper) => _domainMappers.Remove(domainMapper.Domain.Id);
+        #endregion
 
+        #region Numbers/Transforms
+        public IEnumerable<SKNumberMapper> AllNumberMappers(bool reverse = false)
+        {
+            //foreach (var tm in GetTransformMappers(reverse))
+            //{
+            //    yield return tm.Transform.Result;
+            //}
+            foreach (var dm in GetDomainMappers(reverse))
+            {
+                foreach (var nm in dm.GetNumberMappers(reverse))
+                {
+                    yield return nm;
+                }
+            }
+        }
+        public IEnumerable<SKTransformMapper> GetTransformMappers(bool reverse = false)
+        {
+            var vals = reverse ? _transformMappers.Values.Reverse() : _transformMappers.Values;
+            foreach (var mapper in vals)
+            {
+                if (mapper is SKTransformMapper tm)
+                {
+                    yield return tm;
+                }
+            }
+        }
+        public SKTransformMapper GetOrCreateTransformMapper(int id)
+        {
+            return GetOrCreateTransformMapper(Brain.TransformStore[id]);
+        }
+        public SKTransformMapper GetOrCreateTransformMapper(Transform transform, bool doRender = true)
+        {
+            if (!_transformMappers.TryGetValue(transform.Id, out var result))
+            {
+                result = new SKTransformMapper(Agent, transform);
+                _transformMappers[transform.Id] = result;
+                result.DoRender = doRender;
+            }
+            return (SKTransformMapper)result;
+        }
+
+        #endregion
+
+        #region Paths/Text
+        public SKPathMapper CreatePathMapper(SKSegment line = null)
+        {
+            var pathMapper = new SKPathMapper(Agent, line);
+            _pathMappers.Add(pathMapper.Id, pathMapper);
+            return pathMapper;
+        }
+        public void AddPathMapper(SKPathMapper pathMapper)
+        {
+            _pathMappers.Add(pathMapper.Id, pathMapper);
+        }
+        public void RemovePathMapper(SKPathMapper pathMapper)
+        {
+            _pathMappers.Remove(pathMapper.Id);
+        }
+        public SKTextMapper CreateTextMapper(string[] lines, SKSegment line = null)
+        {
+            var textMapper = new SKTextMapper(Agent, lines, line);
+            _textMappers.Add(textMapper.Id, textMapper);
+            return textMapper;
+        }
+        public void AddTextMapper(SKTextMapper textMapper)
+        {
+            _textMappers.Add(textMapper.Id, textMapper);
+        }
+        public void RemoveTextMapper(SKTextMapper textMapper)
+        {
+            _textMappers.Remove(textMapper.Id);
+        }
+        #endregion
 
         public Highlight GetSnapPoint(Highlight highlight, HighlightSet ignoreSet, SKPoint input, float maxDist = SnapDistance * 2f)
         {
@@ -252,7 +356,102 @@ namespace Numbers.Mappers
             Found:
             return highlight;
         }
+        public SKSegment GetHorizontalSegment(float t, int margins)
+        {
+	        var offset = Height * t;
+	        var result = TopSegment + new SKPoint(0, offset);
+	        return result.InsetSegment(margins);
+        }
+        public SKSegment GetVerticalSegment(float t, int margins)
+        {
+	        var offset = Width * t;
+	        var result = LeftSegment + new SKPoint(offset, 0);
+	        return result.InsetSegment(margins);
+        }
+        public void OffsetNextLine(float offsetPercent)
+        {
+            defaultLineT += offsetPercent;
+        }
+        private SKSegment NextDefaultLine()
+        {
+	        var result = GetHorizontalSegment(defaultLineT, (int)(Width * .05f));
+	        defaultLineT += 0.1f;
+	        return result;
+        }
+        public void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)
+        {
+            var nbRange = domainMapper.UnitRangeOnDomainLine;
+            foreach (var sibDomain in Workspace.ActiveSiblingDomains(domainMapper.Domain))
+            {
+                if (sibDomain.BasisFocal.Id == focal.Id)
+                {
+                    GetDomainMapper(sibDomain).UnitRangeOnDomainLine = nbRange;
+                }
+            }
+        }
 
+        #region Rendering
+
+        public bool ShowFractions
+        {
+            get => DefaultShowFractions;
+            set
+            {
+                DefaultShowFractions = value;
+                foreach (var dm in DomainMappers())
+                {
+                    dm.ShowFractions = DefaultShowFractions;
+                }
+            }
+        }
+        public bool DefaultShowInfoOnTop { get; set; } = true;
+        public bool DefaultShowGradientNumberLine { get; set; } = true;
+        public bool DefaultShowPolarity { get; set; } = true;
+        public bool DefaultShowBasis { get; set; } = true;
+        public bool DefaultShowBasisMarkers { get; set; } = true;
+        public bool DefaultShowTicks { get; set; } = true;
+        public bool DefaultShowMinorTicks { get; set; } = true;
+        public bool DefaultShowFractions { get; set; } = true;
+        public bool DefaultShowMaxMinValues { get; set; } = false;
+        public bool DefaultShowNumbersOffset { get; set; } = true;
+        public void ShowAll()
+        {
+            DefaultShowGradientNumberLine = true;
+            DefaultShowPolarity = true;
+            DefaultShowBasis = true;
+            DefaultShowBasisMarkers = true;
+            DefaultShowTicks = true;
+            DefaultShowMinorTicks = true;
+            DefaultShowFractions = true;
+            DefaultShowMaxMinValues = true;
+            DefaultShowNumbersOffset = true;
+        }
+        public void ShowNone()
+        {
+            DefaultShowGradientNumberLine = false;
+            DefaultShowPolarity = false;
+            DefaultShowBasis = false;
+            DefaultShowBasisMarkers = false;
+            DefaultShowTicks = false;
+            DefaultShowMinorTicks = false;
+            DefaultShowFractions = false;
+            DefaultShowMaxMinValues = false;
+            DefaultShowNumbersOffset = false;
+        }
+        private void SetDomainToDefaults(SKDomainMapper dm)
+        {
+            dm.ShowInfoOnTop = DefaultShowInfoOnTop;
+            dm.ShowGradientNumberLine = DefaultShowGradientNumberLine;
+            dm.ShowPolarity = DefaultShowPolarity;
+            dm.ShowBasis = DefaultShowBasis;
+            dm.ShowBasisMarkers = DefaultShowBasisMarkers;
+            dm.ShowTicks = DefaultShowTicks;
+            dm.ShowMinorTicks = DefaultShowMinorTicks;
+            dm.ShowFractions = DefaultShowFractions;
+            dm.ShowMaxMinValues = DefaultShowMaxMinValues;
+            dm.ShowNumbersOffset = DefaultShowNumbersOffset;
+        }
+        public bool Default { get; set; } = true;
         public void Draw()
         {
 	        EnsureRenderers();
@@ -302,101 +501,6 @@ namespace Numbers.Mappers
                 }
             }
         }
-
-        public IEnumerable<SKTransformMapper> GetTransformMappers(bool reverse = false)
-        {
-	        var vals = reverse ? _transformMappers.Values.Reverse() : _transformMappers.Values;
-	        foreach (var mapper in vals)
-	        {
-		        if (mapper is SKTransformMapper tm)
-		        {
-			        yield return tm;
-		        }
-	        }
-        }
-        public IEnumerable<SKDomainMapper> GetDomainMappers(bool reverse = false)
-        {
-	        var vals = reverse ? _domainMappers.Values.Reverse() : _domainMappers.Values;
-	        foreach (var mapper in vals)
-	        {
-		        if (mapper is SKDomainMapper dm)
-		        {
-			        yield return dm;
-		        }
-	        }
-        }
-        public SKDomainMapper DomainMapperByIndex(int index)
-        {
-	        SKDomainMapper result = null;
-	        if (index < _domainMappers.Count)
-	        {
-		        foreach (var dm in _domainMappers.Values)
-		        {
-			        if (--index < 0)
-			        {
-				        result = dm;
-				        break;
-			        }
-		        }
-	        }
-	        return result;
-        }
-        public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
-        {
-	        if (!_domainMappers.TryGetValue(domain.Id, out var result))
-	        {
-                Workspace.AddDomains(true, domain);
-		        line = line ?? NextDefaultLine();
-                var len = (float)domain.MinMaxFocal.AbsLengthInTicks;
-                var tickSize = 1.0f / len;
-                var zeroPt = (domain.BasisFocal.StartPosition - domain.MinMaxFocal.StartPosition) / len;
-		        var uSeg = unitLine ?? line.SegmentAlongLine(zeroPt, zeroPt + (tickSize * domain.BasisFocal.LengthInTicks));
-		        result = new SKDomainMapper(Agent, domain, line, uSeg);
-		        _domainMappers[domain.Id] = result;
-            }
-	        return (SKDomainMapper)result;
-        }
-        public bool RemoveDomainMapper(SKDomainMapper domainMapper) => _domainMappers.Remove(domainMapper.Domain.Id);
-
-        public IEnumerable<SKNumberMapper> AllNumberMappers(bool reverse = false)
-        {
-            //foreach (var tm in GetTransformMappers(reverse))
-            //{
-            //    yield return tm.Transform.Result;
-            //}
-            foreach (var dm in GetDomainMappers(reverse))
-	        {
-		        foreach (var nm in dm.GetNumberMappers(reverse))
-		        {
-			        yield return nm;
-		        }
-	        }
-        }
-
-        public SKSegment GetHorizontalSegment(float t, int margins)
-        {
-	        var offset = Height * t;
-	        var result = TopSegment + new SKPoint(0, offset);
-	        return result.InsetSegment(margins);
-        }
-        public SKSegment GetVerticalSegment(float t, int margins)
-        {
-	        var offset = Width * t;
-	        var result = LeftSegment + new SKPoint(offset, 0);
-	        return result.InsetSegment(margins);
-        }
-
-        public void OffsetNextLine(float offsetPercent)
-        {
-            defaultLineT += offsetPercent;
-        }
-        private SKSegment NextDefaultLine()
-        {
-	        var result = GetHorizontalSegment(defaultLineT, (int)(Width * .05f));
-	        defaultLineT += 0.1f;
-	        return result;
-        }
-
         public void EnsureRenderers()
         {
             foreach (var trait in Brain.TraitStore.Values)
@@ -418,61 +522,7 @@ namespace Numbers.Mappers
 		        }
 	        }
         }
-
-        public SKPathMapper CreatePathMapper(SKSegment line = null)
-        {
-            var pathMapper = new SKPathMapper(Agent, line);
-            _pathMappers.Add(pathMapper.Id, pathMapper);
-            return pathMapper;
-        }
-        public void AddPathMapper(SKPathMapper pathMapper)
-        {
-            _pathMappers.Add(pathMapper.Id, pathMapper);
-        }
-        public void RemovePathMapper(SKPathMapper pathMapper)
-        {
-            _pathMappers.Remove(pathMapper.Id);
-        }
-        public SKTextMapper CreateTextMapper(string[] lines, SKSegment line = null)
-        {
-            var textMapper = new SKTextMapper(Agent, lines, line);
-            _textMappers.Add(textMapper.Id, textMapper);
-            return textMapper;
-        }
-        public void AddTextMapper(SKTextMapper textMapper)
-        {
-            _textMappers.Add(textMapper.Id, textMapper);
-        }
-        public void RemoveTextMapper(SKTextMapper textMapper)
-        {
-            _textMappers.Remove(textMapper.Id);
-        }
-
-        public void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)
-        {
-            var nbRange = domainMapper.UnitRangeOnDomainLine;
-            foreach (var sibDomain in Workspace.ActiveSiblingDomains(domainMapper.Domain))
-            {
-                if (sibDomain.BasisFocal.Id == focal.Id)
-                {
-                    GetDomainMapper(sibDomain).UnitRangeOnDomainLine = nbRange;
-                }
-            }
-        }
-        public SKTransformMapper GetOrCreateTransformMapper(int id)
-        {
-	        return GetOrCreateTransformMapper(Brain.TransformStore[id]);
-        }
-        public SKTransformMapper GetOrCreateTransformMapper(Transform transform, bool doRender = true)
-        {
-	        if (!_transformMappers.TryGetValue(transform.Id, out var result))
-	        {
-		        result = new SKTransformMapper(Agent, transform);
-		        _transformMappers[transform.Id] = result;
-                result.DoRender = doRender;
-	        }
-	        return (SKTransformMapper)result;
-        }
+        #endregion
 
         public void ClearAll()
         {

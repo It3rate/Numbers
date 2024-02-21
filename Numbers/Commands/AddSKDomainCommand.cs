@@ -51,10 +51,6 @@ namespace Numbers.Commands
             {
                 DomainMapper.FlipRenderPerspective();
             }
-		    DomainMapper.ShowGradientNumberLine = true;
-		    DomainMapper.ShowBasis = true;
-		    DomainMapper.ShowBasisMarkers = true;
-            DomainMapper.ShowMinorTicks = true;
         }
 
 	    public override void Unexecute()

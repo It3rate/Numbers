@@ -33,16 +33,17 @@ namespace Numbers.Mappers
 	    public int UnitDirectionOnDomainLine => BasisSegment.DirectionOnLine(Guideline);
 
 		public bool ShowInfoOnTop = true;
-		public bool ShowGradientNumberLine;
+		public bool ShowGradientNumberLine = true;
+        public bool ShowPolarity = true;
+        public bool ShowBasis = true;
+        public bool ShowBasisMarkers;
         public bool ShowTicks = true;
         public bool ShowMinorTicks = true;
-        public bool OffsetNumbers;
 	    public bool ShowValueMarkers = true;
-        public bool ShowBasis;
-        public bool ShowPolarity = true;
-        public bool ShowBasisMarkers;
-	    public bool ShowMaxMinValues;
 	    public bool ShowFractions = true;
+        public bool ShowMaxMinValues = false;
+        public bool ShowNumbersOffset = false;
+
         private int _numberOrderCounter = 0;
 
         public SKDomainMapper(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
@@ -53,13 +54,17 @@ namespace Numbers.Mappers
 	    }
         public SKDomainMapper ShowAll()
         {
+            ShowInfoOnTop = true;
             ShowGradientNumberLine = true;
+            ShowPolarity = true;
+            ShowBasis = true;
+            ShowBasisMarkers = true;
             ShowTicks = true;
             ShowMinorTicks = true;
-            OffsetNumbers = true;
-            ShowBasis = true;
-            ShowPolarity = true;
-            ShowBasisMarkers = true;
+            ShowValueMarkers = true;
+            ShowFractions = true;
+            //ShowMaxMinValues = true;
+            //ShowNumbersOffset = true;
 
             return this;
         }
@@ -292,9 +297,9 @@ namespace Numbers.Mappers
         protected virtual void DrawNumbers()
         {
 			var topDir = ShowInfoOnTop ? 1f : -1f;
-	        var offset = OffsetNumbers ? 0f : 0f;
+	        var offset = ShowNumbersOffset ? 0f : 0f;
 			offset *= topDir;
-			var step = OffsetNumbers ? 12f : 0f;
+			var step = ShowNumbersOffset ? 12f : 0f;
 			step *= topDir;
             foreach(var nm in OrderedValidNumbers())
             {
