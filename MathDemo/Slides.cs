@@ -21,7 +21,7 @@
         public Slides(Brain brain)
         {
             Brain = brain;
-            _testIndex = 4;
+            _testIndex = 6;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -30,7 +30,8 @@
                 GradientLine_B,
                 ValidMath_A,
                 ValidMath_B,
-                Page3,
+                Selection_A,
+                Selection_B,
                 Page4,
                 Page5,
                 Page6,
@@ -131,7 +132,6 @@
             hd.ShowPolarity = false;
             hd.CreateNumber(new Focal(20, 90));
 
-
             return wm;
         }
         private SKWorkspaceMapper ValidMath_B()
@@ -148,18 +148,33 @@
 
             return wm;
         }
-        private SKWorkspaceMapper Page3()
+        private SKWorkspaceMapper Selection_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"You can select areas. Selections can have two directions, one in the increasing direction, one in the decreasing. ",
-"Gradients also have two directions, in that there are two options for the increasing direction. This is the polarity.",
-"You can make multiple selections, and they can have different polarity.",
+            "You can select any section of a line.",
+            "Selections can have one of two directions, the increasing direction or the decreasing direction. "
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var guideline = new SKSegment(200, 350, 1000, 550);
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 10), guideline);
             return wm;
         }
-        private SKWorkspaceMapper Page4()
+        private SKWorkspaceMapper Selection_B()
+        {
+            var wm = Selection_A();
+            wm.AppendText(
+            "These gradient lines also have two directions, positive red or positive blue. This is the polarity.",
+            "You can make multiple selections on a gradient line, and they can have different polarities."
+               );
+            var last = wm.LastDomainMapper();
+            last.ShowGradientNumberLine = true;
+            last.ShowBasis = true;
+            last.ShowPolarity = true;
+            return wm;
+        }
+            private SKWorkspaceMapper Page4()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {

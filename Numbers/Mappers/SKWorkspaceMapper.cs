@@ -29,6 +29,11 @@ namespace Numbers.Mappers
                 yield return dm;
             }
         }
+        public SKDomainMapper DomainMapperAt(int index)
+        {
+            return (index >= 0 && index < _domainMappers.Count) ? _domainMappers.Values.ElementAtOrDefault(index) : null;
+        }
+        public SKDomainMapper LastDomainMapper() => DomainMapperAt(_domainMappers.Count - 1);
         public IEnumerable<SKTransformMapper> TransformMappers()
         {
             foreach (var tm in _transformMappers.Values)
