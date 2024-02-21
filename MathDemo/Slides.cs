@@ -19,11 +19,15 @@
     public class Slides : DemoBase
     {
         private Brain Brain { get; }
-        Random rnd = new Random();
+        private Random rnd = new Random();
+        private SKPaint _oldTextPen;
+        private SKPaint _newTextPen;
         public Slides(Brain brain)
         {
             Brain = brain;
-            _testIndex = 10;
+            SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
+            SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
+            _testIndex = 0;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -171,7 +175,7 @@
             wm.DefaultShowMinorTicks = false;
             string[] txt = new string[] {
             "You can select any section of a line.",
-            "Selections can have one of two directions, the increasing direction or the decreasing direction. "
+            "Selections can have one of two directions, the increasing direction or the decreasing direction (positive and negative)."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Numbers.Agent;
@@ -48,22 +49,6 @@ namespace Numbers.Mappers
                 yield return pm;
             }
         }
-        public void AppendText(params string[] lines)
-        {
-            LastTextMapper()?.TextElement.Lines.AddRange(lines);
-        }
-        public SKTextMapper LastTextMapper() => TextMapperAt(_textMappers.Count - 1);
-        public SKTextMapper TextMapperAt(int index)
-        {
-            return (index >= 0 && index < _textMappers.Count) ? _textMappers.Values.ElementAtOrDefault(index) : null;
-        }
-        public IEnumerable<SKTextMapper> TextMappers()
-        {
-            foreach (var tm in _textMappers.Values)
-            {
-                yield return tm;
-            }
-        }
         public SKTransformMapper TransformMapperInvolving(Number num)
         {
             SKTransformMapper result = null;
@@ -110,7 +95,9 @@ namespace Numbers.Mappers
             //Id = idCounter++;
             MouseAgent.WorkspaceMappers[Id] = this;
             Reset(new SKPoint(left, top), new SKPoint(left + width, top + height));
-	    }
+            DefaultTextPen = DefaultWorkspaceText;
+            DefaultGhostPen = DefaultWorkspaceGhostText;
+        }
 
         #region Domains
 
@@ -144,10 +131,6 @@ namespace Numbers.Mappers
             var dm = GetOrCreateDomainMapper(domain, seg);
             SetDomainToDefaults(dm);
             return dm;
-        }
-        private void SetDomainToDefaults()
-        {
-
         }
         public SKDomainMapper AddHorizontal(Domain domain, int margins = 50)
         {
@@ -231,6 +214,36 @@ namespace Numbers.Mappers
         #endregion
 
         #region Paths/Text
+        public static SKPaint DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#6060D0"), 16);
+        public static SKPaint DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#A0A0F0"), 16);
+        public SKPaint DefaultTextPen { get; set; }
+        public SKPaint DefaultGhostPen { get; set; }
+        public void GhostOldText(SKTextMapper tm = null, int index = -1)
+        {
+            tm = tm ?? LastTextMapper();
+            tm?.GhostTextBefore(tm.TextElement.Lines.Count, DefaultGhostPen);
+        }
+        public void AppendText(params string[] lines)
+        {
+            var ltm = LastTextMapper();
+            if (ltm != null)
+            {
+                GhostOldText();
+                ltm.TextElement.Lines.AddRange(lines);
+            }
+        }
+        public SKTextMapper LastTextMapper() => TextMapperAt(_textMappers.Count - 1);
+        public SKTextMapper TextMapperAt(int index)
+        {
+            return (index >= 0 && index < _textMappers.Count) ? _textMappers.Values.ElementAtOrDefault(index) : null;
+        }
+        public IEnumerable<SKTextMapper> TextMappers()
+        {
+            foreach (var tm in _textMappers.Values)
+            {
+                yield return tm;
+            }
+        }
         public SKPathMapper CreatePathMapper(SKSegment line = null)
         {
             var pathMapper = new SKPathMapper(Agent, line);
@@ -248,6 +261,7 @@ namespace Numbers.Mappers
         public SKTextMapper CreateTextMapper(string[] lines, SKSegment line = null)
         {
             var textMapper = new SKTextMapper(Agent, lines, line);
+            textMapper.Pen = DefaultTextPen;
             _textMappers.Add(textMapper.Id, textMapper);
             return textMapper;
         }

@@ -55,7 +55,7 @@ namespace Numbers.Mappers
         }
         public virtual void Reset(SKSegment segment)
         {
-	        Guideline.Reset(segment.StartPoint, segment.EndPoint);
+	        Reset(segment.StartPoint, segment.EndPoint);
         }
 
         //public abstract SKPoint StartPoint { get; set; }
