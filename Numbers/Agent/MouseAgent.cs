@@ -144,6 +144,7 @@ namespace Numbers.Agent
         public SKPoint DragPoint;
 
         public bool IsCreatingDomain = false;
+        public bool IsDraggingBasis = false;
         public bool IsCreatingNumber = false;
         public SKNumberMapper ActiveNumberMapper;
         public SKDomainMapper ActiveDomainMapper;
@@ -170,6 +171,12 @@ namespace Numbers.Agent
             if (e.Button == MouseButtons.Middle)
             {
                 StartPan();
+            }
+            else if (CurrentKey == Keys.B)
+            {
+                // create domain
+                IsDraggingBasis = true;
+                SelBegin.Set(_highlight.Clone());
             }
             else if (CurrentKey == Keys.D)
             {
@@ -263,26 +270,29 @@ namespace Numbers.Agent
             }
             else if (SelBegin.HasHighlight && !IsDragging)
             {
-	            var dist = (mousePoint - SelBegin.Position).Length;
+                var dist = (mousePoint - SelBegin.Position).Length;
                 if (dist > _minDragDistance)
                 {
                     IsDragging = true;
-					SelCurrent.Set(_highlight.Clone());
-                    if (SelCurrent.ActiveHighlight?.Mapper is SKNumberMapper nm)
-					{
-						SelBegin.OriginalSegment = nm.Guideline.Clone();
-						SelBegin.OriginalFocal = nm.Number.Focal.Clone();
-						if (nm.IsBasis)
-						{
-							SaveNumberValues(SavedNumbers);
+                    SelCurrent.Set(_highlight.Clone());
+                    if (IsDraggingBasis)
+                    {
+                    }
+                    else if (SelCurrent.ActiveHighlight?.Mapper is SKNumberMapper nm)
+                    {
+                        SelBegin.OriginalSegment = nm.Guideline.Clone();
+                        SelBegin.OriginalFocal = nm.Number.Focal.Clone();
+                        if (nm.IsBasis)
+                        {
+                            SaveNumberValues(SavedNumbers);
                             // test for drag from unit multiplication
-                            if(SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && !snm.Number.IsBasis) // must have selection
+                            if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && !snm.Number.IsBasis) // must have selection
                             {
                                 _initialSelectionNum = snm.Number.Clone();
                                 _initialBasisNum = snm.Number.Domain.BasisNumber.Clone(); // always assume bias of 0-1, as we are in the render perspective
                             }
                         }
-					}
+                    }
                 }
             }
 
@@ -299,7 +309,7 @@ namespace Numbers.Agent
                     {
                         if (nm.IsBasis)
                         {
-                            if (!SelSelection.HasHighlight || CurrentKey == Keys.B)
+                            if (!SelSelection.HasHighlight || IsDraggingBasis)
                             {
                                 var curT = nm.DomainMapper.Guideline.TFromPoint(_highlight.OriginalPoint, false).Item1;
                                 var orgT = nm.DomainMapper.Guideline.TFromPoint(activeHighlight.OriginalPoint, false).Item1;
@@ -328,7 +338,7 @@ namespace Numbers.Agent
                     else if (activeKind.IsBasis())
                     {
                         // set basis with new number
-                        if (CurrentKey == Keys.B)
+                        if (IsDraggingBasis)
                         {
                             nm.SetValueByKind(_highlight.SnapPoint, activeKind);
                             AdjustBasis(nm);
@@ -458,6 +468,7 @@ namespace Numbers.Agent
             _initialBasisNum = null;
             _initialSelectionNum = null;
             IsCreatingDomain = false;
+            IsDraggingBasis = false;
             IsCreatingNumber = false;
             DragHighlight = null;
             DragPoint = SKPoint.Empty;

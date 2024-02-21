@@ -51,6 +51,18 @@ namespace Numbers.Mappers
 		    var unitMapper = NumberMapperFor(unit);
 		    unitMapper.Guideline.Reset(guideline.ProjectPointOnto(unitSegment.StartPoint), guideline.ProjectPointOnto(unitSegment.EndPoint));
 	    }
+        public SKDomainMapper ShowAll()
+        {
+            ShowGradientNumberLine = true;
+            ShowTicks = true;
+            ShowMinorTicks = true;
+            OffsetNumbers = true;
+            ShowBasis = true;
+            ShowPolarity = true;
+            ShowBasisMarkers = true;
+
+            return this;
+        }
         public void FlipRenderPerspective()
         {
             Guideline.Reverse();

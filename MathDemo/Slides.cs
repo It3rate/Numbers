@@ -21,7 +21,7 @@
         public Slides(Brain brain)
         {
             Brain = brain;
-            _testIndex = 6;
+            _testIndex = 8;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -32,7 +32,8 @@
                 ValidMath_B,
                 Selection_A,
                 Selection_B,
-                Page4,
+                ComparisonsBasis_A,
+                ComparisonsBasis_B,
                 Page5,
                 Page6,
                 Page7,
@@ -174,16 +175,30 @@
             last.ShowPolarity = true;
             return wm;
         }
-            private SKWorkspaceMapper Page4()
+        private SKWorkspaceMapper ComparisonsBasis_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 250, 1000, 400);
             string[] txt = new string[] {
-"With multiple selections, you can compare lengths. The first is the basis of the comparison.",
-"You can say things like longer, to the left of, twice as long, overlapping.",
-"Switching basis is the reciprocal, shorter, to the right of, half as long.",
-"Basis denotes zero, one, and dominant (positive) direction.",
+            "With multiple selections, you can compare lengths. The first is the basis of the comparison.",
+            "You can say things like longer, to the left of, twice as long, overlapping."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 5)).ShowAll();
+            var hd1 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 5)).ShowAll();
+            var nm0 = hd0.CreateNumberFromFloats(0, 2f);
+            //hd1.CreateNumberFromFloats(2f, -4f);
+            hd1.CreateNumber(nm0.Number.Focal);
+            return wm;
+        }
+        private SKWorkspaceMapper ComparisonsBasis_B()
+        {
+            var wm = ComparisonsBasis_A();
+            wm.AppendText(
+                "Switching basis is the reciprocal, shorter, to the right of, half as long.",
+                "Basis denotes zero, one, and dominant (positive) direction."
+               );
+
             return wm;
         }
         private SKWorkspaceMapper Page5()
