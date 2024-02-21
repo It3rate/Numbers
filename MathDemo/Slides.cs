@@ -23,7 +23,7 @@
         public Slides(Brain brain)
         {
             Brain = brain;
-            _testIndex = 9;
+            _testIndex = 10;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -36,7 +36,9 @@
                 Selection_B,
                 ComparisonsBasis_A,
                 ComparisonsBasis_B,
-                Page5,
+                AddSubtract_A,
+                AddSubtract_B,
+                AddSubtract_C,
                 Page6,
                 Page7,
                 Page8,
@@ -230,16 +232,37 @@
 
             return wm;
         }
-        private SKWorkspaceMapper Page5()
+        private SKWorkspaceMapper AddSubtract_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            wm.ShowAll();
+            wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowPolarity = false;
+            wm.DefaultShowFractions = false;
             string[] txt = new string[] {
-"On a gradient, all motion must be linear. ",
-"You can add, subtract, select by starting with 'smallest imaginable' and growing. ",
-"This stretches the tiny selection, addition.",
-"If you don't do it 'zero wards', it stretches the start point off zero.",
+            "You can select a range by starting with 'smallest imaginable' portion and growing it.",
+            "On a gradient, all motion must be linear.",
+            "This stretches the tiny selection, adding new material. Both positive and negative work.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", 1, 16));
+            return wm;
+        }
+        private SKWorkspaceMapper AddSubtract_B()
+        {
+            var wm = AddSubtract_A();
+            wm.AppendText(
+            "You can also add or remove from existing selections, this is addition and subtraction."
+            );
+            return wm;
+        }
+        private SKWorkspaceMapper AddSubtract_C()
+        {
+            var wm = AddSubtract_B();
+            wm.AppendText(
+            "It is obvious we can add or remove from either end, but what does that imply?"
+            );
             return wm;
         }
         private SKWorkspaceMapper Page6()

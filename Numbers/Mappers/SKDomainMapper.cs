@@ -488,13 +488,13 @@ namespace Numbers.Mappers
         protected (string, string) GetFractionText(Number num, bool isStart)
         {
             var isIValue = isStart == num.IsAligned;
-            var suffix = isIValue ? "i" : "r";
+            var suffix = ShowPolarity ? (isIValue ? "i" : "r") : "";
             var fraction = "";
             var val = isStart ? num.StartValue : num.EndValue;
             var whole = "0";
             if(val != 0)
             {
-                var wholeNum = isStart ? num.WholeStartValue : num.WholeEndValue;
+                var wholeNum = isStart ? (ShowPolarity ? num.WholeStartValue : -num.WholeStartValue) : num.WholeEndValue;
                 //wholeNum = domainIsUnitPersp ? wholeNum : -wholeNum;
                 var sign = wholeNum >= 0 ? "" : "-";// isStart ? (num.StartValue >= 0 ? "" : "-") : (num.EndValue >= 0 ? "" : "-");
                 whole = wholeNum == 0 ? "" : wholeNum.ToString();
