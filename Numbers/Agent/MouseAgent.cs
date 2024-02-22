@@ -68,7 +68,6 @@ namespace Numbers.Agent
 		        }
 	        }
         }
-        public SKPaint CurrentPen { get; set; }
 
         private SKPoint _rawMousePoint;
         private float _minDragDistance = 4f;
@@ -146,6 +145,7 @@ namespace Numbers.Agent
         public bool IsCreatingDomain = false;
         public bool IsDraggingBasis = false;
         public bool IsCreatingNumber = false;
+        public bool IsCreatingInvertedNumber = false;
         public SKNumberMapper ActiveNumberMapper;
         public SKDomainMapper ActiveDomainMapper;
         public SKTransformMapper ActiveTransformMapper;
@@ -190,12 +190,13 @@ namespace Numbers.Agent
                 SelBegin.Set(_highlight.Clone());
                 SelBegin.ActiveHighlight.SnapPoint = ActiveDomainMapper.Guideline.ProjectPointOnto(mousePoint, true);
                 IsCreatingNumber = true;
+                IsCreatingInvertedNumber = _isAltDown; // alt N creates an inverted number
             }
             else if (CurrentKey == Keys.Q)
             {
                 // Drawing
                 _isDrawing = true;
-                var cmd = new AddSKPathCommand(this, CurrentPen);
+                var cmd = new AddSKPathCommand(this, WorkspaceMapper.DefaultDrawPen);
                 Stack.Do(cmd);
                 ActivePathMapper = cmd.PathMapper;
                 ActivePathMapper.BeginRecord();
@@ -277,6 +278,7 @@ namespace Numbers.Agent
                     SelCurrent.Set(_highlight.Clone());
                     if (IsDraggingBasis)
                     {
+                        SelBegin.OriginalSegment = ActiveDomainMapper.BasisSegment.Clone();
                     }
                     else if (SelCurrent.ActiveHighlight?.Mapper is SKNumberMapper nm)
                     {
@@ -423,7 +425,7 @@ namespace Numbers.Agent
                 var dm = SelBegin.ActiveHighlight?.GetRelatedDomainMapper();
                 if(dm != null)
                 {
-                    CreateNumber(dm, DragHighlight);
+                    CreateNumber(dm, DragHighlight, IsCreatingInvertedNumber);
                 }
             }
 
@@ -470,24 +472,29 @@ namespace Numbers.Agent
             IsCreatingDomain = false;
             IsDraggingBasis = false;
             IsCreatingNumber = false;
+            IsCreatingInvertedNumber = false;
             DragHighlight = null;
             DragPoint = SKPoint.Empty;
         }
         #endregion
 
         #region Commands
-        private SKDomainMapper CreateDomain(SKSegment seg, int rangeSize = 4)
+        private SKDomainMapper CreateDomain(SKSegment seg)
         {
-            long unitTicks = 4;
-            long rangeTicks = unitTicks * rangeSize;
+            long unitTicks = WorkspaceMapper.DefaultDomainTicks;
+            long rangeTicks = unitTicks * WorkspaceMapper.DefaultDomainRange;
             var cdc = new AddSKDomainCommand(Brain.GetLastTrait(), 0, unitTicks, -rangeTicks, rangeTicks, seg, null, "userCreated");
             Stack.Do(cdc);
             return cdc.DomainMapper;
         }
-        private SKNumberMapper CreateNumber(SKDomainMapper dm, SKSegment seg)
+        private SKNumberMapper CreateNumber(SKDomainMapper dm, SKSegment seg, bool isInverted)
         {
             var range = dm.RangeFromSegment(seg);
             range.Start = -range.Start;
+            if (isInverted)
+            {
+                range.InvertPolarity();
+            }
             var anc = new AddSKNumberCommand(dm, range);
             Stack.Do(anc);
             return anc.NumberMapper;

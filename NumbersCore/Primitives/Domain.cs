@@ -91,10 +91,12 @@ namespace NumbersCore.Primitives
         {
 	        return AddNumber(new Number(focal), addToStore);
         }
-        public Number CreateNumber(Range value, bool addToStore = true)
+        public Number CreateNumber(Range range, bool addToStore = true)
         {
-	        var focal = CreateFocalFromRange(value);
-	        return AddNumber(new Number(focal), addToStore);
+	        var focal = CreateFocalFromRange(range);
+	        var result = AddNumber(new Number(focal), addToStore);
+            result.Polarity = range.Polarity;
+            return result;
         }
         public Number CreateNumber(long start, long end, bool addToStore = true)
         {

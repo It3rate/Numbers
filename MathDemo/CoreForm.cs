@@ -85,7 +85,11 @@ namespace MathDemo
                 if (_mouseAgent.KeyDown(ea)) { NeedsUpdate(); }
             }
         }
-        private void OnKeyDown(object sender, KeyEventArgs e) { if (_mouseAgent.KeyDown(e)) { NeedsUpdate(); } }
+        private void OnKeyDown(object sender, KeyEventArgs e) 
+        { 
+            if (_mouseAgent.KeyDown(e)) { NeedsUpdate(); }
+            e.SuppressKeyPress = true; // ### Don't do this if eventually using menus etc. This supresses the alt'n sound the system gives thinking it can't find a menu item.
+        }
         private void OnKeyUp(object sender, KeyEventArgs e) { if (_mouseAgent == null || _mouseAgent.KeyUp(e)) { NeedsUpdate(); } }
 
         private void NeedsUpdate() 

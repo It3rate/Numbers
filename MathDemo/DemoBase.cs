@@ -40,7 +40,6 @@
             _currentMouseAgent = mouseAgent;
             _currentMouseAgent.IsPaused = true;
             _currentMouseAgent.ClearAll();
-            _currentMouseAgent.CurrentPen = CorePens.GetPen(SKColor.FromHsl(50, 80, 60, 255), 10);
 
             SKWorkspaceMapper wm = Pages[_testIndex]();
             wm.EnsureRenderers();

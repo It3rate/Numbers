@@ -27,7 +27,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 10;
+            _testIndex = 13;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -246,8 +246,8 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 250, 800, 400);
             wm.ShowAll();
-            wm.DefaultShowMinorTicks = false;
             wm.DefaultShowPolarity = false;
+            wm.DefaultShowMinorTicks = false;
             wm.DefaultShowFractions = false;
             string[] txt = new string[] {
             "You can select a range by starting with 'smallest imaginable' portion and growing it.",
@@ -295,6 +295,11 @@
         private SKWorkspaceMapper UnitUnot_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            wm.DefaultDomainTicks = 1;
+            wm.DefaultDomainRange = 12;
+            wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowFractions = false;
+            wm.DefaultDrawPen = CorePens.GetPen(SKColor.Parse("#6090D0"), 8);
             string[] txt = new string[] {
                 "Encoding a segment with + adds them. A - subtracts them.",
                 "Complex numbers face the same dilemma.",

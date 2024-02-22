@@ -101,6 +101,8 @@ namespace Numbers.Mappers
 
         #region Domains
 
+        public long DefaultDomainTicks { get; set; } = 4;
+        public long DefaultDomainRange { get; set; } = 5;
         public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
         {
             if (!_domainMappers.TryGetValue(domain.Id, out var result))
@@ -218,6 +220,7 @@ namespace Numbers.Mappers
         public static SKPaint DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#A0A0F0"), 16);
         public SKPaint DefaultTextPen { get; set; }
         public SKPaint DefaultGhostPen { get; set; }
+        public SKPaint DefaultDrawPen { get; set; }
         public void GhostOldText(SKTextMapper tm = null, int index = -1)
         {
             tm = tm ?? LastTextMapper();
@@ -244,20 +247,7 @@ namespace Numbers.Mappers
                 yield return tm;
             }
         }
-        public SKPathMapper CreatePathMapper(SKSegment line = null)
-        {
-            var pathMapper = new SKPathMapper(Agent, line);
-            _pathMappers.Add(pathMapper.Id, pathMapper);
-            return pathMapper;
-        }
-        public void AddPathMapper(SKPathMapper pathMapper)
-        {
-            _pathMappers.Add(pathMapper.Id, pathMapper);
-        }
-        public void RemovePathMapper(SKPathMapper pathMapper)
-        {
-            _pathMappers.Remove(pathMapper.Id);
-        }
+
         public SKTextMapper CreateTextMapper(string[] lines, SKSegment line = null)
         {
             var textMapper = new SKTextMapper(Agent, lines, line);
@@ -272,6 +262,24 @@ namespace Numbers.Mappers
         public void RemoveTextMapper(SKTextMapper textMapper)
         {
             _textMappers.Remove(textMapper.Id);
+        }
+        public SKPathMapper CreatePathMapper(SKSegment line = null)
+        {
+            var pathMapper = new SKPathMapper(Agent, line);
+            if(DefaultDrawPen != null)
+            {
+                pathMapper.Pen = DefaultDrawPen;
+            }
+            _pathMappers.Add(pathMapper.Id, pathMapper);
+            return pathMapper;
+        }
+        public void AddPathMapper(SKPathMapper pathMapper)
+        {
+            _pathMappers.Add(pathMapper.Id, pathMapper);
+        }
+        public void RemovePathMapper(SKPathMapper pathMapper)
+        {
+            _pathMappers.Remove(pathMapper.Id);
         }
         #endregion
 
@@ -427,7 +435,7 @@ namespace Numbers.Mappers
         public bool DefaultShowMinorTicks { get; set; } = true;
         public bool DefaultShowFractions { get; set; } = true;
         public bool DefaultShowMaxMinValues { get; set; } = false;
-        public bool DefaultShowNumbersOffset { get; set; } = true;
+        public bool DefaultShowNumbersOffset { get; set; } = false;
         public void ShowAll()
         {
             DefaultShowGradientNumberLine = true;
@@ -438,7 +446,6 @@ namespace Numbers.Mappers
             DefaultShowMinorTicks = true;
             DefaultShowFractions = true;
             DefaultShowMaxMinValues = true;
-            DefaultShowNumbersOffset = true;
         }
         public void ShowNone()
         {
@@ -450,7 +457,6 @@ namespace Numbers.Mappers
             DefaultShowMinorTicks = false;
             DefaultShowFractions = false;
             DefaultShowMaxMinValues = false;
-            DefaultShowNumbersOffset = false;
         }
         private void SetDomainToDefaults(SKDomainMapper dm)
         {
@@ -498,10 +504,11 @@ namespace Numbers.Mappers
 
                         Renderer.DrawGradientNumberLine(Agent.DragHighlight, true, 5);
                     }
-                    if (Agent.IsCreatingNumber)
+                    else if (Agent.IsCreatingNumber)
                     {
                         Renderer.DrawDirectedLine(Agent.DragHighlight, Renderer.Pens.SegPens[0]);
-                        Renderer.DrawDirectedLine(Agent.DragHighlight, Renderer.Pens.UnitInlinePen);
+                        var pen = Agent.IsCreatingInvertedNumber ? Renderer.Pens.UnotInlinePen : Renderer.Pens.UnitInlinePen;
+                        Renderer.DrawDirectedLine(Agent.DragHighlight, pen);
                     }
                     else
                     {
