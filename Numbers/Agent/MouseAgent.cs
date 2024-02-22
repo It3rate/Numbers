@@ -284,6 +284,7 @@ namespace Numbers.Agent
                     SelCurrent.Set(_highlight.Clone());
                     if (IsDraggingBasis)
                     {
+                        SelCurrent.ActiveHighlight.Mapper = ActiveDomainMapper.BasisNumberMapper;
                         SelBegin.OriginalSegment = ActiveDomainMapper.BasisSegment.Clone();
                     }
                     else if (SelCurrent.ActiveHighlight?.Mapper is SKNumberMapper nm)

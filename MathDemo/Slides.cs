@@ -303,7 +303,7 @@
             string[] txt = new string[] {
                 "Encoding a segment with + adds them. A - subtracts them.",
                 "Complex numbers face the same dilemma.",
-                "Look close at use cases. Above and below zero. Deep and high. From and to."
+                "Look close at use cases. From and to. Above and below zero. Deep and high."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;

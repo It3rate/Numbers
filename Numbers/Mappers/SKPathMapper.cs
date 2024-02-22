@@ -70,7 +70,7 @@
 
             if ((_points.Count > 0) && (_points.Count % 32 == 0))
             {
-                SmoothPositions();
+                //SmoothPositions();
             }
         }
 
