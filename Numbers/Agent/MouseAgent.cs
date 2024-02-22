@@ -184,6 +184,12 @@ namespace Numbers.Agent
                 IsCreatingDomain = true;
                 SelBegin.Set(_highlight.Clone());
             }
+            else if (CurrentKey == Keys.Space && ActiveDomainMapper != null)
+            {
+                // dragging full domain
+                SelBegin.Set(_highlight.Clone());
+                SelBegin.OriginalSegment = ActiveDomainMapper.Guideline.Clone();
+            }
             else if (CurrentKey == Keys.N && ActiveDomainMapper != null)
             {
                 // create number
@@ -204,9 +210,9 @@ namespace Numbers.Agent
             }
             else
             {
-	            if (_highlight.IsSet)
-	            {
-		            SelBegin.Set(_highlight.Clone());
+                if (_highlight.IsSet)
+                {
+                    SelBegin.Set(_highlight.Clone());
                     if (_highlight.Mapper is SKNumberMapper nm && !nm.IsBasis)
                     {
                         SelSelection.Clear();
@@ -374,6 +380,15 @@ namespace Numbers.Agent
                         if (CurrentKey == Keys.R)
                         {
                             dm.RotateGuidelineByPoint(_highlight.SnapPoint, activeKind);
+                        }
+                        else if (CurrentKey == Keys.Space && SelBegin.OriginalSegment != null)
+                        {
+                            var diff = _highlight.SnapPoint - activeHighlight.SnapPoint;
+                            var orgSeg = SelBegin.OriginalSegment;
+                            var p0 = orgSeg.StartPoint + diff;
+                            dm.SetValueByKind(p0, UIKind.None);
+                            var p1 = orgSeg.EndPoint + diff;
+                            dm.SetValueByKind(p1, UIKind.Major);
                         }
                         else
                         {
