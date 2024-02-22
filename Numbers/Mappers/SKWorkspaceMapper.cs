@@ -206,7 +206,7 @@ namespace Numbers.Mappers
             {
                 result = new SKTransformMapper(Agent, transform);
                 _transformMappers[transform.Id] = result;
-                result.DoRender = doRender;
+                result.Do2DRender = doRender;
             }
             return (SKTransformMapper)result;
         }

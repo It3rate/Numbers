@@ -43,7 +43,7 @@ namespace Numbers.Mappers
         public void Draw()
         {
             CalculateValue();
-            if (DoRender)
+            if (Do2DRender)
             {
                 DrawMultiply();
             }

@@ -27,7 +27,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 0;
+            _testIndex = 10;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -238,7 +238,7 @@
         }
         private SKWorkspaceMapper AddSubtract_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 250, 800, 400);
             wm.ShowAll();
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowPolarity = false;
@@ -259,6 +259,20 @@
             wm.AppendText(
             "You can also add or remove from existing selections, this is addition and subtraction."
             );
+
+            var leftDm = wm.LastDomainMapper();
+            var rightDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", 1, 16));
+            var resultDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", 1, 16));
+            resultDm.ShowNumbersOffset = true;
+
+            rightDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
+            resultDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
+            var leftNum = leftDm.CreateNumberFromFloats(0, 2);
+            var rightNum = rightDm.CreateNumberFromFloats(0, 3);
+            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, TransformKind.Add);
+            var tm = wm.GetOrCreateTransformMapper(transform);
+            tm.Do2DRender = false;
+            var resultNum = resultDm.Domain.AddNumber(transform.Result);
             return wm;
         }
         private SKWorkspaceMapper AddSubtract_C()
