@@ -48,6 +48,7 @@ namespace Numbers.Renderer
         public SKPaint DomainPenHighlight { get; set; }
 
         public SKPaint TextBrush { get; set; }
+        public SKPaint LabelBrush { get; set; }
         public SKPaint Seg0TextBrush { get; set; }
         public SKPaint Seg1TextBrush { get; set; }
         public SKPaint Seg2TextBrush { get; set; }
@@ -127,6 +128,7 @@ namespace Numbers.Renderer
             DomainPenHighlight.StrokeCap = SKStrokeCap.Butt;
 
             TextBrush = GetText(SKColor.Parse("#A0A0F0"), 20);
+            LabelBrush = GetText(SKColor.Parse("#406060"), 14);
             Seg0TextBrush = GetText(SegPen0.Color, 20);
             Seg1TextBrush = GetText(SegPen1.Color, 20);
             Seg2TextBrush = GetText(SegPen2.Color, 20);
@@ -201,6 +203,7 @@ namespace Numbers.Renderer
             DomainPenHighlight.StrokeCap = SKStrokeCap.Butt;
 
             TextBrush = GetText(SKColor.Parse("#A0404060"), 20);
+            LabelBrush = GetText(SKColor.Parse("#406060"), 14);
             Seg0TextBrush = GetText(SegPen0.Color, 20);
             Seg1TextBrush = GetText(SegPen1.Color, 20);
             Seg2TextBrush = GetText(SegPen2.Color, 20);

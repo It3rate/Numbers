@@ -43,7 +43,11 @@
                 AddSubtract_A,
                 AddSubtract_B,
                 AddSubtract_C,
-                Page6,
+                UnitUnot_A,
+                UnitUnot_B,
+                UnitUnot_C,
+                Polarity_A,
+                Polarity_B,
                 Page7,
                 Page8,
                 Page9,
@@ -55,6 +59,8 @@
                 Page15,
             });
         }
+        // todo: Add a TLDR page first.
+
         private SKWorkspaceMapper RandomVsOrder_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
@@ -261,8 +267,11 @@
             );
 
             var leftDm = wm.LastDomainMapper();
+            leftDm.Label = "  A";
             var rightDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", 1, 16));
+            rightDm.Label = "+ B";
             var resultDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", 1, 16));
+            resultDm.Label = "= C";
             resultDm.ShowNumbersOffset = true;
 
             rightDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
@@ -283,27 +292,65 @@
             );
             return wm;
         }
-        private SKWorkspaceMapper Page6()
+        private SKWorkspaceMapper UnitUnot_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"Can't encode segment with + and two unit numbers, that adds them.",
-"Need to start with unot, end with unit, think an iceberg's height.",
-"A segment on the inverted polarity ends on 'i'.",
-"Infinity is horseshit, ALL numbers are segments. Points are (-xi,x). Domains are bounded.",
+                "Encoding a segment with + adds them. A - subtracts them.",
+                "Complex numbers face the same dilemma.",
+                "Look close at use cases. Above and below zero. Deep and high. From and to."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+            return wm;
+        }
+        private SKWorkspaceMapper UnitUnot_B()
+        {
+            var wm = UnitUnot_A();
+            wm.AppendText(
+                "The basis changes to the inverted basis. All units have a 'unot', or inverted basis.",
+                "Remember these are two zero based values joined together."
+            );
+            return wm;
+        }
+        private SKWorkspaceMapper UnitUnot_C()
+        {
+            var wm = UnitUnot_B();
+            wm.AppendText(
+                "ALL numbers are directed segments. Points are (-xi,x). Domains are bounded.",
+                "A point is a segment where you can't tell which direction it is pointing."
+            );
+            return wm;
+        }
+        private SKWorkspaceMapper Polarity_A()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            string[] txt = new string[] {
+                "A directed segment can exist on either polarity. Always.",
+                "A segment on the inverted polarity ends on 'i'.",
+                "From the 'other' perspective, everything behaves normally."
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+            return wm;
+        }
+        private SKWorkspaceMapper Polarity_B()
+        {
+            var wm = Polarity_A();
+            wm.AppendText(
+                "The inverted perspective represents the same information.",
+                "The context you are in is part of this information.",
+                "It is worth stopping and getting an intuition for this dual perspective."
+            );
             return wm;
         }
         private SKWorkspaceMapper Page7()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"It is handy to break the units into 'ticks'. Math works without this, but there are difficulties. Our brains use ticks.",
-"If the unit is your smallest possible measurement, it is inaccurate by definition, and scaling to 1M will have error.",
-"Easier to have larger measure and divide it accurately, which is what ticks are.",
-"Ticks allow conversion between precision by narrowing numbers, otherwise you must renumber everything.",
-"Negative ticks are rounding. Zero sized ticks are crazy, and that is what we use in real numbers.",
+            "It is handy to break the units into 'ticks'. Math works without this, but there are difficulties. Our brains use ticks.",
+            "If the unit is your smallest possible measurement, it is inaccurate by definition, and scaling to 1M will have error.",
+            "Easier to have larger measure and divide it accurately, which is what ticks are.",
+            "Ticks allow conversion between precision by narrowing numbers, otherwise you must renumber everything.",
+            "Negative ticks are rounding. Zero sized ticks are crazy, and that is what we use in real numbers.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;

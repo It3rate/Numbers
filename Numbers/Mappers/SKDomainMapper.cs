@@ -44,6 +44,8 @@ namespace Numbers.Mappers
         public bool ShowMaxMinValues = false;
         public bool ShowNumbersOffset = false;
 
+        public string Label { get; set; } = "";
+
         private int _numberOrderCounter = 0;
 
         public SKDomainMapper(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
@@ -228,6 +230,9 @@ namespace Numbers.Mappers
             BasisNumberMapper.Reset(SegmentAlongGuideline(unitRatio));
         }
 
+
+
+
         public virtual void Draw()
 	    {
             if (Domain != null && Domain.IsVisible)
@@ -235,31 +240,37 @@ namespace Numbers.Mappers
 	            AddValidNumbers();
 
                 DrawNumberLine();
+                DrawLabel();
 			    DrawUnit();
 			    DrawMarkers();
 			    DrawTicks();
 			    DrawNumbers();
 			    DrawNumberSets();
             }
-	    }
-
-
+        }
         protected virtual void DrawNumberLine()
-	    {
+        {
             var renderDir = UnitDirectionOnDomainLine;
-		    var basisDir = BasisNumber.BasisFocal.Direction;
+            var basisDir = BasisNumber.BasisFocal.Direction;
             var startToEnd = renderDir * basisDir == 1;
             var isSelected = Agent.ActiveDomainMapper?.Domain == Domain;
             if (ShowGradientNumberLine)
-		    {
+            {
                 Renderer.DrawGradientNumberLine(Guideline, startToEnd, 10, isSelected);
-		    }
-		    else if (!ShowBasis) // if not showing units at least color the line
+            }
+            else if (!ShowBasis) // if not showing units at least color the line
             {
                 Renderer.DrawGradientNumberLine(Guideline, startToEnd, 3, isSelected);
-		    }
+            }
             Renderer.DrawSegment(Guideline, Renderer.Pens.NumberLinePen);
-	    }
+        }
+        protected virtual void DrawLabel()
+        {
+            if(Label != "")
+            {
+                Renderer.DrawText(Guideline.EndPoint + new SKPoint(10,3), Label, Renderer.Pens.LabelBrush);
+            }
+        }
         protected virtual void DrawUnit()
 	    {
 		    if (ShowBasis)
