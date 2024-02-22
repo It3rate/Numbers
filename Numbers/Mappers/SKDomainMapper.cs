@@ -43,6 +43,7 @@ namespace Numbers.Mappers
 	    public bool ShowFractions = true;
         public bool ShowMaxMinValues = false;
         public bool ShowNumbersOffset = false;
+        public bool ShowSeparatedSegment = false;
 
         public string Label { get; set; } = "";
 
@@ -363,13 +364,11 @@ namespace Numbers.Mappers
                 if (nm.Number.IsAligned)
 		        {
                     var invPen = ShowPolarity ? Pens.UnotInlinePen : Pens.UnitInlinePen;
-                    var offsetScale = pen.StrokeWidth / Pens.UnitInlinePen.StrokeWidth;
 			        nm.DrawNumber(offset, Pens.UnitInlinePen, invPen);
 		        }
 		        else
                 {
                     var invPen = ShowPolarity ? Pens.UnitInlinePen : Pens.UnotInlinePen;
-                    var offsetScale = pen.StrokeWidth / Pens.UnotInlinePen.StrokeWidth;
 			        nm.DrawNumber(offset, Pens.UnotInlinePen, invPen);
 		        }
 	        }

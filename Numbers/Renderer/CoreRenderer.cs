@@ -91,7 +91,7 @@ namespace Numbers.Renderer
         {
             if (isSelected)
             {
-                Pens.DomainPenHighlight.StrokeWidth = width + 6;
+                Pens.DomainPenHighlight.StrokeWidth = width + 3;
                 DrawSegment(segment, Pens.DomainPenHighlight);
             }
             var gsp = startToEnd ? segment.StartPoint : segment.EndPoint;
@@ -118,9 +118,13 @@ namespace Numbers.Renderer
 		    path.MoveTo(polyline[0]);
 		    path.AddPoly(polyline, true);
 		    Canvas.DrawPath(path, paint);
-	    }
-	    public void DrawDirectedLine(SKSegment segIn, SKPaint paint, SKPaint invertPaint = null)
-	    {
+        }
+        public void DrawLine(SKSegment segIn, SKPaint paint)
+        {
+            DrawPolyline(paint, segIn.Points);
+        }
+        public void DrawDirectedLine(SKSegment segIn, SKPaint paint, SKPaint invertPaint = null)
+        {
             invertPaint = invertPaint ?? paint;
             var seg = segIn.Clone();
             DrawPolyline(paint, seg.Points);

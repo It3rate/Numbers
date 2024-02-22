@@ -85,9 +85,9 @@ namespace Numbers.Renderer
         {
 	        BkgColor = SKColor.Parse("#FFFFFF");
             UnitColor = SKColor.Parse("#00FAFF");
-            UnitLineColor = SKColor.Parse("#9FBFF8");
+            UnitLineColor = SKColor.Parse("#AFDFF8");
             UnotColor = SKColor.Parse("#FF0098");
-            UnotLineColor = SKColor.Parse("#ED9A9E");
+            UnotLineColor = SKColor.Parse("#DDAAAE");
             UnitStrokeColor = SKColor.Parse("#404040");
             TickColor = SKColors.Black;
             MarkerColor = SKColors.DarkGray;

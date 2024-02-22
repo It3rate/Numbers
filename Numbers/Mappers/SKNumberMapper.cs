@@ -4,14 +4,16 @@ using System.IO.Ports;
 using System.Windows.Forms.VisualStyles;
 using Numbers.Agent;
 using Numbers.Drawing;
+using Numbers.Renderer;
 using NumbersCore.Primitives;
+using OpenTK.Audio.OpenAL;
 using SkiaSharp;
 
 namespace Numbers.Mappers
 {
     public class SKNumberMapper : SKMapper
     {
-	    public Number Number => (Number) MathElement;
+        public Number Number => (Number)MathElement;
         public MouseAgent MouseAgent => (MouseAgent)Agent;
         public virtual SKSegment RenderSegment { get; set; }
 
@@ -25,9 +27,9 @@ namespace Numbers.Mappers
 
         public int OrderIndex { get; set; } = -1;
         public SKNumberMapper(MouseAgent agent, Number number) : base(agent, number)
-	    {
+        {
             Id = number.Id;
-	    }
+        }
         public Polarity InvertPolarity()
         {
             return Number.InvertPolarity();
@@ -35,18 +37,31 @@ namespace Numbers.Mappers
         public void ResetNumber(Number number) => MathElement = number;
         public void EnsureSegment()
         {
-	        var val = Number.ValueInRenderPerspective;
-	        Reset(UnitSegment.SegmentAlongLine(val.StartF, val.EndF));
-	    }
-
+            var val = Number.ValueInRenderPerspective;
+            Reset(UnitSegment.SegmentAlongLine(val.StartF, val.EndF));
+        }
 
         public void DrawNumber(float offset, SKPaint paint, SKPaint invertPaint = null)
         {
 			EnsureSegment();
-            invertPaint = invertPaint ?? paint;
+            var pen2 = invertPaint ?? paint;
 			var dir = UnitDirectionOnDomainLine;
-	        RenderSegment = Guideline.ShiftOffLine(offset * dir);
-	        Renderer.DrawDirectedLine(RenderSegment, paint, invertPaint);
+            RenderSegment = Guideline.ShiftOffLine(offset * dir);
+            if (DomainMapper.ShowSeparatedSegment)
+            {
+                var val = Number.ValueInRenderPerspective;
+                var seg1 = UnitSegment.SegmentAlongLine(0, val.EndF).ShiftOffLine(offset * dir );
+                Renderer.DrawDirectedLine(seg1, paint, paint);
+                if (invertPaint != null) // only draw background on correct polarity
+                {
+                    var seg0 = UnitSegment.SegmentAlongLine(0, val.StartF).ShiftOffLine(offset * dir + 1);
+                    Renderer.DrawDirectedLine(seg0, pen2, pen2);
+                }
+            }
+            else
+            {
+                Renderer.DrawDirectedLine(RenderSegment, paint, pen2);
+            }
         }
 
         public void DrawUnit(bool aboveLine, bool showPolarity)

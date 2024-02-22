@@ -674,6 +674,12 @@ namespace Numbers.Agent
                         //_editCommands.Repeat();
                     }
                     break;
+                case Keys.S:
+                    if (_isShiftDown)
+                    {
+                        WorkspaceMapper.ShowSeparatedSegment = !WorkspaceMapper.ShowSeparatedSegment;
+                    }
+                    break;
                 case Keys.Space:
                     StartPan();
                     break;

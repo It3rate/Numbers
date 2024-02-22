@@ -426,6 +426,18 @@ namespace Numbers.Mappers
                 }
             }
         }
+        public bool ShowSeparatedSegment
+        {
+            get => DefaultShowSeparatedSegment;
+            set
+            {
+                DefaultShowSeparatedSegment = value;
+                foreach (var dm in DomainMappers())
+                {
+                    dm.ShowSeparatedSegment = DefaultShowSeparatedSegment;
+                }
+            }
+        }
         public bool DefaultShowInfoOnTop { get; set; } = true;
         public bool DefaultShowGradientNumberLine { get; set; } = true;
         public bool DefaultShowPolarity { get; set; } = true;
@@ -436,6 +448,8 @@ namespace Numbers.Mappers
         public bool DefaultShowFractions { get; set; } = true;
         public bool DefaultShowMaxMinValues { get; set; } = false;
         public bool DefaultShowNumbersOffset { get; set; } = false;
+        public bool DefaultShowSeparatedSegment { get; set; } = false;
+        
         public void ShowAll()
         {
             DefaultShowGradientNumberLine = true;
