@@ -111,6 +111,7 @@
     <Compile Include="Drawing\SkPolyline.cs" />
     <Compile Include="IDemos.cs" />
     <Compile Include="Mappers\ISelectableElement.cs" />
+    <Compile Include="Mappers\SKImageMapper.cs" />
     <Compile Include="Mappers\SKNumberChainMapper.cs" />
     <Compile Include="Mappers\SKNumberSetMapper.cs" />
     <Compile Include="Mappers\SKPathMapper.cs" />

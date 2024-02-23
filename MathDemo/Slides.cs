@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
+    using System.Security.Policy;
     using System.Text;
     using System.Threading.Tasks;
     using System.Windows.Forms;
@@ -27,7 +28,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 13;
+            _testIndex = 0;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -71,12 +72,13 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
+            wm.CreateImageMapper("4_parkPath.jpg", new SKSegment(50, 150, 100, 550));
             var w = 20;
             for (int i = 0; i < 40; i++)
             {
                 var path = wm.CreatePathMapper();
                 path.Pen = CorePens.GetPen(SKColor.FromHsl((rnd.Next(100) + 150), 100, 50), 8);
-                var x = rnd.Next(500) + 200;
+                var x = rnd.Next(500) + 500;
                 var y = rnd.Next(300) + 300;
                 path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
             }
@@ -107,7 +109,7 @@
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             wm.ShowNone();
             string[] txt = new string[] {
-                "Order can be represented by a gradient line - this is a proxy. ",
+                "Order can be represented by a gradient line - this is a proxy.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             var path = wm.CreatePathMapper();
@@ -180,8 +182,10 @@
             wm.DefaultShowFractions = false;
             wm.DefaultShowMinorTicks = false;
             string[] txt = new string[] {
-            "You can select any section of a line.",
-            "Selections can have one of two directions, the increasing direction or the decreasing direction (positive and negative)."
+            "You can select any portion of a line. A selection is always smaller than the lowest precision.",
+            "Selections can move in one of two directions, the increasing direction or the decreasing direction (positive and negative).",
+            "All selections have a start and end point, and therefore a direction.",
+            "Selection with '0' length, mean the length is below the smallest resolution, and you can't tell the direction."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -223,7 +227,7 @@
             var wm = ComparisonsBasis_A();
             wm.AppendText(
                 "Switching basis is the reciprocal, shorter, to the right of, half as long.",
-                "Basis denotes zero, one, and dominant (positive) direction."
+                "The basis denotes zero, one, and dominant (positive) direction. Every basis has in inverted basis."
             );
 
             wm.ShowAll();
@@ -250,9 +254,11 @@
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowFractions = false;
             string[] txt = new string[] {
-            "You can select a range by starting with 'smallest imaginable' portion and growing it.",
-            "On a gradient, all motion must be linear.",
+            "Create a selection by starting with a new position and expanding it, this is creation (not addition!).",
             "This stretches the tiny selection, adding new material. Both positive and negative work.",
+            "On a gradient, ALL motion must be linear and continuous.",
+            "If the final selection is less than the resolution, it still has position and length, just the length is to small to quantify.",
+            "'Zero' length is not nil, zero position is also not nil."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -263,7 +269,8 @@
         {
             var wm = AddSubtract_A();
             wm.AppendText(
-            "You can also add or remove from existing selections, this is addition and subtraction."
+            "You can also expand or contract existing selections from their endpoints, this is addition and subtraction.",
+            "Segments can not be removed this way (that is deletion), they can only be made to have unmeasurable length, and then expand again."
             );
 
             var leftDm = wm.LastDomainMapper();
@@ -288,40 +295,48 @@
         {
             var wm = AddSubtract_B();
             wm.AppendText(
-            "It is obvious we can add or remove from either end, but what does that imply?"
+            "What does moving from the zero position imply?"
             );
             return wm;
         }
         private SKWorkspaceMapper UnitUnot_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 150, 900, 600);
             wm.DefaultDomainTicks = 1;
             wm.DefaultDomainRange = 12;
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowFractions = false;
+            wm.DefaultShowPolarity = false;
             wm.DefaultDrawPen = CorePens.GetPen(SKColor.Parse("#6090D0"), 8);
             string[] txt = new string[] {
-                "Encoding a segment with + adds them. A - subtracts them.",
-                "Complex numbers face the same dilemma.",
-                "Look close at use cases. From and to. Above and below zero. Deep and high."
+                "Encoding a segment: Using + adds them, using - subtracts them, but we want both values to remain.",
+                "Complex numbers face this same dilemma.",
+                "Look close at use cases. From and to. Above and below zero. Deep and high. Y axis. CCW..."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var segLine = wm.GetVerticalSegment(1, 0);
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("UnitUnot", 1, 8), segLine);
             return wm;
         }
         private SKWorkspaceMapper UnitUnot_B()
         {
             var wm = UnitUnot_A();
             wm.AppendText(
-                "The basis changes to the inverted basis. All units have a 'unot', or inverted basis.",
-                "Remember these are two zero based values joined together."
+                "The start point uses the inverted basis. The end point uses the polarity's basis.",
+                "Remember these are two zero based values joined together.",
+                "It is handy to write the end point in the polarity's units (3i+2, or -3-2i)."
             );
+            wm.DefaultShowPolarity = true;
+            var hd0 = wm.LastDomainMapper();
+            hd0.ShowPolarity = true;
             return wm;
         }
         private SKWorkspaceMapper UnitUnot_C()
         {
             var wm = UnitUnot_B();
             wm.AppendText(
-                "ALL numbers are directed segments. Points are (-xi,x). Domains are bounded.",
+                "ALL numbers are directed segments. Points are (-5i+5 or 5-5i). Domains are bounded.",
                 "A point is a segment where you can't tell which direction it is pointing."
             );
             return wm;
@@ -364,11 +379,12 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"Multiply is stretch existing (non zero) section. Stretch from unit maps to our numbers, but isn't required.",
-"Divide is stretch from endpoint to unit (reciprocal action).",
-"Multiply by negative flips. ",
-"Multiply by inverted is normal, but uses 'i' basis, and flips polarity (making it a unique operation).",
-"i*i*i*i... is a very important cycle.",
+            "Add means stretching from a (zero length) position. You can stretch from anywhere, but only the selected segment will be affected.",
+            "Multiply means stretch an existing (non zero) section. Stretching from each perspective's unit maps to our numbers, but isn't required.",
+            "Divide is stretch from endpoint to unit (reciprocal action).",
+            "Multiply by negative flips.",
+            "Multiply by an inverted value works the same, but uses 'i' basis, and flips polarity (making it a different operation than a unit value).",
+            "i*i*i*i... is a very important cycle.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
@@ -377,11 +393,12 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"Repeat steps are powers, but they can be done on any operation. The result is like a 'sectionable' result that can be merged.",
-"Repeated addition (pushing from zero as it is segment addition) can show steps, or merge. ",
-"The 'matter' is different than with multiplication, can be indicated with step coloring.",
-"Multiplication is a second step, do div by zero isn't a valid question. It is like x^4 with the third x missing.",
-"You can get lengths, areas, grids, fence posts, stacked boxes etc with various number combinations.",
+            "Repeat steps are powers, but they can be done on any operation.",
+            "Repeated creation (pushing from zero) merges results, repeated addition appends them.",
+            "The result is like a 'sectionable' result that can be merged.",
+            "The 'matter' is different than with multiplication, can be indicated with step coloring.",
+            "Multiplication is a second step, do div by zero isn't a valid question. It is like x^4 with the third x missing.",
+            "You can get lengths, areas, grids, fence posts, stacked boxes etc with various number combinations.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;

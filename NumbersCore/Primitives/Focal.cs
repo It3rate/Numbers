@@ -34,7 +34,7 @@ namespace NumbersCore.Primitives
     //    Focal Clone();
     //}
 
-    public class Focal
+    public class Focal : IMathElement
     {
         public MathElementKind Kind => MathElementKind.Focal;
         public int Id { get; }

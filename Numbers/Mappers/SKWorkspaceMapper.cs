@@ -20,73 +20,7 @@ namespace Numbers.Mappers
         private readonly Dictionary<int, SKTransformMapper> _transformMappers = new Dictionary<int, SKTransformMapper>();
         private readonly Dictionary<int, SKPathMapper> _pathMappers = new Dictionary<int, SKPathMapper>();
         private readonly Dictionary<int, SKTextMapper> _textMappers = new Dictionary<int, SKTextMapper>();
-        public SKDomainMapper GetDomainMapper(Domain domain) => GetOrCreateDomainMapper(domain);
-        public SKTransformMapper TransformMapper(Transform transform) => GetOrCreateTransformMapper(transform);
-
-        public IEnumerable<SKDomainMapper> DomainMappers()
-        {
-            foreach (var dm in _domainMappers.Values)
-            {
-                yield return dm;
-            }
-        }
-        public SKDomainMapper DomainMapperAt(int index)
-        {
-            return (index >= 0 && index < _domainMappers.Count) ? _domainMappers.Values.ElementAtOrDefault(index) : null;
-        }
-        public SKDomainMapper LastDomainMapper() => DomainMapperAt(_domainMappers.Count - 1);
-        public IEnumerable<SKTransformMapper> TransformMappers()
-        {
-            foreach (var tm in _transformMappers.Values)
-            {
-                yield return tm;
-            }
-        }
-        public IEnumerable<SKPathMapper> PathMappers()
-        {
-            foreach (var pm in _pathMappers.Values)
-            {
-                yield return pm;
-            }
-        }
-        public SKTransformMapper TransformMapperInvolving(Number num)
-        {
-            SKTransformMapper result = null;
-            foreach (var tm in _transformMappers.Values)
-            {
-                if (tm.Transform.Involves(num))
-                {
-                    result = tm;
-                    break;
-                }
-            }
-            return result;
-        }
-
-        public SKPoint TopLeft
-	    {
-		    get => Guideline.StartPoint;
-		    set => Guideline.StartPoint = value;
-	    }
-	    public SKPoint BottomRight
-	    {
-		    get => Guideline.EndPoint;
-		    set => Guideline.EndPoint = value;
-	    }
-	    public override SKPath GetHighlightAt(Highlight highlight)
-	    {
-		    return Renderer.GetRectPath(TopLeft, BottomRight);
-	    }
-
-        public SKPoint Center => TopLeft.Midpoint(BottomRight);
-	    public float Width => BottomRight.X - TopLeft.X;
-	    public float Height => BottomRight.Y - TopLeft.Y;
-        // these are pointing clockwise 
-	    public SKSegment TopSegment => new SKSegment(TopLeft.X, TopLeft.Y, BottomRight.X, TopLeft.Y);
-	    public SKSegment RightSegment => new SKSegment(BottomRight.X, TopLeft.Y, BottomRight.X, BottomRight.Y);
-	    public SKSegment BottomSegment => new SKSegment(BottomRight.X, BottomRight.Y, TopLeft.X, BottomRight.Y);
-	    public SKSegment LeftSegment => new SKSegment(TopLeft.X, BottomRight.Y, TopLeft.X, TopLeft.Y);
-
+        private readonly Dictionary<int, SKImageMapper> _imageMappers = new Dictionary<int, SKImageMapper>();
 	    private static float defaultLineT = 0.1f;
         public const float SnapDistance = 5.0f;
 
@@ -97,10 +31,37 @@ namespace Numbers.Mappers
             Reset(new SKPoint(left, top), new SKPoint(left + width, top + height));
             DefaultTextPen = DefaultWorkspaceText;
             DefaultGhostPen = DefaultWorkspaceGhostText;
+            DefaultBorderPen = Pens.TickBoldPen;
         }
 
         #region Domains
-
+        public SKDomainMapper GetDomainMapper(Domain domain) => GetOrCreateDomainMapper(domain);
+        public IEnumerable<SKDomainMapper> DomainMappers()
+        {
+            foreach (var dm in _domainMappers.Values)
+            {
+                yield return dm;
+            }
+        }
+        public IEnumerable<SKNumberMapper> AllNumberMappers(bool reverse = false)
+        {
+            //foreach (var tm in GetTransformMappers(reverse))
+            //{
+            //    yield return tm.Transform.Result;
+            //}
+            foreach (var dm in GetDomainMappers(reverse))
+            {
+                foreach (var nm in dm.GetNumberMappers(reverse))
+                {
+                    yield return nm;
+                }
+            }
+        }
+        public SKDomainMapper DomainMapperAt(int index)
+        {
+            return (index >= 0 && index < _domainMappers.Count) ? _domainMappers.Values.ElementAtOrDefault(index) : null;
+        }
+        public SKDomainMapper LastDomainMapper() => DomainMapperAt(_domainMappers.Count - 1);
         public long DefaultDomainTicks { get; set; } = 4;
         public long DefaultDomainRange { get; set; } = 5;
         public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
@@ -171,22 +132,7 @@ namespace Numbers.Mappers
         }
         public bool RemoveDomainMapper(SKDomainMapper domainMapper) => _domainMappers.Remove(domainMapper.Domain.Id);
         #endregion
-
-        #region Numbers/Transforms
-        public IEnumerable<SKNumberMapper> AllNumberMappers(bool reverse = false)
-        {
-            //foreach (var tm in GetTransformMappers(reverse))
-            //{
-            //    yield return tm.Transform.Result;
-            //}
-            foreach (var dm in GetDomainMappers(reverse))
-            {
-                foreach (var nm in dm.GetNumberMappers(reverse))
-                {
-                    yield return nm;
-                }
-            }
-        }
+        #region Transforms
         public IEnumerable<SKTransformMapper> GetTransformMappers(bool reverse = false)
         {
             var vals = reverse ? _transformMappers.Values.Reverse() : _transformMappers.Values;
@@ -212,10 +158,29 @@ namespace Numbers.Mappers
             }
             return (SKTransformMapper)result;
         }
-
+        public SKTransformMapper TransformMapperInvolving(Number num)
+        {
+            SKTransformMapper result = null;
+            foreach (var tm in _transformMappers.Values)
+            {
+                if (tm.Transform.Involves(num))
+                {
+                    result = tm;
+                    break;
+                }
+            }
+            return result;
+        }
+        public SKTransformMapper TransformMapper(Transform transform) => GetOrCreateTransformMapper(transform);
+        public IEnumerable<SKTransformMapper> TransformMappers()
+        {
+            foreach (var tm in _transformMappers.Values)
+            {
+                yield return tm;
+            }
+        }
         #endregion
-
-        #region Paths/Text
+        #region Text
         public static SKPaint DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#6060D0"), 16);
         public static SKPaint DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#A0A0F0"), 16);
         public SKPaint DefaultTextPen { get; set; }
@@ -263,6 +228,15 @@ namespace Numbers.Mappers
         {
             _textMappers.Remove(textMapper.Id);
         }
+        #endregion
+        #region Paths
+        public IEnumerable<SKPathMapper> PathMappers()
+        {
+            foreach (var pm in _pathMappers.Values)
+            {
+                yield return pm;
+            }
+        }
         public SKPathMapper CreatePathMapper(SKSegment line = null)
         {
             var pathMapper = new SKPathMapper(Agent, line);
@@ -270,7 +244,7 @@ namespace Numbers.Mappers
             {
                 pathMapper.Pen = DefaultDrawPen;
             }
-            _pathMappers.Add(pathMapper.Id, pathMapper);
+            AddPathMapper(pathMapper);
             return pathMapper;
         }
         public void AddPathMapper(SKPathMapper pathMapper)
@@ -282,7 +256,29 @@ namespace Numbers.Mappers
             _pathMappers.Remove(pathMapper.Id);
         }
         #endregion
+        #region Images
+        public SKPaint DefaultBorderPen { get; set; }
+        public SKImageMapper CreateImageMapper(string path, SKSegment topLine)
+        {
+            var imageMapper = new SKImageMapper(Agent, path, topLine);
+            imageMapper.BorderPen = DefaultBorderPen;
+            AddImageMapper(imageMapper);
+            return imageMapper;
+        }
+        public void AddImageMapper(SKImageMapper imageMapper)
+        {
+            _imageMappers.Add(imageMapper.Id, imageMapper);
+        }
+        public void RemoveImageMapper(SKImageMapper imageMapper)
+        {
+            _imageMappers.Remove(imageMapper.Id);
+        }
+        #endregion
 
+        public override SKPath GetHighlightAt(Highlight highlight)
+	    {
+		    return Renderer.GetRectPath(TopLeft, BottomRight);
+	    }
         public Highlight GetSnapPoint(Highlight highlight, HighlightSet ignoreSet, SKPoint input, float maxDist = SnapDistance * 2f)
         {
             highlight.Reset();
@@ -390,9 +386,9 @@ namespace Numbers.Mappers
 	        var result = LeftSegment + new SKPoint(offset, 0);
 	        return result.InsetSegment(margins);
         }
-        public void OffsetNextLine(float offsetPercent)
+        public void OffsetNextLine(float offsetRatio)
         {
-            defaultLineT += offsetPercent;
+            defaultLineT += offsetRatio;
         }
         private SKSegment NextDefaultLine()
         {
@@ -413,6 +409,26 @@ namespace Numbers.Mappers
         }
 
         #region Rendering
+
+        public SKPoint TopLeft
+        {
+            get => Guideline.StartPoint;
+            set => Guideline.StartPoint = value;
+        }
+        public SKPoint BottomRight
+        {
+            get => Guideline.EndPoint;
+            set => Guideline.EndPoint = value;
+        }
+        public SKPoint Center => TopLeft.Midpoint(BottomRight);
+        public float Width => BottomRight.X - TopLeft.X;
+        public float Height => BottomRight.Y - TopLeft.Y;
+        // these are pointing clockwise 
+        public SKSegment TopSegment => new SKSegment(TopLeft.X, TopLeft.Y, BottomRight.X, TopLeft.Y);
+        public SKSegment RightSegment => new SKSegment(BottomRight.X, TopLeft.Y, BottomRight.X, BottomRight.Y);
+        public SKSegment BottomSegment => new SKSegment(BottomRight.X, BottomRight.Y, TopLeft.X, BottomRight.Y);
+        public SKSegment LeftSegment => new SKSegment(TopLeft.X, BottomRight.Y, TopLeft.X, TopLeft.Y);
+
 
         public bool ShowFractions
         {
@@ -490,9 +506,13 @@ namespace Numbers.Mappers
         {
 	        EnsureRenderers();
 	        if (Workspace.IsActive)
-	        {
-	            foreach (var textMapper in _textMappers.Values)
-		        {
+            {
+                foreach (var imageMapper in _imageMappers.Values)
+                {
+                    imageMapper.Draw();
+                }
+                foreach (var textMapper in _textMappers.Values)
+                {
                     textMapper.Draw();
                 }
 

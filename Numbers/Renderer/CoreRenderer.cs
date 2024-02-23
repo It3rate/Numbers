@@ -163,13 +163,17 @@ namespace Numbers.Renderer
 		public void DrawTextBackground(SKRect rect, SKPaint background)
 	    {
 		    Canvas.DrawRoundRect(rect, 5, 5, background);
-	    }
-	    public void DrawBitmap(SKBitmap bitmap)
-	    {
-		    Canvas.DrawBitmap(bitmap, new SKRect(0, 0, Width, Height));
-	    }
+        }
+        public void DrawBitmap(SKBitmap bitmap)
+        {
+            Canvas.DrawBitmap(bitmap, new SKRect(0, 0, Width, Height));
+        }
+        public void DrawBitmap(SKBitmap bitmap, SKRect bounds)
+        {
+            Canvas.DrawBitmap(bitmap, bounds);
+        }
 
-	    public SKPath GetCirclePath(SKPoint center, float radius = 10)
+        public SKPath GetCirclePath(SKPoint center, float radius = 10)
 	    {
 		    var path = new SKPath();
 		    path.AddCircle(center.X, center.Y, radius);
