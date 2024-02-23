@@ -60,5 +60,9 @@ namespace Numbers.Mappers
 	        }
 	        return result;
         }
+
+        public override void Draw()
+        {
+        }
     }
 }

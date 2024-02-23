@@ -34,7 +34,7 @@
                 RandomVsOrder_A,
                 RandomVsOrder_B,
                 GradientLine_A,
-                //GradientLine_B,
+                GradientLine_B,
                 ValidMath_A,
                 ValidMath_B,
                 Selection_A,
@@ -107,32 +107,18 @@
             }
             return wm;
         }
-        private SKWorkspaceMapper GradientLine_Ax()
+        private SKWorkspaceMapper GradientLine_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             wm.ShowNone();
             string[] txt = new string[] {
                 "Order can be represented by a gradient line - this is a proxy.",
+                "Temperature, brightness, path home, points on a star. These are traits."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
             wm.CreateImageMapper("4_parkPath.jpg", new SKSegment(50, 150, 50, 550));
 
-            //var path = wm.CreatePathMapper();
-            //var paint = CorePens.GetPen(SKColors.Teal, 20);
-            //path.Pen = paint;
-            //var x = 200;
-            //var y = 200;
-            //var d = 200;
-            //path.SetOval(new SKPoint(x, y), new SKPoint(x + d, y + d));
-            return wm;
-        }
-        private SKWorkspaceMapper GradientLine_A()
-        {
-            var wm = GradientLine_Ax();
-            wm.AppendText(
-                "Temperature, brightness, path home, points on a star. These are traits."
-               );
             var w = 80;
             var hue = 100;
             var x = 1050;
@@ -147,6 +133,22 @@
                 y += 100;
                 hue += 150 / count;
             }
+            //var path = wm.CreatePathMapper();
+            //var paint = CorePens.GetPen(SKColors.Teal, 20);
+            //path.Pen = paint;
+            //var x = 200;
+            //var y = 200;
+            //var d = 200;
+            //path.SetOval(new SKPoint(x, y), new SKPoint(x + d, y + d));
+            return wm;
+        }
+        private SKWorkspaceMapper GradientLine_B()
+        {
+            var wm = GradientLine_A();
+            wm.AppendText(
+                "All measurements have uncertainty beyond a certain level.",
+                "This is akin to randomness."
+               );
             return wm;
         }
         private SKWorkspaceMapper ValidMath_A()

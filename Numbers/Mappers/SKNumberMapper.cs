@@ -41,6 +41,7 @@ namespace Numbers.Mappers
             Reset(UnitSegment.SegmentAlongLine(val.StartF, val.EndF));
         }
 
+        public override void Draw() { }
         public void DrawNumber(float offset, SKPaint paint, SKPaint invertPaint = null)
         {
 			EnsureSegment();

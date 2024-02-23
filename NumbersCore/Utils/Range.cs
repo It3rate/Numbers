@@ -247,6 +247,10 @@ namespace NumbersCore.Utils
 	        return result;
         }
 
+        public float Midpoint() => (EndF - StartF) / 2f + StartF;
+        public float SampleRandom(Random rnd) => (EndF - StartF) * (float)rnd.NextDouble() + StartF;
+        public float SampleStdDev() => (EndF - StartF) / 2f + StartF; // todo: add standard deviation sampler
+
         public Range Clone() => new Range(Start, End, IsAligned);
 
         public static bool operator ==(Range left, Range right) => left.Equals(right);

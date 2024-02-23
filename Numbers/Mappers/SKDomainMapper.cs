@@ -234,7 +234,7 @@ namespace Numbers.Mappers
 
 
 
-        public virtual void Draw()
+        public override void Draw()
 	    {
             if (Domain != null && Domain.IsVisible)
             {

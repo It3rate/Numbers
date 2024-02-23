@@ -83,6 +83,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\ShapeControl.cs" />
     <Compile Include="CoreForm.cs">
       <SubType>Form</SubType>
     </Compile>

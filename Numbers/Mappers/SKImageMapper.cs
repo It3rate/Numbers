@@ -50,7 +50,7 @@
             throw new NotImplementedException();
         }
 
-        public void Draw()
+        public override void Draw()
         {
             if (Bitmap != null)
             {

@@ -17,9 +17,12 @@ namespace Numbers.Mappers
 	    {
 	    }
 
-	    public override SKPath GetHighlightAt(Highlight highlight)
-	    {
-		    return new SKPath();
-	    }
+        public override SKPath GetHighlightAt(Highlight highlight)
+        {
+            throw new NotImplementedException();
+        }
+        public override void Draw()
+        {
+        }
     }
 }

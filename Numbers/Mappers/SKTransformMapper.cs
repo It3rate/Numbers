@@ -40,7 +40,7 @@ namespace Numbers.Mappers
         private SKPoint[] ri_s_shape;
         private SKPoint[] r_si_shape;
 
-        public void Draw()
+        public override void Draw()
         {
             CalculateValue();
             if (Do2DRender)

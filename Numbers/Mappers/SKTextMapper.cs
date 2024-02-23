@@ -33,7 +33,7 @@
         {
             throw new NotImplementedException();
         }
-        public void Draw()
+        public override void Draw()
         {
             var sp = Guideline.StartPoint;
             int index = 0;

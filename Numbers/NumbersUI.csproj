@@ -106,10 +106,12 @@
     <Compile Include="Commands\RemoveSKNumberCommand.cs" />
     <Compile Include="Commands\ISKCommand.cs" />
     <Compile Include="Commands\SKCommandBase.cs" />
+    <Compile Include="Controls\UIControlBase.cs" />
     <Compile Include="Drawing\SkiaShapeAdapter.cs" />
     <Compile Include="Drawing\BrushData.cs" />
     <Compile Include="Drawing\SkPolyline.cs" />
     <Compile Include="IDemos.cs" />
+    <Compile Include="Mappers\IDrawableElement.cs" />
     <Compile Include="Mappers\ISelectableElement.cs" />
     <Compile Include="Mappers\SKImageMapper.cs" />
     <Compile Include="Mappers\SKNumberChainMapper.cs" />

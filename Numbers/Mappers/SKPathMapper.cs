@@ -85,7 +85,6 @@
             AddPosition(p0.X, p0.Y);
             _pathDirty = true;
         }
-
         public void SetOval(SKPoint p0, SKPoint p1)
         {
             Reset();
@@ -106,18 +105,27 @@
             Reset();
             _isShape = true;
             var center = p0.Midpoint(p1);
-            var xr = center.X - p0.X;
-            var yr = center.Y - p0.Y;
-            var innerRatio = 0.5f;
-            var num = points == -1 ? 5 * 2 : points * 2; // star points
-            var step = MathF.PI * 2 / num;
-            for (int i = 0; i < num + 1; i++)
+            var starPoints = GenerateStar(center, center.X - p0.X, center.Y - p0.Y, points, 0.5f);
+            foreach (var pt in starPoints)
             {
-                var curXr = i % 2 == 1 ? xr : xr * innerRatio;
-                var curYr = i % 2 == 1 ? yr : yr * innerRatio;
-                AddPosition(center.X + Math.Sin(i * step) * curXr, center.Y + Math.Cos(i * step) * curYr);
+                AddPosition(pt.X, pt.Y);
             }
             _pathDirty = true;
+        }
+        public static SKPoint[] GenerateStar(SKPoint center, float xRadius, float yRadius, int points, float innerRatio = 0.5f)
+        {
+            var num = points == -1 ? 5 * 2 : points * 2; // star points
+            var step = MathF.PI * 2 / num;
+            var result = new SKPoint[num + 1]; // + 1 is link back to start point
+            for (int i = 0; i < num + 1; i++)
+            {
+                var curXr = i % 2 == 1 ? xRadius : xRadius * innerRatio;
+                var curYr = i % 2 == 1 ? yRadius : yRadius * innerRatio;
+                var x = (float)(center.X + Math.Sin(i * step) * curXr);
+                var y = (float)(center.Y + Math.Cos(i * step) * curYr);
+                result[i] = new SKPoint(x, y);
+            }
+            return result;
         }
 
         // maybe smoothing should be in skia world as it happens on points not segments?
@@ -201,7 +209,7 @@
             }
         }
 
-        public void Draw()
+        public override void Draw()
         {
             SKPoint[] pts = _smoothPoints != null ? _smoothPoints : _points.ToArray();
             Renderer.DrawPolyline(Pen, pts);

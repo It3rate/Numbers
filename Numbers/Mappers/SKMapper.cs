@@ -8,7 +8,7 @@ using SkiaSharp;
 
 namespace Numbers.Mappers
 {
-    public abstract class SKMapper
+    public abstract class SKMapper : IDrawableElement
 	{
 		public int Id;
         protected static int idCounter = 0;
@@ -16,9 +16,9 @@ namespace Numbers.Mappers
 		public MouseAgent Agent { get; }
 		public Brain Brain => Agent.Brain;
 		public Workspace Workspace => Agent.Workspace;
-		protected SKWorkspaceMapper WorkspaceMapper => Agent.WorkspaceMapper;
-        protected CoreRenderer Renderer => Agent.Renderer;
-        protected SKCanvas Canvas => Renderer.Canvas;
+		public SKWorkspaceMapper WorkspaceMapper => Agent.WorkspaceMapper;
+        public CoreRenderer Renderer => Agent.Renderer;
+        public SKCanvas Canvas => Renderer.Canvas;
         protected CorePens Pens => Renderer.Pens;
 
         public bool Do2DRender { get; set; } = true;
@@ -62,6 +62,7 @@ namespace Numbers.Mappers
         //public abstract SKPoint MidPoint { get; }
         //   public abstract SKPoint EndPoint { get; set; }
 
+        public abstract void Draw();
 
 
         public abstract SKPath GetHighlightAt(Highlight highlight);
