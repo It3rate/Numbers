@@ -34,7 +34,7 @@
                 RandomVsOrder_A,
                 RandomVsOrder_B,
                 GradientLine_A,
-                GradientLine_B,
+                //GradientLine_B,
                 ValidMath_A,
                 ValidMath_B,
                 Selection_A,
@@ -72,12 +72,13 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            wm.CreateImageMapper("4_parkPath.jpg", new SKSegment(50, 150, 100, 550));
+            wm.CreateImageMapper("0_ants.png", new SKSegment(50, 230, 450, 200));
+
             var w = 20;
             for (int i = 0; i < 40; i++)
             {
                 var path = wm.CreatePathMapper();
-                path.Pen = CorePens.GetPen(SKColor.FromHsl((rnd.Next(100) + 150), 100, 50), 8);
+                path.Pen = CorePens.GetPen(SKColor.FromHsl((rnd.Next(100) + 150), 70, 50), 8);
                 var x = rnd.Next(500) + 500;
                 var y = rnd.Next(300) + 300;
                 path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
@@ -92,19 +93,21 @@
             "Many things have order we can't distinguish: unseen patterns, or differences to small or large to measure.",
             "Random is simple, ordered is math. Distinguishing is precision."
             );
+            var im = wm.LastImageMapper();
+            im.Reset("1_antsSingleFile.png");
 
             var paint = CorePens.GetPen(SKColors.Red, 12);
             for (int i = 0; i < 5; i++)
             {
                 var path = wm.CreatePathMapper();
                 path.Pen = paint;
-                var x = 900;
-                var y = 450;
+                var x = 700;
+                var y = 180;
                 path.SetOval(new SKPoint(x, y), new SKPoint(x + 60 + (float)rnd.NextDouble(), y + 60 + (float)rnd.NextDouble()));
             }
             return wm;
         }
-        private SKWorkspaceMapper GradientLine_A()
+        private SKWorkspaceMapper GradientLine_Ax()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             wm.ShowNone();
@@ -112,33 +115,36 @@
                 "Order can be represented by a gradient line - this is a proxy.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
-            var path = wm.CreatePathMapper();
-            var paint = CorePens.GetPen(SKColors.Teal, 40);
-            path.Pen = paint;
-            var x = 200;
-            var y = 200;
-            var d = 200;
-            path.SetOval(new SKPoint(x, y), new SKPoint(x + d, y + d));
+
+            wm.CreateImageMapper("4_parkPath.jpg", new SKSegment(50, 150, 50, 550));
+
+            //var path = wm.CreatePathMapper();
+            //var paint = CorePens.GetPen(SKColors.Teal, 20);
+            //path.Pen = paint;
+            //var x = 200;
+            //var y = 200;
+            //var d = 200;
+            //path.SetOval(new SKPoint(x, y), new SKPoint(x + d, y + d));
             return wm;
         }
-        private SKWorkspaceMapper GradientLine_B()
+        private SKWorkspaceMapper GradientLine_A()
         {
-            var wm = GradientLine_A();
+            var wm = GradientLine_Ax();
             wm.AppendText(
                 "Temperature, brightness, path home, points on a star. These are traits."
                );
             var w = 80;
             var hue = 100;
-            var x = 100;
-            var y = 500;
+            var x = 1050;
+            var y = 50;
             var pts = 3;
-            var count = 10;
+            var count = 8;
             for (int i = 0; i < count; i++)
             {
                 var path = wm.CreatePathMapper();
                 path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 40), 7);
                 path.SetStar(new SKPoint(x, y), new SKPoint(x + w, y + w), pts++);
-                x += 90;
+                y += 100;
                 hue += 150 / count;
             }
             return wm;

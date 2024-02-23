@@ -170,7 +170,10 @@ namespace Numbers.Renderer
         }
         public void DrawBitmap(SKBitmap bitmap, SKRect bounds)
         {
-            Canvas.DrawBitmap(bitmap, bounds);
+            using (SKPaint paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.High })
+            {
+                Canvas.DrawBitmap(bitmap, bounds, paint);
+            }
         }
 
         public SKPath GetCirclePath(SKPoint center, float radius = 10)

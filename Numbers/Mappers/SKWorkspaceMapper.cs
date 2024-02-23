@@ -273,6 +273,7 @@ namespace Numbers.Mappers
         {
             _imageMappers.Remove(imageMapper.Id);
         }
+        public SKImageMapper LastImageMapper() => _imageMappers.Values.LastOrDefault();
         #endregion
 
         public override SKPath GetHighlightAt(Highlight highlight)
