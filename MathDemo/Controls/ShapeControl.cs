@@ -75,9 +75,9 @@
         public int _lastSampleCount = 0;
         public int _sampleCount = 30;
 
-        public ShapeControl(MouseAgent agent) : base(agent)
+        public ShapeControl(MouseAgent agent, int top, int left, int width, int height) : base(agent)
         {
-            Radius = new Number(new Focal(0, 25));
+            Radius = new Number(new Focal(-10, 30));
             RadiusOffset = new Number(new Focal(0, 100));
             Hue = new Number(new Focal(0, 360));
             Saturation = new Number(new Focal(0, 100));
@@ -86,8 +86,8 @@
             StrokeSaturation = new Number(new Focal(0, 100));
             StrokeLightness = new Number(new Focal(0, 100));
             StrokeWidth = new Number(new Focal(0, 8));
-            X = new Number(new Focal(-500, 1000));
-            Y = new Number(new Focal(-20, 250));
+            X = new Number(new Focal(-left, left + width));
+            Y = new Number(new Focal(-top, top+height));
             Rotation = new Number(new Focal(0, 360));
             Points = new Number(new Focal(-3, 8));
             // temp

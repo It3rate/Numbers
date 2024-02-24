@@ -387,7 +387,7 @@ namespace Numbers.Mappers
             var numPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText; // i value should always be unot color, so use isStart vs useStart
 		    if (num.IsBasis)
 		    {
-                var txt = useStart ? "0" : "1";
+                var txt = useStart ? "0" : num.Domain.BasisIsReciprocal ? "" : "1"; // don't show 1 when ticks are larger than unit
                 Renderer.DrawTextOnPath(txBaseline, txt, Pens.UnitMarkerText, Pens.TextBackgroundPen);
                 if (!useStart && ShowPolarity)
                 {
@@ -477,7 +477,7 @@ namespace Numbers.Mappers
             {
                 var tickStep = BasisSegment.Length * 20 < totalTicks ? 0.1f : Math.Abs(tickToBasisRatio);
                 var rangeInTicks = Domain.ClampToInnerTick(DisplayLineRange);
-			    var offset = Domain.BasisIsReciprocal ? offsetRange * 2.5f : offsetRange;
+			    var offset = Domain.BasisIsReciprocal ? offsetRange * 1.5f : offsetRange;
 				offset *= topDir;
 				for (var i = rangeInTicks.Min; i <= rangeInTicks.Max; i += tickStep)
 	            {

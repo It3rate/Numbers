@@ -29,7 +29,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 0;
+            _testIndex = 3;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -74,9 +74,6 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
             wm.CreateImageMapper("0_ants.png", new SKSegment(50, 230, 450, 200));
-
-            var control = new ShapeControl(_currentMouseAgent);
-            wm.AddUIControl(control);
 
             var w = 20;
             for (int i = 0; i < 40; i++)
@@ -153,6 +150,10 @@
                 "All measurements have uncertainty beyond a certain level.",
                 "This is akin to randomness."
                );
+
+            var control = new ShapeControl(_currentMouseAgent, 200, 550, 400, 400);
+            wm.AddUIControl(control);
+
             return wm;
         }
         private SKWorkspaceMapper ValidMath_A()
