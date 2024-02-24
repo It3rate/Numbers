@@ -105,14 +105,14 @@
             Reset();
             _isShape = true;
             var center = p0.Midpoint(p1);
-            var starPoints = GenerateStar(center, center.X - p0.X, center.Y - p0.Y, points, 0.5f);
+            var starPoints = GenerateStar(center.X, center.Y, center.X - p0.X, center.Y - p0.Y, points, 0.5f);
             foreach (var pt in starPoints)
             {
                 AddPosition(pt.X, pt.Y);
             }
             _pathDirty = true;
         }
-        public static SKPoint[] GenerateStar(SKPoint center, float xRadius, float yRadius, int points, float innerRatio = 0.5f)
+        public static SKPoint[] GenerateStar(float xCenter, float yCenter, float xRadius, float yRadius, int points, float innerRatio = 0.5f)
         {
             var num = points == -1 ? 5 * 2 : points * 2; // star points
             var step = MathF.PI * 2 / num;
@@ -121,8 +121,8 @@
             {
                 var curXr = i % 2 == 1 ? xRadius : xRadius * innerRatio;
                 var curYr = i % 2 == 1 ? yRadius : yRadius * innerRatio;
-                var x = (float)(center.X + Math.Sin(i * step) * curXr);
-                var y = (float)(center.Y + Math.Cos(i * step) * curYr);
+                var x = (float)(xCenter + Math.Sin(i * step) * curXr);
+                var y = (float)(yCenter + Math.Cos(i * step) * curYr);
                 result[i] = new SKPoint(x, y);
             }
             return result;

@@ -10,8 +10,10 @@
     using Numbers.Renderer;
     using SkiaSharp;
 
-    public abstract class UIControlBase
+    public abstract class UIControlBase : IDrawableElement
     {
+        private static int _idCounter = 1; 
+        public int Id { get; set; }
         public MouseAgent Agent { get; }
         public SKWorkspaceMapper WorkspaceMapper => Agent.WorkspaceMapper;
         public CoreRenderer Renderer => Agent.Renderer;
@@ -19,6 +21,7 @@
 
         public UIControlBase(MouseAgent agent) 
         {
+            Id = _idCounter++;
             Agent = agent;
         }
 

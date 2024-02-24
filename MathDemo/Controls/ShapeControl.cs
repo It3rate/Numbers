@@ -37,6 +37,7 @@
         public Number X { get; }
         public Number Y { get; }
         public Number Rotation { get; }
+        public Number Points { get; }
 
         private Focal _lastRadius;
         private Focal _lastRadiusOffset;
@@ -50,9 +51,7 @@
         private Focal _lastX;
         private Focal _lastY;
         private Focal _lastRotation;
-
-        public int _lastSampleCount = 10;
-        public int _sampleCount = 10;
+        private Focal _lastPoints;
 
         private float[] _samplesRadius;
         private float[] _samplesRadiusOffset;
@@ -66,26 +65,50 @@
         private float[] _samplesX;
         private float[] _samplesY;
         private float[] _samplesRotation;
+        private float[] _samplesPoints;
 
         private bool _isDirty = true;
-        private List<SKPath> _paths = new List<SKPath>();
-        private List<SKPaint> _outlines = new List<SKPaint>();
-        private List<SKPaint> _fills = new List<SKPaint>();
+        private SKPath[] _paths;
+        private SKPaint[] _strokes;
+        private SKPaint[] _fills;
+
+        public int _lastSampleCount = 0;
+        public int _sampleCount = 30;
 
         public ShapeControl(MouseAgent agent) : base(agent)
         {
-            Radius = new Number(new Focal(0, 255));
-            RadiusOffset = new Number(new Focal(0, 255));
+            Radius = new Number(new Focal(0, 25));
+            RadiusOffset = new Number(new Focal(0, 100));
             Hue = new Number(new Focal(0, 360));
             Saturation = new Number(new Focal(0, 100));
             Lightness = new Number(new Focal(0, 100));
             StrokeHue = new Number(new Focal(0, 360));
             StrokeSaturation = new Number(new Focal(0, 100));
             StrokeLightness = new Number(new Focal(0, 100));
-            StrokeWidth = new Number(new Focal(0, 50));
-            X = new Number(new Focal(0, 1200));
-            Y = new Number(new Focal(0, 800));
+            StrokeWidth = new Number(new Focal(0, 8));
+            X = new Number(new Focal(-500, 1000));
+            Y = new Number(new Focal(-20, 250));
             Rotation = new Number(new Focal(0, 360));
+            Points = new Number(new Focal(-3, 8));
+            // temp
+            var trait = agent.Brain.GetOrCreateTrait("shapeTrait");
+            agent.Workspace.AddTraits(true, trait);
+            var dm = new Domain(trait, Focal.OneFocal, Focal.MinMaxFocal, "shapeDomain");
+            dm.IsVisible = false;
+            agent.Workspace.AddDomains(true, dm);
+            dm.AddNumber(Radius, false);
+            dm.AddNumber(RadiusOffset, false);
+            dm.AddNumber(Hue, false);
+            dm.AddNumber(Saturation, false);
+            dm.AddNumber(Lightness, false);
+            dm.AddNumber(StrokeHue, false);
+            dm.AddNumber(StrokeSaturation, false);
+            dm.AddNumber(StrokeLightness, false);
+            dm.AddNumber(StrokeWidth, false);
+            dm.AddNumber(X, false);
+            dm.AddNumber(Y, false);
+            dm.AddNumber(Rotation, false);
+            dm.AddNumber(Points, false);
 
             Update();
         }
@@ -151,9 +174,13 @@
                 _samplesRotation = Resample(Rotation);
                 _isDirty = true;
             }
+            if (Points.Focal != _lastPoints || _sampleCount != _lastSampleCount)
+            {
+                _samplesPoints = Resample(Points);
+                _isDirty = true;
+            }
 
 
-            _lastSampleCount = _sampleCount;
             if (_isDirty)
             {
                 GeneratePaths();
@@ -171,11 +198,41 @@
         }
         private void GeneratePaths()
         {
+            if (_isDirty || _lastSampleCount != _sampleCount)
+            {
+                if (_lastSampleCount != _sampleCount)
+                {
+                    _paths = new SKPath[_sampleCount];
+                    _strokes = new SKPaint[_sampleCount];
+                    _fills = new SKPaint[_sampleCount];
+                    for (int i = 0; i < _sampleCount; i++)
+                    {
+                        _paths[i] = new SKPath();
+                    }
+                    _lastSampleCount = _sampleCount;
+                }
+
+                for (int i = 0; i < _sampleCount; i++)
+                {
+                    var pts = SKPathMapper.GenerateStar(_samplesX[i], _samplesY[i], _samplesRadius[i], _samplesRadius[i], (int)_samplesPoints[i], _samplesRadiusOffset[i] / 100f);
+                    _paths[i].Reset();
+                    _paths[i].AddPoly(pts);
+                    _fills[i] = CorePens.GetBrush(SKColor.FromHsl(_samplesHue[i], _samplesSaturation[i], _samplesLightness[i]));
+                    _strokes[i] = CorePens.GetPen(SKColor.FromHsl(_samplesStrokeHue[i], _samplesStrokeSaturation[i], _samplesStrokeLightness[i]), _samplesStrokeWidth[i]);
+                }
+            }
             _isDirty = false;
         }
         public override void Draw()
         {
-
+            if (_paths != null && _paths.Length == _sampleCount)
+            {
+                for (int i = 0; i < _sampleCount; i++)
+                {
+                    Renderer.Canvas.DrawPath(_paths[i], _fills[i]);
+                    Renderer.Canvas.DrawPath(_paths[i], _strokes[i]);
+                }
+            }
         }
     }
 }

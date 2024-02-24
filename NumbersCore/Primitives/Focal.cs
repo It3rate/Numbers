@@ -81,6 +81,7 @@ namespace NumbersCore.Primitives
         public static Focal CreateBalancedFocal(long halfTicks) { return new Focal(-halfTicks, halfTicks); }
         private static Focal _minMaxFocal;
         public static Focal MinMaxFocal => _minMaxFocal ?? (_minMaxFocal = new Focal(long.MinValue, long.MaxValue));
+        public static Focal OneFocal => new Focal(0, 1);
         private static Focal _upMaxFocal;
         public static Focal UpMaxFocal => _upMaxFocal ?? (_upMaxFocal = new Focal(0, long.MaxValue));
 

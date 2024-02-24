@@ -21,6 +21,7 @@ namespace Numbers.Mappers
         private readonly Dictionary<int, SKPathMapper> _pathMappers = new Dictionary<int, SKPathMapper>();
         private readonly Dictionary<int, SKTextMapper> _textMappers = new Dictionary<int, SKTextMapper>();
         private readonly Dictionary<int, SKImageMapper> _imageMappers = new Dictionary<int, SKImageMapper>();
+        private readonly Dictionary<int, IDrawableElement> _uiControls = new Dictionary<int, IDrawableElement>();
 	    private static float defaultLineT = 0.1f;
         public const float SnapDistance = 5.0f;
 
@@ -254,6 +255,23 @@ namespace Numbers.Mappers
         public void RemovePathMapper(SKPathMapper pathMapper)
         {
             _pathMappers.Remove(pathMapper.Id);
+        }
+        #endregion
+        #region Controls
+        public IEnumerable<IDrawableElement> UIControls()
+        {
+            foreach (var pm in _uiControls.Values)
+            {
+                yield return pm;
+            }
+        }
+        public void AddUIControl(IDrawableElement control)
+        {
+            _uiControls.Add(control.Id, control);
+        }
+        public void RemoveUIControl(IDrawableElement control)
+        {
+            _uiControls.Remove(control.Id);
         }
         #endregion
         #region Images
@@ -511,6 +529,10 @@ namespace Numbers.Mappers
                 foreach (var imageMapper in _imageMappers.Values)
                 {
                     imageMapper.Draw();
+                }
+                foreach (var control in _uiControls.Values)
+                {
+                    control.Draw();
                 }
                 foreach (var textMapper in _textMappers.Values)
                 {

@@ -8,6 +8,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using System.Windows.Forms;
+    using MathDemo.Controls;
     using Numbers;
     using Numbers.Agent;
     using Numbers.Drawing;
@@ -73,6 +74,9 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
             wm.CreateImageMapper("0_ants.png", new SKSegment(50, 230, 450, 200));
+
+            var control = new ShapeControl(_currentMouseAgent);
+            wm.AddUIControl(control);
 
             var w = 20;
             for (int i = 0; i < 40; i++)

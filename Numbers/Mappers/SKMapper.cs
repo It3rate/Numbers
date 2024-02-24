@@ -10,7 +10,7 @@ namespace Numbers.Mappers
 {
     public abstract class SKMapper : IDrawableElement
 	{
-		public int Id;
+		public int Id { get; set; }
         protected static int idCounter = 0;
 
 		public MouseAgent Agent { get; }

@@ -11,6 +11,7 @@
 
     public interface IDrawableElement
     {
+        int Id { get; set; }
         MouseAgent Agent { get; }
         SKWorkspaceMapper WorkspaceMapper { get; }
         CoreRenderer Renderer { get; }
