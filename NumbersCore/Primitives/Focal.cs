@@ -34,7 +34,7 @@ namespace NumbersCore.Primitives
     //    Focal Clone();
     //}
 
-    public class Focal : IMathElement
+    public class Focal : IMathElement, IEquatable<Focal>
     {
         public MathElementKind Kind => MathElementKind.Focal;
         public int Id { get; }
@@ -467,7 +467,21 @@ namespace NumbersCore.Primitives
         }
         public bool Equals(Focal value)
         {
-            return StartPosition.Equals(value.StartPosition) && EndPosition.Equals(value.EndPosition);
+            return ReferenceEquals(this, value) || StartPosition.Equals(value.StartPosition) && EndPosition.Equals(value.EndPosition);
+        }
+
+        public static bool operator ==(Focal a, Focal b)
+        {
+            if (a is null || b is null)
+            {
+                return false;
+            }
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Focal a, Focal b)
+        {
+            return !(a == b);
         }
         public override int GetHashCode()
         {

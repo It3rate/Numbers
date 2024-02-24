@@ -73,23 +73,23 @@
         private SKPaint[] _fills;
 
         public int _lastSampleCount = 0;
-        public int _sampleCount = 30;
+        public int _sampleCount = 20;
 
         public ShapeControl(MouseAgent agent, int top, int left, int width, int height) : base(agent)
         {
-            Radius = new Number(new Focal(-10, 30));
-            RadiusOffset = new Number(new Focal(0, 100));
+            Radius = new Number(new Focal(25, 50));
+            RadiusOffset = new Number(new Focal(20, 100));
             Hue = new Number(new Focal(0, 360));
             Saturation = new Number(new Focal(0, 100));
-            Lightness = new Number(new Focal(0, 100));
+            Lightness = new Number(new Focal(20, 80));
             StrokeHue = new Number(new Focal(0, 360));
             StrokeSaturation = new Number(new Focal(0, 100));
-            StrokeLightness = new Number(new Focal(0, 100));
-            StrokeWidth = new Number(new Focal(0, 8));
-            X = new Number(new Focal(-left, left + width));
-            Y = new Number(new Focal(-top, top+height));
+            StrokeLightness = new Number(new Focal(0, 40));
+            StrokeWidth = new Number(new Focal(0, 5));
+            X = new Number(new Focal(left, left + width));
+            Y = new Number(new Focal(top, top+height));
             Rotation = new Number(new Focal(0, 360));
-            Points = new Number(new Focal(-3, 8));
+            Points = new Number(new Focal(3, 8));
             // temp
             var trait = agent.Brain.GetOrCreateTrait("shapeTrait");
             agent.Workspace.AddTraits(true, trait);
@@ -117,66 +117,79 @@
             if (Radius.Focal != _lastRadius || _sampleCount != _lastSampleCount)
             {
                 _samplesRadius = Resample(Radius);
+                _lastRadius = Radius.Focal.Clone();
                 _isDirty = true;
             }
             if (RadiusOffset.Focal != _lastRadiusOffset || _sampleCount != _lastSampleCount)
             {
                 _samplesRadiusOffset = Resample(RadiusOffset);
+                _lastRadiusOffset = RadiusOffset.Focal.Clone();
                 _isDirty = true;
             }
             if (Hue.Focal != _lastHue || _sampleCount != _lastSampleCount)
             {
                 _samplesHue = Resample(Hue);
+                _lastHue = Hue.Focal.Clone();
                 _isDirty = true;
             }
             if (Saturation.Focal != _lastSaturation || _sampleCount != _lastSampleCount)
             {
                 _samplesSaturation = Resample(Saturation);
+                _lastSaturation = Saturation.Focal.Clone();
                 _isDirty = true;
             }
             if (Lightness.Focal != _lastLightness || _sampleCount != _lastSampleCount)
             {
                 _samplesLightness = Resample(Lightness);
+                _lastLightness = Lightness.Focal.Clone();
                 _isDirty = true;
             }
             if (StrokeHue.Focal != _lastStrokeHue || _sampleCount != _lastSampleCount)
             {
                 _samplesStrokeHue = Resample(StrokeHue);
+                _lastStrokeHue = StrokeHue.Focal.Clone();
                 _isDirty = true;
             }
             if (StrokeSaturation.Focal != _lastStrokeSaturation || _sampleCount != _lastSampleCount)
             {
                 _samplesStrokeSaturation = Resample(StrokeSaturation);
+                _lastStrokeSaturation = StrokeSaturation.Focal.Clone();
                 _isDirty = true;
             }
             if (StrokeLightness.Focal != _lastStrokeLightness || _sampleCount != _lastSampleCount)
             {
                 _samplesStrokeLightness = Resample(StrokeLightness);
+                _lastStrokeLightness = StrokeLightness.Focal.Clone();
                 _isDirty = true;
             }
             if (StrokeWidth.Focal != _lastStrokeWidth || _sampleCount != _lastSampleCount)
             {
                 _samplesStrokeWidth = Resample(StrokeWidth);
+                _lastStrokeWidth = StrokeWidth.Focal.Clone();
                 _isDirty = true;
             }
             if (X.Focal != _lastX || _sampleCount != _lastSampleCount)
             {
                 _samplesX = Resample(X);
+                _lastX = X.Focal.Clone();
                 _isDirty = true;
             }
             if (Y.Focal != _lastY || _sampleCount != _lastSampleCount)
             {
                 _samplesY = Resample(Y);
+                _lastY = Y.Focal.Clone();
                 _isDirty = true;
             }
             if (Rotation.Focal != _lastRotation || _sampleCount != _lastSampleCount)
             {
                 _samplesRotation = Resample(Rotation);
+                _lastRotation = Rotation.Focal.Clone();
                 _isDirty = true;
             }
             if (Points.Focal != _lastPoints || _sampleCount != _lastSampleCount)
             {
                 _samplesPoints = Resample(Points);
+                _lastPoints = Points.Focal.Clone();
                 _isDirty = true;
             }
 
@@ -192,7 +205,7 @@
             var result = new float[_sampleCount];
             for (int i = 0; i < _sampleCount; i++)
             {
-                result[i] = source.Value.SampleRandom(_rnd);
+                result[i] = source.ValueInRenderPerspective.SampleRandom(_rnd);
             }
             return result;
         }
@@ -225,6 +238,7 @@
         }
         public override void Draw()
         {
+            Update();
             if (_paths != null && _paths.Length == _sampleCount)
             {
                 for (int i = 0; i < _sampleCount; i++)

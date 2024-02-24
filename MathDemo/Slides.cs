@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
+    using System.Security.Cryptography;
     using System.Security.Policy;
     using System.Text;
     using System.Threading.Tasks;
@@ -36,6 +37,7 @@
                 RandomVsOrder_B,
                 GradientLine_A,
                 GradientLine_B,
+                Uncertainty_A,
                 ValidMath_A,
                 ValidMath_B,
                 Selection_A,
@@ -73,7 +75,7 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            wm.CreateImageMapper("0_ants.png", new SKSegment(50, 230, 450, 200));
+            wm.CreateImageMapper("0_ants.png", new SKSegment(50, 230, 450, 230));
 
             var w = 20;
             for (int i = 0; i < 40; i++)
@@ -114,26 +116,11 @@
             wm.ShowNone();
             string[] txt = new string[] {
                 "Order can be represented by a gradient line - this is a proxy.",
-                "Temperature, brightness, path home, points on a star. These are traits."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            wm.CreateImageMapper("4_parkPath.jpg", new SKSegment(50, 150, 50, 550));
+            wm.CreateImageMapper("4_parkPath.jpg", new SKSegment(50, 130, 500, 130));
 
-            var w = 80;
-            var hue = 100;
-            var x = 1050;
-            var y = 50;
-            var pts = 3;
-            var count = 8;
-            for (int i = 0; i < count; i++)
-            {
-                var path = wm.CreatePathMapper();
-                path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 40), 7);
-                path.SetStar(new SKPoint(x, y), new SKPoint(x + w, y + w), pts++);
-                y += 100;
-                hue += 150 / count;
-            }
             //var path = wm.CreatePathMapper();
             //var paint = CorePens.GetPen(SKColors.Teal, 20);
             //path.Pen = paint;
@@ -147,16 +134,74 @@
         {
             var wm = GradientLine_A();
             wm.AppendText(
-                "All measurements have uncertainty beyond a certain level.",
-                "This is akin to randomness."
+                "Temperature, brightness, path home, points on a star. These are traits."
                );
 
-            var control = new ShapeControl(_currentMouseAgent, 200, 550, 400, 400);
-            wm.AddUIControl(control);
+            wm.DefaultShowGradientNumberLine = false;
+            wm.DefaultShowPolarity = false;
+            wm.DefaultShowPolarity = false;
+            wm.DefaultShowFractions = false;
+            wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowTicks = false;
+
+            // thermometer
+            var left = 678;
+            var right = 805;
+            var top = 135;
+            wm.CreateImageMapper("therm.png", new SKSegment(left, top, right, top));
+            var mid = (right - left) / 2f + left;
+
+            var guideline = new SKSegment(mid + 2, top + 116, mid + 2, top + 425);
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("therm", 1, 50), guideline);
+            var num = hd.CreateNumber(new Focal(50, -10));
+            num.InvertPolarity();
+
+            // stars
+            var w = 80;
+            var hue = 100;
+            var x = 1000;
+            var y = 50;
+            var pts = 3;
+            var count = 8;
+            for (int i = 0; i < count; i++)
+            {
+                var path = wm.CreatePathMapper();
+                path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 40), 7);
+                path.SetStar(new SKPoint(x, y), new SKPoint(x + w, y + w), pts++);
+                y += 100;
+                hue += 150 / count;
+            }
 
             return wm;
         }
-        private SKWorkspaceMapper ValidMath_A()
+        private SKWorkspaceMapper Uncertainty_A()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            wm.ShowNone();
+            wm.DefaultShowTicks = true;
+            string[] txt = new string[] {
+                "All measurements have uncertainty beyond a certain level.",
+                "This is akin to randomness."
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var control = new ShapeControl(_currentMouseAgent, 175, 300, 600, 400);
+            wm.AddUIControl(control);
+
+            var hueGuideline = new SKSegment(200,650,1000,650);
+            var hueDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Hue", 1, 0, 360, 0), hueGuideline);
+            hueDm.Label = "Hue";
+            hueDm.BasisNumber.Focal = control.Hue.Domain.BasisNumber.Focal;
+            var hueNum = hueDm.CreateNumber(control.Hue.Focal);
+
+            var sizeDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Size", 1, 0, 100, 0), hueGuideline + new SKPoint(0, 40));
+            sizeDm.Label = "Size";
+            sizeDm.BasisNumber.Focal = control.Radius.Domain.BasisNumber.Focal;
+            var radNum = sizeDm.CreateNumber(control.Radius.Focal);
+
+            return wm;
+        }
+            private SKWorkspaceMapper ValidMath_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             wm.ShowNone();
