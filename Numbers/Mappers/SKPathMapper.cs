@@ -115,6 +115,7 @@
         public static SKPoint[] GenerateStar(float xCenter, float yCenter, float xRadius, float yRadius, int points, float innerRatio = 0.5f)
         {
             var num = points == -1 ? 5 * 2 : points * 2; // star points
+            num = num < 0 ? 0 : num;
             var step = MathF.PI * 2 / num;
             var result = new SKPoint[num + 1]; // + 1 is link back to start point
             for (int i = 0; i < num + 1; i++)

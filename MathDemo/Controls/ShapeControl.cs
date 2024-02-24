@@ -205,7 +205,8 @@
             var result = new float[_sampleCount];
             for (int i = 0; i < _sampleCount; i++)
             {
-                result[i] = source.ValueInRenderPerspective.SampleRandom(_rnd);
+                var val = source.ValueInRenderPerspective.SampleRandom(_rnd);
+                result[i] = (float)Math.Round(val);
             }
             return result;
         }

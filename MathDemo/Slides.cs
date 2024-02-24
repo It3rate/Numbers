@@ -30,7 +30,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 3;
+            _testIndex = 4;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -185,19 +185,30 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var control = new ShapeControl(_currentMouseAgent, 175, 300, 600, 400);
+            var control = new ShapeControl(_currentMouseAgent, 175, 320, 600, 400);
             wm.AddUIControl(control);
 
             var hueGuideline = new SKSegment(200,650,1000,650);
+
             var hueDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Hue", 1, 0, 360, 0), hueGuideline);
             hueDm.Label = "Hue";
             hueDm.BasisNumber.Focal = control.Hue.Domain.BasisNumber.Focal;
-            var hueNum = hueDm.CreateNumber(control.Hue.Focal);
+            hueDm.CreateNumber(control.Hue.Focal);
 
-            var sizeDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Size", 1, 0, 100, 0), hueGuideline + new SKPoint(0, 40));
+            var inrDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("InnerRadius", 1, 0, 200, 0), hueGuideline + new SKPoint(0, 40));
+            inrDm.Label = "Inner Radius";
+            inrDm.BasisNumber.Focal = control.RadiusOffset.Domain.BasisNumber.Focal;
+            inrDm.CreateNumber(control.RadiusOffset.Focal);
+
+            var sizeDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Size", 1, 0, 100, 0), hueGuideline + new SKPoint(0, 80));
             sizeDm.Label = "Size";
             sizeDm.BasisNumber.Focal = control.Radius.Domain.BasisNumber.Focal;
-            var radNum = sizeDm.CreateNumber(control.Radius.Focal);
+            sizeDm.CreateNumber(control.Radius.Focal);
+
+            var ptsDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Points", 1, 0, 15, 3), hueGuideline + new SKPoint(0, 1200));
+            ptsDm.Label = "Points";
+            ptsDm.BasisNumber.Focal = control.Points.Domain.BasisNumber.Focal;
+            ptsDm.CreateNumber(control.Points.Focal);
 
             return wm;
         }
