@@ -267,7 +267,7 @@ namespace Numbers.Mappers
         }
         protected virtual void DrawLabel()
         {
-            if(Label != "")
+            if(Label != null && Label != "")
             {
                 Renderer.DrawText(Guideline.EndPoint + new SKPoint(10,3), Label, Renderer.Pens.LabelBrush);
             }

@@ -54,6 +54,7 @@ namespace NumbersCore.Primitives
             BasisNumber = CreateNumber(basisFocal);
 	        //BasisFocal = basisFocal;
             MinMaxNumber = minMaxFocal == default ? CreateNumber(Focal.MinMaxFocal) : CreateNumber(minMaxFocal);
+            Name = name;
             Trait.DomainStore.Add(Id, this);
         }
         public void ChangeDomainName(string newDomainName)
@@ -67,12 +68,13 @@ namespace NumbersCore.Primitives
 
         public static Domain CreateDomain(string traitName, int unitSize = 8, int rangeSize = 16, string name = "default") => 
             CreateDomain(traitName, unitSize, rangeSize, rangeSize, 0, name);
-        public static Domain CreateDomain(string traitName, int unitSize, int minRange, int maxRange, int zeroPoint, string name = "default")
+        public static Domain CreateDomain(string traitName, int unitSize, int minRange, int maxRange, int zeroPoint, string name = "default", bool isVisible = true)
         {
             Trait trait = Trait.GetOrCreateTrait(Brain.ActiveBrain, traitName);
             var unit = new Focal(zeroPoint, zeroPoint + unitSize);
-            var range = new Focal(-minRange * unitSize + zeroPoint, maxRange * unitSize + zeroPoint);
-            var domain = trait.AddDomain(unit, range, name);
+            var minMaxRange = new Focal(-minRange * unitSize + zeroPoint, maxRange * unitSize + zeroPoint);
+            var domain = trait.AddDomain(unit, minMaxRange, name);
+            domain.IsVisible = isVisible;
             return domain;
         }
 

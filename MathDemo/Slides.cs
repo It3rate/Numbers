@@ -176,7 +176,7 @@
         }
         private SKWorkspaceMapper Uncertainty_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 200, 650, 800, 300);
             wm.ShowNone();
             wm.DefaultShowTicks = true;
             string[] txt = new string[] {
@@ -188,31 +188,14 @@
             var control = new ShapeControl(_currentMouseAgent, 175, 320, 600, 400);
             wm.AddUIControl(control);
 
-            var hueGuideline = new SKSegment(200,650,1000,650);
-
-            var hueDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Hue", 1, 0, 360, 0), hueGuideline);
-            hueDm.Label = "Hue";
-            hueDm.BasisNumber.Focal = control.Hue.Domain.BasisNumber.Focal;
-            hueDm.CreateNumber(control.Hue.Focal);
-
-            var inrDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("InnerRadius", 1, 0, 200, 0), hueGuideline + new SKPoint(0, 40));
-            inrDm.Label = "Inner Radius";
-            inrDm.BasisNumber.Focal = control.RadiusOffset.Domain.BasisNumber.Focal;
-            inrDm.CreateNumber(control.RadiusOffset.Focal);
-
-            var sizeDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Size", 1, 0, 100, 0), hueGuideline + new SKPoint(0, 80));
-            sizeDm.Label = "Size";
-            sizeDm.BasisNumber.Focal = control.Radius.Domain.BasisNumber.Focal;
-            sizeDm.CreateNumber(control.Radius.Focal);
-
-            var ptsDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Points", 1, 0, 15, 3), hueGuideline + new SKPoint(0, 1200));
-            ptsDm.Label = "Points";
-            ptsDm.BasisNumber.Focal = control.Points.Domain.BasisNumber.Focal;
-            ptsDm.CreateNumber(control.Points.Focal);
+            var dm = wm.CreateLinkedNumber(control.Hue);
+            wm.CreateLinkedNumber(control.Radius);
+            wm.CreateLinkedNumber(control.RadiusOffset);
+            wm.CreateLinkedNumber(control.Points);
 
             return wm;
         }
-            private SKWorkspaceMapper ValidMath_A()
+        private SKWorkspaceMapper ValidMath_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             wm.ShowNone();
@@ -303,7 +286,7 @@
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowPolarity = false;
             wm.DefaultShowFractions = false;
-            wm.OffsetNextLine(.3f);
+            wm.OffsetNextLineBy(50);
             var dmC = wm.GetOrCreateDomainMapper(Domain.CreateDomain("TempC", 9, 22, 38, 0));
             var dmF = wm.GetOrCreateDomainMapper(Domain.CreateDomain("TempF", 5, 8, 100, -32 * 5));
             var nm0 = dmF.CreateNumberFromFloats(35f, 8f);
@@ -317,7 +300,7 @@
         }
         private SKWorkspaceMapper AddSubtract_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 250, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 400, 800, 400);
             wm.ShowAll();
             wm.DefaultShowPolarity = false;
             wm.DefaultShowMinorTicks = false;

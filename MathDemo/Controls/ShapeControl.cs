@@ -77,40 +77,32 @@
 
         public ShapeControl(MouseAgent agent, int top, int left, int width, int height) : base(agent)
         {
-            Radius = new Number(new Focal(25, 50));
-            RadiusOffset = new Number(new Focal(20, 100));
-            Hue = new Number(new Focal(0, 360));
-            Saturation = new Number(new Focal(0, 100));
-            Lightness = new Number(new Focal(20, 80));
-            StrokeHue = new Number(new Focal(0, 360));
-            StrokeSaturation = new Number(new Focal(0, 100));
-            StrokeLightness = new Number(new Focal(0, 40));
-            StrokeWidth = new Number(new Focal(0, 5));
-            X = new Number(new Focal(left, left + width));
-            Y = new Number(new Focal(top, top+height));
-            Rotation = new Number(new Focal(0, 360));
-            Points = new Number(new Focal(3, 8));
-            // temp
-            var trait = agent.Brain.GetOrCreateTrait("shapeTrait");
-            agent.Workspace.AddTraits(true, trait);
-            var dm = new Domain(trait, Focal.OneFocal, Focal.MinMaxFocal, "shapeDomain");
-            dm.IsVisible = false;
-            agent.Workspace.AddDomains(true, dm);
-            dm.AddNumber(Radius, false);
-            dm.AddNumber(RadiusOffset, false);
-            dm.AddNumber(Hue, false);
-            dm.AddNumber(Saturation, false);
-            dm.AddNumber(Lightness, false);
-            dm.AddNumber(StrokeHue, false);
-            dm.AddNumber(StrokeSaturation, false);
-            dm.AddNumber(StrokeLightness, false);
-            dm.AddNumber(StrokeWidth, false);
-            dm.AddNumber(X, false);
-            dm.AddNumber(Y, false);
-            dm.AddNumber(Rotation, false);
-            dm.AddNumber(Points, false);
+            Radius = CreateProperty("Radius", 25, 50, 0, 50);
+            RadiusOffset = CreateProperty("RadiusOffset", 20, 100, 0, 200);
+
+            Hue = CreateProperty("Hue", 0, 360, 0, 360);
+            Saturation = CreateProperty("Saturation", 0, 100, 0, 100);
+            Lightness = CreateProperty("Lightness", 20, 80, 0, 100);
+
+            StrokeHue = CreateProperty("StrokeHue", 0, 360, 0, 360);
+            StrokeSaturation = CreateProperty("StrokeSaturation", 0, 100, 0, 100);
+            StrokeLightness = CreateProperty("StrokeLightness", 0, 40, 0, 100);
+            StrokeWidth = CreateProperty("StrokeWidth", 0, 5, 0, 10);
+
+            X = CreateProperty("X", left, left + width, left, left + width);
+            Y = CreateProperty("Y", top, top + height, top, top + height);
+
+            Rotation = CreateProperty("Rotation", 0, 360, 0, 360);
+            Points = CreateProperty("Points", 3, 8, 0, 15, 3);
 
             Update();
+        }
+        private Number CreateProperty(string trait, int start, int end, int min, int max, int zeroPoint = 0)
+        {
+            var dm = Domain.CreateDomain(trait, 1, min, max, zeroPoint, trait, false);
+            var result = new Number(new Focal(start + zeroPoint, end + zeroPoint));
+            dm.AddNumber(result, false);
+            return result;
         }
         public void Update()
         {

@@ -22,7 +22,7 @@ namespace Numbers.Mappers
         private readonly Dictionary<int, SKTextMapper> _textMappers = new Dictionary<int, SKTextMapper>();
         private readonly Dictionary<int, SKImageMapper> _imageMappers = new Dictionary<int, SKImageMapper>();
         private readonly Dictionary<int, IDrawableElement> _uiControls = new Dictionary<int, IDrawableElement>();
-	    private static float defaultLineT = 0.1f;
+        private int _nextOffset = 0;
         public const float SnapDistance = 5.0f;
 
         public SKWorkspaceMapper(MouseAgent agent, float left, float top, float width, float height) : base(agent, agent.Workspace)
@@ -132,6 +132,19 @@ namespace Numbers.Mappers
             return result;
         }
         public bool RemoveDomainMapper(SKDomainMapper domainMapper) => _domainMappers.Remove(domainMapper.Domain.Id);
+
+        public SKDomainMapper CreateLinkedNumber(Number linkTarget)
+        {
+            var result = GetOrCreateDomainMapper(linkTarget.Domain);
+            linkTarget.Domain.IsVisible = true;
+            if (linkTarget.Domain.Name != "")
+            {
+                result.Label = linkTarget.Domain.Name;
+            }
+            result.BasisNumber.Focal = linkTarget.Domain.BasisNumber.Focal;
+            var num = result.CreateNumber(linkTarget.Focal);
+            return result;
+        }
         #endregion
         #region Transforms
         public IEnumerable<SKTransformMapper> GetTransformMappers(bool reverse = false)
@@ -395,9 +408,14 @@ namespace Numbers.Mappers
         }
         public SKSegment GetHorizontalSegment(float t, int margins)
         {
-	        var offset = Height * t;
-	        var result = TopSegment + new SKPoint(0, offset);
-	        return result.InsetSegment(margins);
+            var offset = Height * t;
+            var result = TopSegment + new SKPoint(0, offset);
+            return result.InsetSegment(margins);
+        }
+        public SKSegment GetHorizontalSegment(int offset, int margins = 0)
+        {
+            var result = TopSegment + new SKPoint(0, offset);
+            return result.InsetSegment(margins);
         }
         public SKSegment GetVerticalSegment(float t, int margins)
         {
@@ -405,14 +423,14 @@ namespace Numbers.Mappers
 	        var result = LeftSegment + new SKPoint(offset, 0);
 	        return result.InsetSegment(margins);
         }
-        public void OffsetNextLine(float offsetRatio)
+        public void OffsetNextLineBy(int offsetToAdd)
         {
-            defaultLineT += offsetRatio;
+            _nextOffset += offsetToAdd;
         }
-        private SKSegment NextDefaultLine()
+        private SKSegment NextDefaultLine(int offsetSize = 40)
         {
-	        var result = GetHorizontalSegment(defaultLineT, (int)(Width * .05f));
-	        defaultLineT += 0.1f;
+            var result = GetHorizontalSegment(_nextOffset);
+            _nextOffset += offsetSize;
 	        return result;
         }
         public void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)
@@ -606,7 +624,7 @@ namespace Numbers.Mappers
         {
 	        _domainMappers.Clear();
 	        _transformMappers.Clear();
-            defaultLineT = 0.1f;
+            _nextOffset = 0;
         }
     }
 }
