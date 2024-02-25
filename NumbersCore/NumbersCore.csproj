@@ -59,8 +59,7 @@
     <Compile Include="CoreConcepts\Tactile\BluntSharp.cs" />
     <Compile Include="CoreConcepts\Tactile\SmoothRough.cs" />
     <Compile Include="CoreConcepts\Tactile\TactileTrait.cs" />
-    <Compile Include="CoreConcepts\Temperature\Celcius.cs" />
-    <Compile Include="CoreConcepts\Temperature\Fahrenheit.cs" />
+    <Compile Include="CoreConcepts\Temperature\TemperatureDomain.cs" />
     <Compile Include="CoreConcepts\Temperature\TemperatureTrait.cs" />
     <Compile Include="CoreConcepts\Time\MillisecondNumber.cs" />
     <Compile Include="CoreConcepts\Time\MillisecondTimeDomain.cs" />

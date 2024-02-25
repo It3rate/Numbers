@@ -65,7 +65,7 @@ namespace Numbers.Mappers
         public SKDomainMapper LastDomainMapper() => DomainMapperAt(_domainMappers.Count - 1);
         public long DefaultDomainTicks { get; set; } = 4;
         public long DefaultDomainRange { get; set; } = 5;
-        public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null)
+        public SKDomainMapper GetOrCreateDomainMapper(Domain domain, SKSegment line = null, SKSegment unitLine = null, string label = "")
         {
             if (!_domainMappers.TryGetValue(domain.Id, out var result))
             {
@@ -77,6 +77,10 @@ namespace Numbers.Mappers
                 var uSeg = unitLine ?? line.SegmentAlongLine(zeroPt, zeroPt + (tickSize * domain.BasisFocal.LengthInTicks));
                 result = new SKDomainMapper(Agent, domain, line, uSeg);
                 SetDomainToDefaults(result);
+                if(label != "")
+                {
+                    result.Label = label;
+                }
                 _domainMappers[domain.Id] = result;
             }
             return (SKDomainMapper)result;

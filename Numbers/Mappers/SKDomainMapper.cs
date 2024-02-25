@@ -150,6 +150,11 @@ namespace Numbers.Mappers
 	        }
 	        return result;
         }
+        public SKNumberMapper LinkNumber(Number sourceNumber, bool addToStore = true)
+        {
+            var num = Domain.CreateNumber(sourceNumber.Focal, addToStore);
+            return GetOrCreateNumberMapper(num);
+        }
         public SKNumberMapper CreateNumber(Focal focal, bool addToStore = true)
         {
             var num = Domain.CreateNumber(focal, addToStore);

@@ -80,6 +80,7 @@
             Radius = CreateProperty("Radius", 25, 50, 0, 50);
             RadiusOffset = CreateProperty("RadiusOffset", 20, 100, 0, 200);
 
+            // todo: get color from knowledge
             Hue = CreateProperty("Hue", 0, 360, 0, 360);
             Saturation = CreateProperty("Saturation", 0, 100, 0, 100);
             Lightness = CreateProperty("Lightness", 20, 80, 0, 100);

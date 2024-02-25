@@ -15,6 +15,7 @@
     using Numbers.Drawing;
     using Numbers.Mappers;
     using Numbers.Renderer;
+    using NumbersCore.CoreConcepts.Temperature;
     using NumbersCore.Primitives;
     using SkiaSharp;
     using static System.Net.Mime.MediaTypeNames;
@@ -30,7 +31,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 4;
+            _testIndex = 10;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -180,8 +181,31 @@
             wm.ShowNone();
             wm.DefaultShowTicks = true;
             string[] txt = new string[] {
-                "All measurements have uncertainty beyond a certain level.",
-                "This is akin to randomness."
+                "We partition these traits into the highest resolution we can (or we care about), anything below this is unpredictable at this resolution.",
+                "We can also choose a section we care about, accept values coming arbitrarily from anywhere in that section.",
+                "All measures have uncertain, unimportant, or unpredictable aspects, but we can quantify and qualify these unknowns."
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var control = new ShapeControl(_currentMouseAgent, 175, 320, 600, 400);
+            wm.AddUIControl(control);
+
+            var dm = wm.CreateLinkedNumber(control.Hue);
+            wm.CreateLinkedNumber(control.Radius);
+            wm.CreateLinkedNumber(control.RadiusOffset);
+            wm.CreateLinkedNumber(control.Points);
+
+            return wm;
+        }
+        private SKWorkspaceMapper Categories_A()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 200, 650, 800, 300);
+            wm.ShowNone();
+            wm.DefaultShowTicks = true;
+            string[] txt = new string[] {
+                "When measurable properties cluster, we can create categories.",
+                "These categories can be as strict or loose as needed, and we don't need to consider all of them at once.",
+                "Traits can be combined into new categories. Area, color, shortcuts, and speed are examples of combined traits."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -261,7 +285,7 @@
         }
         private SKWorkspaceMapper ComparisonsBasis_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 250, 1000, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 250, 900, 400);
             wm.ShowAll();
             wm.DefaultShowPolarity = false;
             string[] txt = new string[] {
@@ -287,14 +311,13 @@
             wm.DefaultShowPolarity = false;
             wm.DefaultShowFractions = false;
             wm.OffsetNextLineBy(50);
-            var dmC = wm.GetOrCreateDomainMapper(Domain.CreateDomain("TempC", 9, 22, 38, 0));
-            var dmF = wm.GetOrCreateDomainMapper(Domain.CreateDomain("TempF", 5, 8, 100, -32 * 5));
+            var dmC = wm.GetOrCreateDomainMapper(TemperatureDomain.CelsiusDomain, null, null, "Celsius");
+            var dmF = wm.GetOrCreateDomainMapper(TemperatureDomain.FahrenheitDomain, null, null, "Fahrenheit");
             var nm0 = dmF.CreateNumberFromFloats(35f, 8f);
-            //hd1.CreateNumberFromFloats(2f, -4f);
-            dmC.CreateNumber(nm0.Number.Focal);
+            dmC.LinkNumber(nm0.Number);
 
-            var tf = wm.CreateTextMapper(new string[] { "Celsius" }, new SKSegment(dmC.Guideline.StartPoint + new SKPoint(0, -32), dmF.Guideline.EndPoint));
-            var tc = wm.CreateTextMapper(new string[] { "Fahrenheit" }, new SKSegment(dmF.Guideline.StartPoint + new SKPoint(0, 30), dmC.Guideline.EndPoint));
+            //var tf = wm.CreateTextMapper(new string[] { "Celsius" }, new SKSegment(dmC.Guideline.StartPoint + new SKPoint(0, -32), dmF.Guideline.EndPoint));
+            //var tc = wm.CreateTextMapper(new string[] { "Fahrenheit" }, new SKSegment(dmF.Guideline.StartPoint + new SKPoint(0, 30), dmC.Guideline.EndPoint));
 
             return wm;
         }
