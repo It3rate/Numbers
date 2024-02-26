@@ -45,49 +45,65 @@
         public Number Rotation { get; }
         public Number Points { get; }
 
-        private List<IMathElement> _elements = new List<IMathElement>();
 
-        private float[] _samplesRadius;
-        private float[] _samplesRadiusOffset;
-        private float[] _samplesHue;
-        private float[] _samplesSaturation;
-        private float[] _samplesLightness;
-        private float[] _samplesStrokeHue;
-        private float[] _samplesStrokeSaturation;
-        private float[] _samplesStrokeLightness;
-        private float[] _samplesStrokeWidth;
-        private float[] _samplesX;
-        private float[] _samplesY;
-        private float[] _samplesRotation;
-        private float[] _samplesPoints;
 
         private bool _pathsDirty = true;
         private SKPath[] _paths;
         private SKPaint[] _strokes;
         private SKPaint[] _fills;
 
+        private List<Number> _numbers = new List<Number>();
+        private float[][] _samples;
+
+        private float[] _samplesRadius => _samples[0];
+        private float[] _samplesRadiusOffset => _samples[1];
+        private float[] _samplesHue => _samples[2];
+        private float[] _samplesSaturation => _samples[3];
+        private float[] _samplesLightness => _samples[4];
+        private float[] _samplesStrokeHue => _samples[5];
+        private float[] _samplesStrokeSaturation => _samples[6];
+        private float[] _samplesStrokeLightness => _samples[7];
+        private float[] _samplesX => _samples[8];
+        private float[] _samplesY => _samples[9];
+        private float[] _samplesStrokeWidth => _samples[10];
+        private float[] _samplesRotation => _samples[11];
+        private float[] _samplesPoints => _samples[12];
 
         public ShapeControl(MouseAgent agent, int top, int left, int width, int height) : base(agent)
         {
             Radius = CreateProperty("Radius", 25, 50, 0, 50);
             RadiusOffset = CreateProperty("RadiusOffset", 20, 100, 0, 200);
-
             AddPolyProperty(Fill, 0, 360, 0, 100, 20, 80);
-
             AddPolyProperty(Stroke, 0, 360, 0, 100, 0, 40);
-
             StrokeWidth = CreateProperty("StrokeWidth", 0, 5, 0, 10);
-
             AddPolyProperty(Position, left, left + width, top, top + height);
-
             Rotation = CreateProperty("Rotation", 0, 360, 0, 360);
             Points = CreateProperty("Points", 3, 8, 0, 15, 3);
 
-            _elements.AddRange(new IMathElement[] { Radius, RadiusOffset, Fill, Stroke, Position, StrokeWidth, Rotation, Rotation, Points } );
-
             _sampleCounter.SetValue(20);
 
+            CreateDomainMaps();
             Update();
+        }
+        private void CreateDomainMaps()
+        {
+            _numbers.Clear();
+
+            _numbers.Add(Radius);
+            _numbers.Add(RadiusOffset);
+            _numbers.Add(Fill.Hue);
+            _numbers.Add(Fill.Saturation);
+            _numbers.Add(Fill.Lightness);
+            _numbers.Add(Stroke.Hue);
+            _numbers.Add(Stroke.Saturation);
+            _numbers.Add(Stroke.Lightness);
+            _numbers.Add(Position.X);
+            _numbers.Add(Position.Y);
+            _numbers.Add(StrokeWidth);
+            _numbers.Add(Rotation);
+            _numbers.Add(Points);
+
+            _samples = new float[_numbers.Count][];
         }
         private Number CreateProperty(string trait, int start, int end, int min, int max, int zeroPoint = 0)
         {
@@ -104,72 +120,15 @@
         }
         public void Update()
         {
-            if (IsDirty || Radius.IsDirty)
+            var countDirty = IsDirty;
+            for (int i = 0; i < _numbers.Count; i++)
             {
-                _samplesRadius = Resample(Radius);
-                _pathsDirty = true;
+                if(countDirty || _numbers[i].IsDirty)
+                {
+                    _samples[i] = Resample(_numbers[i]);
+                    _pathsDirty = true;
+                }
             }
-            if (IsDirty || RadiusOffset.IsDirty)
-            {
-                _samplesRadiusOffset = Resample(RadiusOffset);
-                _pathsDirty = true;
-            }
-            if (IsDirty || Fill.Hue.IsDirty)
-            {
-                _samplesHue = Resample(Fill.Hue);
-                _pathsDirty = true;
-            }
-            if (IsDirty || Fill.Saturation.IsDirty)
-            {
-                _samplesSaturation = Resample(Fill.Saturation);
-                _pathsDirty = true;
-            }
-            if (IsDirty || Fill.Lightness.IsDirty)
-            {
-                _samplesLightness = Resample(Fill.Lightness);
-                _pathsDirty = true;
-            }
-            if (IsDirty || Stroke.Hue.IsDirty)
-            {
-                _samplesStrokeHue = Resample(Stroke.Hue);
-                _pathsDirty = true;
-            }
-            if (IsDirty || Stroke.Saturation.IsDirty)
-            {
-                _samplesStrokeSaturation = Resample(Stroke.Saturation);
-                _pathsDirty = true;
-            }
-            if (IsDirty || Stroke.Lightness.IsDirty)
-            {
-                _samplesStrokeLightness = Resample(Stroke.Lightness);
-                _pathsDirty = true;
-            }
-            if (IsDirty || StrokeWidth.IsDirty)
-            {
-                _samplesStrokeWidth = Resample(StrokeWidth);
-                _pathsDirty = true;
-            }
-            if (IsDirty || Position.X.IsDirty)
-            {
-                _samplesX = Resample(Position.X);
-                _pathsDirty = true;
-            }
-            if (IsDirty || Position.Y.IsDirty)
-            {
-                _samplesY = Resample(Position.Y);
-                _pathsDirty = true;
-            }
-            if (IsDirty || Rotation.IsDirty)
-            {
-                _samplesRotation = Resample(Rotation);
-                _pathsDirty = true;
-            }
-            if (IsDirty || Points.IsDirty)
-            {
-                _samplesPoints = Resample(Points);
-                _pathsDirty = true;
-            }
-
 
             if (_pathsDirty)
             {
@@ -181,9 +140,9 @@
         private void ClearDirty()
         {
             IsDirty = false;
-            foreach (var element in _elements)
+            foreach (var num in _numbers)
             {
-                element.IsDirty = false;
+                num.IsDirty = false;
             }
         }
         private Random _rnd = new Random();
@@ -197,6 +156,8 @@
             }
             return result;
         }
+
+
         private void GeneratePaths()
         {
             if (_pathsDirty || IsDirty)
@@ -212,7 +173,6 @@
                     }
                     _lastSampleCount = SampleCount;
                 }
-
                 for (int i = 0; i < SampleCount; i++)
                 {
                     var pts = SKPathMapper.GenerateStar(_samplesX[i], _samplesY[i], _samplesRadius[i], _samplesRadius[i], (int)_samplesPoints[i], _samplesRadiusOffset[i] / 100f);

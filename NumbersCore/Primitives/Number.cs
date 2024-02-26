@@ -375,28 +375,37 @@ namespace NumbersCore.Primitives
             return Domain.AddNumber(result, addToStore);
         }
 
-		public override bool Equals(object obj)
+        public static bool operator ==(Number a, Number b)
+        {
+            if (a is null || b is null)
+            {
+                return false;
+            }
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Number a, Number b)
+        {
+            return !(a == b);
+        }
+        public override bool Equals(object obj)
 		{
 			return obj is Number other && Equals(other);
 		}
-		public bool Equals(Number value)
-		{
-			return StartTickPosition.Equals(value.StartTickPosition) && 
-			       EndTickPosition.Equals(value.EndTickPosition) &&
-			       Focal.StartPosition.Equals(value.Focal.StartPosition) &&
-			       Focal.EndPosition.Equals(value.Focal.EndPosition) && 
-                   Polarity.Equals(value.Polarity);
+        public bool Equals(Number value)
+        {
+            return ReferenceEquals(this, value) ||
+                    (
+                    Polarity == value.Polarity &&
+                    Focal.Equals(this.Focal, value.Focal)
+                    );
 		}
 
 		public override int GetHashCode()
 		{
 			unchecked
 			{
-                var hashCode = StartTickPosition.GetHashCode();
-                hashCode = (hashCode * 397) ^ EndTickPosition.GetHashCode();
-                hashCode = (hashCode * 17) ^ Focal.StartPosition.GetHashCode();
-                hashCode = (hashCode * 13) ^ Focal.EndPosition.GetHashCode();
-                hashCode = (hashCode * 27) ^ Polarity.GetHashCode();
+                var hashCode = Focal.GetHashCode() * 17 ^ ((int)Polarity + 27) * 397;
                 return hashCode;
 			}
 		}

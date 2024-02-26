@@ -51,7 +51,9 @@
             foreach (var domain in domains)
             {
                 Domains.Add(domain);
-                _numberChains.Add(new NumberChain(domain, Polarity.Aligned));
+                var nc = new NumberChain(domain, Polarity.Aligned);
+                _numberChains.Add(nc);
+                domain.AddNumber(nc, false);
             }
         }
 

@@ -249,5 +249,58 @@
             Count = 0;
         }
 
+
+
+        public static bool operator ==(FocalChain a, FocalChain b)
+        {
+            if (a is null || b is null)
+            {
+                return false;
+            }
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(FocalChain a, FocalChain b)
+        {
+            return !(a == b);
+        }
+        public override bool Equals(object obj)
+        {
+            return obj is FocalChain other && Equals(other);
+        }
+        public bool Equals(FocalChain value)
+        {
+            var result = false;
+            if( ReferenceEquals(this, value))
+            {
+                result = true;
+            }
+            else if (Count != value.Count)
+            {
+                result = false;
+            }
+            else
+            {
+                for (int i = 0; i < _focals.Count; i++)
+                {
+                    if (_focals[i] != value._focals[i])
+                    {
+                        result = false;
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = _focals.GetHashCode();
+                return hashCode;
+            }
+        }
+
     }
 }

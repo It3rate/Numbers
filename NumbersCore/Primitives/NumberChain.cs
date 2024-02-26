@@ -22,12 +22,10 @@ namespace NumbersCore.Primitives
         // all clamping, overlap removal and repears should be done in the focalSet
 	    public override MathElementKind Kind => MathElementKind.NumberChain;
 
-        public bool IsDirty { get => _focalChain.IsDirty; set => _focalChain.IsDirty = value; } // base just calls this
+        public new bool IsDirty { get => _focalChain.IsDirty; set => _focalChain.IsDirty = value; } // base just calls this
 
         private FocalChain _focalChain => (FocalChain)Focal;
         public int Count => _focalChain.Count;
-
-        private PolyDomain _polyDomain;
 
         public override Domain Domain // todo: lookup domain on PolyDomain
         {
@@ -101,6 +99,44 @@ namespace NumbersCore.Primitives
         public override void DivideValue(Number q) { base.DivideValue(q);}
 
         public void Not(Number q) { Reset(Focal.UnaryNot(q.Focal)); }
+
+
+
+        public static bool operator ==(NumberChain a, NumberChain b)
+        {
+            if (a is null || b is null)
+            {
+                return false;
+            }
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(NumberChain a, NumberChain b)
+        {
+            return !(a == b);
+        }
+        public override bool Equals(object obj)
+        {
+            return obj is NumberChain other && Equals(other);
+        }
+        public bool Equals(NumberChain value)
+        {
+            return ReferenceEquals(this, value) ||
+                (
+                    Polarity == value.Polarity &&
+                    FocalChain.Equals(this._focalChain, value._focalChain)
+                );
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = _focalChain.GetHashCode() * 17 ^ ((int)Polarity + 27) * 397;
+                return hashCode;
+            }
+        }
+
         public override string ToString()
         {
             var v = Value;
