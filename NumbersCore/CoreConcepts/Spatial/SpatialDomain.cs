@@ -6,16 +6,27 @@
     using System.Text;
     using System.Threading.Tasks;
     using NumbersCore.CoreConcepts.Counter;
+    using NumbersCore.CoreConcepts.Optical;
+    using NumbersCore.CoreConcepts.Temperature;
     using NumbersCore.Primitives;
+    using NumbersCore.Utils;
 
-    public abstract class SpatialDomain : Domain
+    public class SpatialDomain : Domain
     {
-        //public static SpatialDomain Polyline2DDomain { get; } = new SpatialDomain(Focal.CreateZeroFocal(1), new Focal(long.MinValue, long.MaxValue), "Polyline2D");
+        //public static TemperatureDomain PixelDomain { get; } = CreateDomain(9, 22, 38, 0, "Celsius");
+        public static SpatialDomain GetPixelDomain(int size, string name) => CreateDomain(Common.PixelScope(-size, size), name);
 
         public SpatialDomain(Focal basisFocal, Focal maxFocal, string name) : base(CounterTrait.Instance, basisFocal, maxFocal, name)
         {
             IsVisible = false;
         }
         // methods like getSpatialSize, center, bounds etc. Work in 1D, 2D, 3D, polar, bezier etc
+
+        public static SpatialDomain CreateDomain(DomainScope df, string name, bool isVisible = true)
+        {
+            var domain = new SpatialDomain(df.Basis, df.MinMax, name);
+            return domain;
+        }
+
     }
 }

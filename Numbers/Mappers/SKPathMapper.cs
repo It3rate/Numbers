@@ -23,7 +23,7 @@
         private SKPoint[] _smoothPoints;
         private bool _isShape = false;
         private bool _pathDirty = false;
-        public int Count => PolylineDomain.XYValues.Count;
+        public int Count => PolylineDomain.Count;
         public SKPaint Pen { get; set; }
 
         public SKPathMapper(MouseAgent agent, SKSegment guideline = null) : base(agent, new Polyline2DDomain(500), guideline)

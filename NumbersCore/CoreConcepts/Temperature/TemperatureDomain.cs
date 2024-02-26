@@ -20,10 +20,10 @@
         }
         public static TemperatureDomain CreateDomain(int unitSize, int minRange, int maxRange, int zeroPoint, string name, bool isVisible = true)
         {
-            Trait trait = TemperatureTrait.Instance;
             var basis = new Focal(zeroPoint, zeroPoint + unitSize);
             var minMax = new Focal(-minRange * unitSize + zeroPoint, maxRange * unitSize + zeroPoint);
             var domain = new TemperatureDomain(basis, minMax, name);
+            domain.Trait = TemperatureTrait.Instance;
             domain.IsVisible = isVisible;
             return domain;
         }

@@ -6,7 +6,7 @@ using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
-	// this constrains the significant figures of a measurement, unit/not is the minimum tick size, and range is the max possible.
+    // this constrains the significant figures of a measurement, unit/not is the minimum tick size, and range is the max possible.
     // Feels like this should just be the unit chosen - that works from min tick size, but how to specify a max value? On the trait I guess?
     // the trait then needs to 'know' how measurable it is, and the units are calibrated to that, which seems overspecified
     // (eg 'length' knows a nanometer is min and a light year max, cms and inches calibrate to this. Hmm, no).
@@ -17,13 +17,13 @@ namespace NumbersCore.Primitives
     // Min size is tick size. BasisFocal is start/end point (only one focal allowed for a unit). MinMaxFocal is bounds in ticks. todo: add conversion methods etc.
     public class Domain : IMathElement
     {
-	    public  MathElementKind Kind => MathElementKind.Domain;
-        private static int domainCounter = 1 + (int)MathElementKind.Domain;
+        public MathElementKind Kind => MathElementKind.Domain;
+        private static int _idCounter = 1 + (int)MathElementKind.Domain;
         public int Id { get; internal set; }
         public int CreationIndex => Id - (int)Kind - 1;
 
-	    //public Brain Brain => Trait.Brain;
-	    public Trait Trait { get; protected set; }
+        //public Brain Brain => Trait.Brain;
+        public Trait Trait { get; protected set; }
         public Focal BasisFocal => BasisNumber.Focal;
         public Focal MinMaxFocal { get; protected set; }
         public Number BasisNumber { get; protected set; }
@@ -48,11 +48,11 @@ namespace NumbersCore.Primitives
 
         public Domain(Trait trait, Focal basisFocal, Focal minMaxFocal, string name)
         {
-	        Id = domainCounter++;
-	        Trait = trait;
-	        MinMaxFocal = minMaxFocal;
+            Id = _idCounter++;
+            Trait = trait;
+            MinMaxFocal = minMaxFocal;
             BasisNumber = CreateNumber(basisFocal);
-	        //BasisFocal = basisFocal;
+            //BasisFocal = basisFocal;
             MinMaxNumber = minMaxFocal == default ? CreateNumber(Focal.MinMaxFocal) : CreateNumber(minMaxFocal);
             Name = name;
             Trait.DomainStore.Add(Id, this);
@@ -66,13 +66,13 @@ namespace NumbersCore.Primitives
             BasisNumber = nm;
         }
 
-        public static Domain CreateDomain(string traitName, int unitSize = 8, int rangeSize = 16, string name = "default") => 
+        public static Domain CreateDomain(string traitName, int unitSize = 8, float rangeSize = 16, string name = "default") =>
             CreateDomain(traitName, unitSize, rangeSize, rangeSize, 0, name);
-        public static Domain CreateDomain(string traitName, int unitSize, int minRange, int maxRange, int zeroPoint, string name = "default", bool isVisible = true)
+        public static Domain CreateDomain(string traitName, int unitSize, float minRange, float maxRange, int zeroPoint, string name = "default", bool isVisible = true)
         {
             Trait trait = Trait.GetOrCreateTrait(Brain.ActiveBrain, traitName);
             var unit = new Focal(zeroPoint, zeroPoint + unitSize);
-            var minMaxRange = new Focal(-minRange * unitSize + zeroPoint, maxRange * unitSize + zeroPoint);
+            var minMaxRange = new Focal((int)(-minRange * unitSize + zeroPoint), (int)(maxRange * unitSize + zeroPoint));
             var domain = trait.AddDomain(unit, minMaxRange, name);
             domain.IsVisible = isVisible;
             return domain;
@@ -81,8 +81,8 @@ namespace NumbersCore.Primitives
         public int[] NumberIds() => NumberStore.Values.Select(num => num.Id).ToArray();
         public Number GetNumber(int numberId)
         {
-	        NumberStore.TryGetValue(numberId, out var result);
-	        return result;
+            NumberStore.TryGetValue(numberId, out var result);
+            return result;
         }
         public virtual Number CreateDefaultNumber(bool addToStore = true)
         {
@@ -91,19 +91,19 @@ namespace NumbersCore.Primitives
         }
         public Number CreateNumber(Focal focal, bool addToStore = true)
         {
-	        return AddNumber(new Number(focal), addToStore);
+            return AddNumber(new Number(focal), addToStore);
         }
         public Number CreateNumber(Range range, bool addToStore = true)
         {
-	        var focal = CreateFocalFromRange(range);
-	        var result = AddNumber(new Number(focal), addToStore);
+            var focal = CreateFocalFromRange(range);
+            var result = AddNumber(new Number(focal), addToStore);
             result.Polarity = range.Polarity;
             return result;
         }
         public Number CreateNumber(long start, long end, bool addToStore = true)
         {
-	        var focal = new Focal(start, end);
-	        return AddNumber(new Number(focal), addToStore);
+            var focal = new Focal(start, end);
+            return AddNumber(new Number(focal), addToStore);
         }
         public Number CreateNumberFromFloats(float startF, float endF, bool addToStore = true)
         {
@@ -116,19 +116,19 @@ namespace NumbersCore.Primitives
         public int _nextStoreIndex = 0;
         public Number AddNumber(Number number, bool addToStore = true)
         {
-	        number.Domain = this;
-	        number.Id = number.Id == 0 ? Number.NextNumberId() : number.Id;
-	        if (addToStore)
-	        {
-		        NumberStore[number.Id] = number;
+            number.Domain = this;
+            number.Id = number.Id == 0 ? Number.NextNumberId() : number.Id;
+            if (addToStore)
+            {
+                NumberStore[number.Id] = number;
                 number.StoreIndex = _nextStoreIndex++;
             }
-	        return number;
+            return number;
         }
         public bool RemoveNumber(Number number)
         {
-	        number.Domain = null;
-	        return NumberStore.Remove(number.Id);
+            number.Domain = null;
+            return NumberStore.Remove(number.Id);
         }
 
 
@@ -136,18 +136,18 @@ namespace NumbersCore.Primitives
         public int NextNumberSetId() => _numberSetCounter++ + Id;
         public NumberChain AddNumberSet(NumberChain numberSet, bool addToStore = true)
         {
-	        numberSet.Domain = this;
-	        numberSet.Id = numberSet.Id == 0 ? NextNumberSetId() : numberSet.Id;
-	        if (addToStore)
-	        {
+            numberSet.Domain = this;
+            numberSet.Id = numberSet.Id == 0 ? NextNumberSetId() : numberSet.Id;
+            if (addToStore)
+            {
                 NumberSetStore[numberSet.Id] = numberSet;
-	        }
-	        return numberSet;
+            }
+            return numberSet;
         }
         public bool RemoveNumberSet(NumberChain numberSet)
         {
-	        numberSet.Domain = null;
-	        return NumberSetStore.Remove(numberSet.Id);
+            numberSet.Domain = null;
+            return NumberSetStore.Remove(numberSet.Id);
         }
 
         public Number Zero() => CreateNumber(BasisFocal.StartPosition, BasisFocal.StartPosition);
@@ -168,20 +168,20 @@ namespace NumbersCore.Primitives
         public long RoundToNearestTick(long value) => (long)(Math.Round(value / TickToBasisRatio) * TickToBasisRatio);
         public void RoundToNearestTick(Focal focal)
         {
-	        focal.StartPosition = RoundToNearestTick(focal.StartPosition);
-	        focal.EndPosition = RoundToNearestTick(focal.EndPosition);
+            focal.StartPosition = RoundToNearestTick(focal.StartPosition);
+            focal.EndPosition = RoundToNearestTick(focal.EndPosition);
         }
 
         public Focal CreateFocalFromRange(Range range)
         {
-	        var result = new Focal(0, 1);
-	        result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
-	        return result;
+            var result = new Focal(0, 1);
+            result.SetWithRangeAndBasis(range, BasisFocal, BasisIsReciprocal);
+            return result;
         }
 
         public void ClearAll()
         {
-	        NumberStore.Clear();
+            NumberStore.Clear();
         }
 
         public void AdjustFocalTickSizeBy(int ticks)
@@ -202,31 +202,31 @@ namespace NumbersCore.Primitives
 
         public IEnumerable<Number> Numbers()
         {
-	        foreach (var number in NumberStore.Values)
-	        {
-		        yield return number;
-	        }
+            foreach (var number in NumberStore.Values)
+            {
+                yield return number;
+            }
         }
         public void SaveNumberValues(Dictionary<int, Range> dict, params int[] ignoreIds)
         {
             dict.Clear();
-	        foreach (var num in Numbers())
-	        {
-		        if (!ignoreIds.Contains(num.Id))
-		        {
-			        dict.Add(num.Id, num.Value);
+            foreach (var num in Numbers())
+            {
+                if (!ignoreIds.Contains(num.Id))
+                {
+                    dict.Add(num.Id, num.Value);
                 }
-	        }
+            }
         }
         public void RestoreNumberValues(Dictionary<int, Range> values, params int[] ignoreIds)
         {
-	        foreach (var kvp in values)
-	        {
-		        if (!ignoreIds.Contains(kvp.Key))
-		        {
-			        NumberStore[kvp.Key].Value = kvp.Value;
+            foreach (var kvp in values)
+            {
+                if (!ignoreIds.Contains(kvp.Key))
+                {
+                    NumberStore[kvp.Key].Value = kvp.Value;
                 }
-	        }
+            }
         }
     }
 }

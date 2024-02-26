@@ -316,9 +316,6 @@
             var nm0 = dmF.CreateNumberFromFloats(35f, 8f);
             dmC.LinkNumber(nm0.Number);
 
-            //var tf = wm.CreateTextMapper(new string[] { "Celsius" }, new SKSegment(dmC.Guideline.StartPoint + new SKPoint(0, -32), dmF.Guideline.EndPoint));
-            //var tc = wm.CreateTextMapper(new string[] { "Fahrenheit" }, new SKSegment(dmF.Guideline.StartPoint + new SKPoint(0, 30), dmC.Guideline.EndPoint));
-
             return wm;
         }
         private SKWorkspaceMapper AddSubtract_A()

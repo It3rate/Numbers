@@ -25,6 +25,13 @@ namespace NumbersCore.Primitives
         private FocalChain _focalChain => (FocalChain)Focal;
         public int Count => _focalChain.Count;
 
+        private PolyDomain _polyDomain;
+
+        public override Domain Domain // todo: lookup domain on PolyDomain
+        {
+            get => base.Domain;
+            set => base.Domain = value;
+        }
 
         public NumberChain(Number targetNumber, params Focal[] focals) : base(new FocalChain(), targetNumber.Polarity)
         {

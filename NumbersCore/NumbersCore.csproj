@@ -44,9 +44,11 @@
     <Compile Include="CoreConcepts\Counter\CounterDomains.cs" />
     <Compile Include="CoreConcepts\Counter\CounterTrait.cs" />
     <Compile Include="CoreConcepts\Counter\UpCounter.cs" />
+    <Compile Include="Primitives\PolyDomain.cs" />
+    <Compile Include="Utils\Common.cs" />
     <Compile Include="CoreConcepts\Knowledge.cs" />
     <Compile Include="CoreConcepts\Optical\Brightness.cs" />
-    <Compile Include="CoreConcepts\Optical\Color.cs" />
+    <Compile Include="CoreConcepts\Optical\OpticalDomain.cs" />
     <Compile Include="CoreConcepts\Optical\OpticalTrait.cs" />
     <Compile Include="CoreConcepts\Spatial\Distance.cs" />
     <Compile Include="CoreConcepts\Spatial\Polyline2D.cs" />
@@ -76,6 +78,7 @@
     <Compile Include="Primitives\PolyNumberChain.cs" />
     <Compile Include="Primitives\Relation.cs" />
     <Compile Include="Primitives\Repeat.cs" />
+    <Compile Include="Utils\DomainScope.cs" />
     <Compile Include="Utils\IAgent.cs" />
     <Compile Include="Utils\IMathElement.cs" />
     <Compile Include="Primitives\Network.cs" />

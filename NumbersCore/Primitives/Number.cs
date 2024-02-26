@@ -5,8 +5,15 @@ using NumbersCore.Utils;
 namespace NumbersCore.Primitives
 {
     public enum Polarity { Aligned, Inverted };//, Zero, Max }
+
+    /// <summary>
+    /// Numbers are intervals, calculated by uniting a Focal with a Domain. They supplement a Focal with Polarity.
+    /// If Focals had Polarity, Numbers wouldn't technically be needed, but Focals are simple start/end points.
+    /// Numbers are an assembled instance with all information needed to perform operations.
+    /// </summary>
     public class Number : IMathElement
     {
+        // todo: all numbers are numberChains, this is a special case with one element.
         public virtual MathElementKind Kind => MathElementKind.Number;
 
         public int Id { get; internal set; }

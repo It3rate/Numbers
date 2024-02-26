@@ -11,7 +11,7 @@
     {
         private NumberChain _x;
         private NumberChain _y;
-        public PolyNumberChain XYValues { get; }
+        public PolyDomain XYValues { get; }
 
         public Polyline2D()
         {

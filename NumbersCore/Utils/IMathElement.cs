@@ -15,7 +15,7 @@
         FocalChain      = 0x02000000,
         Number          = 0x03000000,
         NumberChain     = 0x04000000,
-        PolyNumberChain = 0x05000000,
+        PolyDomain      = 0x05000000,
 	    Domain          = 0x06000000,
 	    Transform       = 0x07000000,
         Formula         = 0x08000000,
