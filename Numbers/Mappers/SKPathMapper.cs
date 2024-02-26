@@ -16,7 +16,7 @@
 
     public class SKPathMapper : SKMapper
     {
-        public Polyline2DDomain PolylineDomain => (Polyline2DDomain)MathElement;
+        public XYDomain PolylineDomain => (XYDomain)MathElement;
 
         private List<SKPoint> _points = new List<SKPoint>();
         private SKPoint _lastPoint;
@@ -26,7 +26,7 @@
         public int Count => PolylineDomain.Count;
         public SKPaint Pen { get; set; }
 
-        public SKPathMapper(MouseAgent agent, SKSegment guideline = null) : base(agent, new Polyline2DDomain(500), guideline)
+        public SKPathMapper(MouseAgent agent, SKSegment guideline = null) : base(agent, new XYDomain(500, 500), guideline)
         {
             Pen = Pens.DrawPen;
         }

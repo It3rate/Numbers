@@ -44,6 +44,7 @@
     <Compile Include="CoreConcepts\Counter\CounterDomains.cs" />
     <Compile Include="CoreConcepts\Counter\CounterTrait.cs" />
     <Compile Include="CoreConcepts\Counter\UpCounter.cs" />
+    <Compile Include="CoreConcepts\Optical\HSLDomain.cs" />
     <Compile Include="Primitives\PolyDomain.cs" />
     <Compile Include="Utils\Common.cs" />
     <Compile Include="CoreConcepts\Knowledge.cs" />
@@ -53,7 +54,7 @@
     <Compile Include="CoreConcepts\Spatial\Distance.cs" />
     <Compile Include="CoreConcepts\Spatial\Polyline2D.cs" />
     <Compile Include="CoreConcepts\Spatial\Line2D.cs" />
-    <Compile Include="CoreConcepts\Spatial\Polyline2DDomain.cs" />
+    <Compile Include="CoreConcepts\Spatial\XYDomain.cs" />
     <Compile Include="CoreConcepts\Spatial\Roundness.cs" />
     <Compile Include="CoreConcepts\Spatial\Size.cs" />
     <Compile Include="CoreConcepts\Spatial\SpatialDomain.cs" />
@@ -75,7 +76,6 @@
     <Compile Include="Primitives\Formula.cs" />
     <Compile Include="Primitives\NumberChain.cs" />
     <Compile Include="Primitives\FocalChain.cs" />
-    <Compile Include="Primitives\PolyNumberChain.cs" />
     <Compile Include="Primitives\Relation.cs" />
     <Compile Include="Primitives\Repeat.cs" />
     <Compile Include="Utils\DomainScope.cs" />

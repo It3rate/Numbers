@@ -114,7 +114,7 @@ namespace NumbersCore.Primitives
         }
 
         public int _nextStoreIndex = 0;
-        public Number AddNumber(Number number, bool addToStore = true)
+        public virtual Number AddNumber(Number number, bool addToStore = true)
         {
             number.Domain = this;
             number.Id = number.Id == 0 ? Number.NextNumberId() : number.Id;
@@ -125,7 +125,7 @@ namespace NumbersCore.Primitives
             }
             return number;
         }
-        public bool RemoveNumber(Number number)
+        public virtual bool RemoveNumber(Number number)
         {
             number.Domain = null;
             return NumberStore.Remove(number.Id);

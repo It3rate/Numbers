@@ -9,7 +9,7 @@
     using System.Threading.Tasks;
     using NumbersCore.Primitives;
 
-    public class Polyline2DDomain : PolyDomain //SpatialDomain
+    public class XYDomain : PolyDomain
     {
         // Q. Can numbers combine as separate domains within a single domain like this, or does every dimension require it's own (related) domain?
         // Two numbers in one domain combine through operations creating a result. X and Y have domains so similar they feel the same, but probably aren't.
@@ -22,14 +22,18 @@
         // the difference is a result needs to be a single directional ordered line, divided. A branch can be any two numbers.
         // But a branch can come from a result, and a branch can OP transform to a result.
         // The poly domains aren't specific to traits, but maybe can require matching traits (like X,Y must both be distance, but the combo works for e.g. gear ratios as well.)
-        private NumberChain _x;
-        private NumberChain _y;
-        public Polyline2DDomain(int size) : this(Focal.CreateZeroFocal(1), Focal.CreateBalancedFocal(size)) { }
-        public Polyline2DDomain(Focal basisFocal, Focal maxFocal) : base(SpatialDomain.GetPixelDomain(2000, "X"), SpatialDomain.GetPixelDomain(2000, "Y"))
+        public SpatialDomain XDomain { get; }
+        public SpatialDomain YDomain { get; }
+        public NumberChain X { get; }
+        public NumberChain Y { get; }
+        public XYDomain(int xSize, int ySize) : base(
+                SpatialDomain.GetPixelDomain(xSize, "X"),
+                SpatialDomain.GetPixelDomain(ySize, "Y"))
         {
-            _x = GetChainByName("X");
-            _y = GetChainByName("Y");
-
+            XDomain = (SpatialDomain)GetDomainByName("X");
+            YDomain = (SpatialDomain)GetDomainByName("Y");
+            X = GetChainByName("X");
+            Y = GetChainByName("Y");
         }
         public void AddXY(Number x, Number y)
         {

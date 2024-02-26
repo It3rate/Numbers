@@ -31,7 +31,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 10;
+            _testIndex = 4;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -190,7 +190,7 @@
             var control = new ShapeControl(_currentMouseAgent, 175, 320, 600, 400);
             wm.AddUIControl(control);
 
-            var dm = wm.CreateLinkedNumber(control.Hue);
+            var dm = wm.CreateLinkedNumber(control.Fill.Hue);
             wm.CreateLinkedNumber(control.Radius);
             wm.CreateLinkedNumber(control.RadiusOffset);
             wm.CreateLinkedNumber(control.Points);
@@ -212,7 +212,7 @@
             var control = new ShapeControl(_currentMouseAgent, 175, 320, 600, 400);
             wm.AddUIControl(control);
 
-            var dm = wm.CreateLinkedNumber(control.Hue);
+            var dm = wm.CreateLinkedNumber(control.Fill.Hue);
             wm.CreateLinkedNumber(control.Radius);
             wm.CreateLinkedNumber(control.RadiusOffset);
             wm.CreateLinkedNumber(control.Points);

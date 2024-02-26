@@ -9,7 +9,7 @@
     using System.Xml.Linq;
     using NumbersCore.Utils;
 
-    public class PolyDomain : IMathElement
+    public abstract class PolyDomain : IMathElement
     {
         // todo: Domains are a special case of PolyDomain, where there is only one domain.
         // These single domains are primitives (temperature), or combinations so common/complex the joins are not normally computed (weight (m*g), happiness)
@@ -20,7 +20,7 @@
         public int CreationIndex => Id - (int)Kind - 1;
 
         public List<Domain> Domains { get; } = new List<Domain>(); // todo: sync with PolyNumberChain
-        private List<NumberChain> _numberChains { get; } = new List<NumberChain>(); // these sets always have the same number of elements.
+        protected List<NumberChain> _numberChains { get; } = new List<NumberChain>(); // these sets always have the same number of elements.
 
         public int PolyCount => Domains.Count;
         public int Count => _numberChains[0].Count;
@@ -42,9 +42,11 @@
         public Domain GetDomainOf(NumberChain chain) { var idx = GetChainIndex(chain); return idx > -1 ? Domains[idx] : null; }
         protected Domain GetDomainByName(string name) => Domains.FirstOrDefault(dm => dm.Name == name);
         protected int GetDomainIndex(Domain domain) => Domains.IndexOf(domain);
+        protected Domain GetDomainByIndex(int index) => (index >= 0 && index < Domains.Count) ? Domains[index] : null;
         public NumberChain GetChainOf(Domain domain) { var idx = GetDomainIndex(domain); return idx > -1 ? _numberChains[idx] : null; }
         protected NumberChain GetChainByName(string name) { var idx = Domains.FindIndex(dm => dm.Name == name); return idx > -1 ? _numberChains[idx] : null; }
         protected int GetChainIndex(NumberChain chain) => _numberChains.IndexOf(chain); // can't use Id as there could be repeats of the same chain eventually.
+        protected NumberChain GetChainByIndex(int index) => (index >=0 && index < _numberChains.Count) ? _numberChains[index] : null;
 
 
 
@@ -78,7 +80,6 @@
             }
             return result;
         }
-
         public void AddPosition(params Number[] values)
         {
             if (values.Length == PolyCount)
@@ -108,7 +109,7 @@
                 int i = 0;
                 foreach (var chain in _numberChains)
                 {
-                    chain.AddItem(values[i++], values[i++]);
+                    chain.AddItem(values[i++], values[i++]); // these are segments, so (start, end)
                 }
             }
         }

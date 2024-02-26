@@ -9,6 +9,8 @@
     using Numbers.Controls;
     using Numbers.Mappers;
     using Numbers.Renderer;
+    using NumbersCore.CoreConcepts.Optical;
+    using NumbersCore.CoreConcepts.Spatial;
     using NumbersCore.Primitives;
     using NumbersCore.Utils;
     using SkiaSharp;
@@ -27,15 +29,21 @@
 
         public Number Radius { get; }
         public Number RadiusOffset { get; }
-        public Number Hue { get; }
-        public Number Saturation { get; }
-        public Number Lightness { get; }
-        public Number StrokeHue { get; }
-        public Number StrokeSaturation { get; }
-        public Number StrokeLightness { get; }
+
+
+        public HSLDomain Fill { get; } = new HSLDomain();
+        public HSLDomain Stroke { get; } = new HSLDomain();
+        public XYDomain Position { get; } = new XYDomain(500, 500);
+
+        //public Number Hue { get; }
+        //public Number Saturation { get; }
+        //public Number Lightness { get; }
+        //public Number StrokeHue { get; }
+        //public Number StrokeSaturation { get; }
+        //public Number StrokeLightness { get; }
         public Number StrokeWidth { get; }
-        public Number X { get; }
-        public Number Y { get; }
+        //public Number X { get; }
+        //public Number Y { get; }
         public Number Rotation { get; }
         public Number Points { get; }
 
@@ -80,18 +88,26 @@
             Radius = CreateProperty("Radius", 25, 50, 0, 50);
             RadiusOffset = CreateProperty("RadiusOffset", 20, 100, 0, 200);
 
-            // todo: get color from knowledge
-            Hue = CreateProperty("Hue", 0, 360, 0, 360);
-            Saturation = CreateProperty("Saturation", 0, 100, 0, 100);
-            Lightness = CreateProperty("Lightness", 20, 80, 0, 100);
+            AddPolyProperty(Fill, 0, 360, 0, 100, 20, 80);
+            //AddProperty(Fill.SaturationDomain, 0, 100);
+            //AddProperty(Fill.LightnessDomain, 20, 80);
+            //Hue = CreateProperty("Hue", 0, 360, 0, 360);
+            //Saturation = CreateProperty("Saturation", 0, 100, 0, 100);
+            //Lightness = CreateProperty("Lightness", 20, 80, 0, 100);
 
-            StrokeHue = CreateProperty("StrokeHue", 0, 360, 0, 360);
-            StrokeSaturation = CreateProperty("StrokeSaturation", 0, 100, 0, 100);
-            StrokeLightness = CreateProperty("StrokeLightness", 0, 40, 0, 100);
+            AddPolyProperty(Stroke, 0, 360, 0, 100, 0, 40);
+            //AddProperty(Stroke.SaturationDomain, 0, 100);
+            //AddProperty(Stroke.LightnessDomain, 0, 40);
+            //StrokeHue = CreateProperty("StrokeHue", 0, 360, 0, 360);
+            //StrokeSaturation = CreateProperty("StrokeSaturation", 0, 100, 0, 100);
+            //StrokeLightness = CreateProperty("StrokeLightness", 0, 40, 0, 100);
+
             StrokeWidth = CreateProperty("StrokeWidth", 0, 5, 0, 10);
 
-            X = CreateProperty("X", left, left + width, left, left + width);
-            Y = CreateProperty("Y", top, top + height, top, top + height);
+            AddPolyProperty(Position, left, left + width, top, top + height);
+            //AddProperty(Position.YDomain, top, top + height);
+            //X = CreateProperty("X", left, left + width, left, left + width);
+            //Y = CreateProperty("Y", top, top + height, top, top + height);
 
             Rotation = CreateProperty("Rotation", 0, 360, 0, 360);
             Points = CreateProperty("Points", 3, 8, 0, 15, 3);
@@ -104,6 +120,12 @@
             var result = new Number(new Focal(start + zeroPoint, end + zeroPoint));
             dm.AddNumber(result, false);
             return result;
+        }
+        private void AddPolyProperty(PolyDomain pDomain, params long[] startEndPairs)
+        {
+            //var result = new Number(new Focal(start + domain.BasisFocal.StartPosition, end + domain.BasisFocal.StartPosition));
+            pDomain.AddPosition(startEndPairs);
+            //return result;
         }
         public void Update()
         {
@@ -119,40 +141,40 @@
                 _lastRadiusOffset = RadiusOffset.Focal.Clone();
                 _isDirty = true;
             }
-            if (Hue.Focal != _lastHue || _sampleCount != _lastSampleCount)
+            if (Fill.Hue.Focal != _lastHue || _sampleCount != _lastSampleCount)
             {
-                _samplesHue = Resample(Hue);
-                _lastHue = Hue.Focal.Clone();
+                _samplesHue = Resample(Fill.Hue);
+                _lastHue = Fill.Hue.Focal.Clone();
                 _isDirty = true;
             }
-            if (Saturation.Focal != _lastSaturation || _sampleCount != _lastSampleCount)
+            if (Fill.Saturation.Focal != _lastSaturation || _sampleCount != _lastSampleCount)
             {
-                _samplesSaturation = Resample(Saturation);
-                _lastSaturation = Saturation.Focal.Clone();
+                _samplesSaturation = Resample(Fill.Saturation);
+                _lastSaturation = Fill.Saturation.Focal.Clone();
                 _isDirty = true;
             }
-            if (Lightness.Focal != _lastLightness || _sampleCount != _lastSampleCount)
+            if (Fill.Lightness.Focal != _lastLightness || _sampleCount != _lastSampleCount)
             {
-                _samplesLightness = Resample(Lightness);
-                _lastLightness = Lightness.Focal.Clone();
+                _samplesLightness = Resample(Fill.Lightness);
+                _lastLightness = Fill.Lightness.Focal.Clone();
                 _isDirty = true;
             }
-            if (StrokeHue.Focal != _lastStrokeHue || _sampleCount != _lastSampleCount)
+            if (Stroke.Hue.Focal != _lastStrokeHue || _sampleCount != _lastSampleCount)
             {
-                _samplesStrokeHue = Resample(StrokeHue);
-                _lastStrokeHue = StrokeHue.Focal.Clone();
+                _samplesStrokeHue = Resample(Stroke.Hue);
+                _lastStrokeHue = Stroke.Hue.Focal.Clone();
                 _isDirty = true;
             }
-            if (StrokeSaturation.Focal != _lastStrokeSaturation || _sampleCount != _lastSampleCount)
+            if (Stroke.Saturation.Focal != _lastStrokeSaturation || _sampleCount != _lastSampleCount)
             {
-                _samplesStrokeSaturation = Resample(StrokeSaturation);
-                _lastStrokeSaturation = StrokeSaturation.Focal.Clone();
+                _samplesStrokeSaturation = Resample(Stroke.Saturation);
+                _lastStrokeSaturation = Stroke.Saturation.Focal.Clone();
                 _isDirty = true;
             }
-            if (StrokeLightness.Focal != _lastStrokeLightness || _sampleCount != _lastSampleCount)
+            if (Stroke.Lightness.Focal != _lastStrokeLightness || _sampleCount != _lastSampleCount)
             {
-                _samplesStrokeLightness = Resample(StrokeLightness);
-                _lastStrokeLightness = StrokeLightness.Focal.Clone();
+                _samplesStrokeLightness = Resample(Stroke.Lightness);
+                _lastStrokeLightness = Stroke.Lightness.Focal.Clone();
                 _isDirty = true;
             }
             if (StrokeWidth.Focal != _lastStrokeWidth || _sampleCount != _lastSampleCount)
@@ -161,16 +183,16 @@
                 _lastStrokeWidth = StrokeWidth.Focal.Clone();
                 _isDirty = true;
             }
-            if (X.Focal != _lastX || _sampleCount != _lastSampleCount)
+            if (Position.X.Focal != _lastX || _sampleCount != _lastSampleCount)
             {
-                _samplesX = Resample(X);
-                _lastX = X.Focal.Clone();
+                _samplesX = Resample(Position.X);
+                _lastX = Position.X.Focal.Clone();
                 _isDirty = true;
             }
-            if (Y.Focal != _lastY || _sampleCount != _lastSampleCount)
+            if (Position.Y.Focal != _lastY || _sampleCount != _lastSampleCount)
             {
-                _samplesY = Resample(Y);
-                _lastY = Y.Focal.Clone();
+                _samplesY = Resample(Position.Y);
+                _lastY = Position.Y.Focal.Clone();
                 _isDirty = true;
             }
             if (Rotation.Focal != _lastRotation || _sampleCount != _lastSampleCount)
