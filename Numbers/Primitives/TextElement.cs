@@ -14,6 +14,7 @@
         private static int _idCounter = 1;
         public int Id { get; }
         public int CreationIndex => Id - (int)Kind;
+        public bool IsDirty { get; set; } = true;
 
         public List<string> Lines { get; set; } = new List<string>();
         // font, color etc

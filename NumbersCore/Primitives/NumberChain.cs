@@ -22,6 +22,8 @@ namespace NumbersCore.Primitives
         // all clamping, overlap removal and repears should be done in the focalSet
 	    public override MathElementKind Kind => MathElementKind.NumberChain;
 
+        public bool IsDirty { get => _focalChain.IsDirty; set => _focalChain.IsDirty = value; } // base just calls this
+
         private FocalChain _focalChain => (FocalChain)Focal;
         public int Count => _focalChain.Count;
 

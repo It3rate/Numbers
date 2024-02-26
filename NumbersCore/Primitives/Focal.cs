@@ -41,8 +41,34 @@ namespace NumbersCore.Primitives
         private static int _focalCounter = 1 + (int)MathElementKind.Focal;
         public int CreationIndex => Id - (int)Kind - 1;
 
-        public virtual long StartPosition { get; set; }
-        public virtual long EndPosition { get; set; }
+        public virtual bool IsDirty { get; set; } = true;
+
+        private long _startPosition;
+        public virtual long StartPosition
+        {
+            get => _startPosition;
+            set
+            {
+                if (_startPosition != value)
+                {
+                    _startPosition = value;
+                    IsDirty = true;
+                }
+            }
+        }
+        private long _endPosition;
+        public virtual long EndPosition
+        {
+            get => _endPosition;
+            set
+            {
+                if (_endPosition != value)
+                {
+                    _endPosition = value;
+                    IsDirty = true;
+                }
+            }
+        }
         public virtual long InvertedEndPosition => StartPosition - LengthInTicks;
         public virtual long[] Positions => new long[] { StartPosition, EndPosition };
 

@@ -12,6 +12,7 @@ namespace NumbersCore.Primitives
 	    public int CreationIndex => Id - (int)Kind - 1;
         private static int SelectionCounter = 1 + (int)MathElementKind.Selection;
 
+        public bool IsDirty { get; set; } = true;
         public Number[] SelectedNumbers { get; }
         public int Count => SelectedNumbers.Length; 
         public Number this[int i] => SelectedNumbers[i];

@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="CoreConcepts\Counter\CounterDomains.cs" />
     <Compile Include="CoreConcepts\Counter\CounterTrait.cs" />
+    <Compile Include="CoreConcepts\Counter\SegmentCounter.cs" />
     <Compile Include="CoreConcepts\Counter\UpCounter.cs" />
     <Compile Include="CoreConcepts\Optical\HSLDomain.cs" />
     <Compile Include="Primitives\PolyDomain.cs" />

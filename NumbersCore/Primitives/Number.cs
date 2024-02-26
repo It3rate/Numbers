@@ -29,6 +29,7 @@ namespace NumbersCore.Primitives
             get => Domain.Id;
             set => Domain = Domain.Trait.DomainStore[value];
         }
+        public bool IsDirty { get => Focal.IsDirty; set => Focal.IsDirty = value; }
 
         // number to the power of x, where x is also a focal. Eventually this is equations, lazy solve them.
         public Focal BasisFocal => Domain.BasisFocal;

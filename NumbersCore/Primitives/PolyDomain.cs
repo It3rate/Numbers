@@ -18,7 +18,23 @@
         public int Id { get; internal set; }
         private static int _idCounter = 1 + (int)MathElementKind.PolyDomain;
         public int CreationIndex => Id - (int)Kind - 1;
-
+        private bool _isDirty = true;
+        public bool IsDirty
+        {
+            get => _isDirty;
+            set
+            {
+                _isDirty = value;
+                foreach (var domain in Domains)
+                {
+                    domain.IsDirty = value;
+                }
+                foreach (var chain in _numberChains)
+                {
+                    chain.IsDirty = value;
+                }
+            }
+        }
         public List<Domain> Domains { get; } = new List<Domain>(); // todo: sync with PolyNumberChain
         protected List<NumberChain> _numberChains { get; } = new List<NumberChain>(); // these sets always have the same number of elements.
 

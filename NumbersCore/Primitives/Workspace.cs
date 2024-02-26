@@ -17,6 +17,7 @@ namespace NumbersCore.Primitives
 
         public Brain Brain { get; }
 
+        public bool IsDirty { get; set; } = true;
         private HashSet<int> ActiveIds { get; } = new HashSet<int>();
         public int ActiveElementCount => ActiveIds.Count;
 

@@ -21,8 +21,8 @@ namespace NumbersCore.Primitives
         private static int _idCounter = 1 + (int)MathElementKind.Domain;
         public int Id { get; internal set; }
         public int CreationIndex => Id - (int)Kind - 1;
+        public bool IsDirty { get; set; } = true;
 
-        //public Brain Brain => Trait.Brain;
         public Trait Trait { get; protected set; }
         public Focal BasisFocal => BasisNumber.Focal;
         public Focal MinMaxFocal { get; protected set; }

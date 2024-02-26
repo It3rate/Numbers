@@ -28,7 +28,16 @@
         protected List<Focal> _focals = new List<Focal>();
         private List<long> _positions = new List<long>();
         public int Count { get; private set; }
+        public override bool IsDirty
+        {
+            get => _focals.Any(focal => focal.IsDirty);
+            set
+            {
+                base.IsDirty = value;
+                foreach (var focal in _focals) { focal.IsDirty = false; }
+            }
 
+        }
         public override long StartPosition
         {
             get => Count > 0 ? _focals[0].StartPosition : 0;

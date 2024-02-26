@@ -9,6 +9,7 @@ namespace NumbersCore.Primitives
         public int Id { get; set; }
         public int CreationIndex => Id - (int)Kind - 1;
         public Brain Brain { get; }
+        public bool IsDirty { get; set; } = true;
 
         // Formula needs a list to select from, and a result stack. Then all sel/change/rep/eval come from these collections?
 

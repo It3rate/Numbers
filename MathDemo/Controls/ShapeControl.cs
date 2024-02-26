@@ -9,6 +9,7 @@
     using Numbers.Controls;
     using Numbers.Mappers;
     using Numbers.Renderer;
+    using NumbersCore.CoreConcepts.Counter;
     using NumbersCore.CoreConcepts.Optical;
     using NumbersCore.CoreConcepts.Spatial;
     using NumbersCore.Primitives;
@@ -25,41 +26,26 @@
         // rotation
         // x range
         // y range
-        public Number SampleCount { get; }
+        public bool IsDirty 
+        { 
+            get => _sampleCounter.Segment.IsDirty;
+            set => _sampleCounter.Segment.IsDirty = value; 
+        }
+
+        public long _lastSampleCount = 0;
+        public SegmentCounter _sampleCounter = new SegmentCounter(1, 50);
+        public long SampleCount => _sampleCounter.Value;
 
         public Number Radius { get; }
         public Number RadiusOffset { get; }
-
-
         public HSLDomain Fill { get; } = new HSLDomain();
         public HSLDomain Stroke { get; } = new HSLDomain();
         public PositionDomain Position { get; } = new PositionDomain(500, 500);
-
-        //public Number Hue { get; }
-        //public Number Saturation { get; }
-        //public Number Lightness { get; }
-        //public Number StrokeHue { get; }
-        //public Number StrokeSaturation { get; }
-        //public Number StrokeLightness { get; }
         public Number StrokeWidth { get; }
-        //public Number X { get; }
-        //public Number Y { get; }
         public Number Rotation { get; }
         public Number Points { get; }
 
-        private Focal _lastRadius;
-        private Focal _lastRadiusOffset;
-        private Focal _lastHue;
-        private Focal _lastSaturation;
-        private Focal _lastLightness;
-        private Focal _lastStrokeHue;
-        private Focal _lastStrokeSaturation;
-        private Focal _lastStrokeLightness;
-        private Focal _lastStrokeWidth;
-        private Focal _lastX;
-        private Focal _lastY;
-        private Focal _lastRotation;
-        private Focal _lastPoints;
+        private List<IMathElement> _elements = new List<IMathElement>();
 
         private float[] _samplesRadius;
         private float[] _samplesRadiusOffset;
@@ -75,13 +61,11 @@
         private float[] _samplesRotation;
         private float[] _samplesPoints;
 
-        private bool _isDirty = true;
+        private bool _pathsDirty = true;
         private SKPath[] _paths;
         private SKPaint[] _strokes;
         private SKPaint[] _fills;
 
-        public int _lastSampleCount = 0;
-        public int _sampleCount = 20;
 
         public ShapeControl(MouseAgent agent, int top, int left, int width, int height) : base(agent)
         {
@@ -89,28 +73,19 @@
             RadiusOffset = CreateProperty("RadiusOffset", 20, 100, 0, 200);
 
             AddPolyProperty(Fill, 0, 360, 0, 100, 20, 80);
-            //AddProperty(Fill.SaturationDomain, 0, 100);
-            //AddProperty(Fill.LightnessDomain, 20, 80);
-            //Hue = CreateProperty("Hue", 0, 360, 0, 360);
-            //Saturation = CreateProperty("Saturation", 0, 100, 0, 100);
-            //Lightness = CreateProperty("Lightness", 20, 80, 0, 100);
 
             AddPolyProperty(Stroke, 0, 360, 0, 100, 0, 40);
-            //AddProperty(Stroke.SaturationDomain, 0, 100);
-            //AddProperty(Stroke.LightnessDomain, 0, 40);
-            //StrokeHue = CreateProperty("StrokeHue", 0, 360, 0, 360);
-            //StrokeSaturation = CreateProperty("StrokeSaturation", 0, 100, 0, 100);
-            //StrokeLightness = CreateProperty("StrokeLightness", 0, 40, 0, 100);
 
             StrokeWidth = CreateProperty("StrokeWidth", 0, 5, 0, 10);
 
             AddPolyProperty(Position, left, left + width, top, top + height);
-            //AddProperty(Position.YDomain, top, top + height);
-            //X = CreateProperty("X", left, left + width, left, left + width);
-            //Y = CreateProperty("Y", top, top + height, top, top + height);
 
             Rotation = CreateProperty("Rotation", 0, 360, 0, 360);
             Points = CreateProperty("Points", 3, 8, 0, 15, 3);
+
+            _elements.AddRange(new IMathElement[] { Radius, RadiusOffset, Fill, Stroke, Position, StrokeWidth, Rotation, Rotation, Points } );
+
+            _sampleCounter.SetValue(20);
 
             Update();
         }
@@ -129,96 +104,93 @@
         }
         public void Update()
         {
-            if (Radius.Focal != _lastRadius || _sampleCount != _lastSampleCount)
+            if (IsDirty || Radius.IsDirty)
             {
                 _samplesRadius = Resample(Radius);
-                _lastRadius = Radius.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (RadiusOffset.Focal != _lastRadiusOffset || _sampleCount != _lastSampleCount)
+            if (IsDirty || RadiusOffset.IsDirty)
             {
                 _samplesRadiusOffset = Resample(RadiusOffset);
-                _lastRadiusOffset = RadiusOffset.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (Fill.Hue.Focal != _lastHue || _sampleCount != _lastSampleCount)
+            if (IsDirty || Fill.Hue.IsDirty)
             {
                 _samplesHue = Resample(Fill.Hue);
-                _lastHue = Fill.Hue.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (Fill.Saturation.Focal != _lastSaturation || _sampleCount != _lastSampleCount)
+            if (IsDirty || Fill.Saturation.IsDirty)
             {
                 _samplesSaturation = Resample(Fill.Saturation);
-                _lastSaturation = Fill.Saturation.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (Fill.Lightness.Focal != _lastLightness || _sampleCount != _lastSampleCount)
+            if (IsDirty || Fill.Lightness.IsDirty)
             {
                 _samplesLightness = Resample(Fill.Lightness);
-                _lastLightness = Fill.Lightness.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (Stroke.Hue.Focal != _lastStrokeHue || _sampleCount != _lastSampleCount)
+            if (IsDirty || Stroke.Hue.IsDirty)
             {
                 _samplesStrokeHue = Resample(Stroke.Hue);
-                _lastStrokeHue = Stroke.Hue.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (Stroke.Saturation.Focal != _lastStrokeSaturation || _sampleCount != _lastSampleCount)
+            if (IsDirty || Stroke.Saturation.IsDirty)
             {
                 _samplesStrokeSaturation = Resample(Stroke.Saturation);
-                _lastStrokeSaturation = Stroke.Saturation.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (Stroke.Lightness.Focal != _lastStrokeLightness || _sampleCount != _lastSampleCount)
+            if (IsDirty || Stroke.Lightness.IsDirty)
             {
                 _samplesStrokeLightness = Resample(Stroke.Lightness);
-                _lastStrokeLightness = Stroke.Lightness.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (StrokeWidth.Focal != _lastStrokeWidth || _sampleCount != _lastSampleCount)
+            if (IsDirty || StrokeWidth.IsDirty)
             {
                 _samplesStrokeWidth = Resample(StrokeWidth);
-                _lastStrokeWidth = StrokeWidth.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (Position.X.Focal != _lastX || _sampleCount != _lastSampleCount)
+            if (IsDirty || Position.X.IsDirty)
             {
                 _samplesX = Resample(Position.X);
-                _lastX = Position.X.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (Position.Y.Focal != _lastY || _sampleCount != _lastSampleCount)
+            if (IsDirty || Position.Y.IsDirty)
             {
                 _samplesY = Resample(Position.Y);
-                _lastY = Position.Y.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (Rotation.Focal != _lastRotation || _sampleCount != _lastSampleCount)
+            if (IsDirty || Rotation.IsDirty)
             {
                 _samplesRotation = Resample(Rotation);
-                _lastRotation = Rotation.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
-            if (Points.Focal != _lastPoints || _sampleCount != _lastSampleCount)
+            if (IsDirty || Points.IsDirty)
             {
                 _samplesPoints = Resample(Points);
-                _lastPoints = Points.Focal.Clone();
-                _isDirty = true;
+                _pathsDirty = true;
             }
 
 
-            if (_isDirty)
+            if (_pathsDirty)
             {
                 GeneratePaths();
+            }
+
+            ClearDirty();
+        }
+        private void ClearDirty()
+        {
+            IsDirty = false;
+            foreach (var element in _elements)
+            {
+                element.IsDirty = false;
             }
         }
         private Random _rnd = new Random();
         public float[] Resample(Number source)
         {
-            var result = new float[_sampleCount];
-            for (int i = 0; i < _sampleCount; i++)
+            var result = new float[SampleCount];
+            for (int i = 0; i < SampleCount; i++)
             {
                 var val = source.ValueInRenderPerspective.SampleRandom(_rnd);
                 result[i] = (float)Math.Round(val);
@@ -227,21 +199,21 @@
         }
         private void GeneratePaths()
         {
-            if (_isDirty || _lastSampleCount != _sampleCount)
+            if (_pathsDirty || IsDirty)
             {
-                if (_lastSampleCount != _sampleCount)
+                if (IsDirty)
                 {
-                    _paths = new SKPath[_sampleCount];
-                    _strokes = new SKPaint[_sampleCount];
-                    _fills = new SKPaint[_sampleCount];
-                    for (int i = 0; i < _sampleCount; i++)
+                    _paths = new SKPath[SampleCount];
+                    _strokes = new SKPaint[SampleCount];
+                    _fills = new SKPaint[SampleCount];
+                    for (int i = 0; i < SampleCount; i++)
                     {
                         _paths[i] = new SKPath();
                     }
-                    _lastSampleCount = _sampleCount;
+                    _lastSampleCount = SampleCount;
                 }
 
-                for (int i = 0; i < _sampleCount; i++)
+                for (int i = 0; i < SampleCount; i++)
                 {
                     var pts = SKPathMapper.GenerateStar(_samplesX[i], _samplesY[i], _samplesRadius[i], _samplesRadius[i], (int)_samplesPoints[i], _samplesRadiusOffset[i] / 100f);
                     _paths[i].Reset();
@@ -250,14 +222,14 @@
                     _strokes[i] = CorePens.GetPen(SKColor.FromHsl(_samplesStrokeHue[i], _samplesStrokeSaturation[i], _samplesStrokeLightness[i]), _samplesStrokeWidth[i]);
                 }
             }
-            _isDirty = false;
+            _pathsDirty = false;
         }
         public override void Draw()
         {
             Update();
-            if (_paths != null && _paths.Length == _sampleCount)
+            if (_paths != null && _paths.Length == SampleCount)
             {
-                for (int i = 0; i < _sampleCount; i++)
+                for (int i = 0; i < SampleCount; i++)
                 {
                     Renderer.Canvas.DrawPath(_paths[i], _fills[i]);
                     Renderer.Canvas.DrawPath(_paths[i], _strokes[i]);

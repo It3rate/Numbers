@@ -6,6 +6,8 @@
 	    int Id { get; }
 	    int CreationIndex { get; }
         //string Name { get; }
+
+        bool IsDirty { get; set; }
     }
 
     public enum MathElementKind

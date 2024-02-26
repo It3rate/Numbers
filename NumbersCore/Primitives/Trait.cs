@@ -15,7 +15,8 @@ namespace NumbersCore.Primitives
         private static int _traitCounter = 1 + (int)MathElementKind.Trait;
         public int Id { get; internal set; }
         public int CreationIndex => Id - (int)Kind - 1;
-        
+
+        public bool IsDirty { get; set; } = true;
         public virtual string Name { get; private set; }
 
         public readonly Dictionary<int, long> PositionStore = new Dictionary<int, long>(4096);

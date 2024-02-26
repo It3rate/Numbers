@@ -27,6 +27,7 @@ namespace NumbersCore.Primitives
 	    public int CreationIndex => Id - (int)Kind - 1;
         public Brain Brain { get; }
 
+        public bool IsDirty { get; set; } = true;
         public TransformKind TransformKind { get; set; }
         public bool IsUnary => TransformKind.IsUnary();
         public int Repeats { get; set;  } = 1;
