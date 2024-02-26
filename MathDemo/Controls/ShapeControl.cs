@@ -33,7 +33,7 @@
 
         public HSLDomain Fill { get; } = new HSLDomain();
         public HSLDomain Stroke { get; } = new HSLDomain();
-        public XYDomain Position { get; } = new XYDomain(500, 500);
+        public PositionDomain Position { get; } = new PositionDomain(500, 500);
 
         //public Number Hue { get; }
         //public Number Saturation { get; }

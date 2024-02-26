@@ -30,7 +30,7 @@
             Id = _idCounter++;
             if (domains.Length == 0)
             {
-                throw new ArgumentException("Must have at least one number chain in poly number chain.");
+                throw new ArgumentException("Must have at least one number chain in poly domain.");
             }
             foreach (var domain in domains)
             {

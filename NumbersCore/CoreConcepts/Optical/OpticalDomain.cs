@@ -12,13 +12,13 @@
 
     public class OpticalDomain : Domain
     {
-        public static OpticalDomain RedDomain { get; } = CreateDomain(Common.ByteScope(), "Red");
-        public static OpticalDomain GreenDomain { get; } = CreateDomain(Common.ByteScope(), "Green");
-        public static OpticalDomain BlueDomain { get; } = CreateDomain(Common.ByteScope(), "Blue");
+        public static OpticalDomain RedDomain { get; } = CreateDomain(Common.ByteScope(), "Red", false);
+        public static OpticalDomain GreenDomain { get; } = CreateDomain(Common.ByteScope(), "Green", false);
+        public static OpticalDomain BlueDomain { get; } = CreateDomain(Common.ByteScope(), "Blue", false);
 
-        public static OpticalDomain HueDomain { get; } = CreateDomain(Common.DegreeScope(), "Hue");
-        public static OpticalDomain SaturationDomain { get; } = CreateDomain(Common.CentScope(), "Saturation");
-        public static OpticalDomain LightnessDomain { get; } = CreateDomain(Common.CentScope(), "Lightness");
+        public static OpticalDomain HueDomain { get; } = CreateDomain(Common.DegreeScope(), "Hue", false);
+        public static OpticalDomain SaturationDomain { get; } = CreateDomain(Common.CentScope(), "Saturation", false);
+        public static OpticalDomain LightnessDomain { get; } = CreateDomain(Common.CentScope(), "Lightness", false);
 
         public OpticalDomain(Focal basisFocal, Focal maxFocal, string name) : base(OpticalTrait.Instance, basisFocal, maxFocal, name)
         {
@@ -26,6 +26,7 @@
         public static OpticalDomain CreateDomain(DomainScope df, string name, bool isVisible = true)
         {
             var domain = new OpticalDomain(df.Basis, df.MinMax, name);
+            domain.IsVisible = isVisible;
             return domain;
         }
         

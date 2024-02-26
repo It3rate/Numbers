@@ -9,7 +9,7 @@
     using System.Threading.Tasks;
     using NumbersCore.Primitives;
 
-    public class XYDomain : PolyDomain
+    public class PositionDomain : PolyDomain
     {
         // Q. Can numbers combine as separate domains within a single domain like this, or does every dimension require it's own (related) domain?
         // Two numbers in one domain combine through operations creating a result. X and Y have domains so similar they feel the same, but probably aren't.
@@ -26,7 +26,7 @@
         public SpatialDomain YDomain { get; }
         public NumberChain X { get; }
         public NumberChain Y { get; }
-        public XYDomain(int xSize, int ySize) : base(
+        public PositionDomain(int xSize, int ySize) : base(
                 SpatialDomain.GetPixelDomain(xSize, "X"),
                 SpatialDomain.GetPixelDomain(ySize, "Y"))
         {
