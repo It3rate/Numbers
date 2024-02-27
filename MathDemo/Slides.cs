@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Drawing;
     using System.Linq;
     using System.Security.Cryptography;
@@ -219,10 +220,16 @@
             wm.CreateLinkedNumber(control.Size);
             wm.DefaultShowMinorTicks = true;
             wm.CreateLinkedNumber(control.AspectRatio);
-            wm.CreateLinkedNumber(control.Convexity);
+            var (_, conv) = wm.CreateLinkedNumber(control.Convexity);
+            conv.OnSelected += (sender, e) =>
+            {
+                Trace.WriteLine(control.ValuesAsString());
+            };
 
             return wm;
         }
+
+
         private SKWorkspaceMapper ValidMath_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);

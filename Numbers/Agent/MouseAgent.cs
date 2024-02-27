@@ -217,6 +217,7 @@ namespace Numbers.Agent
                     {
                         SelSelection.Clear();
                         SelSelection.Set(_highlight.Clone());
+                        nm.Select();
                     }
                 }
                 else

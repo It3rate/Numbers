@@ -11,6 +11,7 @@
     using Numbers.Renderer;
     using NumbersCore.CoreConcepts.Counter;
     using NumbersCore.Primitives;
+    using NumbersCore.Utils;
     using SkiaSharp;
 
     public abstract class UIControlBase : IDrawableElement
@@ -131,6 +132,30 @@
                     Renderer.Canvas.DrawPath(_paths[i], _strokes[i]);
                 }
             }
+        }
+
+        public void ValuesFromString(string values)
+        { 
+            var svals = values.Split(',');
+            if(_numbers.Count * 2 == svals.Length)
+            for (int i = 0; i < _numbers.Count; i++)
+            {
+                _numbers[i].Value = new Range(float.Parse(svals[i * 2]), float.Parse(svals[i * 2 + 1]));
+            }
+            IsDirty = true;
+            Update();
+        }
+        public string ValuesAsString()
+        {
+            var sb = new StringBuilder();
+            var comma = "";
+            for (int i = 0; i < _numbers.Count; i++)
+            {
+                sb.Append(comma).AppendFormat(" {0:F2},{1:F2}", _numbers[i].StartValue, _numbers[i].EndValue);
+                comma = ",";
+            }
+            //ValuesFromString("-100.00,1000.00, -150.00,450.00, -61.00,71.00, -0.16,0.36, -49.00,89.00, -70.00,100.00, -24.00,32.00, -0.63,0.88");
+            return sb.ToString();
         }
     }
 }

@@ -26,10 +26,13 @@ namespace Numbers.Mappers
         public int UnitDirectionOnDomainLine => Guideline.DirectionOnLine(DomainMapper.Guideline);
 
         public int OrderIndex { get; set; } = -1;
+
         public SKNumberMapper(MouseAgent agent, Number number) : base(agent, number)
         {
             Id = number.Id;
         }
+
+
         public Polarity InvertPolarity()
         {
             return Number.InvertPolarity();
@@ -39,6 +42,17 @@ namespace Numbers.Mappers
         {
             var val = Number.ValueInRenderPerspective;
             Reset(UnitSegment.SegmentAlongLine(val.StartF, val.EndF));
+        }
+
+        public event EventHandler OnSelected;
+        public void Select()
+        {
+            OnSelected?.Invoke(this, EventArgs.Empty);
+        }
+        public event EventHandler OnDeselected;
+        public void Deselect()
+        {
+            OnSelected?.Invoke(this, EventArgs.Empty);
         }
 
         public override void Draw() { }

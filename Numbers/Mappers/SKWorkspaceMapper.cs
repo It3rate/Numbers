@@ -137,7 +137,7 @@ namespace Numbers.Mappers
         }
         public bool RemoveDomainMapper(SKDomainMapper domainMapper) => _domainMappers.Remove(domainMapper.Domain.Id);
 
-        public SKDomainMapper CreateLinkedNumber(Number linkTarget)
+        public (SKDomainMapper, SKNumberMapper) CreateLinkedNumber(Number linkTarget)
         {
             var result = GetOrCreateDomainMapper(linkTarget.Domain);
             linkTarget.Domain.IsVisible = true;
@@ -147,7 +147,7 @@ namespace Numbers.Mappers
             }
             result.BasisNumber.Focal = linkTarget.Domain.BasisNumber.Focal;
             var num = result.CreateNumber(linkTarget.Focal);
-            return result;
+            return (result, num);
         }
         #endregion
         #region Transforms
