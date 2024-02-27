@@ -72,7 +72,7 @@ namespace NumbersCore.Primitives
         {
             Trait trait = Trait.GetOrCreateTrait(Brain.ActiveBrain, traitName);
             var unit = new Focal(zeroPoint, zeroPoint + unitSize);
-            var minMaxRange = new Focal((int)(-minRange * unitSize + zeroPoint), (int)(maxRange * unitSize + zeroPoint));
+            var minMaxRange = new Focal((int)(minRange * unitSize + zeroPoint), (int)(maxRange * unitSize + zeroPoint));
             var domain = trait.AddDomain(unit, minMaxRange, name);
             domain.IsVisible = isVisible;
             return domain;

@@ -53,8 +53,8 @@
 
         public ShapeControl(MouseAgent agent, int top, int left, int width, int height, long count = 20) : base(agent, count)
         {
-            Radius = CreateProperty("Size", 25, 50, 0, 50);
-            RadiusOffset = CreateProperty("AspectRatio", 20, 100, 0, 200);
+            Radius = CreateProperty("Radius", 25, 50, 0, 50);
+            RadiusOffset = CreateProperty("Radius Offset", 20, 100, 0, 200);
             AddPolyProperty(Fill, 0, 360, 0, 100, 20, 80);
             AddPolyProperty(Stroke, 0, 360, 0, 100, 0, 40);
             StrokeWidth = CreateProperty("StrokeWidth", 0, 5, 0, 10);

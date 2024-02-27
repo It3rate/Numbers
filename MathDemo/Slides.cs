@@ -203,6 +203,7 @@
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 200, 650, 800, 300);
             wm.ShowNone();
             wm.DefaultShowTicks = true;
+            wm.DefaultShowFractions = true;
             string[] txt = new string[] {
                 "When measurable properties cluster, we can create categories.",
                 "These categories can be as strict or loose as needed, and we don't need to consider all of them at once.",
@@ -213,12 +214,11 @@
             var control = new FruitControl(_currentMouseAgent, 150, 100, 900, 300);
             wm.AddUIControl(control);
 
-            var dm = wm.CreateLinkedNumber(control.Fill.Hue);
+            wm.CreateLinkedNumber(control.Fill.Hue);
+            wm.CreateLinkedNumber(control.Fill.Lightness);
             wm.CreateLinkedNumber(control.Size);
+            wm.DefaultShowMinorTicks = true;
             wm.CreateLinkedNumber(control.AspectRatio);
-            //wm.CreateLinkedNumber(control.Size.Horizontal);
-            //wm.CreateLinkedNumber(control.Size.Vertical);
-            wm.CreateLinkedNumber(control.Roundness);
             wm.CreateLinkedNumber(control.Convexity);
 
             return wm;
