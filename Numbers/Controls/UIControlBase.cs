@@ -65,7 +65,7 @@
             for (int i = 0; i < SampleCount; i++)
             {
                 var val = source.ValueInRenderPerspective.SampleRandom(_rnd);
-                result[i] = (float)Math.Round(val);
+                result[i] = val;// (float)Math.Round(val);
             }
             return result;
         }

@@ -31,7 +31,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 4;
+            _testIndex = 5;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -210,13 +210,16 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var control = new FruitControl(_currentMouseAgent, 175, 320, 600, 400);
+            var control = new FruitControl(_currentMouseAgent, 150, 100, 900, 300);
             wm.AddUIControl(control);
 
             var dm = wm.CreateLinkedNumber(control.Fill.Hue);
-            wm.CreateLinkedNumber(control.Size.Horizontal);
-            wm.CreateLinkedNumber(control.Size.Vertical);
-            wm.CreateLinkedNumber(control.Flatness);
+            wm.CreateLinkedNumber(control.Size);
+            wm.CreateLinkedNumber(control.AspectRatio);
+            //wm.CreateLinkedNumber(control.Size.Horizontal);
+            //wm.CreateLinkedNumber(control.Size.Vertical);
+            wm.CreateLinkedNumber(control.Roundness);
+            wm.CreateLinkedNumber(control.Convexity);
 
             return wm;
         }

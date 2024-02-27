@@ -128,6 +128,72 @@
             }
             return result;
         }
+        public static SKPath GenerateArcOval(SKRect bounds, float roundness, float convexity)
+        {
+            SKPath path = new SKPath();
+            //roundness -= 1;// Math.Max(0, Math.Min(1, roundness));
+            //convexity -= 1;// = Math.Max(0, Math.Min(1, convexity));
+            float width = bounds.Width;
+
+            //outerRect.Left -= roundness * bounds.Height / 2f;
+            //outerRect.Right += roundness * bounds.Height / 2f;
+
+            float startAngle = 90;
+            float sweepAngle = 180;
+            var outerRect = bounds;
+            var skew = Math.Abs(convexity) * (bounds.Width / 2f);
+            outerRect.Left -= skew / 4f;
+            outerRect.Right -= skew / 4f;
+            SKPoint center = new SKPoint(outerRect.MidX, outerRect.MidY);
+            path.AddArc(outerRect, startAngle, sweepAngle);
+
+
+            var innerRect = outerRect;
+
+            innerRect.Left = center.X - skew;
+            innerRect.Right = center.X + skew;
+            //sweepAngle = Math.Sign(convexity) < 0 ? -1f - sweepAngle : sweepAngle;
+            path.AddArc(innerRect, startAngle + sweepAngle, sweepAngle * Math.Sign(convexity));
+
+            //path.Close();
+
+            return path;
+        }
+        //    // Clamp the values to ensure they're within the expected range
+        //    roundness = (roundness < 0) ? 0 : (roundness > 1) ? 1 : roundness;
+        //    convexity = (convexity < 0) ? 0 : (convexity > 1) ? 1 : convexity;
+
+        //    // Calculate control points for Bezier curves based on roundness and convexity
+        //    float width = bounds.Width;
+        //    float height = bounds.Height;
+
+        //    // Adjust the height for roundness
+        //    float adjustedHeight = height * roundness;
+
+        //    // Calculate control points for convexity
+        //    float convexityOffset = width * (1 - convexity) / 2;
+
+        //    SKPath path = new SKPath();
+
+        //    // Start at the bottom center
+        //    path.MoveTo(bounds.MidX, bounds.Bottom);
+
+        //    // Bottom arc
+        //    SKPoint controlPoint1Bottom = new SKPoint(bounds.Left + convexityOffset, bounds.Bottom - adjustedHeight);
+        //    SKPoint controlPoint2Bottom = new SKPoint(bounds.Left + convexityOffset, bounds.Top + adjustedHeight);
+        //    SKPoint endPointBottom = new SKPoint(bounds.MidX, bounds.Top);
+        //    path.CubicTo(controlPoint1Bottom, controlPoint2Bottom, endPointBottom);
+
+        //    // Top arc
+        //    SKPoint controlPoint1Top = new SKPoint(bounds.Right - convexityOffset, bounds.Top + adjustedHeight);
+        //    SKPoint controlPoint2Top = new SKPoint(bounds.Right - convexityOffset, bounds.Bottom - adjustedHeight);
+        //    SKPoint endPointTop = new SKPoint(bounds.MidX, bounds.Bottom);
+        //    path.CubicTo(controlPoint1Top, controlPoint2Top, endPointTop);
+
+        //    path.Close();
+
+        //    return path;
+        //}
 
         // maybe smoothing should be in skia world as it happens on points not segments?
         public void SmoothPositions()
