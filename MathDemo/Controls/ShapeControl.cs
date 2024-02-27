@@ -26,34 +26,16 @@
         // rotation
         // x range
         // y range
-        public bool IsDirty 
-        { 
-            get => _sampleCounter.Segment.IsDirty;
-            set => _sampleCounter.Segment.IsDirty = value; 
-        }
-
-        public long _lastSampleCount = 0;
-        public SegmentCounter _sampleCounter = new SegmentCounter(1, 50);
-        public long SampleCount => _sampleCounter.Value;
-
-        public Number Radius { get; }
-        public Number RadiusOffset { get; }
-        public HSLDomain Fill { get; } = new HSLDomain();
-        public HSLDomain Stroke { get; } = new HSLDomain();
-        public PositionDomain Position { get; } = new PositionDomain(500, 500);
-        public Number StrokeWidth { get; }
-        public Number Rotation { get; }
-        public Number Points { get; }
+        public Number Radius { get; private set; }
+        public Number RadiusOffset { get; private set; }
+        public HSLDomain Fill { get; private set; } = new HSLDomain();
+        public HSLDomain Stroke { get; private set; } = new HSLDomain();
+        public ExtentDomain Position { get; private set; } = new ExtentDomain(500, 500);
+        public Number StrokeWidth { get; private set; }
+        public Number Rotation { get; private set; }
+        public Number Points { get; private set; }
 
 
-
-        private bool _pathsDirty = true;
-        private SKPath[] _paths;
-        private SKPaint[] _strokes;
-        private SKPaint[] _fills;
-
-        private List<Number> _numbers = new List<Number>();
-        private float[][] _samples;
 
         private float[] _samplesRadius => _samples[0];
         private float[] _samplesRadiusOffset => _samples[1];
@@ -69,7 +51,7 @@
         private float[] _samplesRotation => _samples[11];
         private float[] _samplesPoints => _samples[12];
 
-        public ShapeControl(MouseAgent agent, int top, int left, int width, int height) : base(agent)
+        public ShapeControl(MouseAgent agent, int top, int left, int width, int height, long count = 20) : base(agent, count)
         {
             Radius = CreateProperty("Radius", 25, 50, 0, 50);
             RadiusOffset = CreateProperty("RadiusOffset", 20, 100, 0, 200);
@@ -80,12 +62,10 @@
             Rotation = CreateProperty("Rotation", 0, 360, 0, 360);
             Points = CreateProperty("Points", 3, 8, 0, 15, 3);
 
-            _sampleCounter.SetValue(20);
-
             CreateDomainMaps();
             Update();
         }
-        private void CreateDomainMaps()
+        protected override void CreateDomainMaps()
         {
             _numbers.Clear();
 
@@ -97,104 +77,22 @@
             _numbers.Add(Stroke.Hue);
             _numbers.Add(Stroke.Saturation);
             _numbers.Add(Stroke.Lightness);
-            _numbers.Add(Position.X);
-            _numbers.Add(Position.Y);
+            _numbers.Add(Position.Horizontal);
+            _numbers.Add(Position.Vertical);
             _numbers.Add(StrokeWidth);
             _numbers.Add(Rotation);
             _numbers.Add(Points);
 
             _samples = new float[_numbers.Count][];
         }
-        private Number CreateProperty(string trait, int start, int end, int min, int max, int zeroPoint = 0)
-        {
-            var dm = Domain.CreateDomain(trait, 1, min, max, zeroPoint, trait, false);
-            var result = new Number(new Focal(start + zeroPoint, end + zeroPoint));
-            dm.AddNumber(result, false);
-            return result;
-        }
-        private void AddPolyProperty(PolyDomain pDomain, params long[] startEndPairs)
-        {
-            //var result = new Number(new Focal(start + domain.BasisFocal.StartPosition, end + domain.BasisFocal.StartPosition));
-            pDomain.AddPosition(startEndPairs);
-            //return result;
-        }
-        public void Update()
-        {
-            var countDirty = IsDirty;
-            for (int i = 0; i < _numbers.Count; i++)
-            {
-                if(countDirty || _numbers[i].IsDirty)
-                {
-                    _samples[i] = Resample(_numbers[i]);
-                    _pathsDirty = true;
-                }
-            }
 
-            if (_pathsDirty)
-            {
-                GeneratePaths();
-            }
-
-            ClearDirty();
-        }
-        private void ClearDirty()
+        protected override void GeneratePath(long idx)
         {
-            IsDirty = false;
-            foreach (var num in _numbers)
-            {
-                num.IsDirty = false;
-            }
-        }
-        private Random _rnd = new Random();
-        public float[] Resample(Number source)
-        {
-            var result = new float[SampleCount];
-            for (int i = 0; i < SampleCount; i++)
-            {
-                var val = source.ValueInRenderPerspective.SampleRandom(_rnd);
-                result[i] = (float)Math.Round(val);
-            }
-            return result;
-        }
-
-
-        private void GeneratePaths()
-        {
-            if (_pathsDirty || IsDirty)
-            {
-                if (IsDirty)
-                {
-                    _paths = new SKPath[SampleCount];
-                    _strokes = new SKPaint[SampleCount];
-                    _fills = new SKPaint[SampleCount];
-                    for (int i = 0; i < SampleCount; i++)
-                    {
-                        _paths[i] = new SKPath();
-                    }
-                    _lastSampleCount = SampleCount;
-                }
-                for (int i = 0; i < SampleCount; i++)
-                {
-                    var pts = SKPathMapper.GenerateStar(_samplesX[i], _samplesY[i], _samplesRadius[i], _samplesRadius[i], (int)_samplesPoints[i], _samplesRadiusOffset[i] / 100f);
-                    _paths[i].Reset();
-                    _paths[i].AddPoly(pts);
-                    _fills[i] = CorePens.GetBrush(SKColor.FromHsl(_samplesHue[i], _samplesSaturation[i], _samplesLightness[i]));
-                    _strokes[i] = CorePens.GetPen(SKColor.FromHsl(_samplesStrokeHue[i], _samplesStrokeSaturation[i], _samplesStrokeLightness[i]), _samplesStrokeWidth[i]);
-                }
-            }
-            _pathsDirty = false;
-        }
-        public override void Draw()
-        {
-            Update();
-            if (_paths != null && _paths.Length == SampleCount)
-            {
-                for (int i = 0; i < SampleCount; i++)
-                {
-                    Renderer.Canvas.DrawPath(_paths[i], _fills[i]);
-                    Renderer.Canvas.DrawPath(_paths[i], _strokes[i]);
-                }
-            }
+            var pts = SKPathMapper.GenerateStar(_samplesX[idx], _samplesY[idx], _samplesRadius[idx], _samplesRadius[idx], (int)_samplesPoints[idx], _samplesRadiusOffset[idx] / 100f);
+            _paths[idx].Reset();
+            _paths[idx].AddPoly(pts);
+            _fills[idx] = CorePens.GetBrush(SKColor.FromHsl(_samplesHue[idx], _samplesSaturation[idx], _samplesLightness[idx]));
+            _strokes[idx] = CorePens.GetPen(SKColor.FromHsl(_samplesStrokeHue[idx], _samplesStrokeSaturation[idx], _samplesStrokeLightness[idx]), _samplesStrokeWidth[idx]);
         }
     }
 }

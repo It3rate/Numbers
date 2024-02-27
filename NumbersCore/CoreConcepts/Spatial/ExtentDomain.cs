@@ -9,7 +9,7 @@
     using System.Threading.Tasks;
     using NumbersCore.Primitives;
 
-    public class PositionDomain : PolyDomain
+    public class ExtentDomain : PolyDomain
     {
         // Q. Can numbers combine as separate domains within a single domain like this, or does every dimension require it's own (related) domain?
         // Two numbers in one domain combine through operations creating a result. X and Y have domains so similar they feel the same, but probably aren't.
@@ -22,41 +22,41 @@
         // the difference is a result needs to be a single directional ordered line, divided. A branch can be any two numbers.
         // But a branch can come from a result, and a branch can OP transform to a result.
         // The poly domains aren't specific to traits, but maybe can require matching traits (like X,Y must both be distance, but the combo works for e.g. gear ratios as well.)
-        public SpatialDomain XDomain { get; }
-        public SpatialDomain YDomain { get; }
-        public NumberChain X { get; }
-        public NumberChain Y { get; }
-        public PositionDomain(int xSize, int ySize) : base(
-                SpatialDomain.GetPixelDomain(xSize, "X"),
-                SpatialDomain.GetPixelDomain(ySize, "Y"))
+        public SpatialDomain HorizontalDomain { get; }
+        public SpatialDomain VerticalDomain { get; }
+        public NumberChain Horizontal { get; }
+        public NumberChain Vertical { get; }
+        public ExtentDomain(int xSize, int ySize) : base(
+                SpatialDomain.GetPixelDomain(xSize, "Horizontal"),
+                SpatialDomain.GetPixelDomain(ySize, "Vertical"))
         {
-            XDomain = (SpatialDomain)GetDomainByName("X");
-            YDomain = (SpatialDomain)GetDomainByName("Y");
-            X = GetChainByName("X");
-            Y = GetChainByName("Y");
+            HorizontalDomain = (SpatialDomain)GetDomainByName("Horizontal");
+            VerticalDomain = (SpatialDomain)GetDomainByName("Vertical");
+            Horizontal = GetChainByName("Horizontal");
+            Vertical = GetChainByName("Vertical");
         }
-        public void AddXY(Number x, Number y)
+        public void AddExtent(Number horz, Number vert)
         {
-            AddPositions(x, y);
+            AddPositions(horz, vert);
         }
-        public void AddXY(Focal x, Focal y)
+        public void AddExtent(Focal horz, Focal vert)
         {
-            AddPosition(x, y);
+            AddPosition(horz, vert);
         }
-        public void AddXY(long xi, long xr, long yi, long yr)
+        public void AddExtent(long horzi, long horzr, long verti, long vertr)
         {
-            AddPosition(xi, xr, yi, yr);
+            AddPosition(horzi, horzr, verti, vertr);
         }
-        public void AddIncrementalXY(long x, long y)
+        public void AddIncrementalExtent(long horz, long vert)
         {
-            AddIncrementalPosition(x, y);
+            AddIncrementalPosition(horz, vert);
         }
-        public (Number,Number) XYAt(int index)
+        public (Number,Number) ExtentAt(int index)
         {
             var result =  NumbersAt(index);
             return (result[0], result[1]);
         }
-        public (Focal, Focal) XYFocalsAt(int index)
+        public (Focal, Focal) ExtentFocalsAt(int index)
         {
             var result = FocalsAt(index);
             return (result[0], result[1]);

@@ -18,7 +18,7 @@
         public NumberChain Hue;
         public NumberChain Saturation;
         public NumberChain Lightness;
-        public HSLDomain() : base(OpticalDomain.HueDomain, OpticalDomain.SaturationDomain, OpticalDomain.LightnessDomain)
+        public HSLDomain() : base(OpticalDomain.GetHueDomain(), OpticalDomain.GetSaturationDomain(), OpticalDomain.GetLightnessDomain())
         {
             HueDomain = (OpticalDomain)Domains[0];
             SaturationDomain = (OpticalDomain)Domains[1];

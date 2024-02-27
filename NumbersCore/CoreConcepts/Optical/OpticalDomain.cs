@@ -12,13 +12,13 @@
 
     public class OpticalDomain : Domain
     {
-        public static OpticalDomain RedDomain { get; } = CreateDomain(Common.ByteScope(), "Red", false);
-        public static OpticalDomain GreenDomain { get; } = CreateDomain(Common.ByteScope(), "Green", false);
-        public static OpticalDomain BlueDomain { get; } = CreateDomain(Common.ByteScope(), "Blue", false);
+        public static OpticalDomain RedDomain() => CreateDomain(Common.ByteScope(), "Red", false);
+        public static OpticalDomain GreenDomain() => CreateDomain(Common.ByteScope(), "Green", false);
+        public static OpticalDomain BlueDomain() => CreateDomain(Common.ByteScope(), "Blue", false);
 
-        public static OpticalDomain HueDomain { get; } = CreateDomain(Common.DegreeScope(), "Hue", false);
-        public static OpticalDomain SaturationDomain { get; } = CreateDomain(Common.CentScope(), "Saturation", false);
-        public static OpticalDomain LightnessDomain { get; } = CreateDomain(Common.CentScope(), "Lightness", false);
+        public static OpticalDomain GetHueDomain() => CreateDomain(Common.DegreeScope(), "Hue", false);
+        public static OpticalDomain GetSaturationDomain() => CreateDomain(Common.CentScope(), "Saturation", false);
+        public static OpticalDomain GetLightnessDomain() => CreateDomain(Common.CentScope(), "Lightness", false);
 
         public OpticalDomain(Focal basisFocal, Focal maxFocal, string name) : base(OpticalTrait.Instance, basisFocal, maxFocal, name)
         {

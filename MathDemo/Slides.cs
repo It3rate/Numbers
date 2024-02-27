@@ -39,6 +39,7 @@
                 GradientLine_A,
                 GradientLine_B,
                 Uncertainty_A,
+                Categories_A,
                 ValidMath_A,
                 ValidMath_B,
                 Selection_A,
@@ -209,13 +210,13 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var control = new ShapeControl(_currentMouseAgent, 175, 320, 600, 400);
+            var control = new FruitControl(_currentMouseAgent, 175, 320, 600, 400);
             wm.AddUIControl(control);
 
             var dm = wm.CreateLinkedNumber(control.Fill.Hue);
-            wm.CreateLinkedNumber(control.Radius);
-            wm.CreateLinkedNumber(control.RadiusOffset);
-            wm.CreateLinkedNumber(control.Points);
+            wm.CreateLinkedNumber(control.Size.Horizontal);
+            wm.CreateLinkedNumber(control.Size.Vertical);
+            wm.CreateLinkedNumber(control.Flatness);
 
             return wm;
         }
@@ -383,7 +384,7 @@
             string[] txt = new string[] {
                 "Encoding a segment: Using + adds them, using - subtracts them, but we want both values to remain.",
                 "Complex numbers face this same dilemma.",
-                "Look close at use cases. From and to. Above and below zero. Deep and high. Y axis. CCW..."
+                "Look close at use cases. From and to. Above and below zero. Deep and high. Vertical axis. CCW..."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 

@@ -14,7 +14,8 @@
     public class SpatialDomain : Domain
     {
         //public static TemperatureDomain PixelDomain { get; } = CreateDomain(9, 22, 38, 0, "Celsius");
-        public static SpatialDomain GetPixelDomain(int size, string name) => CreateDomain(Common.PixelScope(-size, size), name, false);
+        public static SpatialDomain GetPixelDomain(int size, string name) => CreateDomain(Common.PixelScope(0, size), name, false);
+        public static SpatialDomain Get2DCenteredDomain(int ticks, int size, string name) => CreateDomain(Common.TickScope(ticks, -size, size), name, false);
 
         public SpatialDomain(Focal basisFocal, Focal maxFocal, string name) : base(CounterTrait.Instance, basisFocal, maxFocal, name)
         {

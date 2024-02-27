@@ -24,7 +24,13 @@
             var minMax = new Focal(0, 100);
             return new DomainScope(basis, minMax);
         }
-        public static DomainScope PixelScope(int min, int max)
+        public static DomainScope TickScope(long ticksPerUnit, long min, long max)
+        {
+            var basis = new Focal(0, ticksPerUnit);
+            var minMax = new Focal(min, max);
+            return new DomainScope(basis, minMax);
+        }
+        public static DomainScope PixelScope(long min, long max)
         {
             var basis = new Focal(0, 1);
             var minMax = new Focal(min, max);
