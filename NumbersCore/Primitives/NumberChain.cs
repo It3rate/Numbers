@@ -104,6 +104,10 @@ namespace NumbersCore.Primitives
 
         public static bool operator ==(NumberChain a, NumberChain b)
         {
+            if (a is null && b is null)
+            {
+                return true;
+            }
             if (a is null || b is null)
             {
                 return false;

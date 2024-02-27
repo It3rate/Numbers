@@ -377,6 +377,10 @@ namespace NumbersCore.Primitives
 
         public static bool operator ==(Number a, Number b)
         {
+            if (a is null && b is null)
+            {
+                return true;
+            }
             if (a is null || b is null)
             {
                 return false;

@@ -134,7 +134,7 @@
             }
         }
 
-        public void ValuesFromString(string values)
+        public void SetValuesFromString(string values)
         { 
             var svals = values.Split(',');
             if(_numbers.Count * 2 == svals.Length)
@@ -145,7 +145,7 @@
             IsDirty = true;
             Update();
         }
-        public string ValuesAsString()
+        public string GetValuesAsString()
         {
             var sb = new StringBuilder();
             var comma = "";

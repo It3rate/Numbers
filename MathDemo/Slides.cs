@@ -212,7 +212,7 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var control = new FruitControl(_currentMouseAgent, 150, 100, 900, 300);
+            var control = new FruitControl(_currentMouseAgent, 150, 150, 900, 300);
             wm.AddUIControl(control);
 
             wm.CreateLinkedNumber(control.Fill.Hue);
@@ -223,9 +223,20 @@
             var (_, conv) = wm.CreateLinkedNumber(control.Convexity);
             conv.OnSelected += (sender, e) =>
             {
-                Trace.WriteLine(control.ValuesAsString());
+                Trace.WriteLine(control.GetValuesAsString());
             };
 
+            var label = wm.CreateTextMapper(new string[] { "Random" }, new SKSegment(60, 180, 100, 180));
+
+            var fruitCount = FruitControl.FruitData.Count;
+            var guideline = new SKSegment(70, 600, 70, 200);
+            var kindDomain = wm.GetOrCreateDomainMapper(Domain.CreateDomain("kind", 1, 0, fruitCount, 0), guideline);
+            var kindNum = kindDomain.CreateNumber(new Focal(0, 1));
+            kindNum.OnChanged += (sender, e) =>
+            {
+                var name = control.UpdateToIndex((int)-kindNum.Number.StartValue);
+                label.Lines[0] = name;
+            };
             return wm;
         }
 

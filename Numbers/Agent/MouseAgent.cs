@@ -71,6 +71,7 @@ namespace Numbers.Agent
 
         private SKPoint _rawMousePoint;
         private float _minDragDistance = 4f;
+        private Focal _lastDragFocal = null;
         public float ScaleTickSize { get; set; } = 0.2f;
         public Keys CurrentKey { get; private set; }
         private UIMode _uiMode = UIMode.Any;
@@ -343,6 +344,12 @@ namespace Numbers.Agent
                                 // drag segment
                                 nm.MoveSegmentByT(SelBegin.OriginalSegment, curT - clickT);
                             }
+
+                            if(nm.Number.Focal != _lastDragFocal)
+                            {
+                                nm.Changed();
+                                _lastDragFocal = nm.Number.Focal.Clone();
+                            }
                         }
                     }
                     else if (activeKind.IsBasis())
@@ -373,6 +380,11 @@ namespace Numbers.Agent
                     else
                     {
                         nm.SetValueByKind(_highlight.SnapPoint, activeKind);
+                        if (nm.Number.Focal != _lastDragFocal)
+                        {
+                            nm.Changed();
+                            _lastDragFocal = nm.Number.Focal.Clone();
+                        }
                     }
                 }
                 else if (activeHighlight.Mapper is SKDomainMapper dm)
@@ -486,6 +498,7 @@ namespace Numbers.Agent
             }
             _initialBasisNum = null;
             _initialSelectionNum = null;
+            _lastDragFocal = null;
             IsCreatingDomain = false;
             IsDraggingBasis = false;
             IsCreatingNumber = false;

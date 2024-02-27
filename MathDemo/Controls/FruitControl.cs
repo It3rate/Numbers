@@ -2,9 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Deployment.Application;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using System.Windows.Forms;
     using Numbers.Agent;
     using Numbers.Controls;
     using Numbers.Mappers;
@@ -36,7 +38,6 @@
         {
             _sampleCounter.SetValue(20);
 
-            // apple orange banana lemon lime cherry blueberry kiwi cherry peach
             AddPolyProperty(Position, left, left + width, top, top + height);
 
             Size = CreateProperty("Size", 40, 50, 0, 100);
@@ -50,6 +51,15 @@
 
             CreateDomainMaps();
             Update();
+        }
+        public string UpdateToIndex(int index)
+        {
+            index = (index < 0 || index >= FruitData.Count) ? 0 : index;
+            var (name, data) = FruitData[index];
+            SetValuesFromString(data);
+            IsDirty = true;
+            Update();
+            return name;
         }
 
         protected override void CreateDomainMaps()
@@ -79,5 +89,21 @@
             _fills[idx] = CorePens.GetBrush(SKColor.FromHsl(_samplesHue[idx], _samplesSaturation[idx], _samplesLightness[idx]));
             _strokes[idx] = _defaultStroke;
         }
+
+        // apple orange banana lemon lime cherry blueberry kiwi cherry peach
+
+        public static List<(string, string)> FruitData = new List<(string, string)>()
+        {
+            ("Random", "-150.00,1050.00, -150.00,450.00, -27.00,99.00, 0.82,0.76, 0.00,360.00, -70.00,100.00, -18.00,84.00, 0.66,1.00" ),
+            ("Orange", "-150.00,1050.00, -150.00,450.00, -34.00,47.00, 0.04,0.04, -18.00,40.00, -90.00,100.00, -49.00,58.00, -1.00,1.00"),
+            ("Grape", "-150.00,1050.00, -150.00,450.00, -14.00,24.00, -0.10,0.30, -238.00,332.00, -70.00,100.00, -28.00,47.00, -1.00,1.00"),
+            ("Apple", "-150.00,1050.00, -150.00,450.00, -43.00,50.00, 0.18,0.02, 1.00,16.00, -70.00,100.00, -44.00,58.00, -1.00,1.00"),
+            ("Papaya", "-150.00,1050.00, -150.00,450.00, -54.00,64.00, -0.12,0.28, -29.00,90.00, -70.00,100.00, -42.00,50.00, -0.56,0.88"),
+            ("Cherry", "-150.00,1050.00, -150.00,450.00, -20.00,30.00, 0.06,0.02, 0.00,8.00, -80.00,100.00, -42.00,50.00, -1.00,1.00"),
+            ("Kiwi", "-150.00,1050.00, -150.00,450.00, -28.00,30.00, -0.22,0.40, -38.00,43.00, -70.00,100.00, -31.00,35.00, -1.00,1.00"),
+            ("Lime", "-150.00,1050.00, -150.00,450.00, -30.00,35.00, -0.10,0.28, -94.00,119.00, -70.00,100.00, -48.00,55.00, -0.81,0.91"),
+            ("Lemon", "-150.00,1050.00, -150.00,450.00, -36.00,45.00, -0.10,0.28, -58.00,60.00, -100.00,100.00, -50.00,49.00, -0.63,0.91"),
+            ("Banana", "-150.00,1050.00, -150.00,450.00, -72.00,98.00, 0.48,0.24, -43.00,70.00, -70.00,100.00, -62.00,67.00, 0.69,-0.38"),
+        };
     }
 }

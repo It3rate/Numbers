@@ -253,6 +253,10 @@
 
         public static bool operator ==(FocalChain a, FocalChain b)
         {
+            if (a is null && b is null)
+            {
+                return true;
+            }
             if (a is null || b is null)
             {
                 return false;

@@ -498,6 +498,10 @@ namespace NumbersCore.Primitives
 
         public static bool operator ==(Focal a, Focal b)
         {
+            if (a is null && b is null)
+            {
+                return true;
+            }
             if (a is null || b is null)
             {
                 return false;

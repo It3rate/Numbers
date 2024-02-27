@@ -253,8 +253,11 @@ namespace NumbersCore.Utils
 
         public Range Clone() => new Range(Start, End, IsAligned);
 
-        public static bool operator ==(Range left, Range right) => left.Equals(right);
-        public static bool operator !=(Range left, Range right) => !left.Equals(right);
+        public static bool operator ==(Range a, Range b) // value type, so no nulls
+        {
+            return a.Equals(b);
+        }
+        public static bool operator !=(Range a, Range b) => !(a == b);
         public override bool Equals(object obj)
         {
             return obj is Range other && Equals(other);

@@ -52,7 +52,12 @@ namespace Numbers.Mappers
         public event EventHandler OnDeselected;
         public void Deselect()
         {
-            OnSelected?.Invoke(this, EventArgs.Empty);
+            OnDeselected?.Invoke(this, EventArgs.Empty);
+        }
+        public event EventHandler OnChanged;
+        public void Changed()
+        {
+            OnChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public override void Draw() { }
