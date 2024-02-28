@@ -137,7 +137,7 @@
             float sweepAngle = 180;
             var outerRect = bounds;
             var skew = Math.Abs(convexity) * (bounds.Width / 2f);
-            //outerRect.Left += skew > 0 ? (float)Math.Sin(convexity) * 22f : 0;
+            outerRect.Left += skew < 0 ? (float)Math.Sin(convexity) * 22f : 0;
             //outerRect.Right += skew > 0 ? skew / 2f : 0;
             SKPoint center = new SKPoint(outerRect.MidX, outerRect.MidY);
             path.AddArc(outerRect, startAngle, sweepAngle);
