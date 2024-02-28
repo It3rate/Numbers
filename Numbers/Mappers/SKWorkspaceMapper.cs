@@ -357,14 +357,14 @@ namespace Numbers.Mappers
                     {
                         continue; // help with selecting unit drag multiply when M pressed
                     }
+		            else if (!isSameMapper && Agent.CurrentKey != Keys.Space && input.DistanceTo(seg.EndPoint) < maxDist) // prefer endpoint if zero length
+                    {
+                        highlight.Set(input, seg.EndPoint, nm, 1, kind | UIKind.Point | UIKind.Major, nm.Number.Value);
+			            goto Found;
+		            }
 		            if (!isSameMapper && Agent.CurrentKey != Keys.Space && input.DistanceTo(seg.StartPoint) < maxDist) // space always drags line
 		            {
 			            highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point, nm.Number.Value);
-			            goto Found;
-		            }
-		            else if (!isSameMapper && Agent.CurrentKey != Keys.Space && input.DistanceTo(seg.EndPoint) < maxDist)
-                    {
-                        highlight.Set(input, seg.EndPoint, nm, 1, kind | UIKind.Point | UIKind.Major, nm.Number.Value);
 			            goto Found;
 		            }
 		            else if (!isSameMapper && seg.DistanceTo(input, true) < maxDist && Agent.CurrentKey != Keys.M)

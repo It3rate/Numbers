@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 2;
+            _testIndex = 16;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -47,17 +47,19 @@
                 //ValidMath_B,
                 Selection_A,
                 Selection_B,
-                Selection_C,
+                Polarity_A,
                 ComparisonsBasis_A,
                 ComparisonsBasis_B,
+                ComparisonsBasis_C,
+                InvertedBasis_A,
                 AddSubtract_A,
                 AddSubtract_B,
                 AddSubtract_C,
                 UnitUnot_A,
                 UnitUnot_B,
                 UnitUnot_C,
-                Polarity_A,
-                Polarity_B,
+                DefineSegments_A,
+                DefineSegments_B,
                 Page7,
                 Page8,
                 Page9,
@@ -319,13 +321,6 @@
             {
                 pm.SetPartialPath(-num.Number.StartTValue(), num.Number.EndTValue());
             };
-
-            //num.OnSelected += (sender, e) =>
-            //{
-            //    pm.SetValuesFromString(path);
-            //    //Trace.WriteLine(wm.LastPathMapper()?.GetValuesAsString());
-            //};
-
             return wm;
         }
         //private SKWorkspaceMapper ValidMath_B()
@@ -356,7 +351,7 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var guideline = new SKSegment(200, 350, 1000, 350);
+            var guideline = new SKSegment(200, 400, 1000, 400);
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 1, 10), guideline);
             return wm;
         }
@@ -365,7 +360,7 @@
             var wm = Selection_A();
             wm.AppendText(
             "If the final selection is less than the resolution, it still has position and length, just the length is to small to quantify.",
-            "'Zero' length is not nil, zero position is also not nil."
+            "'Zero' length is not nil, zero position is also not nil. You can not destroy a selection by adjusting it."
 
             //"You can create a segment by selecting a position and expanding in the positive or negative direction.",
             //"You can also select an existing segment.",
@@ -375,23 +370,23 @@
             var last = wm.LastDomainMapper();
             return wm;
         }
-        private SKWorkspaceMapper Selection_C()
+        private SKWorkspaceMapper Polarity_A()
         {
-            var wm = Selection_B();
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             wm.ShowAll();
-            wm.AppendText(
+            string[] txt = new string[] {
             "These gradient lines also have two directions, positive red or positive blue. This is the polarity.",
             "You can make multiple segments on a gradient line, and they can have different polarities."
-               );
-            var last = wm.LastDomainMapper();
-            last.ShowGradientNumberLine = true;
-            last.ShowBasis = true;
-            last.ShowPolarity = true;
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var guideline = new SKSegment(200, 400, 1000, 400);
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Polarity", 1, 10), guideline);
             return wm;
         }
         private SKWorkspaceMapper ComparisonsBasis_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 250, 900, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 900, 400);
             wm.ShowAll();
             wm.DefaultShowPolarity = false;
             string[] txt = new string[] {
@@ -410,18 +405,45 @@
             var wm = ComparisonsBasis_A();
             wm.AppendText(
                 "Switching basis is the reciprocal, shorter, to the right of, half as long.",
-                "The basis denotes zero, one, and dominant (positive) direction. Every basis has in inverted basis."
+                "The basis denotes zero, one, and dominant (positive) direction."
+            );
+
+            return wm;
+        }
+        private SKWorkspaceMapper ComparisonsBasis_C()
+        {
+            var wm = ComparisonsBasis_B();
+            wm.AppendText(
+                "Using a different basis for the same property is a form of conversion."
             );
 
             wm.ShowAll();
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowPolarity = false;
             wm.DefaultShowFractions = false;
-            wm.OffsetNextLineBy(50);
+            wm.OffsetNextLineBy(100);
             var dmC = wm.GetOrCreateDomainMapper(TemperatureDomain.CelsiusDomain, null, null, "Celsius");
             var dmF = wm.GetOrCreateDomainMapper(TemperatureDomain.FahrenheitDomain, null, null, "Fahrenheit");
             var nm0 = dmF.CreateNumberFromFloats(35f, 8f);
             dmC.LinkNumber(nm0.Number);
+
+
+            return wm;
+        }
+        private SKWorkspaceMapper InvertedBasis_A()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 900, 400);
+            wm.ShowAll();
+            wm.DefaultShowPolarity = true;
+            string[] txt = new string[] {
+                "What about inverted numbers? Every basis has an inverted basis.",
+                "It always has the same length, it always defines zero and one, and it always points in the *opposite* direction."
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 3));
+            var nm0 = hd0.CreateNumberFromFloats(0, 2f);
+
 
             return wm;
         }
@@ -446,8 +468,8 @@
             var wm = AddSubtract_A();
             wm.AppendText(
             "Segments can not be removed this way (that is deletion).", 
-            "They can only be made to have a length too small to measure, which is zero, but no nil.",
-            "Zero length segments can still be re-expanded. Nil (no selection) can have no operations applied."
+            "They can only be made to have a length too small to measure, which is zero, but not nil.",
+            "Zero length segments can still be re-expanded. There are no operations that can be applied to nil (no selection)."
             );
 
             var leftDm = wm.LastDomainMapper();
@@ -471,19 +493,23 @@
         private SKWorkspaceMapper AddSubtract_C()
         {
             var wm = AddSubtract_B();
+            wm.DefaultShowPolarity = true;
             wm.AppendText(
-            "Do you think our number 5 represents a point or a segment here? What does moving from the zero position imply?"
+            "What does moving from the zero position imply? Do you think our number 5 represents a point or a segment here?"
             );
+            wm.LastDomainMapper().ShowPolarity = true;
             return wm;
         }
         private SKWorkspaceMapper UnitUnot_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 150, 900, 600);
-            wm.DefaultDomainTicks = 1;
-            wm.DefaultDomainRange = 12;
-            wm.DefaultShowMinorTicks = false;
-            wm.DefaultShowFractions = false;
-            wm.DefaultShowPolarity = false;
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 50, 900, 800);
+            wm.ShowAll();
+            wm.DefaultShowNumbersOffset = true;
+            //wm.DefaultDomainTicks = 1;
+            //wm.DefaultDomainRange = 12;
+            //wm.DefaultShowMinorTicks = false;
+            //wm.DefaultShowFractions = false;
+            //wm.DefaultShowPolarity = false;
             wm.DefaultDrawPen = CorePens.GetPen(SKColor.Parse("#6090D0"), 8);
             string[] txt = new string[] {
                 "Encoding a segment: Using + adds them, using - subtracts them, but we want both values to remain.",
@@ -492,8 +518,10 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var segLine = wm.GetVerticalSegment(1, 0);
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("UnitUnot", 1, 8), segLine);
+            wm.CreateImageMapper("iceberg.png", new SKSegment(470, 150, 970, 150));
+
+            var segLine = wm.GetVerticalSegment(1, 20);
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("UnitUnot", 4, -11,5, 0), segLine);
             return wm;
         }
         private SKWorkspaceMapper UnitUnot_B()
@@ -518,7 +546,7 @@
             );
             return wm;
         }
-        private SKWorkspaceMapper Polarity_A()
+        private SKWorkspaceMapper DefineSegments_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
@@ -529,9 +557,9 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
         }
-        private SKWorkspaceMapper Polarity_B()
+        private SKWorkspaceMapper DefineSegments_B()
         {
-            var wm = Polarity_A();
+            var wm = DefineSegments_A();
             wm.AppendText(
                 "The inverted perspective represents the same information.",
                 "The context you are in is part of this information.",
