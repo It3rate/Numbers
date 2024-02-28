@@ -91,7 +91,6 @@ namespace NumbersCore.Primitives
 			get => Domain.GetValueOf(this);
             set => Domain.SetValueOf(this, value);
         }
-
         public long ZeroTick => BasisFocal.StartPosition;
         public long BasisTicks => BasisFocal.LengthInTicks;
         public long AbsBasisTicks => BasisFocal.AbsLengthInTicks;
@@ -108,6 +107,24 @@ namespace NumbersCore.Primitives
             Polarity = polarity;
 		}
 
+        public double StartTValue()
+        {
+            var val = Domain.MinMaxRange;
+            var len = val.Length;
+            return (StartValue - val.Start) / len;
+        }
+        public double EndTValue()
+        {
+            var val = Domain.MinMaxRange;
+            var len = val.Length;
+            return (EndValue - val.Start) / len;
+        }
+        public double TValueOf(double position)
+        {
+            var val = Value;
+            var len = val.Length;
+            return (position - val.Start) / len;
+        }
         public Range ExpansiveForce
         {
             get
@@ -138,12 +155,6 @@ namespace NumbersCore.Primitives
             return other;
         }
 
-        public double RatioFromStart(double pointOnLine)
-        {
-            var val = Value;
-            var len = val.Length;
-            return (pointOnLine - val.Start) / len;
-        }
         public Polarity InvertPolarity()
         {
             Polarity = (Polarity == Polarity.Aligned) ? Polarity.Inverted : Polarity.Aligned;

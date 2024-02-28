@@ -12,6 +12,7 @@
     using Numbers.Utils;
     using NumbersCore.CoreConcepts.Spatial;
     using NumbersCore.Primitives;
+    using NumbersCore.Utils;
     using SkiaSharp;
 
     public class SKPathMapper : SKMapper
@@ -21,6 +22,7 @@
         private List<SKPoint> _points = new List<SKPoint>();
         private SKPoint _lastPoint;
         private SKPoint[] _smoothPoints;
+        private SKPoint[] _storedPoints;
         private bool _isShape = false;
         private bool _pathDirty = false;
         public int Count => PolylineDomain.Count;
@@ -34,6 +36,10 @@
         //{
         //}
 
+        public void SetStoredPoints(string points)
+        {
+            _storedPoints = GetValuesFromString(points);
+        }
         public override SKPath GetHighlightAt(Highlight highlight)
         {
             throw new NotImplementedException();
@@ -241,6 +247,58 @@
             _points.Clear();
             _smoothPoints = null;
             _isShape = false;
+        }
+        public void SetPartialPath(double startT, double endT)
+        {
+            if(_storedPoints != null)
+            {
+                Reset();
+                if(startT > endT)
+                {
+                    var temp = endT;
+                    endT = startT;
+                    startT = temp;
+                }
+                var startIndex = (int)(_storedPoints.Length * startT);
+                startIndex = startIndex < 0 ? 0 : startIndex >= _storedPoints.Length ? _storedPoints.Length : startIndex;
+                var endIndex = (int)(_storedPoints.Length * endT);
+                endIndex = endIndex < 0 ? 0 : endIndex >= _storedPoints.Length ? _storedPoints.Length : endIndex;
+
+                int length = endIndex - startIndex;
+                if(length > 0)
+                {
+                    length = startIndex + length >= _storedPoints.Length ? (_storedPoints.Length - 1) - startIndex : length;
+                    _smoothPoints = new SKPoint[Math.Abs(length)];
+                    Array.Copy(_storedPoints, startIndex, _smoothPoints, 0, length);
+                }
+            }
+        }
+        public SKPoint[] GetValuesFromString(string values)
+        {
+            var svals = values.Split(',');
+            Reset();
+            var result = new SKPoint[svals.Length / 2];
+            for (int i = 0; i < result.Length; i ++)
+            {
+                result[i] = new SKPoint(float.Parse(svals[i * 2]), float.Parse(svals[i * 2 + 1]));
+            }
+            return result;
+        }
+        public void SetValuesFromString(string values)
+        {
+            _smoothPoints = GetValuesFromString(values);
+        }
+        public string GetValuesAsString()
+        {
+            var sb = new StringBuilder();
+            var comma = "";
+            for (int i = 0; i < _smoothPoints.Length; i++)
+            {
+                sb.Append(comma).AppendFormat(" {0:F2},{1:F2}", _smoothPoints[i].X, _smoothPoints[i].Y);
+                comma = ",";
+            }
+            //SetValuesFromString(" 956.00,313.00, 921.00,332.00, 900.00,349.00, 888.00,373.00, 885.00,389.00, 885.00,404.00, 892.00,418.00, 904.00,435.00, 923.00,451.00, 950.00,470.00, 959.00,481.00, 967.00,500.00, 973.00,523.00, 974.00,534.00, 968.00,548.00, 943.00,573.00, 937.00,582.00, 936.00,595.00, 938.00,601.00, 958.00,612.00, 967.00,615.00, 1000.00,620.00, 1008.00,620.00, 1017.00,601.00\r\n");
+            return sb.ToString();
         }
     }
 }

@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 5;
+            _testIndex = 6;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -125,7 +125,7 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            wm.CreateImageMapper("4_parkPath.jpg", new SKSegment(50, 130, 500, 130));
+            wm.CreateImageMapper("3_path.jpg", new SKSegment(50, 130, 500, 130));
 
             //var path = wm.CreatePathMapper();
             //var paint = CorePens.GetPen(SKColors.Teal, 20);
@@ -223,10 +223,10 @@
             wm.DefaultShowMinorTicks = true;
             wm.CreateLinkedNumber(control.AspectRatio);
             var (_, conv) = wm.CreateLinkedNumber(control.Convexity);
-            conv.OnSelected += (sender, e) =>
-            {
-                Trace.WriteLine(control.GetValuesAsString());
-            };
+            //conv.OnSelected += (sender, e) =>
+            //{
+            //    Trace.WriteLine(control.GetValuesAsString());
+            //};
 
             var label = wm.CreateTextMapper(new string[] { "Random" }, new SKSegment(60, 180, 100, 180));
 
@@ -250,16 +250,36 @@
             wm.DefaultShowTicks = true;
             wm.DefaultShowFractions = true;
             string[] txt = new string[] {
-                "Everything that can happen on these gradient lines is valid math.",
                 "Gradients can be any shape, including circles. If they are anything more than a single path, they become multidimensional.",
+                "*** Everything that can happen on these gradient lines is valid math. ***",
                 "Many of these 'valid things' are intuitive, useful, and not covered by existing math. Some will follow here, but there are many more.",
                 "You should explore this!",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
+            wm.CreateImageMapper("4_parkPath.jpg", new SKSegment(350, 250, 850, 250));
+            
+            var path = " 705.00,329.00, 706.00,340.00, 710.00,350.00, 723.00,365.00, 732.00,389.00, 731.00,396.00, 724.00,400.00, 715.00,401.00, 714.00,403.00, 709.00,403.00, 705.00,395.00, 685.00,374.00, 675.00,370.00, 644.00,383.00, 608.00,405.00, 593.00,407.00, 563.00,407.00, 560.00,400.00, 546.00,382.00, 532.00,335.00, 502.00,321.00, 500.00,318.00, 489.00,315.00, 467.00,314.00, 456.00,317.00, 412.00,343.00, 406.00,350.00, 397.00,364.00, 397.00,384.00, 400.00,395.00, 400.00,433.00, 398.00,436.00, 397.00,458.00, 400.00,466.00, 402.00,481.00, 402.00,514.00, 410.00,523.00, 425.00,530.00, 437.00,532.00, 478.00,532.00, 484.00,537.00, 484.00,559.00, 482.00,567.00, 470.00,584.00, 460.00,588.00, 454.00,594.00, 449.00,612.00, 449.00,619.00, 463.00,634.00, 471.00,636.00, 512.00,637.00, 516.00,636.00, 520.00,631.00, 527.00,629.00, 538.00,629.00, 557.00,625.00, 558.00,622.00, 570.00,613.00, 584.00,605.00, 606.00,597.00, 626.00,595.00, 638.00,603.00, 641.00,608.00, 647.00,612.00, 663.00,635.00, 665.00,641.00, 664.00,668.00, 666.00,670.00, 680.00,669.00, 683.00,625.00, 684.00,570.00, 682.00,554.00, 682.00,510.00, 679.00,466.00, 693.00,453.00, 704.00,447.00, 716.00,436.00, 735.00,437.00, 743.00,435.00, 747.00,416.00, 746.00,408.00, 744.00,406.00, 744.00,391.00, 749.00,379.00, 762.00,364.00, 770.00,350.00, 776.00,333.00, 776.00,331.00, 771.00,328.00, 742.00,327.00, 733.00,320.00";
+            var pm = wm.CreatePathMapper();
+            pm.SetStoredPoints(path);
+            pm.Pen = CorePens.GetPen(SKColors.DarkBlue, 10);
+
             var guideline = new SKSegment(100, 200, 1100, 200);
-            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("validMath", 10, 10), guideline);
-            hd.CreateNumber(new Focal(0, 50));
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("validMath", 128, 0, 1, 0), guideline);
+            var num = hd.CreateNumber(new Focal(0, 50));
+
+            num.OnChanged += (sender, e) =>
+            {
+                pm.SetPartialPath(-num.Number.StartTValue(), num.Number.EndTValue());
+                //pm.SetValuesFromString(path);
+                //Trace.WriteLine(wm.LastPathMapper()?.GetValuesAsString());
+            };
+
+            //num.OnSelected += (sender, e) =>
+            //{
+            //    pm.SetValuesFromString(path);
+            //    //Trace.WriteLine(wm.LastPathMapper()?.GetValuesAsString());
+            //};
 
             return wm;
         }

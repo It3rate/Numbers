@@ -273,6 +273,11 @@ namespace Numbers.Mappers
         {
             _pathMappers.Remove(pathMapper.Id);
         }
+        public SKPathMapper PathMapperAt(int index)
+        {
+            return (index >= 0 && index < _pathMappers.Count) ? _pathMappers.Values.ElementAtOrDefault(index) : null;
+        }
+        public SKPathMapper LastPathMapper() => PathMapperAt(_pathMappers.Count - 1);
         #endregion
         #region Controls
         public IEnumerable<IDrawableElement> UIControls()
