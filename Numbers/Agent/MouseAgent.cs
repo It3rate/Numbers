@@ -452,7 +452,7 @@ namespace Numbers.Agent
             else if (IsCreatingNumber)
             {
                 var dm = SelBegin.ActiveHighlight?.GetRelatedDomainMapper();
-                if(dm != null)
+                if(dm != null && DragHighlight != null)
                 {
                     CreateNumber(dm, DragHighlight, IsCreatingInvertedNumber);
                 }

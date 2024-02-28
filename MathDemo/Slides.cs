@@ -3,8 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Drawing;
     using System.Linq;
+    using System.Runtime.InteropServices.Expando;
     using System.Security.Cryptography;
     using System.Security.Policy;
     using System.Text;
@@ -42,9 +44,10 @@
                 Uncertainty_A,
                 Categories_A,
                 ValidMath_A,
-                ValidMath_B,
+                //ValidMath_B,
                 Selection_A,
                 Selection_B,
+                Selection_C,
                 ComparisonsBasis_A,
                 ComparisonsBasis_B,
                 AddSubtract_A,
@@ -207,8 +210,7 @@
             wm.DefaultShowFractions = true;
             string[] txt = new string[] {
                 "When measurable properties cluster, we can create categories.",
-                "These categories can be as strict or loose as needed, and we don't need to consider all of them at once.",
-                "Traits can be combined into new categories. Area, color, shortcuts, and speed are examples of combined traits."
+                "These categories can be as strict or loose as needed, and we don't need to consider all properties at once.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -246,9 +248,12 @@
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             wm.ShowNone();
             wm.DefaultShowTicks = true;
+            wm.DefaultShowFractions = true;
             string[] txt = new string[] {
                 "Everything that can happen on these gradient lines is valid math.",
-                "Every non random operation is encodable, and predictable to its level of precision.",
+                "Gradients can be any shape, including circles. If they are anything more than a single path, they become multidimensional.",
+                "Many of these 'valid things' are intuitive, useful, and not covered by existing math. Some will follow here, but there are many more.",
+                "You should explore this!",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -258,20 +263,19 @@
 
             return wm;
         }
-        private SKWorkspaceMapper ValidMath_B()
-        {
-            var wm = ValidMath_A();
-            wm.AppendText(
-                "Gradients can be any shape, including circles, but if they have branches they are no longer 1D."
-               );
-            //var guideline = new SKSegment(hd.MidPoint, hd.MidPoint + new SKPoint(0, 300));
-            var guideline = new SKSegment(600, 200, 600, 800);
-            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("validMath", 10, 10), guideline);
-            hd.ShowTicks = true;
-            hd.ShowPolarity = false;
+        //private SKWorkspaceMapper ValidMath_B()
+        //{
+        //    var wm = ValidMath_A();
+        //    wm.AppendText(
+        //       );
+        //    //var guideline = new SKSegment(hd.MidPoint, hd.MidPoint + new SKPoint(0, 300));
+        //    var guideline = new SKSegment(600, 200, 600, 800);
+        //    var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("validMath", 10, 10), guideline);
+        //    hd.ShowTicks = true;
+        //    hd.ShowPolarity = false;
 
-            return wm;
-        }
+        //    return wm;
+        //}
         private SKWorkspaceMapper Selection_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
@@ -280,24 +284,39 @@
             wm.DefaultShowFractions = false;
             wm.DefaultShowMinorTicks = false;
             string[] txt = new string[] {
-            "You can select any portion of a line. A selection is always smaller than the lowest precision.",
-            "Selections can move in one of two directions, the increasing direction or the decreasing direction (positive and negative).",
-            "All selections have a start and end point, and therefore a direction.",
-            "Selection with '0' length, mean the length is below the smallest resolution, and you can't tell the direction."
+                "There are two possible initial actions: create a selection, or choose an existing one.",
+            "Create a selection by starting with a new position and expanding it.",
+            "While stretching this tiny selection, new material is appended to the selection. Both positive and negative work.",
+            "On a gradient, ALL motion must be linear and continuous, so creating a selection always results in a single segment.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var guideline = new SKSegment(200, 350, 1000, 550);
-            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 10), guideline);
+            var guideline = new SKSegment(200, 350, 1000, 350);
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 1, 10), guideline);
             return wm;
         }
         private SKWorkspaceMapper Selection_B()
         {
             var wm = Selection_A();
+            wm.AppendText(
+            "If the final selection is less than the resolution, it still has position and length, just the length is to small to quantify.",
+            "'Zero' length is not nil, zero position is also not nil."
+
+            //"You can create a segment by selecting a position and expanding in the positive or negative direction.",
+            //"You can also select an existing segment.",
+            //"All selections have a start and end point, and therefore a direction.",
+            //"Selection with '0' length, means the length is below the smallest resolution, and you can't tell the direction."
+               );
+            var last = wm.LastDomainMapper();
+            return wm;
+        }
+        private SKWorkspaceMapper Selection_C()
+        {
+            var wm = Selection_B();
             wm.ShowAll();
             wm.AppendText(
             "These gradient lines also have two directions, positive red or positive blue. This is the polarity.",
-            "You can make multiple selections on a gradient line, and they can have different polarities."
+            "You can make multiple segments on a gradient line, and they can have different polarities."
                );
             var last = wm.LastDomainMapper();
             last.ShowGradientNumberLine = true;
@@ -311,6 +330,7 @@
             wm.ShowAll();
             wm.DefaultShowPolarity = false;
             string[] txt = new string[] {
+             //"Traits can be combined into new categories. Area, color, shortcuts, and speed are examples of combined traits.",
             "With multiple selections, you can compare lengths. The first is the basis of the comparison.",
             "You can say things like longer, to the left of, twice as long, overlapping."
                };
@@ -348,11 +368,8 @@
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowFractions = false;
             string[] txt = new string[] {
-            "Create a selection by starting with a new position and expanding it, this is creation (not addition!).",
-            "This stretches the tiny selection, adding new material. Both positive and negative work.",
-            "On a gradient, ALL motion must be linear and continuous.",
-            "If the final selection is less than the resolution, it still has position and length, just the length is to small to quantify.",
-            "'Zero' length is not nil, zero position is also not nil."
+                "Addition and subtraction are always two segment operations.",
+                "Modifying existing selections from  endpoints is just a visual shorthand for adding two segments.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -363,8 +380,9 @@
         {
             var wm = AddSubtract_A();
             wm.AppendText(
-            "You can also expand or contract existing selections from their endpoints, this is addition and subtraction.",
-            "Segments can not be removed this way (that is deletion), they can only be made to have unmeasurable length, and then expand again."
+            "Segments can not be removed this way (that is deletion).", 
+            "They can only be made to have a length too small to measure, which is zero, but no nil.",
+            "Zero length segments can still be re-expanded. Nil (no selection) can have no operations applied."
             );
 
             var leftDm = wm.LastDomainMapper();
@@ -389,7 +407,7 @@
         {
             var wm = AddSubtract_B();
             wm.AppendText(
-            "What does moving from the zero position imply?"
+            "Do you think our number 5 represents a point or a segment here? What does moving from the zero position imply?"
             );
             return wm;
         }
@@ -487,7 +505,7 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-            "Repeat steps are powers, but they can be done on any operation.",
+            "Repeat steps are powers, but they can be done on any operation with at least one selection.",
             "Repeated creation (pushing from zero) merges results, repeated addition appends them.",
             "The result is like a 'sectionable' result that can be merged.",
             "The 'matter' is different than with multiplication, can be indicated with step coloring.",
