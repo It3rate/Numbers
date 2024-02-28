@@ -236,9 +236,14 @@
             }
         }
 
+        public SKPaint DefaultBrush { get; set; } = null;
         public override void Draw()
         {
             SKPoint[] pts = _smoothPoints != null ? _smoothPoints : _points.ToArray();
+            if(DefaultBrush != null)
+            {
+                Renderer.FillPolyline(DefaultBrush, pts);
+            }
             Renderer.DrawPolyline(Pen, pts);
         }
 

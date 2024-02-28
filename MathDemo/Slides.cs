@@ -34,13 +34,13 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 6;
+            _testIndex = 2;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
                 RandomVsOrder_B,
                 GradientLine_A,
-                GradientLine_B,
+                //GradientLine_B,
                 Uncertainty_A,
                 Categories_A,
                 ValidMath_A,
@@ -122,26 +122,12 @@
             wm.ShowNone();
             string[] txt = new string[] {
                 "Order can be represented by a gradient line - this is a proxy.",
+                "Temperature, brightness, path home, points on a star. These are traits."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            wm.CreateImageMapper("3_path.jpg", new SKSegment(50, 130, 500, 130));
+            wm.CreateImageMapper("3_path.jpg", new SKSegment(80, 150, 530, 150));
 
-            //var path = wm.CreatePathMapper();
-            //var paint = CorePens.GetPen(SKColors.Teal, 20);
-            //path.Pen = paint;
-            //var x = 200;
-            //var y = 200;
-            //var d = 200;
-            //path.SetOval(new SKPoint(x, y), new SKPoint(x + d, y + d));
-            return wm;
-        }
-        private SKWorkspaceMapper GradientLine_B()
-        {
-            var wm = GradientLine_A();
-            wm.AppendText(
-                "Temperature, brightness, path home, points on a star. These are traits."
-               );
 
             wm.DefaultShowGradientNumberLine = false;
             wm.DefaultShowPolarity = false;
@@ -165,21 +151,81 @@
             // stars
             var w = 80;
             var hue = 100;
-            var x = 1000;
+            var x = 970;
             var y = 50;
             var pts = 3;
             var count = 8;
+            var paths = new List<SKPathMapper>();
+            var val = num.Number.EndValue * 2;
+            byte midH = 128;
+            byte green = 30;
             for (int i = 0; i < count; i++)
             {
                 var path = wm.CreatePathMapper();
-                path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 40), 7);
+                path.DefaultBrush = CorePens.GetBrush(new SKColor((byte)(midH + val), green, (byte)(midH - val)));
+                path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 20), 5);
                 path.SetStar(new SKPoint(x, y), new SKPoint(x + w, y + w), pts++);
                 y += 100;
                 hue += 150 / count;
+                paths.Add(path);
             }
+
+            num.OnChanged += (sender, e) =>
+            {
+                val = Math.Min(100, Math.Max(-100,num.Number.EndValue * 2));
+                var brush = CorePens.GetBrush(new SKColor((byte)(midH + val), green, (byte)(midH - val)));
+                foreach (var path in paths)
+                {
+                    path.DefaultBrush = brush;
+                }
+            };
 
             return wm;
         }
+        //private SKWorkspaceMapper GradientLine_B()
+        //{
+        //    var wm = GradientLine_A();
+        //    wm.AppendText(
+        //        "Temperature, brightness, path home, points on a star. These are traits."
+        //       );
+
+        //    wm.DefaultShowGradientNumberLine = false;
+        //    wm.DefaultShowPolarity = false;
+        //    wm.DefaultShowPolarity = false;
+        //    wm.DefaultShowFractions = false;
+        //    wm.DefaultShowMinorTicks = false;
+        //    wm.DefaultShowTicks = false;
+
+        //    // thermometer
+        //    var left = 678;
+        //    var right = 805;
+        //    var top = 135;
+        //    wm.CreateImageMapper("therm.png", new SKSegment(left, top, right, top));
+        //    var mid = (right - left) / 2f + left;
+
+        //    var guideline = new SKSegment(mid + 2, top + 116, mid + 2, top + 425);
+        //    var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("therm", 1, 50), guideline);
+        //    var num = hd.CreateNumber(new Focal(50, -10));
+        //    num.InvertPolarity();
+
+        //    // stars
+        //    var w = 80;
+        //    var hue = 100;
+        //    var x = 1000;
+        //    var y = 50;
+        //    var pts = 3;
+        //    var count = 8;
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        var path = wm.CreatePathMapper();
+        //        path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 40), 7);
+        //        path.SetStar(new SKPoint(x, y), new SKPoint(x + w, y + w), pts++);
+        //        y += 100;
+        //        hue += 150 / count;
+        //    }
+
+        //    return wm;
+        //}
         private SKWorkspaceMapper Uncertainty_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 200, 650, 800, 300);
@@ -266,13 +312,12 @@
 
             var guideline = new SKSegment(100, 200, 1100, 200);
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("validMath", 128, 0, 1, 0), guideline);
-            var num = hd.CreateNumber(new Focal(0, 50));
+            var num = hd.CreateNumber(new Focal(0, 5));
+            pm.SetPartialPath(-num.Number.StartTValue(), num.Number.EndTValue());
 
             num.OnChanged += (sender, e) =>
             {
                 pm.SetPartialPath(-num.Number.StartTValue(), num.Number.EndTValue());
-                //pm.SetValuesFromString(path);
-                //Trace.WriteLine(wm.LastPathMapper()?.GetValuesAsString());
             };
 
             //num.OnSelected += (sender, e) =>
