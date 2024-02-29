@@ -216,6 +216,7 @@ namespace Numbers.Agent
                     SelBegin.Set(_highlight.Clone());
                     if (_highlight.Mapper is SKNumberMapper nm && !nm.IsBasis)
                     {
+                        //SelectNumber(nm);
                         SelSelection.Clear();
                         SelSelection.Set(_highlight.Clone());
                         nm.Select();
@@ -299,8 +300,8 @@ namespace Numbers.Agent
                             // test for drag from unit multiplication
                             if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && !snm.Number.IsBasis) // must have selection
                             {
-                                _initialSelectionNum = snm.Number.Clone();
-                                _initialBasisNum = snm.Number.Domain.BasisNumber.Clone(); // always assume bias of 0-1, as we are in the render perspective
+                                _initialSelectionNum = snm.Number.Clone(false);
+                                _initialBasisNum = snm.Number.Domain.BasisNumber.Clone(false); // always assume bias of 0-1, as we are in the render perspective
                             }
                         }
                     }
@@ -454,7 +455,8 @@ namespace Numbers.Agent
                 var dm = SelBegin.ActiveHighlight?.GetRelatedDomainMapper();
                 if(dm != null && DragHighlight != null)
                 {
-                    CreateNumber(dm, DragHighlight, IsCreatingInvertedNumber);
+                    var nm = CreateNumber(dm, DragHighlight, IsCreatingInvertedNumber);
+                    SelectNumber(nm);
                 }
             }
 
@@ -463,6 +465,17 @@ namespace Numbers.Agent
             UpdateText(SelBegin.ActiveHighlight);
 
             return true;
+        }
+        private void SelectNumber(SKNumberMapper nm)
+        {
+            _highlight.Reset();
+            _highlight.Mapper = nm;
+            SelSelection.Clear();
+            SelSelection.Set(_highlight.Clone());
+            nm.Select();
+            ActiveNumberMapper = _highlight.GetNumberMapper();
+            ActiveDomainMapper = _highlight.GetRelatedDomainMapper();
+            ActiveTransformMapper = _highlight.GetRelatedTransformMapper(WorkspaceMapper);
         }
         public bool MouseDoubleClick(MouseEventArgs e)
         {

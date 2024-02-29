@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 9;
+            _testIndex = 0;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -78,7 +78,8 @@
             wm.ShowNone();
             string[] txt = new string[] {
              "Derive math from first principles.",
-             "All things are random, ordered or a combination.",
+             "All things are either ordered or random. They are usually combinations of these.",
+             "Random things still have a predictable range. Predictable things are unknown (random) beyond a certain resolution.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -123,7 +124,8 @@
             wm.ShowNone();
             string[] txt = new string[] {
                 "Order can be represented by a gradient line - this is a proxy.",
-                "Temperature, brightness, path home, points on a star. These are traits."
+                "Traits are measurable categories, things like size, position, color, sound, mood, status.",
+                "We can cut paths through these traits, and represent them on a line."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
