@@ -253,18 +253,25 @@
             _smoothPoints = null;
             _isShape = false;
         }
-        public void SetPartialPath(double startT, double endT)
+        public void SetPartialPath(double startT, double endT, bool wrap = false)
         {
             if(_storedPoints != null)
             {
                 Reset();
-                if(startT > endT)
+                if (wrap)
+                {
+                    startT = startT % 1f;
+                    startT = (startT < 0) ? 1.0 + startT : startT;
+                    endT = endT % 1f;
+                    endT = (endT < 0) ? 1.0 + endT : endT;
+                }
+                else if(startT > endT)
                 {
                     var temp = endT;
                     endT = startT;
                     startT = temp;
                 }
-                var startIndex = (int)(_storedPoints.Length * startT);
+                var startIndex = (int)(_storedPoints.Length * startT);  
                 startIndex = startIndex < 0 ? 0 : startIndex >= _storedPoints.Length ? _storedPoints.Length : startIndex;
                 var endIndex = (int)(_storedPoints.Length * endT);
                 endIndex = endIndex < 0 ? 0 : endIndex >= _storedPoints.Length ? _storedPoints.Length : endIndex;
@@ -275,6 +282,13 @@
                     length = startIndex + length >= _storedPoints.Length ? (_storedPoints.Length - 1) - startIndex : length;
                     _smoothPoints = new SKPoint[Math.Abs(length)];
                     Array.Copy(_storedPoints, startIndex, _smoothPoints, 0, length);
+                }
+                else // has wrap
+                {
+                    var startlen = _storedPoints.Length - startIndex;
+                    _smoothPoints = new SKPoint[Math.Abs(startlen) + endIndex];
+                    Array.Copy(_storedPoints, startIndex, _smoothPoints, 0, startlen);
+                    Array.Copy(_storedPoints, 0, _smoothPoints, startlen, endIndex);
                 }
             }
         }

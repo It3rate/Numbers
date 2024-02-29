@@ -57,9 +57,10 @@
                 AddSubtract_C,
                 UnitUnot_A,
                 UnitUnot_B,
-                UnitUnot_C,
+                //UnitUnot_C,
                 DefineSegments_A,
                 DefineSegments_B,
+                DefineSegments_C,
                 Page7,
                 Page8,
                 Page9,
@@ -315,11 +316,11 @@
             var guideline = new SKSegment(100, 200, 1100, 200);
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("validMath", 128, 0, 1, 0), guideline);
             var num = hd.CreateNumber(new Focal(0, 5));
-            pm.SetPartialPath(-num.Number.StartTValue(), num.Number.EndTValue());
+            pm.SetPartialPath(-num.Number.StartTValue(), num.Number.EndTValue(), true);
 
             num.OnChanged += (sender, e) =>
             {
-                pm.SetPartialPath(-num.Number.StartTValue(), num.Number.EndTValue());
+                pm.SetPartialPath(-num.Number.StartTValue(), num.Number.EndTValue(), true);
             };
             return wm;
         }
@@ -502,57 +503,46 @@
         }
         private SKWorkspaceMapper UnitUnot_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 50, 900, 800);
-            wm.ShowAll();
-            wm.DefaultShowNumbersOffset = true;
-            //wm.DefaultDomainTicks = 1;
-            //wm.DefaultDomainRange = 12;
-            //wm.DefaultShowMinorTicks = false;
-            //wm.DefaultShowFractions = false;
-            //wm.DefaultShowPolarity = false;
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 50, 1050, 800);
+            wm.ShowNone();
             wm.DefaultDrawPen = CorePens.GetPen(SKColor.Parse("#6090D0"), 8);
             string[] txt = new string[] {
-                "Encoding a segment: Using + adds them, using - subtracts them, but we want both values to remain.",
+                "If we say 3+8, we just get 11. How can we say 'from 3 to 8'?",
                 "Complex numbers face this same dilemma.",
-                "Look close at use cases. From and to. Above and below zero. Deep and high. Vertical axis. CCW..."
+                "Look close at use cases. From and to. Above and below zero. Deep and high. Vertical axis direction. CCW..."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+            wm.CreateImageMapper("clock.png", new SKSegment(120, 280, 450, 280));
 
-            wm.CreateImageMapper("iceberg.png", new SKSegment(470, 150, 970, 150));
+            var guideline = new SKSegment(120 + 170, 280 + 170, 460, 280 + 170);
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("clock", 60, 0, 12, 0), guideline);
+            var nm = hd.CreateNumberFromFloats(0, 11f);
 
-            var segLine = wm.GetVerticalSegment(1, 20);
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("UnitUnot", 4, -11,5, 0), segLine);
             return wm;
         }
         private SKWorkspaceMapper UnitUnot_B()
         {
             var wm = UnitUnot_A();
+            wm.ShowAll();
+            wm.DefaultShowNumbersOffset = true;
             wm.AppendText(
                 "The start point uses the inverted basis. The end point uses the polarity's basis.",
                 "Remember these are two zero based values joined together.",
                 "It is handy to write the end point in the polarity's units (3i+2, or -3-2i)."
             );
             wm.DefaultShowPolarity = true;
-            var hd0 = wm.LastDomainMapper();
-            hd0.ShowPolarity = true;
-            return wm;
-        }
-        private SKWorkspaceMapper UnitUnot_C()
-        {
-            var wm = UnitUnot_B();
-            wm.AppendText(
-                "ALL numbers are directed segments. Points are (-5i+5 or 5-5i). Domains are bounded.",
-                "A point is a segment where you can't tell which direction it is pointing."
-            );
+            wm.CreateImageMapper("iceberg.png", new SKSegment(550, 150, 1050, 150));
+
+            var guideline = new SKSegment(1100, 850, 1100, 50);
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("UnitUnot", 4, -11, 5, 0), guideline);
             return wm;
         }
         private SKWorkspaceMapper DefineSegments_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-                "A directed segment can exist on either polarity. Always.",
-                "A segment on the inverted polarity ends on 'i'.",
-                "From the 'other' perspective, everything behaves normally."
+                "To review: ALL numbers are directed segments, and they can exist on either polarity.",
+                "Points are expressed as (-5i+5 or 5-5i). Domains are also bounded by resolution. There is no infinity.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
@@ -561,9 +551,19 @@
         {
             var wm = DefineSegments_A();
             wm.AppendText(
+                "A point is a segment where you can't tell which direction it is pointing.",
+                "A segment on the inverted polarity ends with the 'i' value."
+            );
+            return wm;
+        }
+        private SKWorkspaceMapper DefineSegments_C()
+        {
+            var wm = DefineSegments_B();
+            wm.AppendText(
                 "The inverted perspective represents the same information.",
                 "The context you are in is part of this information.",
-                "It is worth stopping and getting an intuition for this dual perspective."
+                "From the 'other' perspective, everything behaves normally.",
+                "Once you develop an intuition for this dual perspective, you will see it everywhere."
             );
             return wm;
         }
