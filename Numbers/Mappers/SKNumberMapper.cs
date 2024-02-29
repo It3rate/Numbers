@@ -68,13 +68,17 @@ namespace Numbers.Mappers
             if (DomainMapper.ShowSeparatedSegment)
             {
                 var val = Number.ValueInRenderPerspective;
-                var segDir = val.EndF >= 0 ? 1 : -1;
-                var endSeg = UnitSegment.SegmentAlongLine(0, val.EndF).ShiftOffLine((offset + 6) * segDir);
-                Renderer.DrawFromZeroHalfLine(endSeg, paint);
 
-                segDir = val.StartF >= 0 ? 1 : -1;
-                var startSeg = UnitSegment.SegmentAlongLine(0, val.StartF).ShiftOffLine((offset + 6) * segDir);
-                Renderer.DrawFromZeroHalfLine(startSeg, pen2);
+                var segEndDir = val.EndF >= 0 ? 1 : -1;
+                var endSeg = UnitSegment.SegmentAlongLine(0, val.EndF).ShiftOffLine((offset + 10) * segEndDir);
+                Renderer.DrawHalfLine(endSeg, paint);
+
+                var segStatDir = val.StartF >= 0 ? 1 : -1;
+                var startSeg = UnitSegment.SegmentAlongLine(0, val.StartF).ShiftOffLine((offset + 6) * segStatDir);
+                Renderer.DrawHalfLine(startSeg, pen2);
+
+                Renderer.DrawEndCap(endSeg, paint);
+                Renderer.DrawStartCap(startSeg, pen2);
 
                 RenderSegment = new SKSegment(startSeg.EndPoint, endSeg.EndPoint);
             }

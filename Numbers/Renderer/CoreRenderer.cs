@@ -129,15 +129,24 @@ namespace Numbers.Renderer
             var seg = segIn.Clone();
             DrawPolyline(paint, seg.Points);
             Canvas.DrawCircle(seg.StartPoint, 3, paint);
-            Canvas.DrawCircle(seg.StartPoint, 1.5f, invertPaint);
+            Canvas.DrawCircle(seg.StartPoint, 1.8f, invertPaint);
             var triPts = seg.EndArrow(8);
             Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
         }
-        public void DrawFromZeroHalfLine(SKSegment segIn, SKPaint paint)
+        public void DrawHalfLine(SKSegment segIn, SKPaint paint)
         {
             var seg = segIn.Clone();
             DrawPolyline(paint, seg.Points);
-            var triPts = seg.EndArrow(8);
+            Canvas.DrawCircle(segIn.StartPoint, 1.5f, paint);
+        }
+        public void DrawStartCap(SKSegment segIn, SKPaint paint)
+        {
+            Canvas.DrawCircle(segIn.EndPoint, 2f, paint);
+            Canvas.DrawCircle(segIn.EndPoint, 4, paint);
+        }
+        public void DrawEndCap(SKSegment segIn, SKPaint paint)
+        {
+            var triPts = segIn.EndArrow(8);
             Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
         }
         public void DrawTextAt(SKPoint point, string text, SKPaint paint)

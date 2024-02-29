@@ -475,7 +475,7 @@
             wm.AppendText(
                 "You can select any section of the gradient, but there are two special types of selection.",
                 "If you select an area that is exactly the same as a number segment, stretching it will result in addition (or subtraction).",
-                "If you select the basis unit of the number, stretching it will result in multiplication (or division).",
+                "If you select the basis unit of the number, stretching it will result in multiplication (or division)."
             );
 
             var leftDm = wm.LastDomainMapper();
@@ -700,7 +700,11 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
         }
-
+        // branches
+        // ornaments, letters
+        // motions, collisions
+        // mapping to language
+        // parts of speech
         #region Utils
         private SKDomainMapper CreateLowResDomain(int rangeSize, float offset, params Focal[] focals)
         {
