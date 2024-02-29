@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 16;
+            _testIndex = 9;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -389,6 +389,7 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 900, 400);
             wm.ShowAll();
+            wm.DefaultShowNumbersOffset = true;
             wm.DefaultShowPolarity = false;
             string[] txt = new string[] {
              //"Traits can be combined into new categories. Area, color, shortcuts, and speed are examples of combined traits.",
@@ -398,7 +399,9 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
             var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 3));
-            var nm0 = hd0.CreateNumberFromFloats(0, 2f);
+            hd0.startOffset = 12;
+            hd0.CreateNumberFromFloats(0, 3f);
+            hd0.CreateNumberFromFloats(0, 1.5f);
             return wm;
         }
         private SKWorkspaceMapper ComparisonsBasis_B()
@@ -408,6 +411,8 @@
                 "Switching basis is the reciprocal, shorter, to the right of, half as long.",
                 "The basis denotes zero, one, and dominant (positive) direction."
             );
+            var ld = wm.LastDomainMapper();
+            ld.RemoveNumberMapperByIndex(2);
 
             return wm;
         }
@@ -418,13 +423,15 @@
                 "Using a different basis for the same property is a form of conversion."
             );
 
+            wm.CreateImageMapper("CF.jpg", new SKSegment(900, 20, 1170, 20));
+
             wm.ShowAll();
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowPolarity = false;
             wm.DefaultShowFractions = false;
             wm.OffsetNextLineBy(100);
-            var dmC = wm.GetOrCreateDomainMapper(TemperatureDomain.CelsiusDomain, null, null, "Celsius");
-            var dmF = wm.GetOrCreateDomainMapper(TemperatureDomain.FahrenheitDomain, null, null, "Fahrenheit");
+            var dmC = wm.GetOrCreateDomainMapper(TemperatureDomain.GetCelsiusDomain(), null, null, "Celsius");
+            var dmF = wm.GetOrCreateDomainMapper(TemperatureDomain.GetFahrenheitDomain(), null, null, "Fahrenheit");
             var nm0 = dmF.CreateNumberFromFloats(35f, 8f);
             dmC.LinkNumber(nm0.Number);
 

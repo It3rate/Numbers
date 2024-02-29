@@ -13,34 +13,34 @@ using SkiaSharp;
 namespace Numbers.Mappers
 {
     public class SKDomainMapper : SKMapper
-	{
-	    public Domain Domain => (Domain)MathElement;
+    {
+        public Domain Domain => (Domain)MathElement;
         public SKNumberMapper BasisNumberMapper => NumberMapperFor(Domain.BasisNumber);
-	    public Number BasisNumber => Domain.BasisNumber;
+        public Number BasisNumber => Domain.BasisNumber;
         public SKSegment BasisSegment => BasisNumberMapper.Guideline;
         public SKSegment InvertedBasisSegment => BasisNumberMapper.InvertedGuideline;
         public SKSegment BasisSegmentForNumber(Number num) => num.IsAligned ? BasisSegment : InvertedBasisSegment;
         public int BasisNumberSign => BasisNumber.Direction;
 
         public List<SKPoint> TickPoints = new List<SKPoint>();
-	    public List<int> ValidNumberIds = new List<int>();
-	    public Range DisplayLineRange => BasisSegment.RatiosAsBasis(Guideline);
-	    public Range UnitRangeOnDomainLine
-	    {
-		    get => Guideline.RatiosAsBasis(BasisSegment);
-		    set => BasisNumberMapper.Reset(SegmentAlongGuideline(value));
-	    }
-	    public int UnitDirectionOnDomainLine => BasisSegment.DirectionOnLine(Guideline);
+        public List<int> ValidNumberIds = new List<int>();
+        public Range DisplayLineRange => BasisSegment.RatiosAsBasis(Guideline);
+        public Range UnitRangeOnDomainLine
+        {
+            get => Guideline.RatiosAsBasis(BasisSegment);
+            set => BasisNumberMapper.Reset(SegmentAlongGuideline(value));
+        }
+        public int UnitDirectionOnDomainLine => BasisSegment.DirectionOnLine(Guideline);
 
-		public bool ShowInfoOnTop = true;
-		public bool ShowGradientNumberLine = true;
+        public bool ShowInfoOnTop = true;
+        public bool ShowGradientNumberLine = true;
         public bool ShowPolarity = true;
         public bool ShowBasis = true;
         public bool ShowBasisMarkers;
         public bool ShowTicks = true;
         public bool ShowMinorTicks = true;
-	    public bool ShowValueMarkers = true;
-	    public bool ShowFractions = true;
+        public bool ShowValueMarkers = true;
+        public bool ShowFractions = true;
         public bool ShowMaxMinValues = false;
         public bool ShowNumbersOffset = false;
         public bool ShowSeparatedSegment = false;
@@ -50,11 +50,11 @@ namespace Numbers.Mappers
         private int _numberOrderCounter = 0;
 
         public SKDomainMapper(MouseAgent agent, Domain domain, SKSegment guideline, SKSegment unitSegment) : base(agent, domain, guideline)
-	    {
-		    var unit = Domain.BasisNumber;
-		    var unitMapper = NumberMapperFor(unit);
-		    unitMapper.Guideline.Reset(guideline.ProjectPointOnto(unitSegment.StartPoint), guideline.ProjectPointOnto(unitSegment.EndPoint));
-	    }
+        {
+            var unit = Domain.BasisNumber;
+            var unitMapper = NumberMapperFor(unit);
+            unitMapper.Guideline.Reset(guideline.ProjectPointOnto(unitSegment.StartPoint), guideline.ProjectPointOnto(unitSegment.EndPoint));
+        }
         public SKDomainMapper ShowAll()
         {
             ShowInfoOnTop = true;
@@ -106,7 +106,7 @@ namespace Numbers.Mappers
 
         public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
         {
-	        _numberMappers[numberMapper.Number.Id] = numberMapper;
+            _numberMappers[numberMapper.Number.Id] = numberMapper;
             numberMapper.Number.Domain = Domain;
             if (numberMapper.OrderIndex <= 0)
             {
@@ -115,6 +115,18 @@ namespace Numbers.Mappers
             return numberMapper;
         }
         public bool RemoveNumberMapper(SKNumberMapper numberMapper) => _numberMappers.Remove(numberMapper.Number.Id);
+        public bool RemoveNumberMapperByIndex(int index) 
+        {
+            var result = false;
+            if (index >= 0 && index < _numberMappers.Count) 
+            {
+                var nmId = _numberMappers.Keys.ElementAt(index);
+                var nm = _numberMappers[nmId];
+                Domain.RemoveNumber(nm.Number);
+                result = _numberMappers.Remove(nmId);
+            }
+            return result;
+        }
         public IEnumerable<SKNumberMapper> GetNumberMappers(bool reverse = false)
         {
 	        var mappers = reverse ? _numberMappers.Values.Reverse() : _numberMappers.Values;
@@ -311,10 +323,11 @@ namespace Numbers.Mappers
 		        }
             }
         }
+        public float startOffset = 0;
         protected virtual void DrawNumbers()
         {
 			var topDir = ShowInfoOnTop ? 1f : -1f;
-	        var offset = ShowNumbersOffset ? 0f : 0f;
+	        var offset = ShowNumbersOffset ? startOffset : 0f;
 			offset *= topDir;
 			var step = ShowNumbersOffset ? 12f : 0f;
 			step *= topDir;

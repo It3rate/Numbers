@@ -11,8 +11,8 @@
 
     public class TemperatureDomain : Domain
     {
-        public static TemperatureDomain CelsiusDomain { get; } = CreateDomain(9, 22, 38, 0, "Celsius");
-        public static TemperatureDomain FahrenheitDomain { get; } = CreateDomain(5, 8, 100, -32 * 5, "Fahrenheit");
+        public static TemperatureDomain GetCelsiusDomain() => CreateDomain(9, 22, 38, 0, "Celsius");
+        public static TemperatureDomain GetFahrenheitDomain() => CreateDomain(5, 8, 100, -32 * 5, "Fahrenheit");
 
         public TemperatureDomain(Focal basisFocal, Focal maxFocal, string name) : base(TemperatureTrait.Instance, basisFocal, maxFocal, name)
         {
