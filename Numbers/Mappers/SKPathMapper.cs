@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using Numbers.Agent;
     using Numbers.Drawing;
+    using Numbers.Renderer;
     using Numbers.Utils;
     using NumbersCore.CoreConcepts.Spatial;
     using NumbersCore.Primitives;
@@ -30,7 +31,7 @@
 
         public SKPathMapper(MouseAgent agent, SKSegment guideline = null) : base(agent, new ExtentDomain(500, 500), guideline)
         {
-            Pen = Pens.DrawPen;
+            Pen = CorePens.GetPen(SKColor.FromHsl(220, 60, 60), 7);
         }
         //public SKPathMapper(MouseAgent agent, PolyNumberChain numberSet, SKSegment xBasis) : base(agent, numberSet, xBasis)
         //{

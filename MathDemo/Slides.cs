@@ -40,11 +40,9 @@
                 RandomVsOrder_A,
                 RandomVsOrder_B,
                 GradientLine_A,
-                //GradientLine_B,
                 Uncertainty_A,
                 Categories_A,
                 ValidMath_A,
-                //ValidMath_B,
                 Selection_A,
                 Selection_B,
                 Polarity_A,
@@ -55,20 +53,20 @@
                 AddSubtract_A,
                 AddSubtract_B,
                 AddSubtract_C,
+                MultiplyDivide_A,
                 UnitUnot_A,
                 UnitUnot_B,
-                //UnitUnot_C,
                 DefineSegments_A,
                 DefineSegments_B,
                 DefineSegments_C,
-                Page7,
+                Resolution_A,
                 Page8,
-                Page9,
-                Page10,
-                Page11,
-                Page12,
-                Page13,
-                Page14,
+                Repeats_A,
+                Bool_A,
+                QualifiedBools_A,
+                RandomUnknown_A,
+                Joins_A,
+                Area_A,
                 Page15,
             });
         }
@@ -463,8 +461,8 @@
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowFractions = false;
             string[] txt = new string[] {
-                "Addition and subtraction are always two segment operations.",
-                "Modifying existing selections from  endpoints is just a visual shorthand for adding two segments.",
+                "All adjustments to a segments must be continuous (because gradients are continuous), so all changes are akin to stretching.",
+                "To stretch something, imagine taking a section of the gradient and stretching it. All selected elements will stretch with it.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -475,9 +473,9 @@
         {
             var wm = AddSubtract_A();
             wm.AppendText(
-            "Segments can not be removed this way (that is deletion).", 
-            "They can only be made to have a length too small to measure, which is zero, but not nil.",
-            "Zero length segments can still be re-expanded. There are no operations that can be applied to nil (no selection)."
+                "You can select any section of the gradient, but there are two special types of selection.",
+                "If you select an area that is exactly the same as a number segment, stretching it will result in addition (or subtraction).",
+                "If you select the basis unit of the number, stretching it will result in multiplication (or division).",
             );
 
             var leftDm = wm.LastDomainMapper();
@@ -503,10 +501,29 @@
             var wm = AddSubtract_B();
             wm.DefaultShowPolarity = true;
             wm.AppendText(
-            "What does moving from the zero position imply? Do you think our number 5 represents a point or a segment here?"
+            "Segments can not be removed by stretching them. That would be deletion, and the most you can do here is shrink.", 
+            "They can be made to have a length too small to measure, which is zero, but not nil.",
+            "Zero length segments can still be re-expanded. There are no operations that can be applied to nil (no selection).",
+            "Division by this zero is a valid operation. The result is a value at least larger than the dividend, and potentially larger than the maximum value."
+            //"What does moving from the zero position imply? Do you think our number 5 represents a point or a segment here?"
             );
             wm.LastDomainMapper().ShowPolarity = true;
             return wm;
+        }
+        private SKWorkspaceMapper MultiplyDivide_A()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 400, 800, 400);
+            wm.ShowAll();
+            wm.DefaultShowPolarity = false;
+            wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowFractions = false;
+            string[] txt = new string[] {
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", 1, 16));
+            return wm;
+
         }
         private SKWorkspaceMapper UnitUnot_A()
         {
@@ -574,7 +591,9 @@
             );
             return wm;
         }
-        private SKWorkspaceMapper Page7()
+        // addition and multiplication with directed segments.
+
+        private SKWorkspaceMapper Resolution_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
@@ -591,8 +610,8 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-            "Add means stretching from a (zero length) position. You can stretch from anywhere, but only the selected segment will be affected.",
-            "Multiply means stretch an existing (non zero) section. Stretching from each perspective's unit maps to our numbers, but isn't required.",
+            "Create means stretching from a (zero length) position. You can stretch from anywhere, but only the selected segment will be affected.",
+            "Add and multiply means stretch an existing (non zero) section. Stretching from each perspective's unit maps to our numbers, but isn't required.",
             "Divide is stretch from endpoint to unit (reciprocal action).",
             "Multiply by negative flips.",
             "Multiply by an inverted value works the same, but uses 'i' basis, and flips polarity (making it a different operation than a unit value).",
@@ -601,7 +620,7 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
         }
-        private SKWorkspaceMapper Page9()
+        private SKWorkspaceMapper Repeats_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
@@ -615,7 +634,7 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
         }
-        private SKWorkspaceMapper Page10()
+        private SKWorkspaceMapper Bool_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
@@ -626,7 +645,7 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
         }
-        private SKWorkspaceMapper Page11()
+        private SKWorkspaceMapper QualifiedBools_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
@@ -636,7 +655,7 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
         }
-        private SKWorkspaceMapper Page12()
+        private SKWorkspaceMapper RandomUnknown_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
@@ -648,7 +667,7 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
         }
-        private SKWorkspaceMapper Page13()
+        private SKWorkspaceMapper Joins_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
@@ -660,7 +679,7 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
         }
-        private SKWorkspaceMapper Page14()
+        private SKWorkspaceMapper Area_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
@@ -676,6 +695,7 @@
             string[] txt = new string[] {
 "Joint traits (mph), math is the same as with branches and other joins.",
 "Common strategy is to normalize one trait (miles per gallon, liters per 100km)",
+"We also create paths through complex joins, like dark or saturated colors, or a path through the woods.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
