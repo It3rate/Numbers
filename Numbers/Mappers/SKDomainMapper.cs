@@ -326,10 +326,12 @@ namespace Numbers.Mappers
         public float startOffset = 0;
         protected virtual void DrawNumbers()
         {
-			var topDir = ShowInfoOnTop ? 1f : -1f;
-	        var offset = ShowNumbersOffset ? startOffset : 0f;
+            var showOffset = ShowNumbersOffset || ShowSeparatedSegment;
+
+            var topDir = ShowInfoOnTop ? 1f : -1f;
+	        var offset = showOffset ? startOffset : 0f;
 			offset *= topDir;
-			var step = ShowNumbersOffset ? 12f : 0f;
+			var step = showOffset ? 12f : 0f;
 			step *= topDir;
             foreach(var nm in OrderedValidNumbers())
             {

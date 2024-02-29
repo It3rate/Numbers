@@ -133,6 +133,13 @@ namespace Numbers.Renderer
             var triPts = seg.EndArrow(8);
             Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
         }
+        public void DrawFromZeroHalfLine(SKSegment segIn, SKPaint paint)
+        {
+            var seg = segIn.Clone();
+            DrawPolyline(paint, seg.Points);
+            var triPts = seg.EndArrow(8);
+            Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
+        }
         public void DrawTextAt(SKPoint point, string text, SKPaint paint)
         {
             Canvas.DrawText(text, point.X, point.Y, paint);

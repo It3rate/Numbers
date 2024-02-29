@@ -65,21 +65,23 @@ namespace Numbers.Mappers
         {
 			EnsureSegment();
             var pen2 = invertPaint ?? paint;
-			var dir = UnitDirectionOnDomainLine;
-            RenderSegment = Guideline.ShiftOffLine(offset * dir);
             if (DomainMapper.ShowSeparatedSegment)
             {
                 var val = Number.ValueInRenderPerspective;
-                var seg1 = UnitSegment.SegmentAlongLine(0, val.EndF).ShiftOffLine(offset * dir );
-                Renderer.DrawDirectedLine(seg1, paint, paint);
-                if (invertPaint != null) // only draw background on correct polarity
-                {
-                    var seg0 = UnitSegment.SegmentAlongLine(0, val.StartF).ShiftOffLine(offset * dir + 1);
-                    Renderer.DrawDirectedLine(seg0, pen2, pen2);
-                }
+                var segDir = val.EndF >= 0 ? 1 : -1;
+                var endSeg = UnitSegment.SegmentAlongLine(0, val.EndF).ShiftOffLine((offset + 6) * segDir);
+                Renderer.DrawFromZeroHalfLine(endSeg, paint);
+
+                segDir = val.StartF >= 0 ? 1 : -1;
+                var startSeg = UnitSegment.SegmentAlongLine(0, val.StartF).ShiftOffLine((offset + 6) * segDir);
+                Renderer.DrawFromZeroHalfLine(startSeg, pen2);
+
+                RenderSegment = new SKSegment(startSeg.EndPoint, endSeg.EndPoint);
             }
             else
             {
+			    var dir = UnitDirectionOnDomainLine;
+                RenderSegment = Guideline.ShiftOffLine(offset * dir);
                 Renderer.DrawDirectedLine(RenderSegment, paint, pen2);
             }
         }
