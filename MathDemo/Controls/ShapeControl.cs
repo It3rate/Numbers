@@ -55,8 +55,8 @@
         {
             Radius = CreateProperty("Radius", 25, 50, 0, 50);
             RadiusOffset = CreateProperty("Radius Offset", 20, 100, 0, 200);
-            AddPolyProperty(Fill, 0, 360, 0, 100, 20, 80);
-            AddPolyProperty(Stroke, 0, 360, 0, 100, 0, 40);
+            AddPolyProperty(Fill, 0, 360, 50, 80, 40, 60);
+            AddPolyProperty(Stroke, 0, 10, 0, 10, 0, 10);
             StrokeWidth = CreateProperty("StrokeWidth", 0, 5, 0, 10);
             AddPolyProperty(Position, left, left + width, top, top + height);
             Rotation = CreateProperty("Rotation", 0, 360, 0, 360);

@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 0;
+            _testIndex = 8;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -79,7 +79,7 @@
             string[] txt = new string[] {
              "Derive math from first principles.",
              "All things are either ordered or random. They are usually combinations of these.",
-             "Random things still have a predictable range. Predictable things are unknown (random) beyond a certain resolution.",
+             "Random things still have a predictable range. Predictable things become unknown (random) beyond a certain resolution.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -235,8 +235,8 @@
             wm.ShowNone();
             wm.DefaultShowTicks = true;
             string[] txt = new string[] {
-                "We partition these traits into the highest resolution we can (or we care about), anything below this is unpredictable at this resolution.",
-                "We can also choose a section we care about, accept values coming arbitrarily from anywhere in that section.",
+                "We partition these paths into the highest resolution we can (or we care about), and accept things below this resolution will be unpredictable.",
+                "We bound the range of unpredictability into something useful for the context, and stop there.",
                 "All measures have uncertain, unimportant, or unpredictable aspects, but we can quantify and qualify these unknowns."
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
@@ -377,11 +377,14 @@
             wm.ShowAll();
             string[] txt = new string[] {
             "These gradient lines also have two directions, positive red or positive blue. This is the polarity.",
-            "You can make multiple segments on a gradient line, and they can have different polarities."
+            "You can make multiple segments on a gradient line, and they can have different polarities.",
+            "In the real world, these polarities have opposite meanings. If one direction is happy, the other might be sad.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var guideline = new SKSegment(200, 400, 1000, 400);
+            wm.CreateImageMapper("polarity_hs.jpg", new SKSegment(600-170, 420, 600+170, 420));
+
+            var guideline = new SKSegment(600 - 450, 280, 600+450, 280);
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Polarity", 1, 10), guideline);
             return wm;
         }

@@ -45,17 +45,17 @@ namespace Numbers.Mappers
         }
 
         public event EventHandler OnSelected;
-        public void Select()
+        public void OnSelect()
         {
             OnSelected?.Invoke(this, EventArgs.Empty);
         }
         public event EventHandler OnDeselected;
-        public void Deselect()
+        public void OnDeselect()
         {
             OnDeselected?.Invoke(this, EventArgs.Empty);
         }
         public event EventHandler OnChanged;
-        public void Changed()
+        public void OnChange()
         {
             OnChanged?.Invoke(this, EventArgs.Empty);
         }

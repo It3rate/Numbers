@@ -219,7 +219,7 @@ namespace Numbers.Agent
                         //SelectNumber(nm);
                         SelSelection.Clear();
                         SelSelection.Set(_highlight.Clone());
-                        nm.Select();
+                        nm.OnSelect();
                     }
                 }
                 else
@@ -348,7 +348,7 @@ namespace Numbers.Agent
 
                             if(nm.Number.Focal != _lastDragFocal)
                             {
-                                nm.Changed();
+                                nm.OnChange();
                                 _lastDragFocal = nm.Number.Focal.Clone();
                             }
                         }
@@ -383,7 +383,7 @@ namespace Numbers.Agent
                         nm.SetValueByKind(_highlight.SnapPoint, activeKind);
                         if (nm.Number.Focal != _lastDragFocal)
                         {
-                            nm.Changed();
+                            nm.OnChange();
                             _lastDragFocal = nm.Number.Focal.Clone();
                         }
                     }
@@ -472,7 +472,7 @@ namespace Numbers.Agent
             _highlight.Mapper = nm;
             SelSelection.Clear();
             SelSelection.Set(_highlight.Clone());
-            nm.Select();
+            nm.OnSelect();
             ActiveNumberMapper = _highlight.GetNumberMapper();
             ActiveDomainMapper = _highlight.GetRelatedDomainMapper();
             ActiveTransformMapper = _highlight.GetRelatedTransformMapper(WorkspaceMapper);
