@@ -396,10 +396,7 @@ namespace Numbers.Mappers
 
         protected virtual void DrawMarker(Number num, bool isStart)
         {
-            var domainIsUnitPersp = num.Domain.BasisFocal.IsPositiveDirection;
             var useStart = isStart == num.IsAligned;
-
-            var value = useStart ? num.Value.StartF : num.Value.EndF;
             var t = useStart ? num.ValueInRenderPerspective.StartF : num.ValueInRenderPerspective.EndF;
 
             var txBaseline = DrawMarkerAndGetTextBaseline(num, t);
@@ -421,6 +418,14 @@ namespace Numbers.Mappers
                 frac = ShowFractions ? frac : "";
                 Renderer.DrawFraction((whole, frac), txBaseline, numPaint, Pens.TextBackgroundPen);
             }
+        }
+        public void DrawEndFraction(Number num, bool aligned, SKPoint point)
+        {
+            var numPaint = aligned ? Pens.UnitMarkerText : Pens.UnotMarkerText;
+            var (whole, frac) = GetFractionText(num, false);
+            frac = ShowFractions ? frac : "";
+            var txBaseline = new SKSegment(point, point + new SKPoint(10, 0));
+            Renderer.DrawFraction((whole, frac), txBaseline, numPaint, Pens.TextBackgroundPen);
         }
         private SKSegment DrawMarkerAndGetTextBaseline(Number num, float t)
         {

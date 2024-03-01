@@ -602,6 +602,13 @@ namespace Numbers.Mappers
                         var pen = Agent.IsCreatingInvertedNumber ? Renderer.Pens.UnotInlinePen : Renderer.Pens.UnitInlinePen;
                         Renderer.DrawDirectedLine(Agent.DragHighlight, pen);
                     }
+                    else if(Agent.IsManualMultiply && Agent.ActiveDomainMapper != null)
+                    {
+                        Renderer.DrawSegment(Agent.DragHighlight, Pens.ThickHighlightPen);
+                        var pt = Agent.DragHighlight.EndPoint + new SKPoint(0, -6);
+                        var isUnit = Agent.SelCurrent.ActiveHighlight.Kind.IsAligned();
+                        Agent.ActiveDomainMapper.DrawEndFraction(Agent.DragMultiplyBasis, isUnit, pt);
+                    }
                     else
                     {
                         Renderer.DrawSegment(Agent.DragHighlight, Pens.ThickHighlightPen);

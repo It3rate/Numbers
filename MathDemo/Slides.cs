@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 20;
+            _testIndex = 16;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -47,6 +47,7 @@
                 Selection_B,
                 Polarity_A,
                 InvertedBasis_A,
+
                 ComparisonsBasis_A,
                 ComparisonsBasis_B,
                 ComparisonsBasis_C,
@@ -57,6 +58,7 @@
                 UnitUnot_A,
                 UnitUnot_B,
                 DefineSegments_A,
+
                 DefineSegments_B,
                 DefineSegments_C,
                 Resolution_A,
@@ -542,8 +544,9 @@
         }
         private SKWorkspaceMapper MultiplyDivide_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 400, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600-550, 400, 550 * 2, 400);
             wm.ShowAll();
+            wm.DefaultShowMinorTicks = false;
             string[] txt = new string[] {
                 "Multiplication is also stretching, but the portion of the gradient being stretched is the unit, not the element.",
                 "You can stretch any section on the gradient, but if you stretch the unit all changes will line up with the number line.",

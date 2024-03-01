@@ -139,13 +139,14 @@ namespace Numbers.Agent
 
         #region Mouse
         private Number _initialSelectionNum;
-        private Number _initialBasisNum;
+        public Number DragMultiplyBasis;
         public SKSegment DragHighlight;
         public SKPoint DragPoint;
 
         public bool IsCreatingDomain = false;
         public bool IsDraggingBasis = false;
         public bool IsCreatingNumber = false;
+        public bool IsManualMultiply = false;
         public bool IsCreatingInvertedNumber = false;
         public SKNumberMapper ActiveNumberMapper;
         public SKDomainMapper ActiveDomainMapper;
@@ -301,7 +302,7 @@ namespace Numbers.Agent
                             if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && !snm.Number.IsBasis) // must have selection
                             {
                                 _initialSelectionNum = snm.Number.Clone(false);
-                                _initialBasisNum = snm.Number.PolarityBasis(SelCurrent.ActiveHighlight.Kind.IsAligned());// snm.Number.Domain.BasisNumber.Clone(false); 
+                                DragMultiplyBasis = snm.Number.PolarityBasis(SelCurrent.ActiveHighlight.Kind.IsAligned());// snm.Number.Domain.BasisNumber.Clone(false); 
                             }
                         }
                     }
@@ -362,20 +363,17 @@ namespace Numbers.Agent
                             AdjustBasis(nm);
                         }
                         // drag multiply from basis tip
-                        else if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && activeKind.IsMajor())// && activeKind.IsAligned() == snm.Number.IsAligned)
+                        else if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && activeKind.IsMajor())
                         {
+                            IsManualMultiply = true;
                             var g = SelCurrent.ActiveHighlight.Mapper.Guideline;
                             var (t, pt) = g.TFromPoint(_highlight.SnapPoint, false);
 
-                            _initialBasisNum.EndValue = _initialBasisNum.IsAligned ? t : -t; // dragging is always in render perspective, so account for direction change
+                            DragMultiplyBasis.EndValue = DragMultiplyBasis.IsAligned ? t : -t; // dragging is always in render perspective, so account for direction change
                             snm.Number.SetWith(_initialSelectionNum);
-                            snm.Number.MultiplyValue(_initialBasisNum);
+                            snm.Number.MultiplyValue(DragMultiplyBasis);
                             DragPoint = pt;
                             DragHighlight = new SKSegment(g.StartPoint, mousePoint);
-                        }
-                        else
-                        {
-
                         }
                     }
                     else
@@ -509,12 +507,13 @@ namespace Numbers.Agent
                 SelBegin?.Reset();
                 SelCurrent?.Reset();
             }
-            _initialBasisNum = null;
+            DragMultiplyBasis = null;
             _initialSelectionNum = null;
             _lastDragFocal = null;
             IsCreatingDomain = false;
             IsDraggingBasis = false;
             IsCreatingNumber = false;
+            IsManualMultiply = false;
             IsCreatingInvertedNumber = false;
             DragHighlight = null;
             DragPoint = SKPoint.Empty;
