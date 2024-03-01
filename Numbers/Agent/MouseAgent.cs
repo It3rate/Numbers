@@ -301,7 +301,7 @@ namespace Numbers.Agent
                             if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && !snm.Number.IsBasis) // must have selection
                             {
                                 _initialSelectionNum = snm.Number.Clone(false);
-                                _initialBasisNum = snm.Number.Domain.BasisNumber.Clone(false); // always assume bias of 0-1, as we are in the render perspective
+                                _initialBasisNum = snm.Number.PolarityBasis(SelCurrent.ActiveHighlight.Kind.IsAligned());// snm.Number.Domain.BasisNumber.Clone(false); 
                             }
                         }
                     }
@@ -362,12 +362,12 @@ namespace Numbers.Agent
                             AdjustBasis(nm);
                         }
                         // drag multiply from basis tip
-                        else if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && activeKind.IsMajor() && activeKind.IsAligned() == snm.Number.IsAligned)
+                        else if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm && activeKind.IsMajor())// && activeKind.IsAligned() == snm.Number.IsAligned)
                         {
                             var g = SelCurrent.ActiveHighlight.Mapper.Guideline;
                             var (t, pt) = g.TFromPoint(_highlight.SnapPoint, false);
 
-                            _initialBasisNum.EndValue = snm.Number.IsAligned ? t : -t; // dragging is always in render perspective, so account for direction change
+                            _initialBasisNum.EndValue = _initialBasisNum.IsAligned ? t : -t; // dragging is always in render perspective, so account for direction change
                             snm.Number.SetWith(_initialSelectionNum);
                             snm.Number.MultiplyValue(_initialBasisNum);
                             DragPoint = pt;
@@ -536,7 +536,7 @@ namespace Numbers.Agent
             range.Start = -range.Start;
             if (isInverted)
             {
-                range.InvertPolarity();
+                range.InvertPolarityAndRange();
             }
             var anc = new AddSKNumberCommand(dm, range);
             Stack.Do(anc);

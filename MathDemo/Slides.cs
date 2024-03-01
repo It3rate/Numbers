@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 8;
+            _testIndex = 20;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -46,10 +46,10 @@
                 Selection_A,
                 Selection_B,
                 Polarity_A,
+                InvertedBasis_A,
                 ComparisonsBasis_A,
                 ComparisonsBasis_B,
                 ComparisonsBasis_C,
-                InvertedBasis_A,
                 AddSubtract_A,
                 AddSubtract_B,
                 AddSubtract_C,
@@ -348,7 +348,6 @@
                 "There are two possible initial actions: create a selection, or choose an existing one.",
             "Create a selection by starting with a new position and expanding it.",
             "While stretching this tiny selection, new material is appended to the selection. Both positive and negative work.",
-            "On a gradient, ALL motion must be linear and continuous, so creating a selection always results in a single segment.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -386,6 +385,29 @@
 
             var guideline = new SKSegment(600 - 450, 280, 600+450, 280);
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Polarity", 1, 10), guideline);
+            return wm;
+        }
+        private SKWorkspaceMapper InvertedBasis_A()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 900, 400);
+            wm.ShowAll();
+            wm.DefaultShowPolarity = true;
+            string[] txt = new string[] {
+                "What about inverted numbers? Every basis has an inverted basis, and inverted numbers use it instead of the regular basis.",
+                "It always has the same length, it always defines zero and one, and it always points in the *opposite* direction.",
+                "A number line can contain both types of numbers. ",
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            wm.CreateImageMapper("eastWest.png", new SKSegment(600 - 170, 470, 600 + 170, 470));
+
+
+            var guideline = new SKSegment(600 - 450, 280, 600 + 450, 280);
+
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 3), guideline);
+            var nm0 = hd.CreateNumberFromFloats(0, 2f);
+
+
             return wm;
         }
         private SKWorkspaceMapper ComparisonsBasis_A()
@@ -447,33 +469,30 @@
 
             return wm;
         }
-        private SKWorkspaceMapper InvertedBasis_A()
+        private SKWorkspaceMapper Resolution_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 900, 400);
-            wm.ShowAll();
-            wm.DefaultShowPolarity = true;
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-                "What about inverted numbers? Every basis has an inverted basis.",
-                "It always has the same length, it always defines zero and one, and it always points in the *opposite* direction."
+            "It is handy to break the units into 'ticks'. Math works without this, but there are difficulties. Our brains use ticks.",
+            "If the unit is your smallest possible measurement, it is inaccurate by definition, and scaling to 1M will have error.",
+            "Easier to have larger measure and divide it accurately, which is what ticks are.",
+            "Ticks allow conversion between precision by narrowing numbers, otherwise you must renumber everything.",
+            "Negative ticks are rounding. Zero sized ticks are crazy, and that is what we use in real numbers.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
-
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 3));
-            var nm0 = hd0.CreateNumberFromFloats(0, 2f);
-
-
             return wm;
         }
         private SKWorkspaceMapper AddSubtract_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 400, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 450, 400, 900, 400);
             wm.ShowAll();
             wm.DefaultShowPolarity = false;
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowFractions = false;
             string[] txt = new string[] {
                 "All adjustments to a segments must be continuous (because gradients are continuous), so all changes are akin to stretching.",
-                "To stretch something, imagine taking a section of the gradient and stretching it. All selected elements will stretch with it.",
+                "To stretch something, imagine taking a section of the gradient and stretching it. ",
+                "All selected elements will stretch with the expanding or contracting gradient.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -525,10 +544,10 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 400, 800, 400);
             wm.ShowAll();
-            wm.DefaultShowPolarity = false;
-            wm.DefaultShowMinorTicks = false;
-            wm.DefaultShowFractions = false;
             string[] txt = new string[] {
+                "Multiplication is also stretching, but the portion of the gradient being stretched is the unit, not the element.",
+                "You can stretch any section on the gradient, but if you stretch the unit all changes will line up with the number line.",
+                "For example, stretching the unit to 3 will make the selection 3 times larger. Unit to -1/2 will make it 'negative half' as large.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -542,7 +561,7 @@
             wm.ShowNone();
             wm.DefaultDrawPen = CorePens.GetPen(SKColor.Parse("#6090D0"), 8);
             string[] txt = new string[] {
-                "If we say 3+8, we just get 11. How can we say 'from 3 to 8'?",
+                "If we call a segment 3+8, we just get 11. How can we say 'from 3 to 8'?",
                 "Complex numbers face this same dilemma.",
                 "Look close at use cases. From and to. Above and below zero. Deep and high. Vertical axis direction. CCW..."
                };
@@ -562,7 +581,7 @@
             wm.DefaultShowNumbersOffset = true;
             wm.AppendText(
                 "The start point uses the inverted basis. The end point uses the polarity's basis.",
-                "Remember these are two zero based values joined together.",
+                "Remember these are two zero based values joined together. Like 'from 9 deep to 3 high'.",
                 "It is handy to write the end point in the polarity's units (3i+2, or -3-2i)."
             );
             wm.DefaultShowPolarity = true;
@@ -577,7 +596,7 @@
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
                 "To review: ALL numbers are directed segments, and they can exist on either polarity.",
-                "Points are expressed as (-5i+5 or 5-5i). Domains are also bounded by resolution. There is no infinity.",
+                "Domains are also bounded by resolution. There is no infinity. Zero is a position with a length below resolution, not nil.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
@@ -586,8 +605,8 @@
         {
             var wm = DefineSegments_A();
             wm.AppendText(
-                "A point is a segment where you can't tell which direction it is pointing.",
-                "A segment on the inverted polarity ends with the 'i' value."
+                "Points are expressed as (-5i+5 or 5-5i).  A point is a segment where you can't tell which direction it is pointing.",
+                "A segment on the inverted polarity ends with the 'i' value. In the normal polarity it starts with the 'i' value."
             );
             return wm;
         }
@@ -595,7 +614,7 @@
         {
             var wm = DefineSegments_B();
             wm.AppendText(
-                "The inverted perspective represents the same information.",
+                "The inverted perspective represents the same information from a different viewpoint.",
                 "The context you are in is part of this information.",
                 "From the 'other' perspective, everything behaves normally.",
                 "Once you develop an intuition for this dual perspective, you will see it everywhere."
@@ -604,19 +623,6 @@
         }
         // addition and multiplication with directed segments.
 
-        private SKWorkspaceMapper Resolution_A()
-        {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
-            string[] txt = new string[] {
-            "It is handy to break the units into 'ticks'. Math works without this, but there are difficulties. Our brains use ticks.",
-            "If the unit is your smallest possible measurement, it is inaccurate by definition, and scaling to 1M will have error.",
-            "Easier to have larger measure and divide it accurately, which is what ticks are.",
-            "Ticks allow conversion between precision by narrowing numbers, otherwise you must renumber everything.",
-            "Negative ticks are rounding. Zero sized ticks are crazy, and that is what we use in real numbers.",
-               };
-            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
-            return wm;
-        }
         private SKWorkspaceMapper Page8()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
@@ -633,6 +639,7 @@
         }
         private SKWorkspaceMapper Repeats_A()
         {
+            // repeats are reselections
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
             "Repeat steps are powers, but they can be done on any operation with at least one selection.",

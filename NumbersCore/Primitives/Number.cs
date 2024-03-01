@@ -95,6 +95,16 @@ namespace NumbersCore.Primitives
         public long BasisTicks => BasisFocal.LengthInTicks;
         public long AbsBasisTicks => BasisFocal.AbsLengthInTicks;
 
+        public Number PolarityBasis(bool isAligned)
+        {
+            var result = Domain.BasisNumber.Clone(false);
+            if (!isAligned)
+            {
+                result.Polarity = Polarity.Inverted;
+                result.Focal.InvertBasis();
+            }
+            return result;
+        }
         public bool IsBasis => Domain.BasisFocal.Id == Focal.Id;
         public bool IsMinMax => Domain.MinMaxNumber.Id == Id;
         public bool IsDomainNumber => IsBasis || IsMinMax;

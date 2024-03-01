@@ -83,6 +83,15 @@ namespace NumbersCore.Utils
         }
         public void InvertPolarity()
         {
+            Polarity = (Polarity == Polarity.Aligned) ? Polarity.Inverted : Polarity.Aligned;
+        }
+        public void InvertRange()
+        {
+            Start = -Start;
+            End = -End;
+        }
+        public void InvertPolarityAndRange()
+        {
             Start = -Start;
             End = -End;
             Polarity = (Polarity == Polarity.Aligned) ? Polarity.Inverted : Polarity.Aligned;
@@ -174,12 +183,11 @@ namespace NumbersCore.Utils
         }
         public void SolvePolarityWith(Polarity right)
         {
-            // separated for test points
-            if (Polarity == Polarity.Aligned && right == Polarity.Inverted)
+            if (Polarity == Polarity.Inverted && right == Polarity.Inverted)
             {
-                InvertPolarity();
+                InvertPolarityAndRange();
             }
-            else if (Polarity == Polarity.Inverted && right == Polarity.Inverted)
+            else if (Polarity == Polarity.Aligned && right == Polarity.Inverted)
             {
                 InvertPolarity();
             }
