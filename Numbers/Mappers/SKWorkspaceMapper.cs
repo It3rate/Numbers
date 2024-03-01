@@ -135,7 +135,15 @@ namespace Numbers.Mappers
             }
             return result;
         }
-        public bool RemoveDomainMapper(SKDomainMapper domainMapper) => _domainMappers.Remove(domainMapper.Domain.Id);
+        public bool RemoveDomainMapper(SKDomainMapper domainMapper)
+        {
+            var domain = domainMapper.Domain;
+            domain.IsVisible = false;
+            domain.Trait.RemoveDomain(domain);
+            var result = _domainMappers.Remove(domainMapper.Domain.Id);
+            Workspace.RemoveDomains(true, domainMapper.Domain);
+            return result;
+        }
 
         public (SKDomainMapper, SKNumberMapper) CreateLinkedNumber(Number linkTarget)
         {

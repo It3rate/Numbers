@@ -401,10 +401,13 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 3));
-            hd0.startOffset = 12;
-            hd0.CreateNumberFromFloats(0, 3f);
-            hd0.CreateNumberFromFloats(0, 1.5f);
+            wm.CreateImageMapper("cats.png", new SKSegment(600-170, 420, 600+170, 420));
+
+            var guideline = new SKSegment(600 - 450, 280, 600 + 450, 280);
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 3), guideline);
+            hd.startOffset = 12;
+            hd.CreateNumberFromFloats(0, 3f);
+            hd.CreateNumberFromFloats(0, 1.5f);
             return wm;
         }
         private SKWorkspaceMapper ComparisonsBasis_B()
@@ -426,13 +429,16 @@
                 "Using a different basis for the same property is a form of conversion."
             );
 
-            wm.CreateImageMapper("CF.jpg", new SKSegment(900, 20, 1170, 20));
+            wm.LastImageMapper().SetBitmap("CF.jpg");
+
+            var ld = wm.LastDomainMapper();
+            wm.RemoveDomainMapper(ld);
 
             wm.ShowAll();
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowPolarity = false;
             wm.DefaultShowFractions = false;
-            wm.OffsetNextLineBy(100);
+            wm.OffsetNextLineBy(-70);
             var dmC = wm.GetOrCreateDomainMapper(TemperatureDomain.GetCelsiusDomain(), null, null, "Celsius");
             var dmF = wm.GetOrCreateDomainMapper(TemperatureDomain.GetFahrenheitDomain(), null, null, "Fahrenheit");
             var nm0 = dmF.CreateNumberFromFloats(35f, 8f);

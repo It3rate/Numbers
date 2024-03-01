@@ -24,10 +24,10 @@
 
         public SKImageMapper(MouseAgent agent, string path, SKSegment guideline = null) : base(agent, new Focal(800, 800), guideline)
         {
-            LoadBitmap(path);
+            SetBitmap(path);
         }
 
-        private void LoadBitmap(string imageName)
+        public void SetBitmap(string imageName)
         {
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string imageFolder = "Images";
@@ -60,7 +60,7 @@
 
         public void Reset(string path)
         {
-            LoadBitmap(path);
+            SetBitmap(path);
         }
     }
 }

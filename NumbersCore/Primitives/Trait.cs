@@ -45,7 +45,14 @@ namespace NumbersCore.Primitives
 	    public Domain AddDomain(long basisTicks, string name)
 	    {
 		    return AddDomain(Focal.CreateZeroFocal(basisTicks), Focal.MinMaxFocal, name);
-	    }
+        }
+        public void RemoveDomain(Domain domain)
+        {
+            if (DomainStore.ContainsKey(domain.Id))
+            {
+                DomainStore.Remove(domain.Id);
+            }
+        }
         public IEnumerable<Domain> Domains()
 	    {
 		    foreach (var domain in DomainStore.Values)
