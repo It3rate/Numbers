@@ -338,7 +338,7 @@ namespace Numbers.Mappers
             highlight.OriginalPoint = input;
 
             // manually create number on domain line
-            if (Agent.CurrentKey == Keys.N)
+            if (Agent.IsCreateNumberKey)
             {
                 foreach (var dm in _domainMappers.Values)
                 {
@@ -361,11 +361,11 @@ namespace Numbers.Mappers
                     // todo: selection depends on added order, but should be render order (basis last). When switching basis the order isn't the same.
                     var isSameMapper = ignoreSet.ActiveHighlight != null && ignoreSet.ActiveHighlight.Mapper == nm;
                     var kind = UIKind.Number | (nm.IsBasis ? UIKind.Basis : UIKind.None);
-                    if (nm.IsBasis && Agent.CurrentKey != Keys.B && Agent.CurrentKey != Keys.M)
+                    if (nm.IsBasis && !Agent.IsBasisAdjustKey && !Agent.IsDragMultiplyKey)
                     {
                         continue; // only adjust basis when B is down
                     }
-                    if (!nm.IsBasis && Agent.CurrentKey == Keys.M)
+                    if (!nm.IsBasis && Agent.IsDragMultiplyKey)
                     {
                         continue; // help with selecting unit drag multiply when M pressed
                     }
@@ -379,7 +379,7 @@ namespace Numbers.Mappers
 			            highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point, nm.Number.Value);
 			            goto Found;
 		            }
-		            else if (!isSameMapper && seg.DistanceTo(input, true) < maxDist && Agent.CurrentKey != Keys.M)
+		            else if (!isSameMapper && seg.DistanceTo(input, true) < maxDist && !Agent.IsDragMultiplyKey)
 		            {
 			            var t = nm.DomainMapper.BasisSegment.TFromPoint(input, false).Item1;
 			            highlight.Set(input, input, nm, t, kind | UIKind.Line, nm.Number.Value);
@@ -407,10 +407,18 @@ namespace Numbers.Mappers
                     if (input.DistanceTo(dmTickPoint) < maxDist / 2f)
                     {
                         var invertedBasis = dm.InvertedBasisSegment;
-                        if (Agent.CurrentKey == Keys.M && input.DistanceTo(invertedBasis.EndPoint) < maxDist)
+                        if (Agent.IsDragMultiplyKey && input.DistanceTo(invertedBasis.EndPoint) < maxDist)
                         {
+                            //if(Agent.CurrentKey == Keys.J) // temporary always drag multiply as positive unit for demo purposes
+                            //{
+                            //    var kind = UIKind.Number | UIKind.Basis | UIKind.Major;
+                            //    highlight.Set(input, invertedBasis.EndPoint, dm.BasisNumberMapper, 1, kind);
+                            //}
+                            //else
+                            //{
                             var kind = UIKind.Number | UIKind.Basis | UIKind.Major | UIKind.Inverted;
                             highlight.Set(input, invertedBasis.EndPoint, dm.BasisNumberMapper, 1, kind);
+                            //}
                             goto Found;
                         }
                         else
@@ -448,10 +456,11 @@ namespace Numbers.Mappers
         {
             _nextOffset += offsetToAdd;
         }
-        private SKSegment NextDefaultLine(int offsetSize = 40)
+        public int LineOffsetSize = 40;
+        private SKSegment NextDefaultLine()
         {
             var result = GetHorizontalSegment(_nextOffset);
-            _nextOffset += offsetSize;
+            _nextOffset += LineOffsetSize;
 	        return result;
         }
         public void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)

@@ -546,23 +546,69 @@
         }
         private SKWorkspaceMapper MultiplyDivide_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 550, 400, 550 * 2, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 400, 480 * 2, 400);
             wm.ShowAll();
-            //wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowMinorTicks = false;
             wm.DefaultDomainTicks = 2;
-            wm.DefaultDomainRange = 8;
+            wm.DefaultDomainRange = 12;
             string[] txt = new string[] {
-                //"Multiplication is also stretching, but the portion of the gradient being stretched is the unit, not the element.",
-                //"You can stretch any section on the gradient, but if you stretch the unit all changes will line up with the number line.",
-                //"For example, stretching the unit to 3 will make the selection 3 times larger. Unit to -1/2 will make it 'negative half' as large.",
+                "Numbers can be positive or negative, the numeric value is defined the basis 'measuring stick'.",
+                "The basis sets the anchor (0), the length (1), the resolution (ticks) and the positive direction.",
+                "Every ordered sequence has two possible positive directions (polarities). Both are valid, and both exist.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            //var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
             return wm;
 
         }
         private SKWorkspaceMapper MultiplyDivide_B()
+        {
+            var wm = MultiplyDivide_A();
+            wm.AppendText(
+                "Stretching a segment multiplies it. You can stretch from anywhere, but the basis maps to the number system.",
+                "Stretching the exact length of the selection is a special case of multiplication we call addition.",
+                "Numbers can be normal or inverted. Both can naturally exist on the same number line.",
+                "Inverted numbers use the inverted basis. They stretch as normal, and they also invert the polarity."
+            );
+
+            var leftDm = wm.LastDomainMapper();
+            leftDm.Label = "  A";
+            leftDm.ShowNumbersOffset = true;
+
+            var guideline = leftDm.Guideline.ShiftOffLine(60);
+            var rightDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange), guideline);
+            rightDm.Label = "+ B";
+            rightDm.ShowNumbersOffset = true;
+
+            guideline = guideline.ShiftOffLine(60);
+            var resultDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange), guideline);
+            resultDm.Label = "= C";
+            resultDm.ShowNumbersOffset = true;
+
+            rightDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
+            resultDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
+            var leftNum = leftDm.CreateNumberFromFloats(0, 2);
+            var rightNum = rightDm.CreateNumberFromFloats(0, 3);
+            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, TransformKind.Add);
+            var tm = wm.GetOrCreateTransformMapper(transform);
+            tm.Do2DRender = false;
+            var resultNum = resultDm.Domain.AddNumber(transform.Result);
+
+            return wm;
+
+        }
+        private SKWorkspaceMapper MultiplyDivide_C()
+        {
+            var wm = MultiplyDivide_A();
+            wm.AppendText(
+                "Repeated multiplying by an inverted number forms a cycle."
+            );
+
+            return wm;
+
+        }
+        private SKWorkspaceMapper MultiplyDivide_BX()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 550, 400, 550 * 2, 400);
             wm.ShowAll();
@@ -577,11 +623,11 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            //var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
             return wm;
 
         }
-        private SKWorkspaceMapper MultiplyDivide_C()
+        private SKWorkspaceMapper MultiplyDivide_CX()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 550, 400, 550 * 2, 400);
             wm.ShowAll();

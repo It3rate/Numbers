@@ -152,6 +152,7 @@ namespace Numbers.Agent
         public SKDomainMapper ActiveDomainMapper;
         public SKTransformMapper ActiveTransformMapper;
         public SKPathMapper ActivePathMapper;
+
         public bool MouseDown(MouseEventArgs e)
         {
             if(IsPaused){return false;}
@@ -170,13 +171,13 @@ namespace Numbers.Agent
             {
                 StartPan();
             }
-            else if (CurrentKey == Keys.B)
+            else if (IsBasisAdjustKey)
             {
                 // create domain
                 IsDraggingBasis = true;
                 SelBegin.Set(_highlight.Clone());
             }
-            else if (CurrentKey == Keys.D)
+            else if (IsCreateDomainKey)
             {
                 // create domain
                 IsCreatingDomain = true;
@@ -188,7 +189,7 @@ namespace Numbers.Agent
                 SelBegin.Set(_highlight.Clone());
                 SelBegin.OriginalSegment = ActiveDomainMapper.Guideline.Clone();
             }
-            else if (CurrentKey == Keys.N && ActiveDomainMapper != null)
+            else if (IsCreateNumberKey && ActiveDomainMapper != null)
             {
                 // create number
                 SelBegin.Set(_highlight.Clone());
@@ -196,7 +197,7 @@ namespace Numbers.Agent
                 IsCreatingNumber = true;
                 IsCreatingInvertedNumber = _isAltDown; // alt N creates an inverted number
             }
-            else if (CurrentKey == Keys.Q)
+            else if (IsDrawingPathKey)
             {
                 // Drawing
                 _isDrawing = true;
@@ -316,7 +317,7 @@ namespace Numbers.Agent
                 }
                 else if (activeHighlight.Mapper is SKNumberMapper nm)
                 {
-                    if (activeKind.IsLine() && CurrentKey != Keys.M)
+                    if (activeKind.IsLine() && !IsDragMultiplyKey)
                     {
                         if (nm.IsBasis)
                         {
@@ -388,7 +389,7 @@ namespace Numbers.Agent
                 {
                     if (activeKind.IsDomainPoint())
                     {
-                        if (CurrentKey == Keys.R)
+                        if (IsRotateDomainKey)
                         {
                             dm.RotateGuidelineByPoint(_highlight.SnapPoint, activeKind);
                         }
@@ -637,6 +638,13 @@ namespace Numbers.Agent
         private bool _isControlDown;
         private bool _isShiftDown;
         private bool _isAltDown;
+        public bool IsDragMultiplyKey => CurrentKey == Keys.M || CurrentKey == Keys.J;
+        public bool IsCreateNumberKey => CurrentKey == Keys.N;
+        public bool IsBasisAdjustKey => CurrentKey == Keys.B;
+        public bool IsCreateDomainKey => CurrentKey == Keys.D;
+        public bool IsDrawingPathKey => CurrentKey == Keys.Q;
+        public bool IsRotateDomainKey => CurrentKey == Keys.R;
+
         private UIMode PreviousMode = UIMode.Any;
         //private SKMatrix _startMatrix;
         private KeyEventArgs _lastKeyUp;
