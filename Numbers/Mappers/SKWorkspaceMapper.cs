@@ -174,7 +174,7 @@ namespace Numbers.Mappers
         {
             return GetOrCreateTransformMapper(Brain.TransformStore[id]);
         }
-        public SKTransformMapper GetOrCreateTransformMapper(Transform transform, bool doRender = true)
+        public SKTransformMapper GetOrCreateTransformMapper(Transform transform, bool doRender = false)
         {
             if (!_transformMappers.TryGetValue(transform.Id, out var result))
             {
@@ -196,6 +196,26 @@ namespace Numbers.Mappers
                 }
             }
             return result;
+        }
+        public SKTransformMapper[] TransformMappersWithInput(Number num)
+        {
+            var result = new List<SKTransformMapper>();
+            foreach (var tm in _transformMappers.Values)
+            {
+                if (tm.Transform.Right == num)
+                {
+                    result.Add(tm);
+                }
+            }
+            return result.ToArray();
+        }
+        public void SetTransformKind(Number num, TransformKind kind)
+        {
+            var xforms = TransformMappersWithInput(num);
+            foreach(var xform in xforms)
+            {
+                xform.Transform.TransformKind = kind;
+            }
         }
         public SKTransformMapper TransformMapper(Transform transform) => GetOrCreateTransformMapper(transform);
         public IEnumerable<SKTransformMapper> TransformMappers()

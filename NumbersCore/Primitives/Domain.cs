@@ -24,10 +24,19 @@ namespace NumbersCore.Primitives
         public bool IsDirty { get; set; } = true;
 
         public Trait Trait { get; protected set; }
-        public Focal BasisFocal => BasisNumber.Focal;
-        public Focal MinMaxFocal { get; protected set; }
         public Number BasisNumber { get; protected set; }
+        public Focal BasisFocal => BasisNumber.Focal;
         public Number MinMaxNumber { get; protected set; }
+        private Focal _minMaxFocal;
+        public Focal MinMaxFocal
+        {
+            get => _minMaxFocal; 
+            set
+            {
+                _minMaxFocal = value;
+                MinMaxNumber = CreateNumber(_minMaxFocal);
+            }
+        }
         public string Name { get; protected set; }
         public bool IsVisible { get; set; } = true;
 
@@ -50,10 +59,10 @@ namespace NumbersCore.Primitives
         {
             Id = _idCounter++;
             Trait = trait;
-            MinMaxFocal = minMaxFocal;
+            MinMaxFocal = minMaxFocal == default ? Focal.MinMaxFocal : minMaxFocal;
             BasisNumber = CreateNumber(basisFocal);
             //BasisFocal = basisFocal;
-            MinMaxNumber = minMaxFocal == default ? CreateNumber(Focal.MinMaxFocal) : CreateNumber(minMaxFocal);
+            //MinMaxNumber = minMaxFocal == default ? CreateNumber(Focal.MinMaxFocal) : CreateNumber(minMaxFocal);
             Name = name;
             Trait.DomainStore.Add(Id, this);
         }
@@ -111,6 +120,13 @@ namespace NumbersCore.Primitives
             long end = (long)(endF * BasisFocal.LengthInTicks);
             var focal = new Focal(start, end);
             return AddNumber(new Number(focal), addToStore);
+        }
+        public Number CreateInvertedNumberFromFloats(float startF, float endF, bool addToStore = true)
+        {
+            long start = (long)(-startF * BasisFocal.LengthInTicks);
+            long end = (long)(endF * BasisFocal.LengthInTicks);
+            var focal = new Focal(-start, -end);
+            return AddNumber(new Number(focal, Polarity.Inverted), addToStore);
         }
 
         public int _nextStoreIndex = 0;

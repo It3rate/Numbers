@@ -21,7 +21,7 @@ namespace Numbers.Mappers
         public SKCanvas Canvas => Renderer.Canvas;
         protected CorePens Pens => Renderer.Pens;
 
-        public bool Do2DRender { get; set; } = true;
+        public bool Do2DRender { get; set; } = false;
 
         public IMathElement MathElement { get; protected set; }
         public SKSegment Guideline { get; set; } = new SKSegment(0, 0, 1, 1);

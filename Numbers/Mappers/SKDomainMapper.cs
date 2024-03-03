@@ -187,12 +187,28 @@ namespace Numbers.Mappers
             var num = Domain.CreateNumberFromFloats(startF, endF, addToStore);
             return GetOrCreateNumberMapper(num);
         }
+        public SKNumberMapper CreateInvertedNumberFromFloats(float startF, float endF, bool addToStore = true)
+        {
+            var num = Domain.CreateInvertedNumberFromFloats(startF, endF, addToStore);
+            return GetOrCreateNumberMapper(num);
+        }
         #endregion
 
         public override void Reset(SKPoint startPoint, SKPoint endPoint)
         {
             base.Reset(startPoint, endPoint);
             AddValidNumbers();
+        }
+        public void AlignDomainTo(SKDomainMapper other)
+        {
+            Domain.RemoveNumber(Domain.MinMaxNumber);
+            Domain.BasisNumber.Focal = other.Domain.BasisNumber.Focal;
+            Domain.MinMaxFocal = other.Domain.MinMaxFocal;
+
+            var unit = other.Domain.BasisNumber;
+            var unitMapper = NumberMapperFor(BasisNumber);
+            var unitSegment = other.BasisSegment;
+            unitMapper.Guideline.Reset(Guideline.ProjectPointOnto(unitSegment.StartPoint), Guideline.ProjectPointOnto(unitSegment.EndPoint));
         }
         public void Recalibrate()
         {

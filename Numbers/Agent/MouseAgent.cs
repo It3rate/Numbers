@@ -759,7 +759,8 @@ namespace Numbers.Agent
                 case Keys.D1:
                     if (_isShiftDown && ActiveTransformMapper != null)
                     {
-                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Nand;
+                        WorkspaceMapper.SetTransformKind(ActiveTransformMapper.Transform.Right, TransformKind.Nand);
+                        //ActiveTransformMapper.Transform.TransformKind = TransformKind.Nand;
                     }
                     else
                     {
@@ -778,14 +779,16 @@ namespace Numbers.Agent
                 case Keys.Oemplus:
                     if(ActiveTransformMapper != null)
                     {
-                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Add;
+                        WorkspaceMapper.SetTransformKind(ActiveTransformMapper.Transform.Right, TransformKind.Add);
+                        //ActiveTransformMapper.Transform.TransformKind = TransformKind.Add;
                     }
                     break;
                 case Keys.Subtract:
                 case Keys.OemMinus:
                     if (ActiveTransformMapper != null)
                     {
-                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Subtract;
+                        WorkspaceMapper.SetTransformKind(ActiveTransformMapper.Transform.Right, TransformKind.Subtract);
+                        //ActiveTransformMapper.Transform.TransformKind = TransformKind.Subtract;
                     }
                     else
                     {
@@ -796,26 +799,30 @@ namespace Numbers.Agent
                 case Keys.Multiply:
                     if (ActiveTransformMapper != null)
                     {
-                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Multiply;
+                        WorkspaceMapper.SetTransformKind(ActiveTransformMapper.Transform.Right, TransformKind.Multiply);
+                        //ActiveTransformMapper.Transform.TransformKind = TransformKind.Multiply;
                     }
                     break;
                 case Keys.OemBackslash:
                 case Keys.Divide:
                     if (ActiveTransformMapper != null)
                     {
-                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Divide;
+                        WorkspaceMapper.SetTransformKind(ActiveTransformMapper.Transform.Right, TransformKind.Divide);
+                        //ActiveTransformMapper.Transform.TransformKind = TransformKind.Divide;
                     }
                     break;
                 case Keys.OemPipe:
                     if (ActiveTransformMapper != null)
                     {
-                        ActiveTransformMapper.Transform.TransformKind = TransformKind.Or;
+                        WorkspaceMapper.SetTransformKind(ActiveTransformMapper.Transform.Right, TransformKind.Or);
+                        //ActiveTransformMapper.Transform.TransformKind = TransformKind.Or;
                     }
                     break;
                 case Keys.D7:
                     if (_isShiftDown && ActiveTransformMapper != null)
                     {
-                        ActiveTransformMapper.Transform.TransformKind = TransformKind.And;
+                        WorkspaceMapper.SetTransformKind(ActiveTransformMapper.Transform.Right, TransformKind.And);
+                        //ActiveTransformMapper.Transform.TransformKind = TransformKind.And;
                     }
                     break;
                 case Keys.Oemtilde:

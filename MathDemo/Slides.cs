@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 16;
+            _testIndex = 18;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -57,6 +57,7 @@
                 MultiplyDivide_A,
                 MultiplyDivide_B,
                 MultiplyDivide_C,
+                MultiplyDivide_D,
                 UnitUnot_A,
                 UnitUnot_B,
                 DefineSegments_A,
@@ -555,6 +556,7 @@
                 "Numbers can be positive or negative, the numeric value is defined the basis 'measuring stick'.",
                 "The basis sets the anchor (0), the length (1), the resolution (ticks) and the positive direction.",
                 "Every ordered sequence has two possible positive directions (polarities). Both are valid, and both exist.",
+                "Numbers can be normal or inverted. Both can naturally exist on the same number line.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -565,11 +567,10 @@
         private SKWorkspaceMapper MultiplyDivide_B()
         {
             var wm = MultiplyDivide_A();
+            wm.DefaultDomainRange = 21;
             wm.AppendText(
                 "Stretching a segment multiplies it. You can stretch from anywhere, but the basis maps to the number system.",
-                "Stretching the exact length of the selection is a special case of multiplication we call addition.",
-                "Numbers can be normal or inverted. Both can naturally exist on the same number line.",
-                "Inverted numbers use the inverted basis. They stretch as normal, and they also invert the polarity."
+                "Stretching the exact length of the selection is a special case of multiplication we call addition."
             );
 
             var leftDm = wm.LastDomainMapper();
@@ -578,19 +579,21 @@
 
             var guideline = leftDm.Guideline.ShiftOffLine(60);
             var rightDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange), guideline);
-            rightDm.Label = "+ B";
+            rightDm.Label = "* B";
             rightDm.ShowNumbersOffset = true;
+            leftDm.AlignDomainTo(rightDm);
 
             guideline = guideline.ShiftOffLine(60);
             var resultDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange), guideline);
             resultDm.Label = "= C";
             resultDm.ShowNumbersOffset = true;
 
+
             rightDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
             resultDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
             var leftNum = leftDm.CreateNumberFromFloats(0, 2);
             var rightNum = rightDm.CreateNumberFromFloats(0, 3);
-            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, TransformKind.Add);
+            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, TransformKind.Multiply);
             var tm = wm.GetOrCreateTransformMapper(transform);
             tm.Do2DRender = false;
             var resultNum = resultDm.Domain.AddNumber(transform.Result);
@@ -600,10 +603,58 @@
         }
         private SKWorkspaceMapper MultiplyDivide_C()
         {
-            var wm = MultiplyDivide_A();
-            wm.AppendText(
-                "Repeated multiplying by an inverted number forms a cycle."
-            );
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 300, 420 * 2, 300);
+            wm.ShowAll();
+            wm.DefaultDomainTicks = 4;
+            wm.DefaultDomainRange = 3;
+            wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowNumbersOffset = true;
+            wm.LineOffsetSize = 50;
+            string[] txt = new string[] {
+                "Inverted numbers use the inverted basis. They stretch as normal, and they also invert the polarity.",
+                "Repeated multiplying by an inverted number forms a cycle.",
+                "Repeating operations on a selection is what powers are.",
+                "Repetition can apply to multiplication, addition, bool operations, and any combinations of these, including powers.",
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            hd0.BasisNumberMapper.Guideline.FlipAroundStartPoint();
+            hd0.Label = "Inverted Basis Position";
+            var hd1 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            hd1.Label = "Inverted Unit (i)";
+            var iValue = hd1.CreateInvertedNumberFromFloats(0, 1);
+            var hd2 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            var oneValue = hd2.CreateNumberFromFloats(0, 1);
+            hd2.Label = "Current Value";
+            return wm;
+
+        }
+        private SKWorkspaceMapper MultiplyDivide_D()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 250, 480 * 2, 250);
+            wm.ShowAll();
+            wm.DefaultDomainTicks = 30;
+            wm.DefaultDomainRange = 3;
+            wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowNumbersOffset = true;
+            string[] txt = new string[] {
+                "Repeated multiplying can converge on Euler's number.",
+                "Accounting for direction is the beginnings of Sin and Cos.",
+                "Repeated addition using partial numbers can create the Fibonacci sequence.",
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            var n0 = hd.CreateNumberFromFloats(0, 1, true);
+            var rightNm = hd.CreateNumberFromFloats(0, 1, true);
+            var result = rightNm.Number;
+            for (int i = 0; i < wm.DefaultDomainTicks + 1; i++) // same rows as ticks to allow Euler's number
+            {
+                Transform transform = Brain.AddTransform(result, n0.Number, TransformKind.Multiply);
+                var tm = wm.GetOrCreateTransformMapper(transform);
+                result = hd.Domain.AddNumber(transform.Result);
+            }
 
             return wm;
 
