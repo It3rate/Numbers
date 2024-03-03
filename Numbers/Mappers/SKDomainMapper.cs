@@ -323,7 +323,7 @@ namespace Numbers.Mappers
 		        }
             }
         }
-        public float startOffset = 0;
+        public float startOffset = 6;
         protected virtual void DrawNumbers()
         {
             var showOffset = ShowNumbersOffset || ShowSeparatedSegment;

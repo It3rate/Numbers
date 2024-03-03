@@ -162,10 +162,6 @@ namespace Numbers.Agent
             WorkspaceMapper.GetSnapPoint(_highlight, SelCurrent, mousePoint);
             SelHighlight.Set(_highlight);
 
-            //Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, false, _selectableKind);
-            //Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
-            //Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
-
             ActiveNumberMapper = _highlight.GetNumberMapper();
             ActiveDomainMapper = _highlight.GetRelatedDomainMapper();
             ActiveTransformMapper = _highlight.GetRelatedTransformMapper(WorkspaceMapper);
@@ -288,8 +284,10 @@ namespace Numbers.Agent
                     SelCurrent.Set(_highlight.Clone());
                     if (IsDraggingBasis)
                     {
-                        SelCurrent.ActiveHighlight.Mapper = ActiveDomainMapper.BasisNumberMapper;
-                        SelBegin.OriginalSegment = ActiveDomainMapper.BasisSegment.Clone();
+                        var bm = ActiveDomainMapper.BasisNumberMapper;
+                        SelCurrent.ActiveHighlight.Mapper = bm;
+                        SelBegin.OriginalSegment = bm.Guideline.Clone();
+                        SelBegin.OriginalFocal = bm.Number.Focal.Clone();
                     }
                     else if (SelCurrent.ActiveHighlight?.Mapper is SKNumberMapper nm)
                     {
@@ -543,7 +541,7 @@ namespace Numbers.Agent
         }
         private void AdjustBasis(SKNumberMapper nm)
         {
-            if (_isControlDown)
+            if (IsControlDown()) 
             {
                 nm.AdjustBySegmentChange(SelBegin);
             }
@@ -590,7 +588,12 @@ namespace Numbers.Agent
                 var delCommand = new RemoveSKNumberCommand(ActiveNumberMapper);
                 ActiveNumberMapper = null;
                 Stack.Do(delCommand);
+                ClearHighlights(); // todo: Add the selection things to commands.
             }
+        }
+        private void ClearPaths()
+        {
+            WorkspaceMapper.ClearPathMappers();
         }
         public void AddTick()
         {
@@ -627,6 +630,8 @@ namespace Numbers.Agent
             }
         }
         #endregion
+        
+        public bool IsControlDown() => (Control.ModifierKeys & Keys.Control) == Keys.Control;
 
         #region Keyboard
         private bool _isControlDown;
@@ -671,7 +676,7 @@ namespace Numbers.Agent
                     DeleteSelected();
                     break;
                 case Keys.Escape:
-                    UIMode = UIMode.Any;
+                    ClearPaths();
                     break;
                 case Keys.F:
                     WorkspaceMapper.ShowFractions = !WorkspaceMapper.ShowFractions;
@@ -735,10 +740,12 @@ namespace Numbers.Agent
                     if (_isShiftDown && _isControlDown)
                     {
                         Stack.Redo();
+                        ClearHighlights();
                     }
                     else if (_isControlDown)
                     {
                         Stack.Undo();
+                        ClearHighlights();
                     }
                     break;
                 case Keys.D1:

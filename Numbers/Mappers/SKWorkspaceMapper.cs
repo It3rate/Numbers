@@ -281,6 +281,10 @@ namespace Numbers.Mappers
         {
             _pathMappers.Remove(pathMapper.Id);
         }
+        public void ClearPathMappers()
+        {
+            _pathMappers.Clear();
+        }
         public SKPathMapper PathMapperAt(int index)
         {
             return (index >= 0 && index < _pathMappers.Count) ? _pathMappers.Values.ElementAtOrDefault(index) : null;

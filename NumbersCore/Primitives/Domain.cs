@@ -66,9 +66,9 @@ namespace NumbersCore.Primitives
             BasisNumber = nm;
         }
 
-        public static Domain CreateDomain(string traitName, int unitSize = 8, float rangeSize = 16, string name = "default") =>
+        public static Domain CreateDomain(string traitName, long unitSize = 8, float rangeSize = 16, string name = "default") =>
             CreateDomain(traitName, unitSize, -rangeSize, rangeSize, 0, name);
-        public static Domain CreateDomain(string traitName, int unitSize, float minRange, float maxRange, int zeroPoint, string name = "default", bool isVisible = true)
+        public static Domain CreateDomain(string traitName, long unitSize, float minRange, float maxRange, int zeroPoint, string name = "default", bool isVisible = true)
         {
             Trait trait = Trait.GetOrCreateTrait(Brain.ActiveBrain, traitName);
             var unit = new Focal(zeroPoint, zeroPoint + unitSize);

@@ -55,6 +55,8 @@
                 AddSubtract_B,
                 AddSubtract_C,
                 MultiplyDivide_A,
+                MultiplyDivide_B,
+                MultiplyDivide_C,
                 UnitUnot_A,
                 UnitUnot_B,
                 DefineSegments_A,
@@ -544,9 +546,30 @@
         }
         private SKWorkspaceMapper MultiplyDivide_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600-550, 400, 550 * 2, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 550, 400, 550 * 2, 400);
             wm.ShowAll();
-            wm.DefaultShowMinorTicks = false;
+            //wm.DefaultShowMinorTicks = false;
+            wm.DefaultDomainTicks = 2;
+            wm.DefaultDomainRange = 8;
+            string[] txt = new string[] {
+                //"Multiplication is also stretching, but the portion of the gradient being stretched is the unit, not the element.",
+                //"You can stretch any section on the gradient, but if you stretch the unit all changes will line up with the number line.",
+                //"For example, stretching the unit to 3 will make the selection 3 times larger. Unit to -1/2 will make it 'negative half' as large.",
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            //var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            return wm;
+
+        }
+        private SKWorkspaceMapper MultiplyDivide_B()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 550, 400, 550 * 2, 400);
+            wm.ShowAll();
+            //wm.DefaultShowMinorTicks = false;
+            wm.DefaultDomainTicks = 2;
+            wm.DefaultDomainRange = 8;
+            wm.DefaultShowNumbersOffset = true;
             string[] txt = new string[] {
                 "Multiplication is also stretching, but the portion of the gradient being stretched is the unit, not the element.",
                 "You can stretch any section on the gradient, but if you stretch the unit all changes will line up with the number line.",
@@ -554,7 +577,25 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", 1, 16));
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            return wm;
+
+        }
+        private SKWorkspaceMapper MultiplyDivide_C()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 550, 400, 550 * 2, 400);
+            wm.ShowAll();
+            //wm.DefaultShowMinorTicks = false;
+            wm.DefaultDomainTicks = 2;
+            wm.DefaultDomainRange = 8;
+            string[] txt = new string[] {
+                "Multiplication is also stretching, but the portion of the gradient being stretched is the unit, not the element.",
+                "You can stretch any section on the gradient, but if you stretch the unit all changes will line up with the number line.",
+                "For example, stretching the unit to 3 will make the selection 3 times larger. Unit to -1/2 will make it 'negative half' as large.",
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            //var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
             return wm;
 
         }
