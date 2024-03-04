@@ -171,13 +171,17 @@ namespace NumbersCore.Primitives
         public long Min => StartPosition <= EndPosition ? StartPosition : EndPosition;
         public long Max => StartPosition >= EndPosition ? StartPosition : EndPosition;
         public Focal Negated => new Focal(-StartPosition, -EndPosition);
+        public void Reverse()
+        {
+            var temp = StartPosition;
+            StartPosition = EndPosition;
+            EndPosition = temp;
+        }
         public void MakeForward()
         {
-            if(EndPosition < StartPosition)
+            if (EndPosition < StartPosition)
             {
-                var temp = StartPosition;
-                StartPosition = EndPosition;
-                EndPosition = temp;
+                Reverse();
             }
         }
         public bool Touches(Focal q) => Touches(this, q);

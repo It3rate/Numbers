@@ -575,9 +575,17 @@ namespace Numbers.Agent
                 dm.FlipRenderPerspective();
             }
         }
+        private void FlipSelected()
+        {
+            if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper nm)
+            {
+                nm.Number.InvertPolarity();
+                nm.Number.Reverse();
+            }
+        }
         private void FlipSelectedPolarity()
         {
-            if(SelSelection.ActiveHighlight?.Mapper is SKNumberMapper nm)
+            if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper nm)
             {
                 nm.Number.InvertPolarity();
             }
@@ -687,7 +695,7 @@ namespace Numbers.Agent
                     ClearPaths();
                     break;
                 case Keys.F:
-                    WorkspaceMapper.ShowFractions = !WorkspaceMapper.ShowFractions;
+                    FlipSelected();
                     break;
                 case Keys.F5:
                 case Keys.Down:
@@ -768,13 +776,23 @@ namespace Numbers.Agent
                     }
                     break;
                 case Keys.D2:
-                    ToggleBasisVisible();
+                    if (_isShiftDown)
+                    {
+                        WorkspaceMapper.ShowFractions = !WorkspaceMapper.ShowFractions;
+                    }
+                    else
+                    {
+                        ToggleBasisVisible();
+                    }
                     break;
                 case Keys.D3:
                     ToggleShowPolarity();
                     break;
                 case Keys.D4:
                     ToggleGradientNumberline();
+                    break;
+                case Keys.D5:
+                    ToggleShowMinorTicks();
                     break;
                 case Keys.Oemplus:
                     if(ActiveTransformMapper != null)
@@ -905,6 +923,13 @@ namespace Numbers.Agent
             foreach (var dm in WorkspaceMapper.DomainMappers())
             {
                 dm.ShowGradientNumberLine = !dm.ShowGradientNumberLine;
+            }
+        }
+        public void ToggleShowMinorTicks()
+        {
+            foreach (var dm in WorkspaceMapper.DomainMappers())
+            {
+                dm.ShowMinorTicks = !dm.ShowMinorTicks;
             }
         }
         public void ToggleShowNumbers()

@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 18;
+            _testIndex = 20;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -58,6 +58,7 @@
                 MultiplyDivide_B,
                 MultiplyDivide_C,
                 MultiplyDivide_D,
+                MultiplyDivide_E,
                 UnitUnot_A,
                 UnitUnot_B,
                 DefineSegments_A,
@@ -657,7 +658,34 @@
             }
 
             return wm;
+        }
+        private SKWorkspaceMapper MultiplyDivide_E()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 250, 480 * 2, 250);
+            wm.ShowAll();
+            wm.DefaultDomainTicks = 1;
+            wm.DefaultDomainRange = 22;
+            wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowNumbersOffset = true;
+            string[] txt = new string[] {
+                "Repeated addition using partial numbers can create the Fibonacci sequence.",
+                "This is convert to the previous number's polarity and add it.",
+                "The odd and even separation will also happen with this.",
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            hd.CreateNumberFromFloats(0, 1, true);
+            hd.CreateInvertedNumberFromFloats(0, 1, true);
+            hd.CreateNumberFromFloats(1, 2, true);
+            hd.CreateInvertedNumberFromFloats(2, 3, true);
+            hd.CreateNumberFromFloats(3, 5, true);
+            hd.CreateInvertedNumberFromFloats(5, 8, true);
+            hd.CreateNumberFromFloats(8, 13, true);
+            hd.CreateInvertedNumberFromFloats(13, 21, true);
+            hd.CreateNumberFromFloats(21, 34, true);
+
+            return wm;
         }
         private SKWorkspaceMapper MultiplyDivide_BX()
         {

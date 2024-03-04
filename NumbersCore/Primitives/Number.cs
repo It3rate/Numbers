@@ -179,6 +179,10 @@ namespace NumbersCore.Primitives
         {
             Value *= -1;
         }
+        public void Reverse()
+        {
+            Focal.Reverse();
+        }
 
         public long WholeStartValue => (long) StartValue;
 		public long WholeEndValue => (long) EndValue;
