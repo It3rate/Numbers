@@ -183,6 +183,11 @@ namespace NumbersCore.Primitives
         {
             Focal.Reverse();
         }
+        public void InvertAndReverse() // change direction and polarity
+        {
+            InvertPolarity();
+            Reverse();
+        }
 
         public long WholeStartValue => (long) StartValue;
 		public long WholeEndValue => (long) EndValue;

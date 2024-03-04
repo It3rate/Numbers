@@ -579,8 +579,7 @@ namespace Numbers.Agent
         {
             if (SelSelection.ActiveHighlight?.Mapper is SKNumberMapper nm)
             {
-                nm.Number.InvertPolarity();
-                nm.Number.Reverse();
+                nm.Number.InvertAndReverse();
             }
         }
         private void FlipSelectedPolarity()

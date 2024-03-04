@@ -59,6 +59,7 @@
                 MultiplyDivide_C,
                 MultiplyDivide_D,
                 MultiplyDivide_E,
+                MultiplyDivide_F,
                 UnitUnot_A,
                 UnitUnot_B,
                 DefineSegments_A,
@@ -660,6 +661,36 @@
             return wm;
         }
         private SKWorkspaceMapper MultiplyDivide_E()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 250, 480 * 2, 250);
+            wm.ShowAll();
+            wm.DefaultDomainTicks = 4;
+            wm.DefaultDomainRange = 8;
+            wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowNumbersOffset = false;
+            string[] txt = new string[] {
+                "Addition can repeat just like multiplication. The result can be separated or combined.",
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var hdOrg = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", 4, -1, 16, 0));
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", 4, -1, 16, 0));
+            hd.ShowTicks = true;
+            hd.ShowMinorTicks = true;
+            hd.ShowTickMarkerValues = true;
+            var n0 = hdOrg.CreateNumberFromFloats(-1f, 1f, true);
+            var n1 = hd.CreateNumberFromFloats(0, .75f, true);
+            var result = n1.Number;
+            for (int i = 0; i < 10; i++) // same rows as ticks to allow Euler's number
+            {
+                Transform transform = Brain.AddTransform(result, n0.Number, TransformKind.Add);
+                var tm = wm.GetOrCreateTransformMapper(transform);
+                result = hd.Domain.AddNumber(transform.Result);
+            }
+
+            return wm;
+        }
+        private SKWorkspaceMapper MultiplyDivide_F()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 250, 480 * 2, 250);
             wm.ShowAll();

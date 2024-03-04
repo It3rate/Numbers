@@ -44,6 +44,8 @@ namespace Numbers.Mappers
         public bool ShowMaxMinValues = false;
         public bool ShowNumbersOffset = false;
         public bool ShowSeparatedSegment = false;
+        public bool ShowTickMarkerValues = false;
+        public int ShowNumberValuesMax = 5;
 
         public string Label { get; set; } = "";
 
@@ -331,7 +333,7 @@ namespace Numbers.Mappers
 		        foreach (var id in ValidNumberIds)
 		        {
 			        var nm = Domain.GetNumber(id);
-                    if(ValidNumberIds.Count < 5 || selId == nm.Id)
+                    if(ValidNumberIds.Count < ShowNumberValuesMax || selId == nm.Id)
                     {
 			            DrawMarker(nm, true);
 			            DrawMarker(nm, false);
@@ -430,9 +432,12 @@ namespace Numbers.Mappers
             }
             else 
 		    {
-			    var (whole, frac) = GetFractionText(num, useStart);
-                frac = ShowFractions ? frac : "";
-                Renderer.DrawFraction((whole, frac), txBaseline, numPaint, Pens.TextBackgroundPen);
+                if (!(num.Focal.LengthInTicks == 0 && isStart) && !ShowTickMarkerValues) // don't draw twice for points
+                {
+                    var (whole, frac) = GetFractionText(num, useStart);
+                    frac = ShowFractions ? frac : "";
+                    Renderer.DrawFraction((whole, frac), txBaseline, numPaint, Pens.TextBackgroundPen);
+                }
             }
         }
         public void DrawEndFraction(Number num, bool aligned, SKPoint point)
@@ -509,7 +514,13 @@ namespace Numbers.Mappers
 	            var offset = isOnTick ? offsetRange : offsetRange / 8f;
 				offset *= topDir;
                 var tickPen = ShowMinorTicks ? Renderer.Pens.TickBoldPen : Renderer.Pens.TickPen;
-                TickPoints.Add(DrawTick((float)i, offset * upDir, tickPen));  
+                var startPt = DrawTick((float)i, offset * upDir, tickPen);
+                TickPoints.Add(startPt);
+                if (ShowTickMarkerValues)
+                {
+                    var pt = new SKPoint(startPt.X + 4, startPt.Y - (upDir * 10));
+                    Renderer.DrawText(pt, i.ToString(), Pens.TextFractionPen);
+                }
             }
 
             // minor ticks
