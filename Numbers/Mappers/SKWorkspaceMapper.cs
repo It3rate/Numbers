@@ -552,6 +552,7 @@ namespace Numbers.Mappers
         public bool DefaultShowMaxMinValues { get; set; } = false;
         public bool DefaultShowNumbersOffset { get; set; } = false;
         public bool DefaultShowSeparatedSegment { get; set; } = false;
+        public bool DefaultShowValueMarkers { get; set; } = true;
         
         public void ShowAll()
         {
@@ -587,6 +588,7 @@ namespace Numbers.Mappers
             dm.ShowFractions = DefaultShowFractions;
             dm.ShowMaxMinValues = DefaultShowMaxMinValues;
             dm.ShowNumbersOffset = DefaultShowNumbersOffset;
+            dm.ShowValueMarkers = DefaultShowValueMarkers;
         }
         public bool Default { get; set; } = true;
         public override void Draw()

@@ -422,12 +422,15 @@ namespace Numbers.Mappers
             var numPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText; // i value should always be unot color, so use isStart vs useStart
 		    if (num.IsBasis)
 		    {
-                var txt = useStart ? "0" : num.Domain.BasisIsReciprocal ? "" : "1"; // don't show 1 when ticks are larger than unit
-                Renderer.DrawTextOnPath(txBaseline, txt, Pens.UnitMarkerText, Pens.TextBackgroundPen);
-                if (!useStart && ShowPolarity)
+                if (!ShowTickMarkerValues)
                 {
-                    txBaseline = DrawMarkerAndGetTextBaseline(num, -1);
-                    Renderer.DrawTextOnPath(txBaseline, "i", Pens.UnotMarkerText, Pens.TextBackgroundPen);
+                    var txt = useStart ? "0" : num.Domain.BasisIsReciprocal ? "" : "1"; // don't show 1 when ticks are larger than unit
+                    Renderer.DrawTextOnPath(txBaseline, txt, Pens.UnitMarkerText, Pens.TextBackgroundPen);
+                    if (!useStart && ShowPolarity)
+                    {
+                        txBaseline = DrawMarkerAndGetTextBaseline(num, -1);
+                        Renderer.DrawTextOnPath(txBaseline, "i", Pens.UnotMarkerText, Pens.TextBackgroundPen);
+                    }
                 }
             }
             else 
@@ -518,7 +521,7 @@ namespace Numbers.Mappers
                 TickPoints.Add(startPt);
                 if (ShowTickMarkerValues)
                 {
-                    var pt = new SKPoint(startPt.X + 4, startPt.Y - (upDir * 10));
+                    var pt = new SKPoint(startPt.X + 4, startPt.Y - (upDir * 16));
                     Renderer.DrawText(pt, i.ToString(), Pens.TextFractionPen);
                 }
             }
@@ -550,7 +553,7 @@ namespace Numbers.Mappers
         protected (string, string) GetFractionText(Number num, bool isStart)
         {
             var isIValue = isStart == num.IsAligned;
-            var suffix = ShowPolarity ? (isIValue ? "i" : "r") : "";
+            var suffix = ShowPolarity ? (isIValue ? "i" : "") : ""; // can use "r" or "n" for normal numbers
             var fraction = "";
             var val = isStart ? num.StartValue : num.EndValue;
             var whole = "0";

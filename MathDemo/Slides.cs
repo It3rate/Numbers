@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 20;
+            _testIndex = 0;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -51,22 +51,23 @@
                 ComparisonsBasis_A,
                 ComparisonsBasis_B,
                 ComparisonsBasis_C,
+                Ticks_A,
+                SefDef_A,
+                SegDef_B,
+                Nil_A,
                 AddSubtract_A,
                 AddSubtract_B,
                 AddSubtract_C,
-                MultiplyDivide_A,
-                MultiplyDivide_B,
+                //MultiplyDivide_A,
+                //MultiplyDivide_B,
                 MultiplyDivide_C,
                 MultiplyDivide_D,
                 MultiplyDivide_E,
                 MultiplyDivide_F,
-                UnitUnot_A,
-                UnitUnot_B,
                 DefineSegments_A,
 
                 DefineSegments_B,
                 DefineSegments_C,
-                Resolution_A,
                 Page8,
                 Repeats_A,
                 Bool_A,
@@ -81,49 +82,74 @@
 
         private SKWorkspaceMapper RandomVsOrder_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 500, 300, 550, 350);
             wm.ShowNone();
             string[] txt = new string[] {
-             "Derive math from first principles.",
-             "All things are either ordered or random. They are usually combinations of these.",
-             "Random things still have a predictable range. Predictable things become unknown (random) beyond a certain resolution.",
+             "All things are ordered or random. Random is unknowable, ordered is knowable.",
+             "Randomness happens when something is supplying information you can't predict, or you are supplying a guess for something unpredictable.",
+             "All random things happen within a range, all ordered things happen along a range.",
+             "All predictable things become unknown (random) beyond a certain resolution.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
             wm.CreateImageMapper("0_ants.png", new SKSegment(50, 230, 450, 230));
-
-            var w = 20;
-            for (int i = 0; i < 40; i++)
-            {
-                var path = wm.CreatePathMapper();
-                path.Pen = CorePens.GetPen(SKColor.FromHsl((rnd.Next(100) + 150), 70, 50), 8);
-                var x = rnd.Next(500) + 500;
-                var y = rnd.Next(300) + 300;
-                path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
-            }
-
+            DrawCircles(wm, -250, 250, -150, 150);
             return wm;
         }
         private SKWorkspaceMapper RandomVsOrder_B()
         {
             var wm = RandomVsOrder_A();
+            wm.DefaultShowPolarity = false;
+            wm.DefaultShowValueMarkers = false;
             wm.AppendText(
             "Many things have order we can't distinguish: unseen patterns, or differences to small or large to measure.",
-            "Random is simple, ordered is math. Distinguishing is precision."
+            "Perceptible does not mean predictable. Ordered sequences maximize both perceptibility and predictability."
             );
             var im = wm.LastImageMapper();
             im.Reset("1_antsSingleFile.png");
 
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("RandomVsOrder", 1, 250), wm.BottomSegment.Inverted());
+            var num0 = hd0.CreateNumberFromFloats(250, 250f);
+            var hd1 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("RandomVsOrder", 1, 150), wm.RightSegment.Inverted());
+            var num1 = hd1.CreateNumberFromFloats(150, 150f);
+
+            num0.OnChanged += (sender, e) =>
+            {
+                DrawCircles(wm, (int)-num0.Number.StartValue, (int)num0.Number.EndValue, (int)-num1.Number.StartValue, (int)num1.Number.EndValue);
+            };
+            num1.OnChanged += (sender, e) =>
+            {
+                DrawCircles(wm, (int)-num0.Number.StartValue, (int)num0.Number.EndValue, (int)-num1.Number.StartValue, (int)num1.Number.EndValue);
+            };
+
             var paint = CorePens.GetPen(SKColors.Red, 12);
-            for (int i = 0; i < 5; i++)
+            var w = 22;
+            for (int i = 0; i < 25; i++)
             {
                 var path = wm.CreatePathMapper();
-                path.Pen = paint;
-                var x = 700;
-                var y = 180;
-                path.SetOval(new SKPoint(x, y), new SKPoint(x + 60 + (float)rnd.NextDouble(), y + 60 + (float)rnd.NextDouble()));
+                path.Pen = CorePens.GetPen(SKColor.FromHsl(i*4f + 150, 70, 50), 8); ;
+                var x = 500 + i*w;
+                var y = 700;
+                path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
             }
             return wm;
+        }
+        private void DrawCircles(SKWorkspaceMapper wm, int minX, int maxX, int minY, int maxY)
+        {
+            var w = 20;
+            wm.ClearPathMappers();
+            var minXt = Math.Min(minX, maxX);
+            var maxXt = Math.Max(minX, maxX);
+            var minYt = Math.Min(minY, maxY);
+            var maxYt = Math.Max(minY, maxY);
+            for (int i = 0; i < 40; i++)
+            {
+                var path = wm.CreatePathMapper();
+                path.Pen = CorePens.GetPen(SKColor.FromHsl((rnd.Next(100) + 150), 70, 50), 8);
+                var x = (rnd.Next(minXt, maxXt)) + 750;
+                var y = (rnd.Next(minYt, maxYt)) + 450;
+                path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
+            }
         }
         private SKWorkspaceMapper GradientLine_A()
         {
@@ -179,16 +205,7 @@
                 hue += 150 / count;
                 paths.Add(path);
             }
-
-            num.OnChanged += (sender, e) =>
-            {
-                val = Math.Min(100, Math.Max(-100,num.Number.EndValue * 2));
-                var brush = CorePens.GetBrush(new SKColor((byte)(midH + val), green, (byte)(midH - val)));
-                foreach (var path in paths)
-                {
-                    path.DefaultBrush = brush;
-                }
-            };
+            
 
             return wm;
         }
@@ -476,9 +493,10 @@
 
             return wm;
         }
-        private SKWorkspaceMapper Resolution_A()
+        private SKWorkspaceMapper Ticks_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 900, 400);
+            wm.ShowAll();
             string[] txt = new string[] {
             "It is handy to break the units into 'ticks'. Math works without this, but there are difficulties. Our brains use ticks.",
             "If the unit is your smallest possible measurement, it is inaccurate by definition, and scaling to 1M will have error.",
@@ -487,39 +505,51 @@
             "Negative ticks are rounding. Zero sized ticks are crazy, and that is what we use in real numbers.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+            wm.LineOffsetSize = 60;
+
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Ticks", 1, 6));
+            hd0.Label = "Whole Values";
+            var hd1 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Ticks", 8, 6));
+            hd1.Label = "Higher Resolution";
+            var hd2 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Ticks", 5, 20));
+            hd2.Label = "Inverted Resolution";
+            hd2.Domain.BasisIsReciprocal = true;
+            //hd2.ShowMinorTicks = false;
+            hd2.ShowTickMarkerValues = true;
             return wm;
         }
         private SKWorkspaceMapper AddSubtract_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 450, 400, 900, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 450, 300, 900, 300);
             wm.ShowAll();
             wm.DefaultShowPolarity = false;
             wm.DefaultShowMinorTicks = false;
             wm.DefaultShowFractions = false;
+            wm.DefaultDomainTicks = 1;
+            wm.DefaultDomainRange = 16;
             string[] txt = new string[] {
                 "All adjustments to a segments must be continuous (because gradients are continuous), so all changes are akin to stretching.",
                 "To stretch something, imagine taking a section of the gradient and stretching it. ",
                 "All selected elements will stretch with the expanding or contracting gradient.",
+                "You can select any section of the gradient, but there are two special types of selection.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", 1, 16));
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", wm.DefaultDomainTicks, wm.DefaultDomainRange));
             return wm;
         }
         private SKWorkspaceMapper AddSubtract_B()
         {
             var wm = AddSubtract_A();
             wm.AppendText(
-                "You can select any section of the gradient, but there are two special types of selection.",
-                "If you select an area that is exactly the same as a number segment, stretching it will result in addition (or subtraction).",
                 "If you select the basis unit of the number, stretching it will result in multiplication (or division)."
             );
 
             var leftDm = wm.LastDomainMapper();
             leftDm.Label = "  A";
-            var rightDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", 1, 16));
-            rightDm.Label = "+ B";
-            var resultDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", 1, 16));
+            var rightDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            rightDm.Label = "* B";
+            var resultDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("AddSubtract", wm.DefaultDomainTicks, wm.DefaultDomainRange));
             resultDm.Label = "= C";
             resultDm.ShowNumbersOffset = true;
 
@@ -527,7 +557,7 @@
             resultDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
             var leftNum = leftDm.CreateNumberFromFloats(0, 2);
             var rightNum = rightDm.CreateNumberFromFloats(0, 3);
-            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, TransformKind.Add);
+            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, TransformKind.Multiply);
             var tm = wm.GetOrCreateTransformMapper(transform);
             tm.Do2DRender = false;
             var resultNum = resultDm.Domain.AddNumber(transform.Result);
@@ -538,20 +568,64 @@
             var wm = AddSubtract_B();
             wm.DefaultShowPolarity = true;
             wm.AppendText(
-            "Segments can not be removed by stretching them. That would be deletion, and the most you can do here is shrink.", 
-            "They can be made to have a length too small to measure, which is zero, but not nil.",
-            "Zero length segments can still be re-expanded. There are no operations that can be applied to nil (no selection).",
-            "Division by this zero is a valid operation. The result is a value at least larger than the dividend, and potentially larger than the maximum value."
+                "If you select an area that is exactly the same as a number segment, stretching it will result in addition (or subtraction)."
             //"What does moving from the zero position imply? Do you think our number 5 represents a point or a segment here?"
             );
             wm.LastDomainMapper().ShowPolarity = true;
+
+
+            var last = wm.LastDomainMapper();
+            var guideline = last.Guideline.ShiftOffLine(100);
+            var leftDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange), guideline);
+            leftDm.Label = "  A";
+            leftDm.ShowNumbersOffset = true;
+
+            guideline = leftDm.Guideline.ShiftOffLine(60);
+            var rightDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange), guideline);
+            rightDm.Label = "+ B";
+            rightDm.ShowNumbersOffset = true;
+            leftDm.AlignDomainTo(rightDm);
+
+            guideline = guideline.ShiftOffLine(60);
+            var resultDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange), guideline);
+            resultDm.Label = "= C";
+            resultDm.ShowNumbersOffset = true;
+
+
+            rightDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
+            resultDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
+            var leftNum = leftDm.CreateNumberFromFloats(0, 2);
+            var rightNum = rightDm.CreateNumberFromFloats(0, 3);
+            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, TransformKind.Add);
+            var tm = wm.GetOrCreateTransformMapper(transform);
+            tm.Do2DRender = false;
+            var resultNum = resultDm.Domain.AddNumber(transform.Result);
+
+            return wm;
+        }
+        private SKWorkspaceMapper Nil_A()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 400, 480 * 2, 400);
+            wm.ShowAll();
+            wm.DefaultShowMinorTicks = true;
+            wm.DefaultDomainTicks = 2;
+            wm.DefaultDomainRange = 12;
+            string[] txt = new string[] {
+            "Segments can not be removed by stretching them. That would be deletion, and the most you can do here is shrink.",
+            "They can be made to have a length too small to measure, which is zero, but not nil.",
+            "Zero length segments can still be re-expanded. There are no operations that can be applied to nil (no selection).",
+            "Division by this zero is a valid operation. The result is a value at least larger than the dividend, and potentially larger than the maximum value.",
+            "What does moving from the zero position imply? Do you think our number 5 represents a point or a segment here?",
+            };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
             return wm;
         }
         private SKWorkspaceMapper MultiplyDivide_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 400, 480 * 2, 400);
             wm.ShowAll();
-            wm.DefaultShowMinorTicks = false;
+            wm.DefaultShowMinorTicks = true;
             wm.DefaultDomainTicks = 2;
             wm.DefaultDomainRange = 12;
             string[] txt = new string[] {
@@ -643,7 +717,7 @@
             string[] txt = new string[] {
                 "Repeated multiplying can converge on Euler's number.",
                 "Accounting for direction is the beginnings of Sin and Cos.",
-                "Repeated addition using partial numbers can create the Fibonacci sequence.",
+                //"Repeated addition using partial numbers can create the Fibonacci sequence.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -755,7 +829,7 @@
             return wm;
 
         }
-        private SKWorkspaceMapper UnitUnot_A()
+        private SKWorkspaceMapper SefDef_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 50, 1050, 800);
             wm.ShowNone();
@@ -774,9 +848,9 @@
 
             return wm;
         }
-        private SKWorkspaceMapper UnitUnot_B()
+        private SKWorkspaceMapper SegDef_B()
         {
-            var wm = UnitUnot_A();
+            var wm = SefDef_A();
             wm.ShowAll();
             wm.DefaultShowNumbersOffset = true;
             wm.AppendText(

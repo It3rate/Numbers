@@ -106,6 +106,7 @@ namespace Numbers.Drawing
 
         }
 
+        public SKSegment Inverted() => new SKSegment(EndPoint, StartPoint);
         public SKSegment SegmentAlongLine(Range ratios, float offsetT = 0) => SegmentAlongLine(ratios.StartF, ratios.EndF, offsetT);
         public SKSegment SegmentAlongLine(float startT, float endT, float offsetT = 0)
         {
