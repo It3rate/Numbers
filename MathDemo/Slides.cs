@@ -54,31 +54,22 @@
                 Ticks_A,
                 SefDef_A,
                 SegDef_B,
-                Nil_A,
+                //Nil_A,
                 AddSubtract_A,
                 AddSubtract_B,
                 AddSubtract_C,
-                //MultiplyDivide_A,
-                //MultiplyDivide_B,
+                MultiplyDivide_A,
+                MultiplyDivide_B,
                 MultiplyDivide_C,
                 MultiplyDivide_D,
-                MultiplyDivide_E,
-                MultiplyDivide_F,
-                DefineSegments_A,
 
-                DefineSegments_B,
-                DefineSegments_C,
-                Page8,
-                Repeats_A,
                 Bool_A,
                 QualifiedBools_A,
-                RandomUnknown_A,
                 Joins_A,
                 Area_A,
-                Page15,
+                Area_B,
             });
         }
-        // todo: Add a TLDR page first.
 
         private SKWorkspaceMapper RandomVsOrder_A()
         {
@@ -88,7 +79,6 @@
              "All things are ordered or random. Random is unknowable, ordered is knowable.",
              "Randomness happens when something is supplying information you can't predict, or you are supplying a guess for something unpredictable.",
              "All random things happen within a range, all ordered things happen along a range.",
-             "All predictable things become unknown (random) beyond a certain resolution.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
@@ -102,6 +92,7 @@
             wm.DefaultShowPolarity = false;
             wm.DefaultShowValueMarkers = false;
             wm.AppendText(
+             "All predictable things become unknown (random) beyond a certain resolution.",
             "Many things have order we can't distinguish: unseen patterns, or differences to small or large to measure.",
             "Perceptible does not mean predictable. Ordered sequences maximize both perceptibility and predictability."
             );
@@ -133,23 +124,6 @@
                 path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
             }
             return wm;
-        }
-        private void DrawCircles(SKWorkspaceMapper wm, int minX, int maxX, int minY, int maxY)
-        {
-            var w = 20;
-            wm.ClearPathMappers();
-            var minXt = Math.Min(minX, maxX);
-            var maxXt = Math.Max(minX, maxX);
-            var minYt = Math.Min(minY, maxY);
-            var maxYt = Math.Max(minY, maxY);
-            for (int i = 0; i < 40; i++)
-            {
-                var path = wm.CreatePathMapper();
-                path.Pen = CorePens.GetPen(SKColor.FromHsl((rnd.Next(100) + 150), 70, 50), 8);
-                var x = (rnd.Next(minXt, maxXt)) + 750;
-                var y = (rnd.Next(minYt, maxYt)) + 450;
-                path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
-            }
         }
         private SKWorkspaceMapper GradientLine_A()
         {
@@ -205,54 +179,19 @@
                 hue += 150 / count;
                 paths.Add(path);
             }
-            
+
+            num.OnChanged += (sender, e) =>
+            {
+                val = Math.Min(100, Math.Max(-100, num.Number.EndValue * 2));
+                var brush = CorePens.GetBrush(new SKColor((byte)(midH + val), green, (byte)(midH - val)));
+                foreach (var path in paths)
+                {
+                    path.DefaultBrush = brush;
+                }
+            };
 
             return wm;
         }
-        //private SKWorkspaceMapper GradientLine_B()
-        //{
-        //    var wm = GradientLine_A();
-        //    wm.AppendText(
-        //        "Temperature, brightness, path home, points on a star. These are traits."
-        //       );
-
-        //    wm.DefaultShowGradientNumberLine = false;
-        //    wm.DefaultShowPolarity = false;
-        //    wm.DefaultShowPolarity = false;
-        //    wm.DefaultShowFractions = false;
-        //    wm.DefaultShowMinorTicks = false;
-        //    wm.DefaultShowTicks = false;
-
-        //    // thermometer
-        //    var left = 678;
-        //    var right = 805;
-        //    var top = 135;
-        //    wm.CreateImageMapper("therm.png", new SKSegment(left, top, right, top));
-        //    var mid = (right - left) / 2f + left;
-
-        //    var guideline = new SKSegment(mid + 2, top + 116, mid + 2, top + 425);
-        //    var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("therm", 1, 50), guideline);
-        //    var num = hd.CreateNumber(new Focal(50, -10));
-        //    num.InvertPolarity();
-
-        //    // stars
-        //    var w = 80;
-        //    var hue = 100;
-        //    var x = 1000;
-        //    var y = 50;
-        //    var pts = 3;
-        //    var count = 8;
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        var path = wm.CreatePathMapper();
-        //        path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 40), 7);
-        //        path.SetStar(new SKPoint(x, y), new SKPoint(x + w, y + w), pts++);
-        //        y += 100;
-        //        hue += 150 / count;
-        //    }
-
-        //    return wm;
-        //}
         private SKWorkspaceMapper Uncertainty_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 200, 650, 800, 300);
@@ -314,8 +253,6 @@
             };
             return wm;
         }
-
-
         private SKWorkspaceMapper ValidMath_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
@@ -348,19 +285,6 @@
             };
             return wm;
         }
-        //private SKWorkspaceMapper ValidMath_B()
-        //{
-        //    var wm = ValidMath_A();
-        //    wm.AppendText(
-        //       );
-        //    //var guideline = new SKSegment(hd.MidPoint, hd.MidPoint + new SKPoint(0, 300));
-        //    var guideline = new SKSegment(600, 200, 600, 800);
-        //    var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("validMath", 10, 10), guideline);
-        //    hd.ShowTicks = true;
-        //    hd.ShowPolarity = false;
-
-        //    return wm;
-        //}
         private SKWorkspaceMapper Selection_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
@@ -392,6 +316,24 @@
             //"Selection with '0' length, means the length is below the smallest resolution, and you can't tell the direction."
                );
             var last = wm.LastDomainMapper();
+            return wm;
+        }
+        private SKWorkspaceMapper Nil_A()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 400, 480 * 2, 400);
+            wm.ShowAll();
+            wm.DefaultShowMinorTicks = true;
+            wm.DefaultDomainTicks = 2;
+            wm.DefaultDomainRange = 12;
+            string[] txt = new string[] {
+            "Segments can not be removed by stretching them. That would be deletion, and the most you can do here is shrink.",
+            "They can be made to have a length too small to measure, which is zero, but not nil.",
+            "Zero length segments can still be re-expanded. There are no operations that can be applied to nil (no selection).",
+            "Division by this zero is a valid operation. The result is a value at least larger than the dividend, and potentially larger than the maximum value.",
+            "What does moving from the zero position imply? Do you think our number 5 represents a point or a segment here?",
+            };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
             return wm;
         }
         private SKWorkspaceMapper Polarity_A()
@@ -434,6 +376,7 @@
 
             return wm;
         }
+
         private SKWorkspaceMapper ComparisonsBasis_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 900, 400);
@@ -460,8 +403,7 @@
         {
             var wm = ComparisonsBasis_A();
             wm.AppendText(
-                "Switching basis is the reciprocal, shorter, to the right of, half as long.",
-                "The basis denotes zero, one, and dominant (positive) direction."
+                "Switching basis is the reciprocal, shorter, to the right of, half as long."
             );
             var ld = wm.LastDomainMapper();
             ld.RemoveNumberMapperByIndex(2);
@@ -516,6 +458,43 @@
             hd2.Domain.BasisIsReciprocal = true;
             //hd2.ShowMinorTicks = false;
             hd2.ShowTickMarkerValues = true;
+            return wm;
+        }
+        private SKWorkspaceMapper SefDef_A()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 50, 1050, 800);
+            wm.ShowNone();
+            wm.DefaultDrawPen = CorePens.GetPen(SKColor.Parse("#6090D0"), 8);
+            string[] txt = new string[] {
+                "If we call a segment 3+8, we just get 11. How can we say 'from 3 to 8'?",
+                "Complex numbers face this same dilemma.",
+                "Look close at use cases. From and to. Above and below zero. Deep and high. Vertical axis direction. CCW..."
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+            wm.CreateImageMapper("clock.png", new SKSegment(120, 280, 450, 280));
+
+            var guideline = new SKSegment(120 + 170, 280 + 170, 460, 280 + 170);
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("clock", 60, 0, 12, 0), guideline);
+            var nm = hd.CreateNumberFromFloats(0, 11f);
+            wm.ShowAll();
+
+            return wm;
+        }
+        private SKWorkspaceMapper SegDef_B()
+        {
+            var wm = SefDef_A();
+            wm.ShowAll();
+            wm.DefaultShowNumbersOffset = true;
+            wm.AppendText(
+                "The start point uses the inverted basis. The end point uses the polarity's basis.",
+                "Remember these are two zero based values joined together. Like 'from 9 deep to 3 high'.",
+                "It is handy to write the end point in the polarity's units (3i+2, or -3-2i)."
+            );
+            wm.DefaultShowPolarity = true;
+            wm.CreateImageMapper("iceberg.png", new SKSegment(550, 150, 1050, 150));
+
+            var guideline = new SKSegment(1100, 850, 1100, 50);
+            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("UnitUnot", 4, -11, 5, 0), guideline);
             return wm;
         }
         private SKWorkspaceMapper AddSubtract_A()
@@ -603,81 +582,7 @@
 
             return wm;
         }
-        private SKWorkspaceMapper Nil_A()
-        {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 400, 480 * 2, 400);
-            wm.ShowAll();
-            wm.DefaultShowMinorTicks = true;
-            wm.DefaultDomainTicks = 2;
-            wm.DefaultDomainRange = 12;
-            string[] txt = new string[] {
-            "Segments can not be removed by stretching them. That would be deletion, and the most you can do here is shrink.",
-            "They can be made to have a length too small to measure, which is zero, but not nil.",
-            "Zero length segments can still be re-expanded. There are no operations that can be applied to nil (no selection).",
-            "Division by this zero is a valid operation. The result is a value at least larger than the dividend, and potentially larger than the maximum value.",
-            "What does moving from the zero position imply? Do you think our number 5 represents a point or a segment here?",
-            };
-            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
-            return wm;
-        }
         private SKWorkspaceMapper MultiplyDivide_A()
-        {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 400, 480 * 2, 400);
-            wm.ShowAll();
-            wm.DefaultShowMinorTicks = true;
-            wm.DefaultDomainTicks = 2;
-            wm.DefaultDomainRange = 12;
-            string[] txt = new string[] {
-                "Numbers can be positive or negative, the numeric value is defined the basis 'measuring stick'.",
-                "The basis sets the anchor (0), the length (1), the resolution (ticks) and the positive direction.",
-                "Every ordered sequence has two possible positive directions (polarities). Both are valid, and both exist.",
-                "Numbers can be normal or inverted. Both can naturally exist on the same number line.",
-               };
-            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
-
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
-            return wm;
-
-        }
-        private SKWorkspaceMapper MultiplyDivide_B()
-        {
-            var wm = MultiplyDivide_A();
-            wm.DefaultDomainRange = 21;
-            wm.AppendText(
-                "Stretching a segment multiplies it. You can stretch from anywhere, but the basis maps to the number system.",
-                "Stretching the exact length of the selection is a special case of multiplication we call addition."
-            );
-
-            var leftDm = wm.LastDomainMapper();
-            leftDm.Label = "  A";
-            leftDm.ShowNumbersOffset = true;
-
-            var guideline = leftDm.Guideline.ShiftOffLine(60);
-            var rightDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange), guideline);
-            rightDm.Label = "* B";
-            rightDm.ShowNumbersOffset = true;
-            leftDm.AlignDomainTo(rightDm);
-
-            guideline = guideline.ShiftOffLine(60);
-            var resultDm = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange), guideline);
-            resultDm.Label = "= C";
-            resultDm.ShowNumbersOffset = true;
-
-
-            rightDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
-            resultDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
-            var leftNum = leftDm.CreateNumberFromFloats(0, 2);
-            var rightNum = rightDm.CreateNumberFromFloats(0, 3);
-            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, TransformKind.Multiply);
-            var tm = wm.GetOrCreateTransformMapper(transform);
-            tm.Do2DRender = false;
-            var resultNum = resultDm.Domain.AddNumber(transform.Result);
-
-            return wm;
-
-        }
-        private SKWorkspaceMapper MultiplyDivide_C()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 300, 420 * 2, 300);
             wm.ShowAll();
@@ -706,7 +611,7 @@
             return wm;
 
         }
-        private SKWorkspaceMapper MultiplyDivide_D()
+        private SKWorkspaceMapper MultiplyDivide_B()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 250, 480 * 2, 250);
             wm.ShowAll();
@@ -734,7 +639,7 @@
 
             return wm;
         }
-        private SKWorkspaceMapper MultiplyDivide_E()
+        private SKWorkspaceMapper MultiplyDivide_C()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 250, 480 * 2, 250);
             wm.ShowAll();
@@ -764,7 +669,7 @@
 
             return wm;
         }
-        private SKWorkspaceMapper MultiplyDivide_F()
+        private SKWorkspaceMapper MultiplyDivide_D()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 250, 480 * 2, 250);
             wm.ShowAll();
@@ -792,147 +697,16 @@
 
             return wm;
         }
-        private SKWorkspaceMapper MultiplyDivide_BX()
-        {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 550, 400, 550 * 2, 400);
-            wm.ShowAll();
-            //wm.DefaultShowMinorTicks = false;
-            wm.DefaultDomainTicks = 2;
-            wm.DefaultDomainRange = 8;
-            wm.DefaultShowNumbersOffset = true;
-            string[] txt = new string[] {
-                "Multiplication is also stretching, but the portion of the gradient being stretched is the unit, not the element.",
-                "You can stretch any section on the gradient, but if you stretch the unit all changes will line up with the number line.",
-                "For example, stretching the unit to 3 will make the selection 3 times larger. Unit to -1/2 will make it 'negative half' as large.",
-               };
-            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            //var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
-            return wm;
 
-        }
-        private SKWorkspaceMapper MultiplyDivide_CX()
-        {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 550, 400, 550 * 2, 400);
-            wm.ShowAll();
-            //wm.DefaultShowMinorTicks = false;
-            wm.DefaultDomainTicks = 2;
-            wm.DefaultDomainRange = 8;
-            string[] txt = new string[] {
-                "Multiplication is also stretching, but the portion of the gradient being stretched is the unit, not the element.",
-                "You can stretch any section on the gradient, but if you stretch the unit all changes will line up with the number line.",
-                "For example, stretching the unit to 3 will make the selection 3 times larger. Unit to -1/2 will make it 'negative half' as large.",
-               };
-            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            //var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("MultiplyDivide", wm.DefaultDomainTicks, wm.DefaultDomainRange));
-            return wm;
-
-        }
-        private SKWorkspaceMapper SefDef_A()
-        {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 50, 1050, 800);
-            wm.ShowNone();
-            wm.DefaultDrawPen = CorePens.GetPen(SKColor.Parse("#6090D0"), 8);
-            string[] txt = new string[] {
-                "If we call a segment 3+8, we just get 11. How can we say 'from 3 to 8'?",
-                "Complex numbers face this same dilemma.",
-                "Look close at use cases. From and to. Above and below zero. Deep and high. Vertical axis direction. CCW..."
-               };
-            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
-            wm.CreateImageMapper("clock.png", new SKSegment(120, 280, 450, 280));
-
-            var guideline = new SKSegment(120 + 170, 280 + 170, 460, 280 + 170);
-            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("clock", 60, 0, 12, 0), guideline);
-            var nm = hd.CreateNumberFromFloats(0, 11f);
-
-            return wm;
-        }
-        private SKWorkspaceMapper SegDef_B()
-        {
-            var wm = SefDef_A();
-            wm.ShowAll();
-            wm.DefaultShowNumbersOffset = true;
-            wm.AppendText(
-                "The start point uses the inverted basis. The end point uses the polarity's basis.",
-                "Remember these are two zero based values joined together. Like 'from 9 deep to 3 high'.",
-                "It is handy to write the end point in the polarity's units (3i+2, or -3-2i)."
-            );
-            wm.DefaultShowPolarity = true;
-            wm.CreateImageMapper("iceberg.png", new SKSegment(550, 150, 1050, 150));
-
-            var guideline = new SKSegment(1100, 850, 1100, 50);
-            var hd0 = wm.GetOrCreateDomainMapper(Domain.CreateDomain("UnitUnot", 4, -11, 5, 0), guideline);
-            return wm;
-        }
-        private SKWorkspaceMapper DefineSegments_A()
-        {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
-            string[] txt = new string[] {
-                "To review: ALL numbers are directed segments, and they can exist on either polarity.",
-                "Domains are also bounded by resolution. There is no infinity. Zero is a position with a length below resolution, not nil.",
-               };
-            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
-            return wm;
-        }
-        private SKWorkspaceMapper DefineSegments_B()
-        {
-            var wm = DefineSegments_A();
-            wm.AppendText(
-                "Points are expressed as (-5i+5 or 5-5i).  A point is a segment where you can't tell which direction it is pointing.",
-                "A segment on the inverted polarity ends with the 'i' value. In the normal polarity it starts with the 'i' value."
-            );
-            return wm;
-        }
-        private SKWorkspaceMapper DefineSegments_C()
-        {
-            var wm = DefineSegments_B();
-            wm.AppendText(
-                "The inverted perspective represents the same information from a different viewpoint.",
-                "The context you are in is part of this information.",
-                "From the 'other' perspective, everything behaves normally.",
-                "Once you develop an intuition for this dual perspective, you will see it everywhere."
-            );
-            return wm;
-        }
-        // addition and multiplication with directed segments.
-
-        private SKWorkspaceMapper Page8()
-        {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
-            string[] txt = new string[] {
-            "Create means stretching from a (zero length) position. You can stretch from anywhere, but only the selected segment will be affected.",
-            "Add and multiply means stretch an existing (non zero) section. Stretching from each perspective's unit maps to our numbers, but isn't required.",
-            "Divide is stretch from endpoint to unit (reciprocal action).",
-            "Multiply by negative flips.",
-            "Multiply by an inverted value works the same, but uses 'i' basis, and flips polarity (making it a different operation than a unit value).",
-            "i*i*i*i... is a very important cycle.",
-               };
-            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
-            return wm;
-        }
-        private SKWorkspaceMapper Repeats_A()
-        {
-            // repeats are reselections
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
-            string[] txt = new string[] {
-            "Repeat steps are powers, but they can be done on any operation with at least one selection.",
-            "Repeated creation (pushing from zero) merges results, repeated addition appends them.",
-            "The result is like a 'sectionable' result that can be merged.",
-            "The 'matter' is different than with multiplication, can be indicated with step coloring.",
-            "Multiplication is a second step, do div by zero isn't a valid question. It is like x^4 with the third x missing.",
-            "You can get lengths, areas, grids, fence posts, stacked boxes etc with various number combinations.",
-               };
-            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
-            return wm;
-        }
         private SKWorkspaceMapper Bool_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"Merge operations (bool truth tables) are probably the most obvious, and should be first. There are 16.",
-"These get complex in math, but simple in visualization and language (NAND is visually behind, and linguistically 'except')",
-"These are like conditions that allow alternate paths along branches. Also can be 'physics' on segments.",
+            "Merge operations (bool truth tables) are probably the most obvious, and should be first. There are 16.",
+            "These get complex in math, but simple in visualization and language (NAND is visually behind, and linguistically 'except')",
+            "These are like conditions that allow alternate paths along branches. Also can be 'physics' on segments.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
@@ -941,20 +715,8 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"Numbers and merge results can be compared, and the results can be described with quantitative bools, like prepositions:",
-"near, over, to the left of, at least etc. These can all be constructed with segment definitions and bool operations.",
-               };
-            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
-            return wm;
-        }
-        private SKWorkspaceMapper RandomUnknown_A()
-        {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
-            string[] txt = new string[] {
-"Random sampling is a valid operation on a line, it is qualifiable, but not predictable outside those bounds.",
-"The sampling need not be random point on line.",
-"You could think aim for center of segments, from further based on length (normal dist).",
-"This is currently complex math, but is very simple with segments, it is encoded as just a segment.",
+            "Numbers and merge results can be compared, and the results can be described with quantitative bools, like prepositions:",
+            "near, over, to the left of, at least etc. These can all be constructed with segment definitions and bool operations.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
@@ -963,10 +725,10 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"Join with branches, this happens as alternate paths on the same domain (same unit and trait).",
-"Can be an optional or required paths, triggered or blocked by bool results.",
-"Ornamental patterns and glyphs are examples of these visually. TYLOXP etc",
-"Predictions and plans are by definition alternate paths. Words like 'either', 'detour', 'try' suggest them.",
+            "Join with branches, this happens as alternate paths on the same domain (same unit and trait).",
+            "Can be an optional or required paths, triggered or blocked by bool results.",
+            "Ornamental patterns and glyphs are examples of these visually. TYLOXP etc",
+            "Predictions and plans are by definition alternate paths. Words like 'either', 'detour', 'try' suggest them.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
@@ -975,19 +737,19 @@
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"Join domains (area), use the same traits (spatial, optical, tactile), but combine different aspects of them (xy, rgb, curved/smooth)",
-"Can be a 2D graph, join endpoints, and opposite tips. Drag out 4 lines to combine, triangles are alternate view.",
+            "Join domains (area), use the same traits (spatial, optical, tactile), but combine different aspects of them (xy, rgb, curved/smooth)",
+            "Can be a 2D graph, join endpoints, and opposite tips. Drag out 4 lines to combine, triangles are alternate view.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
         }
-        private SKWorkspaceMapper Page15()
+        private SKWorkspaceMapper Area_B()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
             string[] txt = new string[] {
-"Joint traits (mph), math is the same as with branches and other joins.",
-"Common strategy is to normalize one trait (miles per gallon, liters per 100km)",
-"We also create paths through complex joins, like dark or saturated colors, or a path through the woods.",
+            "Joint traits (mph), math is the same as with branches and other joins.",
+            "Common strategy is to normalize one trait (miles per gallon, liters per 100km)",
+            "We also create paths through complex joins, like dark or saturated colors, or a path through the woods.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             return wm;
@@ -1069,6 +831,23 @@
             }
 
             return result;
+        }
+        private void DrawCircles(SKWorkspaceMapper wm, int minX, int maxX, int minY, int maxY)
+        {
+            var w = 20;
+            wm.ClearPathMappers();
+            var minXt = Math.Min(minX, maxX);
+            var maxXt = Math.Max(minX, maxX);
+            var minYt = Math.Min(minY, maxY);
+            var maxYt = Math.Max(minY, maxY);
+            for (int i = 0; i < 40; i++)
+            {
+                var path = wm.CreatePathMapper();
+                path.Pen = CorePens.GetPen(SKColor.FromHsl((rnd.Next(100) + 150), 70, 50), 8);
+                var x = (rnd.Next(minXt, maxXt)) + 750;
+                var y = (rnd.Next(minYt, maxYt)) + 450;
+                path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
+            }
         }
         #endregion
     }
