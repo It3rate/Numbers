@@ -35,6 +35,7 @@ namespace MathDemo
 
         private SKWorkspaceMapper test2DMult()
         {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 300, 0, 600, 600);
             var hDomain = Domain.CreateDomain("test2DMult", 100, 10);
             var vDomain = Domain.CreateDomain("test2DMult", 100, 10);
             var hNum = hDomain.CreateNumberFromFloats(2, 9);
@@ -42,7 +43,6 @@ namespace MathDemo
 
             Transform transform = Brain.AddTransform(hNum, vNum, TransformKind.Multiply);
 
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 300, 0, 600, 600);
             wm.AddHorizontal(hDomain);
             wm.AddVertical(vDomain);
 

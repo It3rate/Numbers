@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 0;
+            _testIndex = 26;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -48,7 +48,7 @@
                 Polarity_A,
                 InvertedBasis_A,
 
-                ComparisonsBasis_A,
+                ComparisonsBasis_A, // 10
                 ComparisonsBasis_B,
                 ComparisonsBasis_C,
                 Ticks_A,
@@ -59,13 +59,13 @@
                 AddSubtract_B,
                 AddSubtract_C,
                 MultiplyDivide_A,
-                MultiplyDivide_B,
+
+                MultiplyDivide_B, // 20
                 MultiplyDivide_C,
                 MultiplyDivide_D,
-
                 Bool_A,
                 QualifiedBools_A,
-                Joins_A,
+                Joins_A, // 25
                 Area_A,
                 Area_B,
             });
@@ -611,6 +611,7 @@
             return wm;
 
         }
+
         private SKWorkspaceMapper MultiplyDivide_B()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 600 - 480, 250, 480 * 2, 250);
@@ -723,7 +724,7 @@
         }
         private SKWorkspaceMapper Joins_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 150, 800, 600);
             string[] txt = new string[] {
             "Join with branches, this happens as alternate paths on the same domain (same unit and trait).",
             "Can be an optional or required paths, triggered or blocked by bool results.",
@@ -731,16 +732,46 @@
             "Predictions and plans are by definition alternate paths. Words like 'either', 'detour', 'try' suggest them.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+
             return wm;
         }
         private SKWorkspaceMapper Area_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 450, 20, 520, 660);
+            wm.DefaultShowMinorTicks = false;
             string[] txt = new string[] {
-            "Join domains (area), use the same traits (spatial, optical, tactile), but combine different aspects of them (xy, rgb, curved/smooth)",
-            "Can be a 2D graph, join endpoints, and opposite tips. Drag out 4 lines to combine, triangles are alternate view.",
+            "Join domains (area), use the same traits (spatial, optical, tactile),",
+                "but combine different aspects of them (xy, rgb, curved/smooth)",
+            "Can be a 2D graph, join endpoints, and opposite tips.",
+                "Drag out 4 lines to combine, triangles are alternate view.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var center = new SKPoint(780, 320);
+            var w = 280;
+
+            var guideline = new SKSegment(center.X - w, center.Y, center.X + w, center.Y);
+            var hMapper = wm.GetOrCreateDomainMapper(Domain.CreateDomain("area", 100, 10), guideline);
+            var hNum = hMapper.Domain.CreateNumberFromFloats(2, 9);
+
+            guideline = new SKSegment(center.X, center.Y + w, center.X, center.Y - w);
+            var vMapper = wm.GetOrCreateDomainMapper(Domain.CreateDomain("area", 100, 10), guideline);
+            var vNum = vMapper.Domain.CreateNumberFromFloats(3, 6);
+
+
+            Transform transform = Brain.AddTransform(hNum, vNum, TransformKind.Multiply);
+            var tm = wm.GetOrCreateTransformMapper(transform);
+            tm.Do2DRender = true;
+            tm.EquationPoint = new SKPoint(hMapper.StartPoint.X - 220, vMapper.MidPoint.Y - 20);
+
+
+            CreateSimilarDomain(hMapper.Domain, 1f, 20, hNum.Focal);
+            CreateSimilarDomain(hMapper.Domain, 1.08f, 20, vNum.Focal);
+            CreateSimilarDomain(hMapper.Domain, 1.2f, 100, transform.Result.Focal);
+
+
+
             return wm;
         }
         private SKWorkspaceMapper Area_B()

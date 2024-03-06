@@ -40,6 +40,7 @@ namespace Numbers.Mappers
         private SKPoint[] ri_s_shape;
         private SKPoint[] r_si_shape;
 
+        public SKPoint EquationPoint = SKPoint.Empty;
         public override void Draw()
         {
             CalculateValue();
@@ -49,7 +50,8 @@ namespace Numbers.Mappers
             }
             else if(Agent.ActiveTransformMapper == this)
             {
-                DrawEquation(Guideline.EndPoint.Subtract(200,150), Pens.TextBrush);
+                var eqp = EquationPoint.IsEmpty ? Guideline.EndPoint.Subtract(200, 150) : EquationPoint;
+                DrawEquation(eqp, Pens.TextBrush);
             }
         }
         private void CalculateValue()
@@ -122,7 +124,8 @@ namespace Numbers.Mappers
             var itxt = $"{iv:0.00}i";
             Canvas.DrawText(itxt, ip0.X, ip1.Y - 4, Pens.UnotMarkerText);
 
-            DrawEquation(new SKPoint(150, 100), Pens.TextBrush);
+            var eqp = EquationPoint.IsEmpty ? new SKPoint(50, 200) : EquationPoint;
+            DrawEquation(eqp, Pens.TextBrush);
             DrawAreaValues(selNum, repNum);
         }
         public void DrawX()
