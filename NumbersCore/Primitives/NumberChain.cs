@@ -3,6 +3,7 @@
 namespace NumbersCore.Primitives
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -15,12 +16,12 @@ namespace NumbersCore.Primitives
     /// Can also represent the start/endpoints of mergable repeats, like 3+3+3 or 3*3*3. 
     /// </summary>
     public class NumberChain : Number, IMathElement
-    { 
+    {
         // should be able to access and update proportionally, where 8 even subdivisions will remain so even when changing the base number.
         // they can be recorded as on/off/on/off along the line, allowing construction of 2D continuous paths (though this would just be an optimization).
         // knowing if focals are touching (contiguous) matters.
         // all clamping, overlap removal and repears should be done in the focalSet
-	    public override MathElementKind Kind => MathElementKind.NumberChain;
+        public override MathElementKind Kind => MathElementKind.NumberChain;
 
         public new bool IsDirty { get => _focalChain.IsDirty; set => _focalChain.IsDirty = value; } // base just calls this
 
@@ -64,13 +65,124 @@ namespace NumbersCore.Primitives
         // todo: account for polarity
         public Focal CreateFocalFromRange(Range value) => Domain.CreateFocalFromRange(value);
 
-        public void MergeItem(Number num, OperationKind operationKind = OperationKind.None) => _focalChain.Merge(num.Focal, operationKind); 
-        public void MergeItem(Focal focal, OperationKind operationKind = OperationKind.None) => _focalChain.Merge(focal, operationKind); 
-        public void MergeItem(long start, long end, OperationKind operationKind = OperationKind.None) => _focalChain.Merge(start, end, operationKind); 
-        public void MergeItem(Range value, OperationKind operationKind = OperationKind.None)
+        public void ComputeWith(Number num, OperationKind operationKind)
         {
-            var focal = Domain.CreateFocalFromRange(value);
-            _focalChain.Merge(focal, operationKind);
+            if (operationKind.IsBoolOp())
+            {
+                _focalChain.ComputeWith(num.Focal, operationKind);
+            }
+            else if (operationKind.IsUnary())
+            {
+                switch (operationKind)
+                {
+                    case OperationKind.None:
+                        break;
+                    case OperationKind.Negate:
+                        Negate();
+                        break;
+                    case OperationKind.Reciprocal:
+                        break;
+                    case OperationKind.TogglePolarity:
+                        break;
+                    case OperationKind.FlipInPlace:
+                        break;
+                    case OperationKind.MirrorOnUnit:
+                        break;
+                    case OperationKind.MirrorOnUnot:
+                        break;
+                    case OperationKind.MirrorOnStart:
+                        break;
+                    case OperationKind.MirrorOnEnd:
+                        break;
+                    case OperationKind.FilterUnit:
+                        break;
+                    case OperationKind.FilterUnot:
+                        break;
+                    case OperationKind.FilterStart:
+                        break;
+                    case OperationKind.FilterEnd:
+                        break;
+                    case OperationKind.UnaryNot:
+                        _focalChain.ComputeWith(num.Focal, operationKind);
+                        break;
+                }
+            }
+            else if (operationKind.IsBinary())
+            {
+                switch (operationKind)
+                {
+                    case OperationKind.Add:
+                        AddValue(num);
+                        break;
+                    case OperationKind.Subtract:
+                        SubtractValue(num);
+                        break;
+                    case OperationKind.Multiply:
+                        MultiplyValue(num);
+                        break;
+                    case OperationKind.Divide:
+                        DivideValue(num);
+                        break;
+                    case OperationKind.Root:
+                        break;
+                    case OperationKind.Wedge:
+                        break;
+                    case OperationKind.DotProduct:
+                        break;
+                    case OperationKind.GeometricProduct:
+                        break;
+                    case OperationKind.Blend:
+                        break;
+                }
+            }
+            else if (operationKind.IsTernary())
+            {
+                switch (operationKind)
+                {
+                    case OperationKind.PowerAdd:
+                        break;
+                    case OperationKind.PowerMultiply:
+                        break;
+                }
+            }
+            else
+            {
+                switch (operationKind)
+                {
+                    case OperationKind.None:
+                        break;
+                    case OperationKind.AppendAll:
+                        break;
+                    case OperationKind.MultiplyAll:
+                        break;
+                    case OperationKind.Average:
+                        break;
+                }
+            }
+        }
+        public void ComputeWith(Focal focal, OperationKind operationKind) => _focalChain.ComputeWith(focal, operationKind);
+        public void ComputeWith(long start, long end, OperationKind operationKind) => ComputeWith(new Focal(start, end), operationKind);
+        public void ComputeWith(Range range, OperationKind operationKind)
+        {
+            var focal = Domain.CreateFocalFromRange(range);
+            _focalChain.ComputeWith(focal, operationKind);
+        }
+        public void AddPosition(long start, long end)
+        {
+            _focalChain.AddPosition(start, end);
+        }
+        public void AddPosition(Focal focal)
+        {
+           AddPosition(focal.StartPosition, focal.EndPosition);
+        }
+        public void AddPosition(Number num)
+        {
+            AddPosition(num.Focal.StartPosition, num.Focal.EndPosition);
+        }
+        public void AddPosition(Range range)
+        {
+            var focal = Domain.CreateFocalFromRange(range);
+            AddPosition(focal.StartPosition, focal.EndPosition);
         }
         public void RemoveLastPosition() => _focalChain.RemoveLastPosition();
 

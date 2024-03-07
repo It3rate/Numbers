@@ -6,8 +6,7 @@
     {
         None,
 
-        UNARY_NOT, // this is Flip In Place
-
+        // bool
         FALSE,
         AND,
         AND_NOT,
@@ -25,7 +24,9 @@
         NAND,
         TRUE,
 
+        // unary
         Negate,
+        Reciprocal,
         TogglePolarity,
         FlipInPlace,
         MirrorOnUnit,
@@ -36,31 +37,50 @@
         FilterUnot, // always 0 to i value
         FilterStart, // depends on polarity
         FilterEnd, // depends on polarity
+        UnaryNot, // Flip In Place (same segment meaning, persepctive inverted)
 
         // Binary
         Add,
         Subtract,
         Multiply,
         Divide,
-        PowerAdd,
-        PowerMultiply,
-        Reciprocal,
-
-        AppendAll, // repeat are added together ('regular' multiplication)
-        MultiplyAll, // repeat are multiplied together (exponents)
-        Blend, // multiply as in area, blend from unot to unit
-        Average,
         Root,
         Wedge,
         DotProduct,
         GeometricProduct,
-    }
+        Blend, // multiply as in area, blend from unot to unit
 
+
+        // ternary
+        PowerAdd,
+        PowerMultiply,
+
+
+        AppendAll, // repeat are added together ('regular' multiplication)
+        MultiplyAll, // repeat are multiplied together (exponents)
+        Average,
+    }
     public static class OperationKindExtension
     {
+        public static bool IsBoolOp(this OperationKind kind)
+        {
+            return kind >= OperationKind.FALSE && kind <= OperationKind.TRUE;
+        }
         public static bool IsUnary(this OperationKind kind)
         {
-            return kind > OperationKind.None && kind <= OperationKind.UNARY_NOT;
+            return kind >= OperationKind.Negate && kind <= OperationKind.UnaryNot;
+        }
+        public static bool IsBinary(this OperationKind kind)
+        {
+            return kind >= OperationKind.Add && kind <= OperationKind.Blend;
+        }
+        public static bool IsTernary(this OperationKind kind)
+        {
+            return kind >= OperationKind.PowerAdd && kind <= OperationKind.PowerMultiply;
+        }
+        public static bool IsMultipleOp(this OperationKind kind)
+        {
+            return kind >= OperationKind.AppendAll && kind <= OperationKind.Average;
         }
         public static string GetSymbol(this OperationKind kind)
         {

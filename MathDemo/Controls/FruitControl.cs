@@ -46,7 +46,7 @@
             AspectRatio = aspectDomain.CreateNumber(new Range(0.2f, 0.2f));
 
             Convexity = new NumberChain(_convexityDomain, Polarity.Aligned);
-            Convexity.MergeItem(32, 32);
+            Convexity.AddPosition(32, 32);
             AddPolyProperty(Fill, 0, 360, 70, 100, 40, 60);
 
             CreateDomainMaps();

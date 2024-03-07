@@ -4,6 +4,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
     using System.Text;
     using System.Threading;
@@ -84,18 +85,18 @@
         public override void Reset(long start, long end)
         {
             Clear();
-            Merge(start, end);
+            AddPosition(start, end);
         }
         public override void Reset(Focal left)
         {
             Clear();
-            Merge(left);
+            AddPosition(left);
         }
         public void Reset(Focal left, Focal right, OperationKind operationKind)
         {
             Clear();
-            Merge(left);
-            Merge(right, operationKind);
+            AddPosition(left);
+            ComputeWith(right, operationKind);
         }
         /// <summary>
         /// Merge existing focals to each other by iterating over each one using the internal operation.
@@ -105,7 +106,7 @@
             var orgPositions = GetPositions(focals);
             for (int i = 0; i < orgPositions.Length; i += 2)
             {
-                Merge(orgPositions[i + 0], orgPositions[i + 1]);
+                AddPosition(orgPositions[i + 0], orgPositions[i + 1]);
             }
             //if (OperationKind != OperationKind.None && focals.Count > 1)
             //{
@@ -124,26 +125,30 @@
             //{
             //}
         }
-        public void Merge(Focal focal, OperationKind operationKind = OperationKind.None)
+        public void ComputeWith(Focal focal, OperationKind operationKind)
         {
-            Merge(focal.StartPosition, focal.EndPosition, operationKind);
+            ComputeWith(focal.StartPosition, focal.EndPosition, operationKind);
         }
-        public void Merge(long start, long end, OperationKind operationKind = OperationKind.None)
+        public void ComputeWith(long start, long end, OperationKind operationKind)
         {
-            if (operationKind != OperationKind.None)
+            // todo: also do (partial) add, subtract, multiply etc in focals?
+            if (operationKind.IsBoolOp())
             {
                 var tt = BuildTruthTable(_positions.ToArray(), new long[] {start, end});
                 var positions = ApplyOpToTruthTable(tt, operationKind.GetFunc());
                 RegenerateFocals(positions);
             }
-            else
-            {
-                FillNextPosition(start, end);
-                _positions.Add(start);
-                _positions.Add(end);
-            }
         }
         public Focal Last() => Count > 0 ? _focals[Count - 1] : null;
+
+        public void AddPosition(long start, long end)
+        {
+            FillNextPosition(start, end);
+            _positions.Add(start);
+            _positions.Add(end);
+        }
+        public void AddPosition(Focal position) => AddPosition(position.StartPosition, position.EndPosition);
+
         public void RemoveLastPosition()
         {
             if(Count > 0)

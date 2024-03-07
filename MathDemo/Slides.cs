@@ -707,7 +707,7 @@
             wm.DefaultDomainTicks = 8;
             wm.DefaultDomainRange = 8;
             string[] txt = new string[] {
-            "Merge operations (bool truth tables) are probably the most obvious, and should be first. There are 16.",
+            "ComputeWith operations (bool truth tables) are probably the most obvious, and should be first. There are 16.",
             "These get complex in math, but simple in visualization and language (NAND is visually behind, and linguistically 'except')",
             "These are like conditions that allow alternate paths along branches. Also can be 'physics' on segments.",
                };

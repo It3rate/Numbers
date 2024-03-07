@@ -101,13 +101,13 @@ namespace NumbersCore.Primitives
                     break;
 
                 case OperationKind.AND:
-                    Result.MergeItem(Right, OperationKind.AND);
+                    Result.ComputeWith(Right, OperationKind.AND);
                     break;
                 case OperationKind.OR:
-                    Result.MergeItem(Right, OperationKind.OR);
+                    Result.ComputeWith(Right, OperationKind.OR);
                     break;
                 case OperationKind.NAND:
-                    Result.MergeItem(Right, OperationKind.NAND);
+                    Result.ComputeWith(Right, OperationKind.NAND);
                     break;
             }
 		    OnEndTransformEvent(this);
