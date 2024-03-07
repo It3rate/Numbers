@@ -105,7 +105,7 @@
                 int i = 0;
                 foreach (var chain in _numberChains)
                 {
-                    chain.AddItem(values[i++]);
+                    chain.MergeItem(values[i++]);
                 }
             }
         }
@@ -116,7 +116,7 @@
                 int i = 0;
                 foreach (var chain in _numberChains)
                 {
-                    chain.AddItem(values[i++]);
+                    chain.MergeItem(values[i++]);
                 }
             }
         }
@@ -127,7 +127,7 @@
                 int i = 0;
                 foreach (var chain in _numberChains)
                 {
-                    chain.AddItem(values[i++], values[i++]); // these are segments, so (start, end)
+                    chain.MergeItem(values[i++], values[i++]); // these are segments, so (start, end)
                 }
             }
         }
@@ -138,7 +138,7 @@
                 int i = 0;
                 foreach (var chain in _numberChains)
                 {
-                    chain.AddItem(values[i++]);
+                    chain.MergeItem(values[i++]);
                 }
             }
         }
@@ -150,7 +150,7 @@
                 {
                     for (var j = 0; j < PolyCount; j++)
                     {
-                        _numberChains[j].AddItem(values[i * PolyCount + j]);
+                        _numberChains[j].MergeItem(values[i * PolyCount + j]);
                     }
                 }
             }
@@ -163,7 +163,7 @@
                 {
                     for (var j = 0; j < PolyCount; j++)
                     {
-                        _numberChains[j].AddItem(values[i * PolyCount + j]);
+                        _numberChains[j].MergeItem(values[i * PolyCount + j]);
                     }
                 }
             }
@@ -176,7 +176,7 @@
                 {
                     for (var j = 0; j < PolyCount; j++)
                     {
-                        _numberChains[j].AddItem(values[i * PolyCount + j * 2], values[i * PolyCount + j * 2 + 1]);
+                        _numberChains[j].MergeItem(values[i * PolyCount + j * 2], values[i * PolyCount + j * 2 + 1]);
                     }
                 }
             }
@@ -200,7 +200,7 @@
                 foreach (var chain in _numberChains)
                 {
                     var start = chain.Last().EndPosition;
-                    chain.AddItem(start, values[i++]);
+                    chain.MergeItem(start, values[i++]);
                 }
             }
         }

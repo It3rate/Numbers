@@ -36,12 +36,12 @@ namespace NumbersCore.Primitives
         public NumberChain(Number targetNumber, params Focal[] focals) : base(new FocalChain(), targetNumber.Polarity)
         {
             Domain = targetNumber.Domain;
-            _focalChain.AddRange(focals);
+            _focalChain.MergeRange(focals);
         }
         public NumberChain(Domain domain, Polarity polarity, params Focal[] focals) : base(new FocalChain(), polarity)
         {
             Domain = domain;
-            _focalChain.AddRange(focals);
+            _focalChain.MergeRange(focals);
         }
 
         public IEnumerable<Number> InternalNumbers()
@@ -64,20 +64,20 @@ namespace NumbersCore.Primitives
         // todo: account for polarity
         public Focal CreateFocalFromRange(Range value) => Domain.CreateFocalFromRange(value);
 
-        public void AddItem(Number num, OperationKind operationKind = OperationKind.None) => _focalChain.Add(num.Focal, operationKind); 
-        public void AddItem(Focal focal, OperationKind operationKind = OperationKind.None) => _focalChain.Add(focal, operationKind); 
-        public void AddItem(long start, long end, OperationKind operationKind = OperationKind.None) => _focalChain.Add(start, end, operationKind); 
-        public void AddItem(Range value, OperationKind operationKind = OperationKind.None)
+        public void MergeItem(Number num, OperationKind operationKind = OperationKind.None) => _focalChain.Merge(num.Focal, operationKind); 
+        public void MergeItem(Focal focal, OperationKind operationKind = OperationKind.None) => _focalChain.Merge(focal, operationKind); 
+        public void MergeItem(long start, long end, OperationKind operationKind = OperationKind.None) => _focalChain.Merge(start, end, operationKind); 
+        public void MergeItem(Range value, OperationKind operationKind = OperationKind.None)
         {
             var focal = Domain.CreateFocalFromRange(value);
-            _focalChain.Add(focal, operationKind);
+            _focalChain.Merge(focal, operationKind);
         }
         public void RemoveLastPosition() => _focalChain.RemoveLastPosition();
 
         public void Reset(params Focal[] focals)
         {
             _focalChain.Clear();
-            _focalChain.AddRange(focals);
+            _focalChain.MergeRange(focals);
         }
         public Number this[int index] => index < Count ? Domain.CreateNumber(_focalChain[index], false) : null;
         public Focal FocalAt(int index) => index < Count ? _focalChain[index] : null;

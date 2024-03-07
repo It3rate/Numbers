@@ -28,8 +28,8 @@ namespace NumbersCore.Primitives
         public Brain Brain { get; }
 
         public bool IsDirty { get; set; } = true;
-        public TransformKind TransformKind { get; set; }
-        public bool IsUnary => TransformKind.IsUnary();
+        public OperationKind OperationKind { get; set; }
+        public bool IsUnary => OperationKind.IsUnary();
         public int Repeats { get; set;  } = 1;
         public int Steps { get; set; } = 1;
 	    public Number Left { get; set; } // the object being transformed
@@ -53,13 +53,13 @@ namespace NumbersCore.Primitives
             yield return Result;
         }
 
-        public Transform(Number left, Number right, TransformKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
+        public Transform(Number left, Number right, OperationKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
         {
 	        Left = left;
 	        Right = right;
 
             Result = new NumberChain(Right.Domain.MinMaxNumber);// left.Clone(false);
-	        TransformKind = kind;
+	        OperationKind = kind;
 	        Brain = right.Brain;
 	        Id = Brain.NextTransformId();
         }
@@ -85,28 +85,29 @@ namespace NumbersCore.Primitives
 	    public void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
 	    public void ApplyEnd()
 	    {
-            switch (TransformKind)
+            switch (OperationKind)
             {
-                case TransformKind.Add:
+                case OperationKind.Add:
                     Result.AddValue(Right);
                     break;
-                case TransformKind.Subtract:
+                case OperationKind.Subtract:
                     Result.SubtractValue(Right);
                     break;
-                case TransformKind.Multiply:
+                case OperationKind.Multiply:
                     Result.MultiplyValue(Right);
                     break;
-                case TransformKind.Divide:
+                case OperationKind.Divide:
                     Result.DivideValue(Right);
                     break;
-                case TransformKind.And:
-                    Result.AddItem(Right, OperationKind.AND);
+
+                case OperationKind.AND:
+                    Result.MergeItem(Right, OperationKind.AND);
                     break;
-                case TransformKind.Or:
-                    Result.AddItem(Right, OperationKind.OR);
+                case OperationKind.OR:
+                    Result.MergeItem(Right, OperationKind.OR);
                     break;
-                case TransformKind.Nand:
-                    Result.AddItem(Right, OperationKind.NAND);
+                case OperationKind.NAND:
+                    Result.MergeItem(Right, OperationKind.NAND);
                     break;
             }
 		    OnEndTransformEvent(this);
@@ -132,7 +133,7 @@ namespace NumbersCore.Primitives
 	    }
         public override string ToString()
         {
-            var symbol = TransformKind.GetSymbol();
+            var symbol = OperationKind.GetSymbol();
             return $"{Left} {symbol} {Right} = {Result}";
         }
     }
@@ -149,101 +150,5 @@ namespace NumbersCore.Primitives
 	    void ApplyEnd();
 	    void ApplyPartial(long tickOffset);
 	    bool IsComplete();
-    }
-
-    public enum TransformKind
-    {
-	    None, // leave repeat in place
-
-        Negate,
-        TogglePolarity,
-        FlipInPlace,
-        MirrorOnUnit,
-        MirrorOnUnot,
-        MirrorOnStart,
-        MirrorOnEnd,
-        FilterUnit, // always 0 to r value
-        FilterUnot, // always 0 to i value
-        FilterStart, // depends on polarity
-        FilterEnd, // depends on polarity
-        And,
-        Or,
-        Not,
-        Nand,
-        Xor, // 16 binary truth table ops
-
-        // Binary
-        Add,
-        Subtract,
-        Multiply,
-        Divide,
-        PowerAdd,
-        PowerMultiply,
-        Reciprocal,
-
-        AppendAll, // repeat are added together ('regular' multiplication)
-	    MultiplyAll, // repeat are multiplied together (exponents)
-	    Blend, // multiply as in area, blend from unot to unit
-        Average,
-        Root,
-        Wedge,
-        DotProduct,
-        GeometricProduct,
-    }
-    public static class TransformKindExtensions
-    {
-        public static bool IsUnary(this TransformKind kind)
-        {
-            return (kind > TransformKind.None) && (kind < TransformKind.Add);
-        }
-        public static string GetSymbol(this TransformKind kind)
-        {
-            var result = "☼";
-            switch (kind)
-            {
-                case TransformKind.Add:
-                    result = "+";
-                    break;
-                case TransformKind.Negate:
-                case TransformKind.Subtract:
-                    result = "-";
-                    break;
-                case TransformKind.Multiply:
-                    result = "*";
-                    break;
-                case TransformKind.Divide:
-                    result = "/";
-                    break;
-                case TransformKind.PowerMultiply:
-                    result = "^";
-                    break;
-                case TransformKind.And:
-                    result = "&";
-                    break;
-                case TransformKind.Or:
-                    result = "|";
-                    break;
-                case TransformKind.Not:
-                    result = "!";
-                    break;
-                case TransformKind.Nand:
-                    result = "^&";
-                    break;
-            }
-            return result;
-        }
-    }
-
-    // todo: Evaluation of two segments are very much like the 16 bool operations, probably the same.
-    public enum EvaluationKind
-    {
-        // can use overlap, equal, contain, not contain, minmax ranges, unit range, basis direction, number direction...
-
-	    None, // Never continue
-        InTarget, // continue unless result escapes containment of EvaluationTarget
-        NotInTarget,  // continue unless result enters containment of EvaluationTarget
-        TargetIn,  // continue unless EvaluationTarget escapes containment of result
-        NotTargetIn,  // continue unless EvaluationTarget enters containment of result
-        Always, // always continue
     }
 }

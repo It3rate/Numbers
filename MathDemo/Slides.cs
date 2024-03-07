@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 26;
+            _testIndex = 23;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -536,7 +536,7 @@
             resultDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
             var leftNum = leftDm.CreateNumberFromFloats(0, 2);
             var rightNum = rightDm.CreateNumberFromFloats(0, 3);
-            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, TransformKind.Multiply);
+            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, OperationKind.Multiply);
             var tm = wm.GetOrCreateTransformMapper(transform);
             tm.Do2DRender = false;
             var resultNum = resultDm.Domain.AddNumber(transform.Result);
@@ -575,7 +575,7 @@
             resultDm.BasisNumber.Focal = leftDm.BasisNumber.Focal;
             var leftNum = leftDm.CreateNumberFromFloats(0, 2);
             var rightNum = rightDm.CreateNumberFromFloats(0, 3);
-            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, TransformKind.Add);
+            Transform transform = Brain.AddTransform(leftNum.Number, rightNum.Number, OperationKind.Add);
             var tm = wm.GetOrCreateTransformMapper(transform);
             tm.Do2DRender = false;
             var resultNum = resultDm.Domain.AddNumber(transform.Result);
@@ -633,7 +633,7 @@
             var result = rightNm.Number;
             for (int i = 0; i < wm.DefaultDomainTicks + 1; i++) // same rows as ticks to allow Euler's number
             {
-                Transform transform = Brain.AddTransform(result, n0.Number, TransformKind.Multiply);
+                Transform transform = Brain.AddTransform(result, n0.Number, OperationKind.Multiply);
                 var tm = wm.GetOrCreateTransformMapper(transform);
                 result = hd.Domain.AddNumber(transform.Result);
             }
@@ -663,7 +663,7 @@
             var result = n1.Number;
             for (int i = 0; i < 10; i++) // same rows as ticks to allow Euler's number
             {
-                Transform transform = Brain.AddTransform(result, n0.Number, TransformKind.Add);
+                Transform transform = Brain.AddTransform(result, n0.Number, OperationKind.Add);
                 var tm = wm.GetOrCreateTransformMapper(transform);
                 result = hd.Domain.AddNumber(transform.Result);
             }
@@ -704,12 +704,24 @@
         private SKWorkspaceMapper Bool_A()
         {
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
+            wm.DefaultDomainTicks = 8;
+            wm.DefaultDomainRange = 8;
             string[] txt = new string[] {
             "Merge operations (bool truth tables) are probably the most obvious, and should be first. There are 16.",
             "These get complex in math, but simple in visualization and language (NAND is visually behind, and linguistically 'except')",
             "These are like conditions that allow alternate paths along branches. Also can be 'physics' on segments.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Bool", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            var n0 = hd.CreateNumberFromFloats(2, 2, true);
+            var n1 = hd.CreateNumberFromFloats(1, 1, true);
+            for (int i = 0; i < wm.DefaultDomainTicks + 1; i++) 
+            {
+                Transform transform = Brain.AddTransform(n0.Number, n1.Number, OperationKind.NAND);
+                var tm = wm.GetOrCreateTransformMapper(transform);
+                var result = hd.Domain.AddNumber(transform.Result);
+            }
             return wm;
         }
         private SKWorkspaceMapper QualifiedBools_A()
@@ -760,7 +772,7 @@
             var vNum = vMapper.Domain.CreateNumberFromFloats(3, 6);
 
 
-            Transform transform = Brain.AddTransform(hNum, vNum, TransformKind.Multiply);
+            Transform transform = Brain.AddTransform(hNum, vNum, OperationKind.Multiply);
             var tm = wm.GetOrCreateTransformMapper(transform);
             tm.Do2DRender = true;
             tm.EquationPoint = new SKPoint(hMapper.StartPoint.X - 220, vMapper.MidPoint.Y - 20);

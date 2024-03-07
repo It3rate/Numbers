@@ -84,28 +84,28 @@
         public override void Reset(long start, long end)
         {
             Clear();
-            Add(start, end);
+            Merge(start, end);
         }
         public override void Reset(Focal left)
         {
             Clear();
-            Add(left);
+            Merge(left);
         }
         public void Reset(Focal left, Focal right, OperationKind operationKind)
         {
             Clear();
-            Add(left);
-            Add(right, operationKind);
+            Merge(left);
+            Merge(right, operationKind);
         }
         /// <summary>
         /// Merge existing focals to each other by iterating over each one using the internal operation.
         /// </summary>
-        public void AddRange(IEnumerable<Focal> focals)
+        public void MergeRange(IEnumerable<Focal> focals)
         {
             var orgPositions = GetPositions(focals);
             for (int i = 0; i < orgPositions.Length; i += 2)
             {
-                Add(orgPositions[i + 0], orgPositions[i + 1]);
+                Merge(orgPositions[i + 0], orgPositions[i + 1]);
             }
             //if (OperationKind != OperationKind.None && focals.Count > 1)
             //{
@@ -124,11 +124,11 @@
             //{
             //}
         }
-        public void Add(Focal focal, OperationKind operationKind = OperationKind.None)
+        public void Merge(Focal focal, OperationKind operationKind = OperationKind.None)
         {
-            Add(focal.StartPosition, focal.EndPosition, operationKind);
+            Merge(focal.StartPosition, focal.EndPosition, operationKind);
         }
-        public void Add(long start, long end, OperationKind operationKind = OperationKind.None)
+        public void Merge(long start, long end, OperationKind operationKind = OperationKind.None)
         {
             if (operationKind != OperationKind.None)
             {
@@ -178,7 +178,7 @@
         {
             var focals = new List<Focal>(Focals()); // these are overwritten in process, but internally works on positions, not focals.
             Clear();
-            AddRange(focals);
+            MergeRange(focals);
         }
 
         private long[] ApplyOpToTruthTable(List<(long, bool, bool)> data, Func<bool, bool, bool> operation)

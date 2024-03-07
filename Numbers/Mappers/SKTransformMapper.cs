@@ -12,7 +12,7 @@ using SkiaSharp;
 
 namespace Numbers.Mappers
 {
-	public class SKTransformMapper : SKMapper
+    public class SKTransformMapper : SKMapper
     {
         CoreRenderer _renderer = CoreRenderer.Instance;
         public Transform Transform => (Transform)MathElement;
@@ -60,7 +60,7 @@ namespace Numbers.Mappers
         }
         private void DrawEquation(SKPoint location, SKPaint paint)
         {
-            var symbol = Transform.TransformKind.GetSymbol();
+            var symbol = Transform.OperationKind.GetSymbol();
 
             var selTxt = Transform.Left.ToString();
             var repTxt = Transform.Right.ToString();

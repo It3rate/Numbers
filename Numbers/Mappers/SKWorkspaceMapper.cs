@@ -8,7 +8,6 @@ using Numbers.Drawing;
 using Numbers.Renderer;
 using Numbers.Utils;
 using NumbersCore.Primitives;
-using NumbersCore.Utils;
 //using OpenTK.Graphics.ES30;
 using SkiaSharp;
 
@@ -209,12 +208,12 @@ namespace Numbers.Mappers
             }
             return result.ToArray();
         }
-        public void SetTransformKind(Number num, TransformKind kind)
+        public void SetTransformKind(Number num, OperationKind kind)
         {
             var xforms = TransformMappersWithInput(num);
             foreach(var xform in xforms)
             {
-                xform.Transform.TransformKind = kind;
+                xform.Transform.OperationKind = kind;
             }
         }
         public SKTransformMapper TransformMapper(Transform transform) => GetOrCreateTransformMapper(transform);

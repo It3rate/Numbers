@@ -5,7 +5,7 @@ using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
-	// Brain -> Traits, transforms
+    // Brain -> Traits, transforms
 
     public class Brain
     {
@@ -88,7 +88,7 @@ namespace NumbersCore.Primitives
 		    trait.MyBrain = null;
 		    return TraitStore.Remove(trait.Id);
 	    }
-        public Transform AddTransform(Number left, Number repeats, TransformKind kind)
+        public Transform AddTransform(Number left, Number repeats, OperationKind kind)
 	    {
 		    var result = new Transform(left, repeats, kind);
 		    TransformStore.Add(result.Id, result);

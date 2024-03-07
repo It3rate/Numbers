@@ -1,11 +1,6 @@
-﻿namespace NumbersCore.Utils
+﻿namespace NumbersCore.Primitives
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using NumbersCore.Primitives;
 
     public enum OperationKind
     {
@@ -16,27 +11,40 @@
         FALSE,
         AND,
         AND_NOT,
-        FIRST_INPUT,
+        A,
         NOT_AND,
-        SECOND_INPUT,
+        B,
         XOR,
         OR,
         NOR,
         XNOR,
-        NOT_SECOND_INPUT,
+        NOT_B,
         IF_THEN,
-        NOT_FIRST_INPUT,
+        NOT_A,
         THEN_IF,
         NAND,
         TRUE,
 
+        Negate,
+        TogglePolarity,
+        FlipInPlace,
+        MirrorOnUnit,
+        MirrorOnUnot,
+        MirrorOnStart,
+        MirrorOnEnd,
+        FilterUnit, // always 0 to r value
+        FilterUnot, // always 0 to i value
+        FilterStart, // depends on polarity
+        FilterEnd, // depends on polarity
+
+        // Binary
         Add,
         Subtract,
         Multiply,
         Divide,
-
         PowerAdd,
         PowerMultiply,
+        Reciprocal,
 
         AppendAll, // repeat are added together ('regular' multiplication)
         MultiplyAll, // repeat are multiplied together (exponents)
@@ -50,6 +58,47 @@
 
     public static class OperationKindExtension
     {
+        public static bool IsUnary(this OperationKind kind)
+        {
+            return kind > OperationKind.None && kind <= OperationKind.UNARY_NOT;
+        }
+        public static string GetSymbol(this OperationKind kind)
+        {
+            var result = "☼";
+            switch (kind)
+            {
+                case OperationKind.Add:
+                    result = "+";
+                    break;
+                case OperationKind.Negate:
+                case OperationKind.Subtract:
+                    result = "-";
+                    break;
+                case OperationKind.Multiply:
+                    result = "*";
+                    break;
+                case OperationKind.Divide:
+                    result = "/";
+                    break;
+                case OperationKind.PowerMultiply:
+                    result = "^";
+                    break;
+                case OperationKind.AND:
+                    result = "&";
+                    break;
+                case OperationKind.OR:
+                    result = "|";
+                    break;
+                case OperationKind.NOT_B:
+                    result = "!";
+                    break;
+                case OperationKind.NAND:
+                    result = "^&";
+                    break;
+            }
+            return result;
+        }
+
         // FALSE (output is always false)
         private static Func<bool, bool, bool> FALSE = (x, y) => false;
 
@@ -60,13 +109,13 @@
         private static Func<bool, bool, bool> AND_NOT = (x, y) => x && !y;
 
         // FIRST INPUT (output is the first input)
-        private static Func<bool, bool, bool> FIRST_INPUT = (x, y) => x;
+        private static Func<bool, bool, bool> A = (x, y) => x;
 
         // NOT-AND (true if the first input is false and the second is true) equivalent to Select-and-Complement
         private static Func<bool, bool, bool> NOT_AND = (x, y) => !x && y;
 
         // SECOND INPUT (output is the second input)
-        private static Func<bool, bool, bool> SECOND_INPUT = (x, y) => y;
+        private static Func<bool, bool, bool> B = (x, y) => y;
 
         // XOR (true if inputs are different)
         private static Func<bool, bool, bool> XOR = (x, y) => x ^ y;
@@ -99,7 +148,7 @@
         private static Func<bool, bool, bool> TRUE = (x, y) => true;
         public static Func<bool, bool, bool> GetFunc(this OperationKind kind)
         {
-            var result = FIRST_INPUT;
+            var result = A;
             switch (kind)
             {
                 case OperationKind.FALSE:
@@ -114,16 +163,16 @@
                     result = AND_NOT;
                     break;
 
-                case OperationKind.FIRST_INPUT:
-                    result = FIRST_INPUT;
+                case OperationKind.A:
+                    result = A;
                     break;
 
                 case OperationKind.NOT_AND:
                     result = NOT_AND;
                     break;
 
-                case OperationKind.SECOND_INPUT:
-                    result = SECOND_INPUT;
+                case OperationKind.B:
+                    result = B;
                     break;
 
                 case OperationKind.XOR:
@@ -142,7 +191,7 @@
                     result = XNOR;
                     break;
 
-                case OperationKind.NOT_SECOND_INPUT:
+                case OperationKind.NOT_B:
                     result = NOT_SECOND_INPUT;
                     break;
 
@@ -150,7 +199,7 @@
                     result = IF_THEN;
                     break;
 
-                case OperationKind.NOT_FIRST_INPUT:
+                case OperationKind.NOT_A:
                     result = NOT_FIRST_INPUT;
                     break;
 
@@ -168,5 +217,19 @@
             }
             return result;
         }
+    }
+
+
+    // todo: Evaluation of two segments are very much like the 16 bool operations, probably the same.
+    public enum EvaluationKind
+    {
+        // can use overlap, equal, contain, not contain, minmax ranges, unit range, basis direction, number direction...
+
+        None, // Never continue
+        InTarget, // continue unless result escapes containment of EvaluationTarget
+        NotInTarget,  // continue unless result enters containment of EvaluationTarget
+        TargetIn,  // continue unless EvaluationTarget escapes containment of result
+        NotTargetIn,  // continue unless EvaluationTarget enters containment of result
+        Always, // always continue
     }
 }

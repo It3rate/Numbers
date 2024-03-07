@@ -16,7 +16,7 @@ using NumbersCore.Utils;
 
 namespace MathDemo
 {
-	public class Demos : DemoBase
+    public class Demos : DemoBase
     {
 	    private Brain Brain { get; }
 
@@ -41,7 +41,7 @@ namespace MathDemo
             var hNum = hDomain.CreateNumberFromFloats(2, 9);
             var vNum = vDomain.CreateNumberFromFloats(3, 6);
 
-            Transform transform = Brain.AddTransform(hNum, vNum, TransformKind.Multiply);
+            Transform transform = Brain.AddTransform(hNum, vNum, OperationKind.Multiply);
 
             wm.AddHorizontal(hDomain);
             wm.AddVertical(vDomain);
@@ -72,14 +72,14 @@ namespace MathDemo
 
             var vNum = hDomain.CreateNumberFromFloats(0, 1.25f);
 
-            Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, TransformKind.Multiply);
+            Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, OperationKind.Multiply);
             var tm = wm.GetOrCreateTransformMapper(transform, false);
             tm.Guideline = wm.TopSegment;
             hDomain.Domain.AddNumber(transform.Result);
 
             for (int i = 0; i < 15; i++)
             {
-                transform = Brain.AddTransform(hNum.Number, transform.Result, TransformKind.Multiply);
+                transform = Brain.AddTransform(hNum.Number, transform.Result, OperationKind.Multiply);
                 tm = wm.GetOrCreateTransformMapper(transform, false);
                 tm.Guideline = wm.TopSegment;
                 hDomain.Domain.AddNumber(transform.Result);
@@ -110,7 +110,7 @@ namespace MathDemo
 
             var vNum = vDomain.CreateNumberFromFloats(0, 1.25f);
 
-            Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, TransformKind.Add);
+            Transform transform = Brain.AddTransform(hNum.Number, vNum.Number, OperationKind.Add);
             var tm = wm.GetOrCreateTransformMapper(transform);
             tm.Do2DRender = false;
             var mNum = mDomain.Domain.AddNumber(transform.Result);
@@ -180,7 +180,7 @@ namespace MathDemo
             var num2 = domain.CreateNumber(val2);
             //var num3 = new Number(domain2, val3.Id);
             //var sel = new Source(num2);
-            //var transform = t0.AddTransform(sel, num3, TransformKind.Blend);
+            //var transform = t0.AddTransform(sel, num3, OperationKind.Blend);
 
             _currentMouseAgent.Workspace.AddDomains(true, domain);//, domain2);
             var wm = new SKWorkspaceMapper(_currentMouseAgent, 20, 20, 800, 800);
