@@ -69,7 +69,7 @@ namespace NumbersCore.Primitives
         {
             if (operationKind.IsBoolOp())
             {
-                _focalChain.ComputeWith(num.Focal, operationKind);
+                _focalChain.ComputeWith(num.Focal, operationKind); // need to compute with numberchain, as inverted numbers have opposite polarity.
             }
             else if (operationKind.IsUnary())
             {
@@ -166,6 +166,9 @@ namespace NumbersCore.Primitives
         {
             var focal = Domain.CreateFocalFromRange(range);
             _focalChain.ComputeWith(focal, operationKind);
+        }
+        public void ComputeBoolOp(NumberChain num, OperationKind operationKind)
+        {
         }
         public void AddPosition(long start, long end)
         {

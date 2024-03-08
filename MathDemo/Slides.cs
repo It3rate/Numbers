@@ -703,7 +703,7 @@
 
         private SKWorkspaceMapper Bool_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 260, 200, 650, 700);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 260, 170, 650, 700);
             wm.ShowNone();
             wm.DefaultDomainTicks = 1;
             wm.DefaultDomainRange = 64;

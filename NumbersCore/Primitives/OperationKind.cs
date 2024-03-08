@@ -87,7 +87,7 @@
         public static IEnumerable<OperationKind> BoolKinds()
         {
             var result = OperationKind.FALSE;
-            while (result != OperationKind.TRUE)
+            while (result <= OperationKind.TRUE)
             {
                 yield return result;
                 result += 1;

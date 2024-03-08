@@ -191,8 +191,10 @@
             var result = new List<long>();
             var lastResult = false;
             var hadFirstTrue = false;
-            foreach (var item in data)
+            //foreach (var item in data)
+            for (int i = 0; i < data.Count - 1; i++)
             {
+                var item = data[i];
                 var valid = BoolStateExtension.AreBool(item.Item2, item.Item3);
                 var opResult = operation(item.Item2.BoolValue(), item.Item3.BoolValue());
                 if (!hadFirstTrue && opResult == true)
@@ -231,9 +233,9 @@
                 {
                     if (leftPositions.Contains(pos)) { leftSideState = leftSideState.Invert(); }
                     if (rightPositions.Contains(pos)) { rightSideState = rightSideState.Invert(); }
-                    var left = index == 0 ? BoolState.Underflow : leftSideState;
-                    var right = index == sortedAll.Count - 1 ? BoolState.Overflow : rightSideState;
-                    result.Add((pos, left, right));
+                    //var left = index == 0 ? BoolState.Underflow : leftSideState;
+                    //var right = index == sortedAll.Count - 1 ? BoolState.Overflow : rightSideState;
+                    result.Add((pos, leftSideState, rightSideState));
                     index++;
                 }
             }
