@@ -65,7 +65,7 @@
                 MultiplyDivide_D,
                 Bool_A,
                 BoolCompare_A,
-                QualifiedBools_A,
+                //QualifiedBools_A,
                 Joins_A, // 25
                 Area_A,
                 Area_B,
