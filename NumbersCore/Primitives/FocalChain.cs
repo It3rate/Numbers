@@ -131,7 +131,9 @@
         }
         public void ComputeWith(long start, long end, OperationKind operationKind)
         {
-            // todo: also do (partial) add, subtract, multiply etc in focals?
+            // bool ops are just comparing state, so they don't care about direction or polarity
+            // add, multiply etc, require polarity, so must happen on a higher level.
+            // this assumes the two focals have the same resolutions
             if (operationKind.IsBoolOp())
             {
                 var tt = BuildTruthTable(_positions.ToArray(), new long[] {start, end});

@@ -69,7 +69,7 @@ namespace NumbersCore.Primitives
         {
             if (operationKind.IsBoolOp())
             {
-                _focalChain.ComputeWith(num.Focal, operationKind); // need to compute with numberchain, as inverted numbers have opposite polarity.
+                ComputeBoolOp(num.Focal, operationKind); 
             }
             else if (operationKind.IsUnary())
             {
@@ -167,8 +167,11 @@ namespace NumbersCore.Primitives
             var focal = Domain.CreateFocalFromRange(range);
             _focalChain.ComputeWith(focal, operationKind);
         }
-        public void ComputeBoolOp(NumberChain num, OperationKind operationKind)
+        public void ComputeBoolOp(Focal focal, OperationKind operationKind)
         {
+            // bool ops are just comparing state, so they don't care about direction or polarity, thus happen on focals
+            // however, this requires they have the same resolutions, so really should be on number chains.
+            _focalChain.ComputeWith(focal, operationKind); 
         }
         public void AddPosition(long start, long end)
         {

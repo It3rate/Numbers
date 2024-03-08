@@ -703,7 +703,7 @@
 
         private SKWorkspaceMapper Bool_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 260, 170, 650, 700);
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 420, 170, 600, 700);
             wm.ShowNone();
             wm.DefaultDomainTicks = 1;
             wm.DefaultDomainRange = 64;
@@ -720,6 +720,8 @@
             "These are like conditions that allow alternate paths along branches. Also can be 'physics' on segments.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            wm.CreateImageMapper("BOOLoPS.png", new SKSegment(50, 160, 350, 160));
 
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Bool", wm.DefaultDomainTicks, wm.DefaultDomainRange));
             hd.ShowNumbersOffset = true;
