@@ -41,14 +41,15 @@
         }
         public override long StartPosition
         {
-            get => Count > 0 ? _focals[0].StartPosition : 0;
-            set { if (Count > 0) { _focals[Count - 1].StartPosition = value; } }
+            get => HasValue ? _focals[0].StartPosition : 0;
+            set { if (HasValue) { _focals[0].StartPosition = value; } }
         }
         public override long EndPosition
         {
             get => Count > 0 ? _focals[Count - 1].EndPosition : 0;
             set { if (Count > 0) { _focals[Count - 1].EndPosition = value; } } 
         }
+        public bool HasValue => Count > 0;
 
         public FocalChain(long startTickPosition, long endTickPosition) : base(startTickPosition, endTickPosition)
         {
@@ -82,6 +83,9 @@
             }
         }
         public long[] GetPositions() => _positions.ToArray();
+        public long MaxPosition => _positions.Max();
+        public long MinPosition => _positions.Min();
+
         public override void Reset(long start, long end)
         {
             Clear();
@@ -129,16 +133,56 @@
         {
             ComputeWith(focal.StartPosition, focal.EndPosition, operationKind);
         }
-        public void ComputeWith(long start, long end, OperationKind operationKind)
+        public void ComputeWith(long startB, long endB, OperationKind operationKind)
         {
             // bool ops are just comparing state, so they don't care about direction or polarity
             // add, multiply etc, require polarity, so must happen on a higher level.
             // this assumes the two focals have the same resolutions
             if (operationKind.IsBoolOp())
             {
-                var tt = BuildTruthTable(_positions.ToArray(), new long[] {start, end});
+                var tt = BuildTruthTable(_positions.ToArray(), new long[] { startB, endB });
                 var positions = ApplyOpToTruthTable(tt, operationKind.GetFunc());
                 RegenerateFocals(positions);
+            }
+            else if (operationKind.IsBoolCompare())
+            {
+                var maxA = _positions.Max();
+                var minA = _positions.Min();
+                var maxB = startB > endB ? startB : endB;
+                var minB = startB < endB ? startB : endB;
+                switch (operationKind)
+                {
+                    case OperationKind.GreaterThan: // A all to right of B
+                        if (minA <= maxB) { Clear(); }
+                        break;
+                    case OperationKind.GreaterThanOrEqual: // no part of A to left of B
+                        if (minA <= minB || maxA < maxB) { Clear(); }
+                        break;
+                    case OperationKind.GreaterThanAndEqual: // no part of A to left of B, and part to the right of B (overlap right)
+                        if (minA <= minB || maxA < maxB || minA >= maxB) { Clear(); }
+                        break;
+                    case OperationKind.ContainedBy: // A fits inside B
+                        if (minA < minB || maxA > maxB) { Clear(); }
+                        break;
+                    case OperationKind.Equals: // B matches A
+                        if (minA != minB || maxA != maxB) { Clear(); }
+                        break;
+                    case OperationKind.Contains: // B fits inside A
+                        if (minB < minA || maxB > maxA) { Clear(); }
+                        break;
+                    case OperationKind.LessThanAndEqual: // no part of A to right of B, and part to the left of B  (overlap left)
+                        if (maxA >= maxB || minA > minB || maxA <= minB) { Clear(); }
+                        break;
+                    case OperationKind.LessThanOrEqual: // no part of A to right of B
+                        if (maxA >= maxB || minA > minB) { Clear(); }
+                        break;
+                    case OperationKind.LessThan: // A all to left of B
+                        if (maxA >= minB) { Clear(); }
+                        break;
+                }
+                //var tt = BuildTruthTable(_positions.ToArray(), new long[] { start, end });
+                //var positions = ApplyOpToTruthTable(tt, operationKind.GetFunc());
+                //RegenerateFocals(positions);
             }
         }
         public Focal Last() => Count > 0 ? _focals[Count - 1] : null;

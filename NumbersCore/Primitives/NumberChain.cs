@@ -69,7 +69,11 @@ namespace NumbersCore.Primitives
         {
             if (operationKind.IsBoolOp())
             {
-                ComputeBoolOp(num.Focal, operationKind); 
+                ComputeBoolOp(num.Focal, operationKind);
+            }
+            else if (operationKind.IsBoolCompare())
+            {
+                ComputeBoolCompare(num.Focal, operationKind);
             }
             else if (operationKind.IsUnary())
             {
@@ -171,7 +175,11 @@ namespace NumbersCore.Primitives
         {
             // bool ops are just comparing state, so they don't care about direction or polarity, thus happen on focals
             // however, this requires they have the same resolutions, so really should be on number chains.
-            _focalChain.ComputeWith(focal, operationKind); 
+            _focalChain.ComputeWith(focal, operationKind);
+        }
+        public void ComputeBoolCompare(Focal focal, OperationKind operationKind)
+        {
+            _focalChain.ComputeWith(focal, operationKind);
         }
         public void AddPosition(long start, long end)
         {

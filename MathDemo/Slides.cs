@@ -64,6 +64,7 @@
                 MultiplyDivide_C,
                 MultiplyDivide_D,
                 Bool_A,
+                BoolCompare_A,
                 QualifiedBools_A,
                 Joins_A, // 25
                 Area_A,
@@ -715,20 +716,56 @@
             //wm.DefaultShowMinorTicks = false;
 
             string[] txt = new string[] {
-            "ComputeWith operations (bool truth tables) are probably the most obvious, and should be first. There are 16.",
-            "These get complex in math, but simple in visualization and language (NAND is visually behind, and linguistically 'except')",
-            "These are like conditions that allow alternate paths along branches. Also can be 'physics' on segments.",
+            "Direct On/Off comparisons are probably the most obvious thing you can do with segments. With two values there are 4 possible configurations.",
+            "There are 16 possible outputs given two inputs. Many of these map to language, words like and, or, not, except, more, never.",
+            "Results can be used to conditionally activate branch paths. They can also can act 'physically' on segments, like stop on collide.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            wm.CreateImageMapper("BOOLoPS.png", new SKSegment(50, 160, 350, 160));
+            wm.CreateImageMapper("boolOps.png", new SKSegment(50, 160, 350, 160));
 
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Bool", wm.DefaultDomainTicks, wm.DefaultDomainRange));
             hd.ShowNumbersOffset = true;
             var n0 = hd.CreateNumberFromFloats(32, 16, true);
             var n1 = hd.CreateNumberFromFloats(8, 8, true);
             wm.OffsetNextLineBy(30);
-            foreach(var kind in OperationKindExtension.BoolKinds())
+            foreach(var kind in OperationKindExtension.BoolOpKinds())
+            {
+                var bdm = hd.Duplicate();
+                bdm.Label = kind.GetName();
+                Transform transform = Brain.AddTransform(n0.Number, n1.Number, kind);
+                wm.GetOrCreateTransformMapper(transform);
+                bdm.Domain.AddNumber(transform.Result);
+            }
+            return wm;
+        }
+        private SKWorkspaceMapper BoolCompare_A()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 270, 250, 600, 700);
+            wm.ShowNone();
+            wm.DefaultDomainTicks = 1;
+            wm.DefaultDomainRange = 32;
+            wm.DefaultShowPolarity = true;
+            //wm.DefaultShowBasis = true;
+            wm.DefaultShowBasisMarkers = false;
+            wm.DefaultShowGradientNumberLine = true;
+            //wm.DefaultShowTicks = true;
+            //wm.DefaultShowMinorTicks = false;
+
+            string[] txt = new string[] {
+                "Comparisons are also possible with segments. A is LessThan B means A is fully to the left of B.",
+                "A is LessThanOrEqual means one segment is not to the right of another.",
+                "LessThanAndEqual means there is overlap on the left of B.",
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("BoolCompare", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            hd.ShowNumbersOffset = true;
+            var n0 = hd.CreateNumberFromFloats(16, 16, true);
+            var n1 = hd.CreateNumberFromFloats(8, 8, true);
+            wm.OffsetNextLineBy(30);
+            foreach (var kind in OperationKindExtension.BoolCompareKinds())
             {
                 var bdm = hd.Duplicate();
                 bdm.Label = kind.GetName();

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
 
     public enum OperationKind
     {
@@ -45,12 +46,24 @@
         Subtract,
         Multiply,
         Divide,
+
         Root,
         Wedge,
         DotProduct,
         CrossProduct,
         GeometricProduct,
         Blend, // multiply as in area, blend from unot to unit
+
+        // bool comparisons return original number if true, otherwise nil
+        GreaterThan, // A all to right of B
+        GreaterThanOrEqual, // no part of A to left of B
+        GreaterThanAndEqual, // no part of A to left of B, and part to the right of B (overlap right)
+        ContainedBy, // A fits inside B
+        Equals, // B matches A
+        Contains, // B fits inside A
+        LessThanAndEqual, // no part of A to right of B, and part to the left of B  (overlap left)
+        LessThanOrEqual, // no part of A to right of B
+        LessThan, // A all to left of B
 
 
         // ternary
@@ -68,6 +81,10 @@
         {
             return kind >= OperationKind.FALSE && kind <= OperationKind.TRUE;
         }
+        public static bool IsBoolCompare(this OperationKind kind)
+        {
+            return kind >= OperationKind.GreaterThan && kind <= OperationKind.LessThan;
+        }
         public static bool IsUnary(this OperationKind kind)
         {
             return kind >= OperationKind.Negate && kind <= OperationKind.UnaryNot;
@@ -84,10 +101,19 @@
         {
             return kind >= OperationKind.AppendAll && kind <= OperationKind.Average;
         }
-        public static IEnumerable<OperationKind> BoolKinds()
+        public static IEnumerable<OperationKind> BoolOpKinds()
         {
             var result = OperationKind.FALSE;
             while (result <= OperationKind.TRUE)
+            {
+                yield return result;
+                result += 1;
+            }
+        }
+        public static IEnumerable<OperationKind> BoolCompareKinds()
+        {
+            var result = OperationKind.GreaterThan;
+            while (result <= OperationKind.LessThan)
             {
                 yield return result;
                 result += 1;
@@ -494,6 +520,35 @@
                 case OperationKind.Blend:
                     result = "Blend";
                     break;
+
+                case OperationKind.GreaterThan:
+                    result = "GreaterThan";
+                    break;
+                case OperationKind.GreaterThanOrEqual:
+                    result = "GreaterThanOrEqual";
+                    break;
+                case OperationKind.GreaterThanAndEqual:
+                    result = "GreaterThanAndEqual";
+                    break;
+                case OperationKind.ContainedBy:
+                    result = "ContainedBy";
+                    break;
+                case OperationKind.Equals:
+                    result = "Equals";
+                    break;
+                case OperationKind.Contains:
+                    result = "Contains";
+                    break;
+                case OperationKind.LessThanAndEqual:
+                    result = "LessThanAndEqual";
+                    break;
+                case OperationKind.LessThanOrEqual:
+                    result = "LessThanOrEqual";
+                    break;
+                case OperationKind.LessThan:
+                    result = "LessThan";
+                    break;
+
                 case OperationKind.PowerAdd:
                     result = "PowerAdd";
                     break;
