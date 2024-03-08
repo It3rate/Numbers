@@ -46,6 +46,7 @@
     <Compile Include="CoreConcepts\Counter\SegmentCounter.cs" />
     <Compile Include="CoreConcepts\Counter\UpCounter.cs" />
     <Compile Include="CoreConcepts\Optical\HSLDomain.cs" />
+    <Compile Include="Primitives\BoolState.cs" />
     <Compile Include="Primitives\PolyDomain.cs" />
     <Compile Include="Utils\Common.cs" />
     <Compile Include="CoreConcepts\Knowledge.cs" />

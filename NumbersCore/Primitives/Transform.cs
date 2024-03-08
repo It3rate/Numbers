@@ -85,31 +85,7 @@ namespace NumbersCore.Primitives
 	    public void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
 	    public void ApplyEnd()
 	    {
-            switch (OperationKind)
-            {
-                case OperationKind.Add:
-                    Result.AddValue(Right);
-                    break;
-                case OperationKind.Subtract:
-                    Result.SubtractValue(Right);
-                    break;
-                case OperationKind.Multiply:
-                    Result.MultiplyValue(Right);
-                    break;
-                case OperationKind.Divide:
-                    Result.DivideValue(Right);
-                    break;
-
-                case OperationKind.AND:
-                    Result.ComputeWith(Right, OperationKind.AND);
-                    break;
-                case OperationKind.OR:
-                    Result.ComputeWith(Right, OperationKind.OR);
-                    break;
-                case OperationKind.NAND:
-                    Result.ComputeWith(Right, OperationKind.NAND);
-                    break;
-            }
+            Result.ComputeWith(Right, OperationKind);
 		    OnEndTransformEvent(this);
 		    IsActive = false;
 	    }

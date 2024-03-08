@@ -266,6 +266,12 @@ namespace Numbers.Mappers
             BasisNumberMapper.Reset(SegmentAlongGuideline(unitRatio));
         }
 
+        public SKDomainMapper Duplicate(int offset = -1)
+        {
+            var domain = Domain.Duplicate();
+            var result = WorkspaceMapper.GetOrCreateDomainMapper(domain);
+            return result;
+        }
 
 
 

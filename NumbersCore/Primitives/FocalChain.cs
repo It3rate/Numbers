@@ -186,14 +186,15 @@
             MergeRange(focals);
         }
 
-        private long[] ApplyOpToTruthTable(List<(long, bool, bool)> data, Func<bool, bool, bool> operation)
+        private long[] ApplyOpToTruthTable(List<(long, BoolState, BoolState)> data, Func<bool, bool, bool> operation)
         {
             var result = new List<long>();
             var lastResult = false;
             var hadFirstTrue = false;
             foreach (var item in data)
             {
-                var opResult = operation(item.Item2, item.Item3);
+                var valid = BoolStateExtension.AreBool(item.Item2, item.Item3);
+                var opResult = operation(item.Item2.BoolValue(), item.Item3.BoolValue());
                 if (!hadFirstTrue && opResult == true)
                 {
                     result.Add(item.Item1);
@@ -208,7 +209,7 @@
                 }
             }
 
-            if(lastResult == true) // always close
+            if(lastResult == true && result.Count > 0) // always close
             {
                 result.Add(data.Last().Item1);
             }
@@ -216,18 +217,25 @@
         }
 
         // truth table only acts on valid parts of segments. Remember a -10i+5 has two parts, 0 to -10i and 0 to 5. This is the area bools apply to.
-        private List<(long, bool, bool)> BuildTruthTable(long[] leftPositions, long[] rightPositions)
+        private List<(long, BoolState, BoolState)> BuildTruthTable(long[] leftPositions, long[] rightPositions)
         {
-            var result = new List<(long, bool, bool)>();
-            var ss = new SortedSet<long>(leftPositions);
-            ss.UnionWith(rightPositions);
-            bool isLeftOn = false;
-            bool isRightOn = false;
-            foreach (var pos in ss)
+            var result = new List<(long, BoolState, BoolState)>();
+            if (leftPositions.Length > 0)
             {
-                if (leftPositions.Contains(pos)) { isLeftOn = !isLeftOn; }
-                if (rightPositions.Contains(pos)) { isRightOn = !isRightOn; }
-                result.Add((pos, isLeftOn, isRightOn));
+                var sortedAll = new SortedSet<long>(leftPositions);
+                sortedAll.UnionWith(rightPositions);
+                var leftSideState = BoolState.False;
+                var rightSideState = BoolState.False;
+                int index = 0;
+                foreach (var pos in sortedAll)
+                {
+                    if (leftPositions.Contains(pos)) { leftSideState = leftSideState.Invert(); }
+                    if (rightPositions.Contains(pos)) { rightSideState = rightSideState.Invert(); }
+                    var left = index == 0 ? BoolState.Underflow : leftSideState;
+                    var right = index == sortedAll.Count - 1 ? BoolState.Overflow : rightSideState;
+                    result.Add((pos, left, right));
+                    index++;
+                }
             }
             return result;
         }

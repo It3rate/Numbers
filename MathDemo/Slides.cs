@@ -703,9 +703,17 @@
 
         private SKWorkspaceMapper Bool_A()
         {
-            var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 350, 800, 400);
-            wm.DefaultDomainTicks = 8;
-            wm.DefaultDomainRange = 8;
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 260, 200, 650, 700);
+            wm.ShowNone();
+            wm.DefaultDomainTicks = 1;
+            wm.DefaultDomainRange = 64;
+            wm.DefaultShowPolarity = true;
+            //wm.DefaultShowBasis = true;
+            wm.DefaultShowBasisMarkers = false;
+            wm.DefaultShowGradientNumberLine = true;
+            //wm.DefaultShowTicks = true;
+            //wm.DefaultShowMinorTicks = false;
+
             string[] txt = new string[] {
             "ComputeWith operations (bool truth tables) are probably the most obvious, and should be first. There are 16.",
             "These get complex in math, but simple in visualization and language (NAND is visually behind, and linguistically 'except')",
@@ -714,13 +722,17 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Bool", wm.DefaultDomainTicks, wm.DefaultDomainRange));
-            var n0 = hd.CreateNumberFromFloats(2, 2, true);
-            var n1 = hd.CreateNumberFromFloats(1, 1, true);
-            for (int i = 0; i < wm.DefaultDomainTicks + 1; i++) 
+            hd.ShowNumbersOffset = true;
+            var n0 = hd.CreateNumberFromFloats(32, 16, true);
+            var n1 = hd.CreateNumberFromFloats(8, 8, true);
+            wm.OffsetNextLineBy(30);
+            foreach(var kind in OperationKindExtension.BoolKinds())
             {
-                Transform transform = Brain.AddTransform(n0.Number, n1.Number, OperationKind.NAND);
-                var tm = wm.GetOrCreateTransformMapper(transform);
-                var result = hd.Domain.AddNumber(transform.Result);
+                var bdm = hd.Duplicate();
+                bdm.Label = kind.GetName();
+                Transform transform = Brain.AddTransform(n0.Number, n1.Number, kind);
+                wm.GetOrCreateTransformMapper(transform);
+                bdm.Domain.AddNumber(transform.Result);
             }
             return wm;
         }

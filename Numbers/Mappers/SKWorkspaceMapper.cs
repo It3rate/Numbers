@@ -84,10 +84,10 @@ namespace Numbers.Mappers
             }
             return (SKDomainMapper)result;
         }
-        public SKDomainMapper AddDomain(Domain domain, float offset, bool isHorizontal = true, int margins = 50)
+        public SKDomainMapper AddDomain(Domain domain, float precentOffset, bool isHorizontal = true, int margins = 50)
         {
             Agent.Workspace.AddDomains(true, domain);
-            var seg = isHorizontal ? GetHorizontalSegment(offset, margins) : GetVerticalSegment(offset, margins);
+            var seg = isHorizontal ? GetHorizontalSegment(precentOffset, margins) : GetVerticalSegment(precentOffset, margins);
             var dm = GetOrCreateDomainMapper(domain, seg);
             SetDomainToDefaults(dm);
             return dm;
@@ -476,7 +476,7 @@ namespace Numbers.Mappers
             _nextOffset += offsetToAdd;
         }
         public int LineOffsetSize = 40;
-        private SKSegment NextDefaultLine()
+        public SKSegment NextDefaultLine()
         {
             var result = GetHorizontalSegment(_nextOffset);
             _nextOffset += LineOffsetSize;

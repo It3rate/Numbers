@@ -86,7 +86,7 @@ namespace NumbersCore.Primitives
             domain.IsVisible = isVisible;
             return domain;
         }
-
+        
         public int[] NumberIds() => NumberStore.Values.Select(num => num.Id).ToArray();
         public Number GetNumber(int numberId)
         {
@@ -243,6 +243,13 @@ namespace NumbersCore.Primitives
                     NumberStore[kvp.Key].Value = kvp.Value;
                 }
             }
+        }
+
+        public Domain Duplicate()
+        {
+            var result = new Domain(Trait, BasisFocal, MinMaxFocal, Name);
+            result.IsVisible = IsVisible;
+            return result;
         }
     }
 }
