@@ -117,6 +117,10 @@ namespace NumbersCore.Primitives
             Polarity = polarity;
 		}
 
+        public virtual long[] GetPositions()
+        {
+            return new long[] {StartTickPosition, EndTickPosition};
+        }
         public double StartTValue()
         {
             var val = Domain.MinMaxRange;

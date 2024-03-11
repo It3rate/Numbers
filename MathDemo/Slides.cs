@@ -64,6 +64,7 @@
                 MultiplyDivide_C,
                 MultiplyDivide_D,
                 Bool_A,
+                Bool_Test,
                 BoolCompare_A,
                 //QualifiedBools_A,
                 Joins_A, // 25
@@ -737,6 +738,77 @@
                 wm.GetOrCreateTransformMapper(transform);
                 bdm.Domain.AddNumber(transform.Result);
             }
+            return wm;
+        }
+        private SKWorkspaceMapper Bool_Test()
+        {
+            var wm = new SKWorkspaceMapper(_currentMouseAgent, 410, 170, 600, 700);
+            wm.ShowNone();
+            wm.DefaultDomainTicks = 1;
+            wm.DefaultDomainRange = 64;
+            wm.DefaultShowPolarity = true;
+            wm.DefaultShowBasisMarkers = false;
+            wm.DefaultShowGradientNumberLine = true;
+
+            string[] txt = new string[] {
+            "How should segments going in opposite directions compare? How about inverted segments?",
+            "it feels like these should all give different answers. The interpretation for operations (like multiply) is how B causes A to change.",
+            "So these can be though of as a bool comparison along the segment, and leaving, removing, inverting, and/or negating that section of A.",
+               };
+            wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
+
+            wm.CreateImageMapper("boolOpsInvA.png", new SKSegment(50, 160, 350, 160));
+
+            var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Bool_Test", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            hd.Label = "A & B";
+            hd.ShowNumbersOffset = true;
+            var n0 = hd.CreateNumberFromFloats(40, 0, true);
+            var n1 = hd.CreateNumberFromFloats(20, 20, true);
+            hd.CreateNumberFromFloats(999, -999, true);
+            Transform transform = Brain.AddTransform(n0.Number, n1.Number, OperationKind.AND);
+            wm.GetOrCreateTransformMapper(transform);
+            hd.Domain.AddNumber(transform.Result);
+
+            wm.OffsetNextLineBy(100);
+            hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Bool_Test2", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            hd.Label = "A & B, opposite direction";
+            hd.ShowNumbersOffset = true;
+            n0 = hd.CreateNumberFromFloats(40, 0, true);
+            n1 = hd.CreateNumberFromFloats(-20, -20, true);
+            hd.CreateNumberFromFloats(999, -999, true);
+            hd.CreateNumberFromFloats(0, -20, true);
+
+            wm.OffsetNextLineBy(100);
+            hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Bool_Test2", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            hd.Label = "A & B, opposite direction";
+            hd.ShowNumbersOffset = true;
+            n1 = hd.CreateNumberFromFloats(-20, -20, true);
+            n0 = hd.CreateNumberFromFloats(40, 0, true);
+            hd.CreateNumberFromFloats(999, -999, true);
+            hd.CreateNumberFromFloats(0, -20, true);
+
+            wm.OffsetNextLineBy(100);
+            hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Bool_Test2", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            hd.Label = "A & B, inverted polarity";
+            hd.ShowNumbersOffset = true;
+            n0 = hd.CreateNumberFromFloats(40, 0, true);
+            n1 = hd.CreateNumberFromFloats(20, 20, true);
+            n1.InvertPolarity();
+            hd.CreateNumberFromFloats(999, -999, true);
+            var nr = hd.CreateNumberFromFloats(20, 0, true);
+            nr.InvertPolarity();
+
+            wm.OffsetNextLineBy(100);
+            hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Bool_Test2", wm.DefaultDomainTicks, wm.DefaultDomainRange));
+            hd.Label = "A & B, inverted polarity";
+            hd.ShowNumbersOffset = true;
+            n0 = hd.CreateNumberFromFloats(40, 0, true);
+            n0.InvertPolarity();
+            n1 = hd.CreateNumberFromFloats(20, 20, true);
+            n1.InvertPolarity();
+            hd.CreateNumberFromFloats(999, -999, true);
+            nr = hd.CreateNumberFromFloats(20, 0, true);
+
             return wm;
         }
         private SKWorkspaceMapper BoolCompare_A()

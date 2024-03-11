@@ -45,6 +45,10 @@ namespace NumbersCore.Primitives
             _focalChain.MergeRange(focals);
         }
 
+        public override long[] GetPositions()
+        {
+            return _focalChain.GetPositions();
+        }
         public IEnumerable<Number> InternalNumbers()
         {
             foreach (var focal in _focalChain.Focals())
@@ -86,9 +90,9 @@ namespace NumbersCore.Primitives
                         break;
                     case OperationKind.Reciprocal:
                         break;
-                    case OperationKind.TogglePolarity:
+                    case OperationKind.ObverseInPlace:
                         break;
-                    case OperationKind.FlipInPlace:
+                    case OperationKind.Obverse:
                         break;
                     case OperationKind.MirrorOnUnit:
                         break;
@@ -106,7 +110,7 @@ namespace NumbersCore.Primitives
                         break;
                     case OperationKind.FilterEnd:
                         break;
-                    case OperationKind.UnaryNot:
+                    case OperationKind.NegateInPlace:
                         _focalChain.ComputeWith(num.Focal, operationKind);
                         break;
                 }
@@ -227,6 +231,64 @@ namespace NumbersCore.Primitives
         public void Not(Number q) { Reset(Focal.UnaryNot(q.Focal)); }
 
 
+        private long[] ApplyOpToTruthTable(List<(long, BoolState, BoolState)> data, Func<bool, bool, bool> operation)
+        {
+            var result = new List<long>();
+            var lastResult = false;
+            var hadFirstTrue = false;
+            //foreach (var item in data)
+            for (int i = 0; i < data.Count - 1; i++)
+            {
+                var item = data[i];
+                var valid = BoolStateExtension.AreBool(item.Item2, item.Item3);
+                var opResult = operation(item.Item2.BoolValue(), item.Item3.BoolValue());
+                if (!hadFirstTrue && opResult == true)
+                {
+                    result.Add(item.Item1);
+                    hadFirstTrue = true;
+                    lastResult = opResult;
+
+                }
+                else if (lastResult != opResult)
+                {
+                    result.Add(item.Item1);
+                    lastResult = opResult;
+                }
+            }
+
+            if (lastResult == true && result.Count > 0) // always close
+            {
+                result.Add(data.Last().Item1);
+            }
+            return result.ToArray();
+        }
+
+        // truth table only acts on valid parts of segments. Remember a -10i+5 has two parts, 0 to -10i and 0 to 5. This is the area bools apply to.
+        private List<(long, BoolState, BoolState)> BuildTruthTable(Number right)
+        {
+            var leftPositions = GetPositions();
+            var rightPositions = right.GetPositions();
+            //var pos = _focalChain.BuildTruthTable(leftPositions, rightPositions);
+            var result = new List<(long, BoolState, BoolState)>();
+            if (leftPositions.Length > 0)
+            {
+                var sortedAll = new SortedSet<long>(leftPositions);
+                sortedAll.UnionWith(rightPositions);
+                var leftSideState = BoolState.FalsePositive;
+                var rightSideState = BoolState.FalsePositive;
+                int index = 0;
+                foreach (var pos in sortedAll)
+                {
+                    if (leftPositions.Contains(pos)) { leftSideState = leftSideState.Invert(); }
+                    if (rightPositions.Contains(pos)) { rightSideState = rightSideState.Invert(); }
+                    //var left = index == 0 ? BoolState.Underflow : leftSideState;
+                    //var right = index == sortedAll.Count - 1 ? BoolState.Overflow : rightSideState;
+                    result.Add((pos, leftSideState, rightSideState));
+                    index++;
+                }
+            }
+            return result;
+        }
 
         public static bool operator ==(NumberChain a, NumberChain b)
         {

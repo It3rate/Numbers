@@ -27,10 +27,13 @@
         TRUE,
 
         // unary
-        Negate,
-        Reciprocal,
-        TogglePolarity,
-        FlipInPlace,
+        Negate, // multiplicative inverse of negative
+        NegateInPlace, // Flip arrow in place, additive inverse of negation
+        Obverse, // multiplicative inverse of polarity (*i)
+        ObverseInPlace,  // Flip polarity in place, additive inverse of polarity 
+        Reciprocal, // multiplicative inverse of multiplication (additive reciprocal would be length becomes 1/len, in place)
+        ReciprocalInPlace, // additive inverse of multiplication (length becomes 1/len, in place)
+
         MirrorOnUnit,
         MirrorOnUnot,
         MirrorOnStart,
@@ -39,15 +42,17 @@
         FilterUnot, // always 0 to i value
         FilterStart, // depends on polarity
         FilterEnd, // depends on polarity
-        UnaryNot, // Flip In Place (same segment meaning, persepctive inverted)
 
         // Binary
         Add,
-        Subtract,
+        Subtract, // really just add negated
         Multiply,
-        Divide,
+        Divide, // just multiply reciprocal
 
-        Root,
+        Repeat, // powers
+        RepeatInPlace, // additive powers
+        Root, // inverted powers
+        RootInPlace, // inverted additive powers
         Wedge,
         DotProduct,
         CrossProduct,
@@ -64,6 +69,17 @@
         LessThanAndEqual, // no part of A to right of B, and part to the left of B  (overlap left)
         LessThanOrEqual, // no part of A to right of B
         LessThan, // A all to left of B
+
+        // (these are just the above ops, with a comparison to the original, so 'fully greater than' etc.)
+        EvaluateGreaterThan, // T/F division: A all to right of B
+        EvaluateGreaterThanOrEqual, // T/F division: no part of A to left of B
+        EvaluateGreaterThanAndEqual, // T/F division: no part of A to left of B, and part to the right of B (overlap right)
+        EvaluateContainedBy, // T/F division: A fits inside B
+        EvaluateEquals, // T/F division: B matches A
+        EvaluateContains, // T/F division: B fits inside A
+        EvaluateLessThanAndEqual, // T/F division: no part of A to right of B, and part to the left of B  (overlap left)
+        EvaluateLessThanOrEqual, // T/F division: no part of A to right of B
+        EvaluateLessThan, // T/F division: A all to left of B
 
 
         // ternary
@@ -87,7 +103,7 @@
         }
         public static bool IsUnary(this OperationKind kind)
         {
-            return kind >= OperationKind.Negate && kind <= OperationKind.UnaryNot;
+            return kind >= OperationKind.Negate && kind <= OperationKind.FilterEnd;
         }
         public static bool IsBinary(this OperationKind kind)
         {
@@ -118,6 +134,63 @@
                 yield return result;
                 result += 1;
             }
+        }
+        public static OperationKind InverseOp(this OperationKind kind)
+        {
+            OperationKind result = OperationKind.None;
+            switch (kind)
+            {
+                case OperationKind.FALSE:
+                    result = OperationKind.TRUE;
+                    break;
+                case OperationKind.AND:
+                    result = OperationKind.NAND;
+                    break;
+                case OperationKind.AND_NOT:
+                    result = OperationKind.NOT_A_OR_B;
+                    break;
+                case OperationKind.A:
+                    result = OperationKind.NOT_A;
+                    break;
+                case OperationKind.NOT_AND:
+                    result = OperationKind.A_OR_NOT_B;
+                    break;
+                case OperationKind.B:
+                    result = OperationKind.NOT_B;
+                    break;
+                case OperationKind.XOR:
+                    result = OperationKind.XNOR;
+                    break;
+                case OperationKind.OR:
+                    result = OperationKind.NOR;
+                    break;
+                case OperationKind.NOR:
+                    result = OperationKind.OR;
+                    break;
+                case OperationKind.XNOR:
+                    result = OperationKind.XOR;
+                    break;
+                case OperationKind.NOT_B:
+                    result = OperationKind.B;
+                    break;
+                case OperationKind.A_OR_NOT_B:
+                    result = OperationKind.NOT_AND;
+                    break;
+                case OperationKind.NOT_A:
+                    result = OperationKind.A;
+                    break;
+                case OperationKind.NOT_A_OR_B:
+                    result = OperationKind.AND_NOT;
+                    break;
+                case OperationKind.NAND:
+                    result = OperationKind.AND;
+                    break;
+                case OperationKind.TRUE:
+                    result = OperationKind.FALSE;
+                    break;
+                    // todo: add all other ops when implemented
+            }
+            return result;
         }
 
         // FALSE (output is always false)
@@ -314,11 +387,11 @@
                 case OperationKind.Reciprocal:
                     result = "1/";
                     break;
-                case OperationKind.TogglePolarity:
-                    result = "TogglePolarity";
+                case OperationKind.ObverseInPlace:
+                    result = "ObverseInPlace";
                     break;
-                case OperationKind.FlipInPlace:
-                    result = "FlipInPlace";
+                case OperationKind.Obverse:
+                    result = "Obverse";
                     break;
                 case OperationKind.MirrorOnUnit:
                     result = "MirrorOnUnit";
@@ -344,7 +417,7 @@
                 case OperationKind.FilterEnd:
                     result = "FilterEnd";
                     break;
-                case OperationKind.UnaryNot:
+                case OperationKind.NegateInPlace:
                     result = "!";
                     break;
                 case OperationKind.Add:
@@ -457,11 +530,11 @@
                 case OperationKind.Reciprocal:
                     result = "Reciprocal";
                     break;
-                case OperationKind.TogglePolarity:
-                    result = "TogglePolarity";
+                case OperationKind.ObverseInPlace:
+                    result = "ObverseInPlace";
                     break;
-                case OperationKind.FlipInPlace:
-                    result = "FlipInPlace";
+                case OperationKind.Obverse:
+                    result = "Obverse";
                     break;
                 case OperationKind.MirrorOnUnit:
                     result = "MirrorOnUnit";
@@ -487,8 +560,8 @@
                 case OperationKind.FilterEnd:
                     result = "FilterEnd";
                     break;
-                case OperationKind.UnaryNot:
-                    result = "UnaryNot";
+                case OperationKind.NegateInPlace:
+                    result = "NegateInPlace";
                     break;
                 case OperationKind.Add:
                     result = "Add";

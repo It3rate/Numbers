@@ -27,7 +27,7 @@
 
 
         protected List<Focal> _focals = new List<Focal>();
-        private List<long> _positions = new List<long>();
+        //private List<long> _positions = new List<long>();
         public int Count { get; private set; }
         public override bool IsDirty
         {
@@ -82,9 +82,17 @@
                 yield return _focals[i];
             }
         }
-        public long[] GetPositions() => _positions.ToArray();
-        public long MaxPosition => _positions.Max();
-        public long MinPosition => _positions.Min();
+        public IEnumerable<long> Positions()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                yield return _focals[i].StartPosition;
+                yield return _focals[i].EndPosition;
+            }
+        }
+        public long[] GetPositions() => Positions().ToArray();
+        public long MaxPosition => Positions().Max();
+        public long MinPosition => Positions().Min();
 
         public override void Reset(long start, long end)
         {
@@ -140,14 +148,14 @@
             // this assumes the two focals have the same resolutions
             if (operationKind.IsBoolOp())
             {
-                var tt = BuildTruthTable(_positions.ToArray(), new long[] { startB, endB });
+                var tt = BuildTruthTable(Positions().ToArray(), new long[] { startB, endB });
                 var positions = ApplyOpToTruthTable(tt, operationKind.GetFunc());
                 RegenerateFocals(positions);
             }
             else if (operationKind.IsBoolCompare())
             {
-                var maxA = _positions.Max();
-                var minA = _positions.Min();
+                var maxA = MaxPosition;
+                var minA = MinPosition;
                 var maxB = startB > endB ? startB : endB;
                 var minB = startB < endB ? startB : endB;
                 switch (operationKind)
@@ -190,8 +198,6 @@
         public void AddPosition(long start, long end)
         {
             FillNextPosition(start, end);
-            _positions.Add(start);
-            _positions.Add(end);
         }
         public void AddPosition(Focal position) => AddPosition(position.StartPosition, position.EndPosition);
 
@@ -216,12 +222,11 @@
         private void RegenerateFocals(long[] positions)
         {
             Clear();
-            _positions.AddRange(positions);
-            for (int i = 0; i < _positions.Count; i += 2)
+            for (int i = 0; i < positions.Length; i += 2)
             {
-                var p0 = _positions[i];
+                var p0 = positions[i];
                 // odd number of positions creates a point at end. Anything depending odd stores on this should use positions directly.
-                var p1 = i + 1 < _positions.Count ? _positions[i + 1] : p0; 
+                var p1 = i + 1 < positions.Length ? positions[i + 1] : p0; 
                 var f = FillNextPosition(p0, p1);
             }
         }
@@ -232,7 +237,7 @@
             MergeRange(focals);
         }
 
-        private long[] ApplyOpToTruthTable(List<(long, BoolState, BoolState)> data, Func<bool, bool, bool> operation)
+        public long[] ApplyOpToTruthTable(List<(long, BoolState, BoolState)> data, Func<bool, bool, bool> operation)
         {
             var result = new List<long>();
             var lastResult = false;
@@ -265,15 +270,15 @@
         }
 
         // truth table only acts on valid parts of segments. Remember a -10i+5 has two parts, 0 to -10i and 0 to 5. This is the area bools apply to.
-        private List<(long, BoolState, BoolState)> BuildTruthTable(long[] leftPositions, long[] rightPositions)
+        public List<(long, BoolState, BoolState)> BuildTruthTable(long[] leftPositions, long[] rightPositions)
         {
             var result = new List<(long, BoolState, BoolState)>();
             if (leftPositions.Length > 0)
             {
                 var sortedAll = new SortedSet<long>(leftPositions);
                 sortedAll.UnionWith(rightPositions);
-                var leftSideState = BoolState.False;
-                var rightSideState = BoolState.False;
+                var leftSideState = BoolState.FalsePositive;
+                var rightSideState = BoolState.FalsePositive;
                 int index = 0;
                 foreach (var pos in sortedAll)
                 {
@@ -306,7 +311,6 @@
         }
         public void Clear()
         {
-            _positions.Clear();
             Count = 0;
         }
 

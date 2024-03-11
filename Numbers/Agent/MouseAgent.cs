@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Numbers.Commands;
 using Numbers.Drawing;
@@ -560,6 +561,14 @@ namespace Numbers.Agent
                 nm.Number.Domain.SetBasisWithNumber(nm.Number);
             }
         }
+        private void Reverse()
+        {
+            var nm = SelSelection.GetNumberMapper();
+            if (nm != null)
+            {
+                nm.Number.Reverse();
+            }
+        }
         private void NegateSelection()
         {
             var nm = SelSelection.GetNumberMapper();
@@ -733,7 +742,7 @@ namespace Numbers.Agent
                     }
                     else
                     {
-                        //_editCommands.Repeat();
+                        Reverse();
                     }
                     break;
                 case Keys.S:
