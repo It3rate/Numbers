@@ -723,7 +723,7 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            wm.CreateImageMapper("boolOps.png", new SKSegment(50, 160, 350, 160));
+            wm.CreateImageMapper("boolOps.png", new SKSegment(40, 150, 380, 150));
 
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Bool", wm.DefaultDomainTicks, wm.DefaultDomainRange));
             hd.ShowNumbersOffset = true;

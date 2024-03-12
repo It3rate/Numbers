@@ -201,11 +201,11 @@ namespace NumbersCore.Primitives
         public static Focal Intersection(Focal p, Focal q)
         {
             Focal result = null;
-            var start = MaxStart(p, q);
-            long end = MinEnd(p, q);
-            if(end > start)
+            var ov = Overlap(p, q);
+            if(ov.LengthInTicks != 0)
             {
-                result = new Focal(start, end);
+                result = ov;
+                if (!p.IsPositiveDirection) { ov.Reverse(); }
             }
             return result;
         }

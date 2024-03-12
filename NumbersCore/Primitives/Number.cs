@@ -5,7 +5,7 @@ using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
-    public enum Polarity { Unknown, Aligned, Inverted };//, Zero, Max }
+    public enum Polarity { None, Unknown, Aligned, Inverted };//, Zero, Max }
 
     /// <summary>
     /// Numbers are intervals, calculated by uniting a Focal with a Domain. They supplement a Focal with Polarity.
@@ -50,6 +50,7 @@ namespace NumbersCore.Primitives
         }
         public int PolarityDirection => IsAligned ? 1 : -1;
         public bool IsAligned => Polarity == Polarity.Aligned;
+        public bool HasPolairty => Polarity == Polarity.Aligned || Polarity == Polarity.Inverted;
         public bool IsInverted => !IsAligned;
         public int Direction => BasisFocal.Direction * PolarityDirection;
         protected long StartTickPosition
@@ -109,8 +110,8 @@ namespace NumbersCore.Primitives
         public bool IsBasis => Domain.BasisFocal.Id == Focal.Id;
         public bool IsMinMax => Domain.MinMaxNumber.Id == Id;
         public bool IsDomainNumber => IsBasis || IsMinMax;
-        public bool IsPositivePointing => (IsAligned && EndTickPosition > StartTickPosition) || (!IsAligned && EndTickPosition < StartTickPosition);
-        public bool IsUnitPositivePointing =>  EndTickPosition > StartTickPosition;
+        public bool IsPositivePointing => HasPolairty && (IsAligned && EndTickPosition > StartTickPosition) || (!IsAligned && EndTickPosition < StartTickPosition);
+        public bool IsUnitPositivePointing =>  HasPolairty && (EndTickPosition > StartTickPosition);
 
         public int StoreIndex { get; set; } // order added to domain
 

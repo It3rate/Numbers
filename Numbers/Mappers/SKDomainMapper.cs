@@ -367,8 +367,8 @@ namespace Numbers.Mappers
                     int index = 0;
                     foreach(var num in numberSet.InternalNumbers())
                     {
-                        if (num.IsAligned || num.IsPositivePointing) // dont draw default false numbers (they point unit right, so negative).
-                        {
+                        //if (num.IsAligned)// || num.IsPositivePointing) // don't draw default false numbers (they point unit right, so negative).
+                        //{
                             var numMap = new SKNumberMapper(Agent, num);
                             DrawNumber(numMap, offset + topDir * 2, isSelected);
                             if (index == 0)
@@ -377,7 +377,7 @@ namespace Numbers.Mappers
                                 index++;
                             }
                             pts[1] = numMap.RenderSegment.EndPoint;
-                        }
+                        //}
                     }
                     if(index > 0 && pts.Length > 1)
                     {

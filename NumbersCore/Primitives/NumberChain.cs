@@ -298,22 +298,24 @@ namespace NumbersCore.Primitives
                         if(intersection != null)
                         {
                             partial = new Number(intersection, number.Polarity);
+                            partial.Domain = domain;
+                            matches.Add(partial);
                         }
                         else
                         {
-                            partial = new Number(focal.Clone(), Polarity.Inverted); // false
+                            partial = new Number(focal.Clone(), Polarity.None); // false
+                            partial.Domain = domain;
+                            matches.Add(partial);
                         }
-                        partial.Domain = domain;
-                        matches.Add(partial);
                     }
                 }
 
-                if(matches.Count == 0) // empty is false
-                {
-                    var num = new Number(focal, Polarity.Inverted);
-                    num.Domain = domain;
-                    matches.Add(num);
-                }
+                //if(matches.Count == 0) // empty is false
+                //{
+                //    var num = new Number(focal, Polarity.Inverted);
+                //    num.Domain = domain;
+                //    matches.Add(num);
+                //}
                 result.Add(matches.ToArray());
             }
 
@@ -335,58 +337,53 @@ namespace NumbersCore.Primitives
                 {
                     var first = seg[0];
                     var op = operation;
-                    var resultInverted = false;
-                    var resultNegated = false;
                     var opResult = false;
+                    var dirResult = false;
+                    var polResult = false;
                     for (int i = 0; i < seg.Length; i++)
                     {
-                        var right = seg[i];
-                        if (right.IsInverted)
-                        {
-                            //op = op.InverseOp();
-                            //right.InvertPolarity();
-                            //resultInverted = !resultInverted;
-                        }
-                        if (!right.IsUnitPositivePointing)
-                        {
-                            right.Reverse();
-                            resultNegated = !resultNegated;
-                        }
-
+                        var curNum = seg[i];
                         var func = op.GetFunc();
                         if (i == 0)
                         {
-                            if(seg.Length == 1)
+                            polResult = curNum.IsAligned;
+                            dirResult = curNum.IsUnitPositivePointing;
+                            opResult = curNum.HasPolairty;
+                        }
+                        else
+                        {
+                            polResult = func(polResult, curNum.IsAligned); ;
+                            dirResult = func(dirResult, curNum.IsUnitPositivePointing);
+                            opResult = func(opResult, curNum.HasPolairty);
+                        }
+                    }
+
+                    if (opResult)
+                    {
+                        var focal = dirResult ? new Focal(first.MinTickPosition, first.MaxTickPosition) : new Focal(first.MaxTickPosition, first.MinTickPosition);
+                        var polarity = polResult ? Polarity.Aligned : Polarity.Inverted;
+                        if (lastFocal != null && lastPolarity == polarity && lastFocal.IsPositiveDirection == focal.IsPositiveDirection) // merge continuous segments
+                        {
+                            if (lastFocal.IsPositiveDirection)
                             {
-                                opResult = func(false, right.IsAligned);
+                                lastFocal.EndPosition = focal.EndPosition;
                             }
                             else
                             {
-                                opResult = right.IsAligned;
+                                lastFocal.StartPosition = focal.StartPosition;
                             }
                         }
                         else
                         {
-                            opResult = func(opResult, right.IsAligned);
+                            focals.Add(focal);
+                            polarities.Add(polarity);
+                            lastFocal = focal;
+                            lastPolarity = polarity;
                         }
-                    }
-                    var focal = new Focal(first.MinTickPosition, first.MaxTickPosition);
-                    if (resultNegated)
-                    {
-                        focal.Reverse();
-                    }
-                    opResult = resultInverted ? !opResult : opResult;
-                    var polarity = opResult ? Polarity.Aligned : Polarity.Inverted;
-                    if(lastFocal != null && lastPolarity == polarity && lastFocal.IsPositiveDirection && focal.IsPositiveDirection)
-                    {
-                        lastFocal.EndPosition = focal.EndPosition;
                     }
                     else
                     {
-                        focals.Add(focal);
-                        polarities.Add(polarity);
-                        lastFocal = focal;
-                        lastPolarity = polarity;
+                        lastFocal = null;
                     }
                 }
             }
