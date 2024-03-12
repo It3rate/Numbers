@@ -8,6 +8,7 @@ namespace NumbersCore.Primitives
     using System.Data;
     using System.Linq;
     using System.Text;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -83,11 +84,14 @@ namespace NumbersCore.Primitives
             }
         }
 
-        public void Reset(Number left, OperationKind operationKind)
+        public void Reset(Number value, OperationKind operationKind)
         {
             Clear();
-            _focalChain.Reset(left.Focal);
-            _polarityChain.Add(left.Polarity);
+            if (value.IsValid)
+            {
+                _focalChain.Reset(value.Focal);
+                _polarityChain.Add(value.Polarity);
+            }
         }
         public void Clear()
         {
@@ -281,8 +285,15 @@ namespace NumbersCore.Primitives
             var sPositions = new SortedSet<long>();
             foreach (var number in numbers)
             {
-                internalNumberSets.Add(number.InternalNumbers().ToArray());
-                sPositions.UnionWith(number.GetPositions());
+                if(number.IsValid)
+                {
+                    internalNumberSets.Add(number.InternalNumbers().ToArray());
+                    sPositions.UnionWith(number.GetPositions());
+                }
+                else
+                {
+                    internalNumberSets.Add(new Number[] { });
+                }
             }
             var positions = sPositions.ToArray();
             Number partial;
@@ -292,34 +303,36 @@ namespace NumbersCore.Primitives
                 var matches = new List<Number>();
                 foreach(var numSet in internalNumberSets)
                 {
-                    foreach(var number in numSet)
+                    if (numSet.Length == 0)
                     {
-                        var intersection = Focal.Intersection(number.Focal, focal);
-                        if(intersection != null)
+                        matches.Add(CreateSubsegment(domain, focal, Polarity.None));
+                    }
+                    else
+                    {
+                        foreach (var number in numSet)
                         {
-                            partial = new Number(intersection, number.Polarity);
-                            partial.Domain = domain;
-                            matches.Add(partial);
-                        }
-                        else
-                        {
-                            partial = new Number(focal.Clone(), Polarity.None); // false
-                            partial.Domain = domain;
-                            matches.Add(partial);
+                            var intersection = Focal.Intersection(number.Focal, focal);
+                            if (intersection != null)
+                            {
+                                matches.Add(CreateSubsegment(domain, focal, number.Polarity));
+                            }
+                            else
+                            {
+                                matches.Add(CreateSubsegment(domain, focal, Polarity.None));
+                            }
                         }
                     }
                 }
-
-                //if(matches.Count == 0) // empty is false
-                //{
-                //    var num = new Number(focal, Polarity.Inverted);
-                //    num.Domain = domain;
-                //    matches.Add(num);
-                //}
                 result.Add(matches.ToArray());
             }
 
             return (positions, result);
+        }
+        private static Number CreateSubsegment(Domain domain, Focal focal, Polarity polairty = Polarity.None)
+        {
+            var result = new Number(focal.Clone(), polairty); // false
+            result.Domain = domain;
+            return result;
         }
         private (Focal[], Polarity[]) ApplyOpToSegmentedTable(List<Number[]> data, OperationKind operation)
         {

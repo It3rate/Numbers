@@ -25,6 +25,7 @@ namespace NumbersCore.Primitives
         public Brain Brain => Trait?.MyBrain;
         public Trait Trait => Domain.Trait;
         public virtual Domain Domain { get; set; }
+        public bool IsValid => Domain != null;
         public int DomainId
         {
             get => Domain.Id;
@@ -107,7 +108,7 @@ namespace NumbersCore.Primitives
             }
             return result;
         }
-        public bool IsBasis => Domain.BasisFocal.Id == Focal.Id;
+        public bool IsBasis => IsValid && Domain.BasisFocal.Id == Focal.Id;
         public bool IsMinMax => Domain.MinMaxNumber.Id == Id;
         public bool IsDomainNumber => IsBasis || IsMinMax;
         public bool IsPositivePointing => HasPolairty && (IsAligned && EndTickPosition > StartTickPosition) || (!IsAligned && EndTickPosition < StartTickPosition);
@@ -127,11 +128,17 @@ namespace NumbersCore.Primitives
         }
         public virtual IEnumerable<Range> InternalRanges()
         {
-            yield return Value;
+            if (IsValid)
+            {
+                yield return Value;
+            }
         }
         public virtual IEnumerable<Number> InternalNumbers()
         {
-            yield return this;
+            if (IsValid)
+            {
+                yield return this;
+            }
         }
         public double StartTValue()
         {
@@ -461,11 +468,15 @@ namespace NumbersCore.Primitives
 		}
         public override string ToString()
 		{
-			var v = Value;
-            var midSign = v.End > 0 ? " + " : " ";
-            var result = IsAligned ?
-                $"({v.UnotValue:0.##}i{midSign}{v.UnitValue}r)" :
-                $"~({v.UnitValue:0.##}r{midSign}{v.UnotValue:0.##}i)";
+            var result = "x";
+            if (IsValid)
+            {
+			    var v = Value;
+                var midSign = v.End > 0 ? " + " : " ";
+                result = IsAligned ?
+                    $"({v.UnotValue:0.##}i{midSign}{v.UnitValue}r)" :
+                    $"~({v.UnitValue:0.##}r{midSign}{v.UnotValue:0.##}i)";
+            }
             return result;
 		}
     }
