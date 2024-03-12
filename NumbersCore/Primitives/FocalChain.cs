@@ -27,7 +27,6 @@
 
 
         protected List<Focal> _focals = new List<Focal>();
-        //private List<long> _positions = new List<long>();
         public int Count { get; private set; }
         public override bool IsDirty
         {
@@ -120,22 +119,6 @@
             {
                 AddPosition(orgPositions[i + 0], orgPositions[i + 1]);
             }
-            //if (OperationKind != OperationKind.None && focals.Count > 1)
-            //{
-            //    var op = OperationKind.GetFunc();
-            //    var leftPositions = new long[] { orgPositions[0], orgPositions[1] };
-            //    for (int i = 2; i < orgPositions.Length; i += 2)
-            //    {
-            //        Add(orgPositions[i + 0], orgPositions[i + 1]);
-            //        //var rightPositions = new long[] { orgPositions[i + 0], orgPositions[i + 1] };
-            //        //var tt = BuildTruthTable(leftPositions, rightPositions);
-            //        //leftPositions = ApplyOpToTruthTable(tt, op);
-            //    }
-            //    RegenFocals();
-            //}
-            //else
-            //{
-            //}
         }
         public void ComputeWith(Focal focal, OperationKind operationKind)
         {
@@ -199,7 +182,14 @@
         {
             FillNextPosition(start, end);
         }
-        public void AddPosition(Focal position) => AddPosition(position.StartPosition, position.EndPosition);
+        public void AddPosition(Focal position) => FillNextPosition(position.StartPosition, position.EndPosition);
+        public void AddPositions(Focal[] focals)
+        {
+            foreach (var focal in focals)
+            {
+                FillNextPosition(focal.StartPosition, focal.EndPosition);
+            }
+        }
 
         public void RemoveLastPosition()
         {
@@ -277,8 +267,8 @@
             {
                 var sortedAll = new SortedSet<long>(leftPositions);
                 sortedAll.UnionWith(rightPositions);
-                var leftSideState = BoolState.FalsePositive;
-                var rightSideState = BoolState.FalsePositive;
+                var leftSideState = BoolState.False;
+                var rightSideState = BoolState.False;
                 int index = 0;
                 foreach (var pos in sortedAll)
                 {
@@ -296,7 +286,7 @@
         private Focal FillNextPosition(long startPosition, long endPosition)
         {
             Focal result;
-            if (_focals.Count > Count + 1)
+            if (Count < _focals.Count)
             {
                 result = _focals[Count];
                 result.Reset(startPosition, endPosition);
@@ -369,6 +359,17 @@
                 var hashCode = _focals.GetHashCode();
                 return hashCode;
             }
+        }
+        public override string ToString()
+        {
+            var result = $"fc:(";
+            for (int i = 0; i < Count; i++)
+            {
+                var f = _focals[i];
+                result += $"[{f.StartPosition}:{f.EndPosition}] ";
+            }
+            result += $")";
+            return result;
         }
 
     }

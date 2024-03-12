@@ -45,7 +45,7 @@
             var aspectDomain = Domain.CreateDomain("Aspect", 50, -1, 1, 0, "Aspect", false);
             AspectRatio = aspectDomain.CreateNumber(new Range(0.2f, 0.2f));
 
-            Convexity = new NumberChain(_convexityDomain, Polarity.Aligned);
+            Convexity = new NumberChain(_convexityDomain);
             Convexity.AddPosition(32, 32);
             AddPolyProperty(Fill, 0, 360, 70, 100, 40, 60);
 

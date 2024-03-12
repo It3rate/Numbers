@@ -367,16 +367,19 @@ namespace Numbers.Mappers
                     int index = 0;
                     foreach(var num in numberSet.InternalNumbers())
                     {
-                        var numMap = new SKNumberMapper(Agent, num);
-                        DrawNumber(numMap, offset + topDir * 2, isSelected);
-                        if(index == 0)
+                        if (num.IsAligned || num.IsPositivePointing) // dont draw default false numbers (they point unit right, so negative).
                         {
-                            pts[0] = numMap.RenderSegment.StartPoint;
-                            index++;
+                            var numMap = new SKNumberMapper(Agent, num);
+                            DrawNumber(numMap, offset + topDir * 2, isSelected);
+                            if (index == 0)
+                            {
+                                pts[0] = numMap.RenderSegment.StartPoint;
+                                index++;
+                            }
+                            pts[1] = numMap.RenderSegment.EndPoint;
                         }
-                        pts[1] = numMap.RenderSegment.EndPoint;
                     }
-                    if(index > 0)
+                    if(index > 0 && pts.Length > 1)
                     {
                         nm.RenderSegment = new SKSegment(pts[0], pts[1]);
                     }

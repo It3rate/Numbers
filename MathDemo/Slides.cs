@@ -34,7 +34,7 @@
             Brain = brain;
             SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
             SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-            _testIndex = 23;
+            _testIndex = 24;
             Pages.AddRange(new PageCreator[]
             {
                 RandomVsOrder_A,
@@ -446,7 +446,7 @@
             "If the unit is your smallest possible measurement, it is inaccurate by definition, and scaling to 1M will have error.",
             "Easier to have larger measure and divide it accurately, which is what ticks are.",
             "Ticks allow conversion between precision by narrowing numbers, otherwise you must renumber everything.",
-            "Negative ticks are rounding. Zero sized ticks are crazy, and that is what we use in real numbers.",
+            "TrueNegative ticks are rounding. Zero sized ticks are crazy, and that is what we use in real numbers.",
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
             wm.LineOffsetSize = 60;

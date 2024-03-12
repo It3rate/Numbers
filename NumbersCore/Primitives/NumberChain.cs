@@ -5,6 +5,7 @@ namespace NumbersCore.Primitives
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Data;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace NumbersCore.Primitives
         public new bool IsDirty { get => _focalChain.IsDirty; set => _focalChain.IsDirty = value; } // base just calls this
 
         private FocalChain _focalChain => (FocalChain)Focal;
+        private List<Polarity> _polarityChain { get; } = new List<Polarity>();
         public int Count => _focalChain.Count;
 
         public override Domain Domain // todo: lookup domain on PolyDomain
@@ -39,30 +41,58 @@ namespace NumbersCore.Primitives
             Domain = targetNumber.Domain;
             _focalChain.MergeRange(focals);
         }
-        public NumberChain(Domain domain, Polarity polarity, params Focal[] focals) : base(new FocalChain(), polarity)
+        public NumberChain(Domain domain, Focal[] focals = null, Polarity[] polarities = null) : base(new FocalChain(), Polarity.Aligned)
         {
             Domain = domain;
-            _focalChain.MergeRange(focals);
+            if(focals != null)
+            {
+                int i = 0;
+                foreach(Focal focal in focals)
+                {
+                    var polarity = polarities != null && polarities.Length > i ? polarities[i] : Polarity.Aligned;
+                    _focalChain.AddPosition(focal);
+                    _polarityChain.Add(polarity);
+                }
+            }
         }
+        public Polarity PolarityAt(int index) => _polarityChain.Count > index ? _polarityChain[index] : Polarity.Aligned;
 
         public override long[] GetPositions()
         {
             return _focalChain.GetPositions();
         }
-        public IEnumerable<Number> InternalNumbers()
+        public override IEnumerable<Range> InternalRanges()
         {
+            var i = 0;
+            foreach(var focal in _focalChain.Focals())
+            {
+                var val = Domain.GetValueOf(_focalChain, PolarityAt(i));
+                yield return val;
+
+            }
+        }
+        public override IEnumerable<Number> InternalNumbers()
+        {
+            var i = 0;
             foreach (var focal in _focalChain.Focals())
             {
-                var nm = new Number(focal, Polarity);
+                var nm = new Number(focal, PolarityAt(i));
                 nm.Domain = Domain;
                 yield return nm;
+                i++;
             }
         }
 
         public void Reset(Number left, OperationKind operationKind)
         {
+            Clear();
             _focalChain.Reset(left.Focal);
-            Polarity = left.Polarity;
+            _polarityChain.Add(left.Polarity);
+        }
+        public void Clear()
+        {
+            _focalChain.Clear();
+            _polarityChain.Clear();
         }
 
         public Focal Last() => _focalChain.Last();
@@ -73,7 +103,7 @@ namespace NumbersCore.Primitives
         {
             if (operationKind.IsBoolOp())
             {
-                ComputeBoolOp(num.Focal, operationKind);
+                ComputeBoolOp(num, operationKind);
             }
             else if (operationKind.IsBoolCompare())
             {
@@ -175,11 +205,16 @@ namespace NumbersCore.Primitives
             var focal = Domain.CreateFocalFromRange(range);
             _focalChain.ComputeWith(focal, operationKind);
         }
-        public void ComputeBoolOp(Focal focal, OperationKind operationKind)
+        public void ComputeBoolOp(Number other, OperationKind operationKind)
         {
             // bool ops are just comparing state, so they don't care about direction or polarity, thus happen on focals
             // however, this requires they have the same resolutions, so really should be on number chains.
-            _focalChain.ComputeWith(focal, operationKind);
+            //_focalChain.ComputeWith(focal, operationKind);
+            var (_, table) = SegmentedTable(Domain, this, other);
+            var(focals, polarities) = ApplyOpToSegmentedTable(table, operationKind);
+            Clear();
+            _focalChain.AddPositions(focals);
+            _polarityChain.AddRange(polarities);
         }
         public void ComputeBoolCompare(Focal focal, OperationKind operationKind)
         {
@@ -206,8 +241,12 @@ namespace NumbersCore.Primitives
 
         public void Reset(params Focal[] focals)
         {
-            _focalChain.Clear();
+            Clear();
             _focalChain.MergeRange(focals);
+            foreach (var focal in focals)
+            {
+                _polarityChain.Add(Polarity.Aligned);
+            }
         }
         public Number this[int index] => index < Count ? Domain.CreateNumber(_focalChain[index], false) : null;
         public Focal FocalAt(int index) => index < Count ? _focalChain[index] : null;
@@ -231,64 +270,157 @@ namespace NumbersCore.Primitives
         public void Not(Number q) { Reset(Focal.UnaryNot(q.Focal)); }
 
 
-        private long[] ApplyOpToTruthTable(List<(long, BoolState, BoolState)> data, Func<bool, bool, bool> operation)
+        /// <summary>
+        /// NumberChains can have overlapping numbers, so this segmented version returns all partial ranges for each possible segment.
+        /// Assumes aligned domains.
+        /// </summary>
+        public static (long[], List<Number[]>) SegmentedTable(Domain domain, params Number[] numbers)
         {
-            var result = new List<long>();
-            var lastResult = false;
-            var hadFirstTrue = false;
-            //foreach (var item in data)
-            for (int i = 0; i < data.Count - 1; i++)
+            var result = new List<Number[]>();
+            var internalNumberSets = new List<Number[]>();
+            var sPositions = new SortedSet<long>();
+            foreach (var number in numbers)
             {
-                var item = data[i];
-                var valid = BoolStateExtension.AreBool(item.Item2, item.Item3);
-                var opResult = operation(item.Item2.BoolValue(), item.Item3.BoolValue());
-                if (!hadFirstTrue && opResult == true)
+                internalNumberSets.Add(number.InternalNumbers().ToArray());
+                sPositions.UnionWith(number.GetPositions());
+            }
+            var positions = sPositions.ToArray();
+            Number partial;
+            for (int i = 1; i < positions.Length; i++)
+            {
+                var focal = new Focal(positions[i - 1], positions[i]);
+                var matches = new List<Number>();
+                foreach(var numSet in internalNumberSets)
                 {
-                    result.Add(item.Item1);
-                    hadFirstTrue = true;
-                    lastResult = opResult;
-
+                    foreach(var number in numSet)
+                    {
+                        var intersection = Focal.Intersection(number.Focal, focal);
+                        if(intersection != null)
+                        {
+                            partial = new Number(intersection, number.Polarity);
+                        }
+                        else
+                        {
+                            partial = new Number(focal.Clone(), Polarity.Inverted); // false
+                        }
+                        partial.Domain = domain;
+                        matches.Add(partial);
+                    }
                 }
-                else if (lastResult != opResult)
+
+                if(matches.Count == 0) // empty is false
                 {
-                    result.Add(item.Item1);
-                    lastResult = opResult;
+                    var num = new Number(focal, Polarity.Inverted);
+                    num.Domain = domain;
+                    matches.Add(num);
+                }
+                result.Add(matches.ToArray());
+            }
+
+            return (positions, result);
+        }
+        private (Focal[], Polarity[]) ApplyOpToSegmentedTable(List<Number[]> data, OperationKind operation)
+        {
+            var focals = new List<Focal>();
+            var polarities = new List<Polarity>();
+            Focal lastFocal = null;
+            Polarity lastPolarity = Polarity.Unknown;
+
+            foreach (var seg in data)
+            {
+                if(seg.Length == 0)
+                {
+                }
+                else
+                {
+                    var first = seg[0];
+                    var op = operation;
+                    var resultInverted = false;
+                    var resultNegated = false;
+                    var opResult = false;
+                    for (int i = 0; i < seg.Length; i++)
+                    {
+                        var right = seg[i];
+                        if (right.IsInverted)
+                        {
+                            //op = op.InverseOp();
+                            //right.InvertPolarity();
+                            //resultInverted = !resultInverted;
+                        }
+                        if (!right.IsUnitPositivePointing)
+                        {
+                            right.Reverse();
+                            resultNegated = !resultNegated;
+                        }
+
+                        var func = op.GetFunc();
+                        if (i == 0)
+                        {
+                            if(seg.Length == 1)
+                            {
+                                opResult = func(false, right.IsAligned);
+                            }
+                            else
+                            {
+                                opResult = right.IsAligned;
+                            }
+                        }
+                        else
+                        {
+                            opResult = func(opResult, right.IsAligned);
+                        }
+                    }
+                    var focal = new Focal(first.MinTickPosition, first.MaxTickPosition);
+                    if (resultNegated)
+                    {
+                        focal.Reverse();
+                    }
+                    opResult = resultInverted ? !opResult : opResult;
+                    var polarity = opResult ? Polarity.Aligned : Polarity.Inverted;
+                    if(lastFocal != null && lastPolarity == polarity && lastFocal.IsPositiveDirection && focal.IsPositiveDirection)
+                    {
+                        lastFocal.EndPosition = focal.EndPosition;
+                    }
+                    else
+                    {
+                        focals.Add(focal);
+                        polarities.Add(polarity);
+                        lastFocal = focal;
+                        lastPolarity = polarity;
+                    }
                 }
             }
 
-            if (lastResult == true && result.Count > 0) // always close
-            {
-                result.Add(data.Last().Item1);
-            }
-            return result.ToArray();
+            return (focals.ToArray(), polarities.ToArray());
+
         }
 
-        // truth table only acts on valid parts of segments. Remember a -10i+5 has two parts, 0 to -10i and 0 to 5. This is the area bools apply to.
-        private List<(long, BoolState, BoolState)> BuildTruthTable(Number right)
-        {
-            var leftPositions = GetPositions();
-            var rightPositions = right.GetPositions();
-            //var pos = _focalChain.BuildTruthTable(leftPositions, rightPositions);
-            var result = new List<(long, BoolState, BoolState)>();
-            if (leftPositions.Length > 0)
-            {
-                var sortedAll = new SortedSet<long>(leftPositions);
-                sortedAll.UnionWith(rightPositions);
-                var leftSideState = BoolState.FalsePositive;
-                var rightSideState = BoolState.FalsePositive;
-                int index = 0;
-                foreach (var pos in sortedAll)
-                {
-                    if (leftPositions.Contains(pos)) { leftSideState = leftSideState.Invert(); }
-                    if (rightPositions.Contains(pos)) { rightSideState = rightSideState.Invert(); }
-                    //var left = index == 0 ? BoolState.Underflow : leftSideState;
-                    //var right = index == sortedAll.Count - 1 ? BoolState.Overflow : rightSideState;
-                    result.Add((pos, leftSideState, rightSideState));
-                    index++;
-                }
-            }
-            return result;
-        }
+        //// truth table only acts on valid parts of segments. Remember a -10i+5 has two parts, 0 to -10i and 0 to 5. This is the area bools apply to.
+        //private List<(long, BoolState, BoolState)> BuildTruthTable(Number right)
+        //{
+        //    var leftRanges = InternalRanges();
+        //    var rightRanges = right.InternalRanges();
+        //    //var pos = _focalChain.BuildTruthTable(leftPositions, rightPositions);
+        //    var result = new List<(long, BoolState, BoolState)>();
+        //    if (left.Length > 0)
+        //    {
+        //        var sortedAll = new SortedSet<long>(left);
+        //        sortedAll.UnionWith(right);
+        //        var leftSideState = BoolState.False;
+        //        var rightSideState = BoolState.False;
+        //        int index = 0;
+        //        foreach (var pos in sortedAll)
+        //        {
+        //            if (left.Contains(pos)) { leftSideState = leftSideState.Invert(); }
+        //            if (right.Contains(pos)) { rightSideState = rightSideState.Invert(); }
+        //            //var left = index == 0 ? BoolState.Underflow : leftSideState;
+        //            //var right = index == sortedAll.Count - 1 ? BoolState.Overflow : rightSideState;
+        //            result.Add((pos, leftSideState, rightSideState));
+        //            index++;
+        //        }
+        //    }
+        //    return result;
+        //}
 
         public static bool operator ==(NumberChain a, NumberChain b)
         {

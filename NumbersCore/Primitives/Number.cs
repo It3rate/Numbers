@@ -1,10 +1,11 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives
 {
-    public enum Polarity { Aligned, Inverted };//, Zero, Max }
+    public enum Polarity { Unknown, Aligned, Inverted };//, Zero, Max }
 
     /// <summary>
     /// Numbers are intervals, calculated by uniting a Focal with a Domain. They supplement a Focal with Polarity.
@@ -108,6 +109,8 @@ namespace NumbersCore.Primitives
         public bool IsBasis => Domain.BasisFocal.Id == Focal.Id;
         public bool IsMinMax => Domain.MinMaxNumber.Id == Id;
         public bool IsDomainNumber => IsBasis || IsMinMax;
+        public bool IsPositivePointing => (IsAligned && EndTickPosition > StartTickPosition) || (!IsAligned && EndTickPosition < StartTickPosition);
+        public bool IsUnitPositivePointing =>  EndTickPosition > StartTickPosition;
 
         public int StoreIndex { get; set; } // order added to domain
 
@@ -120,6 +123,14 @@ namespace NumbersCore.Primitives
         public virtual long[] GetPositions()
         {
             return new long[] {StartTickPosition, EndTickPosition};
+        }
+        public virtual IEnumerable<Range> InternalRanges()
+        {
+            yield return Value;
+        }
+        public virtual IEnumerable<Number> InternalNumbers()
+        {
+            yield return this;
         }
         public double StartTValue()
         {

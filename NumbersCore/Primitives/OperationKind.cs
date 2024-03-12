@@ -224,16 +224,16 @@
         private static Func<bool, bool, bool> XNOR = (x, y) => !(x ^ y);
 
         // NOT SECOND INPUT (output is the negation of the second input)
-        private static Func<bool, bool, bool> NOT_SECOND_INPUT = (x, y) => !y;
+        private static Func<bool, bool, bool> NOT_B = (x, y) => !y;
 
         // IF-THEN (true if the first input is false or both are true) equivalent to logical implication
-        private static Func<bool, bool, bool> IF_THEN = (x, y) => !x || y;
+        private static Func<bool, bool, bool> A_OR_NOT_B = (x, y) => x || !y;
 
         // NOT FIRST INPUT (output is the negation of the first input)
-        private static Func<bool, bool, bool> NOT_FIRST_INPUT = (x, y) => !x;
+        private static Func<bool, bool, bool> NOT_A = (x, y) => !x;
 
         // THEN-IF (true if the second input is false or both are true) equivalent to converse implication
-        private static Func<bool, bool, bool> THEN_IF = (x, y) => x || !y;
+        private static Func<bool, bool, bool> NOT_A_OR_B = (x, y) => !x || y;
 
         // NAND (true if at least one input is false)
         private static Func<bool, bool, bool> NAND = (x, y) => !(x && y);
@@ -286,19 +286,19 @@
                     break;
 
                 case OperationKind.NOT_B:
-                    result = NOT_SECOND_INPUT;
+                    result = NOT_B;
                     break;
 
                 case OperationKind.A_OR_NOT_B:
-                    result = IF_THEN;
+                    result = A_OR_NOT_B;
                     break;
 
                 case OperationKind.NOT_A:
-                    result = NOT_FIRST_INPUT;
+                    result = NOT_A;
                     break;
 
                 case OperationKind.NOT_A_OR_B:
-                    result = THEN_IF;
+                    result = NOT_A_OR_B;
                     break;
 
                 case OperationKind.NAND:

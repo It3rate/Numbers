@@ -3,6 +3,9 @@ using NumbersCore.Primitives;
 
 namespace NumbersCore.Utils
 {
+    /// <summary>
+    /// A segment of two values, with the non aligned one using the inverted polarity.
+    /// </summary>
 	public struct Range
     {
         public static readonly Range Empty = new Range(0.0, 1.0, true);

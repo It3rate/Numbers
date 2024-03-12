@@ -169,6 +169,7 @@ namespace NumbersCore.Primitives
         public Number Zero() => CreateNumber(BasisFocal.StartPosition, BasisFocal.StartPosition);
         public Number One() => CreateNumber(BasisFocal.StartPosition, BasisFocal.EndPosition);
 
+        public Range GetValueOf(Focal focal, Polarity polarity) => focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal, polarity == Polarity.Aligned);
         public Range GetValueOf(Number num) => num.Focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal, num.IsAligned);
         public void SetValueOf(Number num, Range range)
         {
