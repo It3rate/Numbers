@@ -188,6 +188,7 @@
                 //RegenerateFocals(positions);
             }
         }
+        public Focal First() => Count > 0 ? _focals[0] : null;
         public Focal Last() => Count > 0 ? _focals[Count - 1] : null;
 
         public void AddPosition(long start, long end)

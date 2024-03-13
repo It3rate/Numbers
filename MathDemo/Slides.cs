@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Drawing;
+    using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices.Expando;
     using System.Security.Cryptography;
@@ -730,14 +731,43 @@
             var n0 = hd.CreateNumberFromFloats(32, 16, true);
             var n1 = hd.CreateNumberFromFloats(8, 8, true);
             wm.OffsetNextLineBy(30);
-            foreach(var kind in OperationKindExtension.BoolOpKinds())
+            List<Transform> transforms = new List<Transform>();
+            List<SKPathMapper> paths = new List<SKPathMapper>();
+
+            foreach (var kind in OperationKindExtension.BoolOpKinds())
             {
                 var bdm = hd.Duplicate();
-                bdm.Label = kind.GetName();
+                bdm.Label = "       " + kind.GetName();
                 Transform transform = Brain.AddTransform(n0.Number, n1.Number, kind);
                 wm.GetOrCreateTransformMapper(transform);
                 bdm.Domain.AddNumber(transform.Result);
+                var pt = bdm.Guideline.EndPoint + new SKPoint(10, -8);
+                transforms.Add(transform);
+                paths.Add(AddCircle(wm, pt, 4, 0));
             }
+
+            var red = 0;
+            var yellow = 40;
+            var green = 100;
+            n0.OnChanged += (sender, e) =>
+            {
+                for (int i = 0; i < transforms.Count; i++)
+                {
+                    transforms[i].Apply();
+                    var hue = transforms[i].IsFalse ? red : transforms[i].IsEqual ? green : yellow;
+                    paths[i].Pen.Color = SKColor.FromHsl(hue, 80, 60);
+                }
+            };
+            n1.OnChanged += (sender, e) =>
+            {
+                //var i = 6;
+                for (int i = 0; i < transforms.Count; i++)
+                {
+                    transforms[i].Apply();
+                    var hue = transforms[i].IsFalse ? red : transforms[i].IsEqual ? green : yellow;
+                    paths[i].Pen.Color = SKColor.FromHsl(hue, 80, 60);
+                }
+            };
             return wm;
         }
         private SKWorkspaceMapper Bool_Test()
@@ -1014,6 +1044,15 @@
                 var y = (rnd.Next(minYt, maxYt)) + 450;
                 path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
             }
+        }
+        private SKPathMapper AddCircle(SKWorkspaceMapper wm, SKPoint pt, int radius, int hue)
+        {
+            var path = wm.CreatePathMapper();
+            path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 60), 4);
+            var x = pt.X + radius;
+            var y = pt.Y + radius;
+            path.SetOval(new SKPoint(x - radius, y - radius), new SKPoint(x + radius * 2, y + radius * 2));
+            return path;
         }
         #endregion
     }

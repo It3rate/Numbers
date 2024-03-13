@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Numbers.Commands;
@@ -606,6 +607,7 @@ namespace Numbers.Agent
                 ActiveNumberMapper = null;
                 Stack.Do(delCommand);
                 ClearHighlights(); // todo: Add the selection things to commands.
+                delCommand.NumberMapper?.OnChange();
             }
         }
         private void ClearPaths()

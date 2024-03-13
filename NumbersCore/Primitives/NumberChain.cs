@@ -99,6 +99,19 @@ namespace NumbersCore.Primitives
             _polarityChain.Clear();
         }
 
+        public Number FirstNumber()
+        {
+            Number result = null;
+            if(Count > 0)
+            {
+                result = new Number(First(), PolarityAt(0));
+                result.Domain = Domain;
+            }
+            return result;
+        }
+        public Focal First() => _focalChain.First();
+        public Polarity FirstPolarity() => _polarityChain.Count > 0 ? _polarityChain[0] : Polarity.None;
+        public int FirstDirection() => FirstNumber()?.PolarityDirection ?? 0;
         public Focal Last() => _focalChain.Last();
         // todo: account for polarity
         public Focal CreateFocalFromRange(Range value) => Domain.CreateFocalFromRange(value);

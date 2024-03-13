@@ -49,7 +49,7 @@ namespace NumbersCore.Primitives
             get => IsBasis ? Polarity.Aligned : _polarity;
             set => _polarity = value; 
         }
-        public int PolarityDirection => IsAligned ? 1 : -1;
+        public int PolarityDirection => IsAligned ? 1 : IsInverted ? -1 : 0;
         public bool IsAligned => Polarity == Polarity.Aligned;
         public bool HasPolairty => Polarity == Polarity.Aligned || Polarity == Polarity.Inverted;
         public bool IsInverted => !IsAligned;
@@ -453,6 +453,7 @@ namespace NumbersCore.Primitives
         {
             return ReferenceEquals(this, value) ||
                     (
+                    //IsValid && value.IsValid &&
                     Polarity == value.Polarity &&
                     Focal.Equals(this.Focal, value.Focal)
                     );
@@ -462,7 +463,7 @@ namespace NumbersCore.Primitives
 		{
 			unchecked
 			{
-                var hashCode = Focal.GetHashCode() * 17 ^ ((int)Polarity + 27) * 397;
+                var hashCode = Focal.GetHashCode() * 17 ^ ((int)Polarity + 27) * 397;// + (IsValid ? 77 : 33);
                 return hashCode;
 			}
 		}

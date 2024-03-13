@@ -41,6 +41,14 @@ namespace NumbersCore.Primitives
         public Evaluation HaltCondition { get; set; } // the evaluation that decides if the transform can continue
         public bool IsActive { get; private set; }
 
+        public bool IsSingle => Result.Count == 1;
+        public bool IsTrue => Result.Count > 0;
+        public bool IsFalse => Result.Count == 0;
+        public bool IsEqual => IsSizeEqual && IsPolarityEqual && IsDirectionEqual;
+        public bool IsSizeEqual => IsSingle && (Left.Focal.Min == Result.First().Min && Left.Focal.Max == Result.First().Max);
+        public bool IsPolarityEqual => IsSingle && (Left.Polarity == Result.FirstPolarity());
+        public bool IsDirectionEqual => IsSingle && (Left.Direction == Result.FirstDirection());
+
         public IEnumerable<Number> UsedNumbers()
         {
             yield return Left;

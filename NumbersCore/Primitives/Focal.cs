@@ -72,8 +72,8 @@ namespace NumbersCore.Primitives
         public virtual long InvertedEndPosition => StartPosition - LengthInTicks;
         public virtual long[] Positions => new long[] { StartPosition, EndPosition };
 
-        public int Direction => StartPosition <= EndPosition ? 1 : -1;
-        public bool IsPositiveDirection => Direction >= 0;
+        public int Direction => StartPosition < EndPosition ? 1 : StartPosition > EndPosition ? -1 : 0;
+        public bool IsPositiveDirection => Direction > 0;
 
         // todo: add a digits per tick value to disconnect tick size from underlying representation
         public long LengthInTicks => EndPosition - StartPosition;
