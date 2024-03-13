@@ -64,7 +64,7 @@
                 MultiplyDivide_C,
                 MultiplyDivide_D,
                 Bool_A,
-                Bool_Test,
+                //Bool_Test,
                 BoolCompare_A,
                 //QualifiedBools_A,
                 Joins_A, // 25
@@ -840,7 +840,7 @@
             foreach (var kind in OperationKindExtension.BoolCompareKinds())
             {
                 var bdm = hd.Duplicate();
-                bdm.Label = kind.GetName();
+                bdm.Label = "        " + kind.GetName();
                 Transform transform = Brain.AddTransform(n0.Number, n1.Number, kind);
                 wm.GetOrCreateTransformMapper(transform);
                 bdm.Domain.AddNumber(transform.Result);
