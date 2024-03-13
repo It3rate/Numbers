@@ -27,6 +27,7 @@
         private bool _isShape = false;
         private bool _pathDirty = false;
         public int Count => PolylineDomain.Count;
+        public bool IsPermanent { get; set; } = false;
         public SKPaint Pen { get; set; }
 
         public SKPathMapper(MouseAgent agent, SKSegment guideline = null) : base(agent, new ExtentDomain(500, 500), guideline)

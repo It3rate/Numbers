@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -302,7 +303,26 @@ namespace Numbers.Mappers
         }
         public void ClearPathMappers()
         {
-            _pathMappers.Clear();
+            //var keysToRemove = _pathMappers.Where(kv => !kv.Value.IsPermanent).Select(kv => kv.Key);
+
+            //foreach (int key in keysToRemove)
+            //{
+            //    _pathMappers.Remove(key);
+            //}
+            List<int> keysToRemove = new List<int>();
+
+            foreach (int key in _pathMappers.Keys)
+            {
+                if (!_pathMappers[key].IsPermanent)
+                {
+                    keysToRemove.Add(key);
+                }
+            }
+
+            foreach (int key in keysToRemove)
+            {
+                _pathMappers.Remove(key);
+            }
         }
         public SKPathMapper PathMapperAt(int index)
         {

@@ -1040,6 +1040,7 @@
             var x = pt.X + radius;
             var y = pt.Y + radius;
             path.SetOval(new SKPoint(x - radius, y - radius), new SKPoint(x + radius * 2, y + radius * 2));
+            path.IsPermanent = true;
             return path;
         }
         private void UpdateSignals(List<Transform> transforms, List<SKPathMapper> paths)
