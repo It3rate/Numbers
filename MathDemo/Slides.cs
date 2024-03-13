@@ -121,8 +121,8 @@
             for (int i = 0; i < 25; i++)
             {
                 var path = wm.CreatePathMapper();
-                path.Pen = CorePens.GetPen(SKColor.FromHsl(i*4f + 150, 70, 50), 8); ;
-                var x = 500 + i*w;
+                path.Pen = CorePens.GetPen(SKColor.FromHsl(i * 4f + 150, 70, 50), 8); ;
+                var x = 500 + i * w;
                 var y = 700;
                 path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
             }
@@ -271,7 +271,7 @@
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
             wm.CreateImageMapper("4_parkPath.jpg", new SKSegment(350, 250, 850, 250));
-            
+
             var path = " 705.00,329.00, 706.00,340.00, 710.00,350.00, 723.00,365.00, 732.00,389.00, 731.00,396.00, 724.00,400.00, 715.00,401.00, 714.00,403.00, 709.00,403.00, 705.00,395.00, 685.00,374.00, 675.00,370.00, 644.00,383.00, 608.00,405.00, 593.00,407.00, 563.00,407.00, 560.00,400.00, 546.00,382.00, 532.00,335.00, 502.00,321.00, 500.00,318.00, 489.00,315.00, 467.00,314.00, 456.00,317.00, 412.00,343.00, 406.00,350.00, 397.00,364.00, 397.00,384.00, 400.00,395.00, 400.00,433.00, 398.00,436.00, 397.00,458.00, 400.00,466.00, 402.00,481.00, 402.00,514.00, 410.00,523.00, 425.00,530.00, 437.00,532.00, 478.00,532.00, 484.00,537.00, 484.00,559.00, 482.00,567.00, 470.00,584.00, 460.00,588.00, 454.00,594.00, 449.00,612.00, 449.00,619.00, 463.00,634.00, 471.00,636.00, 512.00,637.00, 516.00,636.00, 520.00,631.00, 527.00,629.00, 538.00,629.00, 557.00,625.00, 558.00,622.00, 570.00,613.00, 584.00,605.00, 606.00,597.00, 626.00,595.00, 638.00,603.00, 641.00,608.00, 647.00,612.00, 663.00,635.00, 665.00,641.00, 664.00,668.00, 666.00,670.00, 680.00,669.00, 683.00,625.00, 684.00,570.00, 682.00,554.00, 682.00,510.00, 679.00,466.00, 693.00,453.00, 704.00,447.00, 716.00,436.00, 735.00,437.00, 743.00,435.00, 747.00,416.00, 746.00,408.00, 744.00,406.00, 744.00,391.00, 749.00,379.00, 762.00,364.00, 770.00,350.00, 776.00,333.00, 776.00,331.00, 771.00,328.00, 742.00,327.00, 733.00,320.00";
             var pm = wm.CreatePathMapper();
             pm.SetStoredPoints(path);
@@ -350,9 +350,9 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            wm.CreateImageMapper("polarity_hs.jpg", new SKSegment(600-170, 420, 600+170, 420));
+            wm.CreateImageMapper("polarity_hs.jpg", new SKSegment(600 - 170, 420, 600 + 170, 420));
 
-            var guideline = new SKSegment(600 - 450, 280, 600+450, 280);
+            var guideline = new SKSegment(600 - 450, 280, 600 + 450, 280);
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Polarity", 1, 10), guideline);
             return wm;
         }
@@ -393,7 +393,7 @@
                };
             wm.CreateTextMapper(txt, new SKSegment(50, 50, 100, 50));
 
-            wm.CreateImageMapper("cats.png", new SKSegment(600-170, 420, 600+170, 420));
+            wm.CreateImageMapper("cats.png", new SKSegment(600 - 170, 420, 600 + 170, 420));
 
             var guideline = new SKSegment(600 - 450, 280, 600 + 450, 280);
             var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Selection", 4, 3), guideline);
@@ -741,33 +741,15 @@
                 Transform transform = Brain.AddTransform(n0.Number, n1.Number, kind);
                 wm.GetOrCreateTransformMapper(transform);
                 bdm.Domain.AddNumber(transform.Result);
-                var pt = bdm.Guideline.EndPoint + new SKPoint(10, -8);
                 transforms.Add(transform);
+                var pt = bdm.Guideline.EndPoint + new SKPoint(10, -8);
                 paths.Add(AddCircle(wm, pt, 4, 0));
             }
 
-            var red = 0;
-            var yellow = 40;
-            var green = 100;
-            n0.OnChanged += (sender, e) =>
-            {
-                for (int i = 0; i < transforms.Count; i++)
-                {
-                    transforms[i].Apply();
-                    var hue = transforms[i].IsFalse ? red : transforms[i].IsEqual ? green : yellow;
-                    paths[i].Pen.Color = SKColor.FromHsl(hue, 80, 60);
-                }
-            };
-            n1.OnChanged += (sender, e) =>
-            {
-                //var i = 6;
-                for (int i = 0; i < transforms.Count; i++)
-                {
-                    transforms[i].Apply();
-                    var hue = transforms[i].IsFalse ? red : transforms[i].IsEqual ? green : yellow;
-                    paths[i].Pen.Color = SKColor.FromHsl(hue, 80, 60);
-                }
-            };
+            n0.OnChanged += (sender, e) => { UpdateSignals(transforms, paths); };
+            n1.OnChanged += (sender, e) => { UpdateSignals(transforms, paths); };
+            UpdateSignals(transforms, paths);
+
             return wm;
         }
         private SKWorkspaceMapper Bool_Test()
@@ -848,11 +830,8 @@
             wm.DefaultDomainTicks = 1;
             wm.DefaultDomainRange = 32;
             wm.DefaultShowPolarity = true;
-            //wm.DefaultShowBasis = true;
             wm.DefaultShowBasisMarkers = false;
             wm.DefaultShowGradientNumberLine = true;
-            //wm.DefaultShowTicks = true;
-            //wm.DefaultShowMinorTicks = false;
 
             string[] txt = new string[] {
                 "Comparisons are also possible with segments. A is LessThan B means A is fully to the left of B.",
@@ -867,14 +846,23 @@
             var n0 = hd.CreateNumberFromFloats(16, 16, true);
             var n1 = hd.CreateNumberFromFloats(8, 8, true);
             wm.OffsetNextLineBy(30);
+            List<Transform> transforms = new List<Transform>();
+            List<SKPathMapper> paths = new List<SKPathMapper>();
             foreach (var kind in OperationKindExtension.BoolCompareKinds())
             {
                 var bdm = hd.Duplicate();
-                bdm.Label = "        " + kind.GetName();
+                bdm.Label = "     " + kind.GetName();
                 Transform transform = Brain.AddTransform(n0.Number, n1.Number, kind);
                 wm.GetOrCreateTransformMapper(transform);
                 bdm.Domain.AddNumber(transform.Result);
+                transforms.Add(transform);
+                var pt = bdm.Guideline.EndPoint + new SKPoint(10, -8);
+                paths.Add(AddCircle(wm, pt, 4, 0));
             }
+
+            n0.OnChanged += (sender, e) => { UpdateSignals(transforms, paths); };
+            n1.OnChanged += (sender, e) => { UpdateSignals(transforms, paths); };
+            UpdateSignals(transforms, paths);
             return wm;
         }
         private SKWorkspaceMapper QualifiedBools_A()
@@ -1053,6 +1041,18 @@
             var y = pt.Y + radius;
             path.SetOval(new SKPoint(x - radius, y - radius), new SKPoint(x + radius * 2, y + radius * 2));
             return path;
+        }
+        private void UpdateSignals(List<Transform> transforms, List<SKPathMapper> paths)
+        {
+            var red = 0;
+            var yellow = 40;
+            var green = 100;
+            for (int i = 0; i < transforms.Count; i++)
+            {
+                transforms[i].Apply();
+                var hue = transforms[i].IsFalse ? red : transforms[i].IsEqual ? green : yellow;
+                paths[i].Pen.Color = SKColor.FromHsl(hue, 80, 60);
+            }
         }
         #endregion
     }
