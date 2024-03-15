@@ -327,7 +327,7 @@ namespace NumbersCore.Primitives
                             var intersection = Focal.Intersection(number.Focal, focal);
                             if (intersection != null)
                             {
-                                matches.Add(CreateSubsegment(domain, focal, number.Polarity));
+                                matches.Add(CreateSubsegment(domain, intersection, number.Polarity));
                             }
                             else
                             {
